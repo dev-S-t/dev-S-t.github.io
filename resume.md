@@ -3,7 +3,7 @@
 **Title:** AI Solutions Engineer @ TechieMaya  
 **Location:** Ghaziabad, UP, India (Open to Remote / Delhi NCR / Bengaluru / Pune)  
 **Handles:** GitHub: [dev-S-t](https://github.com/dev-S-t) | LinkedIn: [dev-s-t](https://www.linkedin.com/in/dev-s-t/)  
-**WhatsApp:** [Primary WhatsApp](https://wa.link/r8csgy)
+**WhatsApp:** [Primary (wa.link/r8csgy)](https://wa.link/r8csgy) | [Secondary (wa.link/l2oedq)](https://wa.link/l2oedq)
 
 ---
 

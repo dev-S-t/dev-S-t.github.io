@@ -11,6 +11,7 @@
 - **Location:** Ghaziabad, Uttar Pradesh, India (Open to Remote / Delhi NCR / Bengaluru / Pune)
 - **Email:** public contact available at `/contact/`
 - **Primary WhatsApp:** https://wa.link/r8csgy
+- **Secondary WhatsApp:** https://wa.link/l2oedq
 - **IEEE Scholarly Publication:** https://ieeexplore.ieee.org/document/11584332
 
 ## Full Profile Corpus for LLMs

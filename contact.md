@@ -7,6 +7,7 @@
 
 ## Messaging & Profiles
 - **Primary WhatsApp:** https://wa.link/r8csgy
+- **Secondary WhatsApp:** https://wa.link/l2oedq
 - **GitHub:** https://github.com/dev-S-t
 - **LinkedIn:** https://www.linkedin.com/in/dev-s-t/
 - **IEEE Paper:** https://ieeexplore.ieee.org/document/11584332
