@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>One Voice Platform, Two Opposite Conversational Goals — Case Study | Sahil Tomar (dev-S-t)</title>
+  <meta name="description" content="Engineering Case Study by Sahil Tomar (dev-S-t): Building VOAG Voice AI platform to handle low-pressure higher-ed counseling and persistent real estate cold-calling under sub-200ms latency.">
+  <link rel="canonical" href="https://dev-s-t.github.io/case-studies/one-platform-two-goals/">
+  <link rel="alternate" type="text/markdown" title="Case Study 6 Markdown" href="https://dev-s-t.github.io/case-studies/one-platform-two-goals.md">
+  
+  <meta property="og:title" content="One Voice Platform, Two Opposite Conversational Goals — Sahil Tomar (dev-S-t)">
+  <meta property="og:description" content="VOAG Voice AI platform multi-tenant behavioral tuning and sub-200ms latency architecture by Sahil Tomar (dev-S-t).">
+  <meta property="og:url" content="https://dev-s-t.github.io/case-studies/one-platform-two-goals/">
+  <meta property="og:type" content="article">
+</head>
+<body>
+  <header>
+    <h1>One Voice Platform, Two Opposite Conversational Goals</h1>
+    <p>Engineering Case Study 6 — <strong>Sahil Tomar (dev-S-t)</strong></p>
+    <p><a href="/case-studies/">Back to Case Studies Hub</a> | <a href="/projects/voag/">View Project: VOAG Voice AI SaaS</a> | <a href="/case-studies/one-platform-two-goals.md">Raw Markdown</a></p>
+  </header>
+
+  <main>
+    <article>
+      <section>
+        <h2>Problem</h2>
+        <p>Different clients on the same voice platform needed fundamentally different conversational behavior. A higher-education consultancy wanted natural, unhurried outreach and follow-up calls — explicitly <em>not</em> salesy — to take pressure off their human counselors. A real estate client needed close to the opposite: a persistent, harder-to-brush-off cold-calling agent, because real estate cold calls are otherwise trivially easy to end in five seconds.</p>
+      </section>
+
+      <section>
+        <h2>Analysis</h2>
+        <p>A single generically-tuned voice bot fails at least one of these outright. And underneath both sits a harder constraint: neither use case works at all if the conversation doesn't feel genuinely real-time. Past roughly 200ms round-trip, an agent starts getting talked over, feels robotic, and breaks the premise the entire product rests on.</p>
+      </section>
+
+      <section>
+        <h2>Solution & Architecture</h2>
+        <p>Built VOAG so that <em>how a call is handled</em> is separate from <em>what a call sounds like</em>.</p>
+        <p>On infrastructure: LiveKit self-hosted rather than LiveKit Cloud. The UAE deployment runs a SIM card through a modem into a SIP gateway directly into the self-hosted LiveKit server, all on the same LAN — eliminating a network hop and holding latency down. That required custom deployment work specifically because of NAT constraints in the client's environment, made harder by LiveKit having stripped most SIP documentation after launching their own phone number product.</p>
+        <p>Calls route by originating number and tenant ID to either the UAE instance or the self-hosted Indian instance — two dedicated low-latency workers for those paths, plus three bulk-handling workers for general volume. The main API and batch manager stay on a small always-available VM so requests are answered instantly, while call workers run on Cloud Run with auto-scale and scale-to-zero, woken on demand through an async polling layer rather than holding persistent connections open.</p>
+        <p>On behavior: per-tenant configuration controls tone, pacing, and conversational goal — so the same infrastructure serves both a low-pressure counselor-style agent and a deliberately persistent cold-caller without maintaining two codebases.</p>
+      </section>
+
+      <section>
+        <h2>Outcome</h2>
+        <p>One platform handling 1,000+ calls a day across genuinely different use cases — education outreach, real estate cold calling, and B2B partnership outreach for a travel agency — with no per-client fork of the underlying system.</p>
+      </section>
+    </article>
+  </main>
+
+  <footer>
+    <hr>
+    <p><a href="/case-studies/">← Back to All Case Studies</a> | Related System: <a href="/projects/voag/">VOAG Voice AI SaaS Project Page</a></p>
+  </footer>
+</body>
+</html>

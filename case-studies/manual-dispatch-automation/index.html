@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>30 Minutes to Under a Minute — Automating a Manual Dispatch Desk — Case Study | Sahil Tomar (dev-S-t)</title>
+  <meta name="description" content="Engineering Case Study by Sahil Tomar (dev-S-t): How a 30-minute manual B2B WhatsApp group dispatch desk for a Dubai luxury transport client became a sub-minute automated multi-agent system.">
+  <link rel="canonical" href="https://dev-s-t.github.io/case-studies/manual-dispatch-automation/">
+  <link rel="alternate" type="text/markdown" title="Case Study 3 Markdown" href="https://dev-s-t.github.io/case-studies/manual-dispatch-automation.md">
+  
+  <meta property="og:title" content="30 Minutes to Under a Minute — Automating a Manual Dispatch Desk — Sahil Tomar (dev-S-t)">
+  <meta property="og:description" content="Automating B2B WhatsApp group dispatch with whatsmeow (Go) and Google ADK multi-agent orchestration by Sahil Tomar (dev-S-t).">
+  <meta property="og:url" content="https://dev-s-t.github.io/case-studies/manual-dispatch-automation/">
+  <meta property="og:type" content="article">
+</head>
+<body>
+  <header>
+    <h1>30 Minutes to Under a Minute — Automating a Manual Dispatch Desk</h1>
+    <p>Engineering Case Study 3 — <strong>Sahil Tomar (dev-S-t)</strong></p>
+    <p><em>Client: A Dubai-based luxury ground transportation company (engagement held by TechieMaya).</em></p>
+    <p><a href="/case-studies/">Back to Case Studies Hub</a> | <a href="/projects/whatsapp-dispatch/">View Project: WhatsApp Dispatch Automation</a> | <a href="/case-studies/manual-dispatch-automation.md">Raw Markdown</a></p>
+  </header>
+
+  <main>
+    <article>
+      <section>
+        <h2>Problem</h2>
+        <p>The company ran their entire B2B partner booking flow through WhatsApp groups. A partner posted a request; a human had to notice it, manually check vehicle and driver availability, calculate a fare, and reply. Typical turnaround was around 30 minutes with staff on hand — and well over two hours for requests arriving outside working hours. WhatsApp's official Business API offers no support for reading or acting on group messages, so there was no vendor-sanctioned automation path at all.</p>
+      </section>
+
+      <section>
+        <h2>Analysis</h2>
+        <p>Two distinct problems stacked. First: get a working connection into group chats, which the official API structurally does not permit. Second, once that's solved: real booking requests are messy — missing details, a flight time that doesn't line up with the requested pickup window, contradictory information. This couldn't be keyword matching. It needed to actually reason about what was missing or inconsistent and ask the right follow-up question, or it would just generate confidently wrong bookings faster than humans generated correct ones.</p>
+      </section>
+
+      <section>
+        <h2>Solution & Architecture</h2>
+        <p>A connection layer built on the <code>whatsmeow</code> Go library, managing the WhatsApp session directly — reading, receiving, and sending messages, read receipts, typing indicators.</p>
+        <p>On top of that, a Python multi-agent system on Google ADK:</p>
+        <ul>
+          <li>An <strong>orchestrator</strong> supervising the sub-agents and managing the shared context each one needs.</li>
+          <li>A <strong>booking agent</strong> that extracts request details and fills gaps through tools — layered Google Maps queries for location resolution, flight data lookups, and the client's own backend for vehicle and driver availability, assignment, and fare estimation. When something is missing or internally contradictory, it asks a targeted follow-up instead of guessing.</li>
+          <li>A <strong>support agent</strong> handling cancellations, modifications, rescheduling, and general inquiries against existing bookings.</li>
+        </ul>
+        <p>A separate <strong>Flight Data service</strong> runs independently on Cloud Run as the shared flight-lookup backend the booking agent calls into.</p>
+      </section>
+
+      <section>
+        <h2>Outcome</h2>
+        <p>Turnaround dropped from ~30 minutes (2+ hours off-hours) to under a minute, with no recurring WhatsApp Business API costs, since the integration never routes through the paid official channel.</p>
+      </section>
+    </article>
+  </main>
+
+  <footer>
+    <hr>
+    <p><a href="/case-studies/">← Back to All Case Studies</a> | Related System: <a href="/projects/whatsapp-dispatch/">WhatsApp Dispatch Automation Project Page</a></p>
+  </footer>
+</body>
+</html>

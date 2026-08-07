@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data That Can't Leave the Building — Case Study | Sahil Tomar (dev-S-t)</title>
+  <meta name="description" content="Engineering Case Study by Sahil Tomar (dev-S-t): Solving privacy-constrained RAG for legal and compliance clients using an inverted topology over Agent-to-Agent (A2A) protocol.">
+  <link rel="canonical" href="https://dev-s-t.github.io/case-studies/on-prem-privacy-rag/">
+  <link rel="alternate" type="text/markdown" title="Case Study 1 Markdown" href="https://dev-s-t.github.io/case-studies/on-prem-privacy-rag.md">
+  
+  <meta property="og:title" content="Data That Can't Leave the Building — Sahil Tomar (dev-S-t)">
+  <meta property="og:description" content="Inverted RAG topology over A2A protocol for compliance-sensitive internal documents by Sahil Tomar (dev-S-t).">
+  <meta property="og:url" content="https://dev-s-t.github.io/case-studies/on-prem-privacy-rag/">
+  <meta property="og:type" content="article">
+</head>
+<body>
+  <header>
+    <h1>Data That Can't Leave the Building</h1>
+    <p>Engineering Case Study 1 — <strong>Sahil Tomar (dev-S-t)</strong></p>
+    <p><a href="/case-studies/">Back to Case Studies Hub</a> | <a href="/projects/privacy-rag/">View Project: Privacy-First On-Prem RAG</a> | <a href="/case-studies/on-prem-privacy-rag.md">Raw Markdown</a></p>
+  </header>
+
+  <main>
+    <article>
+      <section>
+        <h2>Problem</h2>
+        <p>A client needed AI-powered access to their own internal documents and knowledge base, but would not send that data to any external service — regardless of encryption or access-control guarantees offered. That rules out essentially every standard RAG architecture, all of which assume documents get uploaded somewhere the model can reach.</p>
+      </section>
+
+      <section>
+        <h2>Analysis</h2>
+        <p>This wasn't a modeling problem, it was a topology problem. No amount of security assurance around a hosted vector store satisfies a hard requirement that data never leaves the network. The real question was whether the reasoning could happen where the data already lives, rather than moving the data to where the reasoning happens.</p>
+      </section>
+
+      <section>
+        <h2>Solution & Architecture</h2>
+        <p>Inverted the usual model: the reasoning agent deploys onto the client's own infrastructure instead of documents shipping out to a cloud pipeline. Built over an Agent-to-Agent (A2A) protocol, so any external system — another agent, a human-facing tool — can query it and get a useful answer without the underlying documents ever crossing the client's network boundary.</p>
+        <p>The local index pairs dense vector (semantic) search with keyword search, because embedding similarity alone degrades sharply across mixed document types: contracts, spreadsheets, scanned text, source code.</p>
+      </section>
+
+      <section>
+        <h2>Outcome</h2>
+        <p>A repeatable pattern for "AI over data that can't move" — now the standard offering for any client with the same constraint, rather than a one-off build.</p>
+      </section>
+    </article>
+  </main>
+
+  <footer>
+    <hr>
+    <p><a href="/case-studies/">← Back to All Case Studies</a> | Related System: <a href="/projects/privacy-rag/">Privacy-First On-Prem RAG Project Page</a></p>
+  </footer>
+</body>
+</html>

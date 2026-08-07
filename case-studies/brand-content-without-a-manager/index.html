@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consistent Brand Content Without a Social Media Manager — Case Study | Sahil Tomar (dev-S-t)</title>
+  <meta name="description" content="Engineering Case Study by Sahil Tomar (dev-S-t): Building MAGe Multi-Agent Media Generation Engine (Google Veo, Playwright brand crawler, Cartesia voice, Subreddit trend intelligence, and contextvars cost accounting).">
+  <link rel="canonical" href="https://dev-s-t.github.io/case-studies/brand-content-without-a-manager/">
+  <link rel="alternate" type="text/markdown" title="Case Study 7 Markdown" href="https://dev-s-t.github.io/case-studies/brand-content-without-a-manager.md">
+  
+  <meta property="og:title" content="Consistent Brand Content Without a Social Media Manager — Sahil Tomar (dev-S-t)">
+  <meta property="og:description" content="MAGe multi-agent ad generation engine with Google Veo, Playwright, and trend intelligence by Sahil Tomar (dev-S-t).">
+  <meta property="og:url" content="https://dev-s-t.github.io/case-studies/brand-content-without-a-manager/">
+  <meta property="og:type" content="article">
+</head>
+<body>
+  <header>
+    <h1>Consistent Brand Content Without a Social Media Manager</h1>
+    <p>Engineering Case Study 7 — <strong>Sahil Tomar (dev-S-t)</strong></p>
+    <p><a href="/case-studies/">Back to Case Studies Hub</a> | <a href="/projects/mage/">View Project: MAGe Media Engine</a> | <a href="/case-studies/brand-content-without-a-manager.md">Raw Markdown</a></p>
+  </header>
+
+  <main>
+    <article>
+      <section>
+        <h2>Problem</h2>
+        <p>Maintaining a consistent brand presence on social media effectively requires a dedicated social media manager — daily posting, on-brand creative, and staying current with what's actually working. Most small and mid-size businesses don't have one, and two failure modes follow directly.</p>
+        <p>First: businesses often don't know <em>what</em> to post. Second: even when there's a clear idea, execution is slow. A common real pattern — a CEO sees a post they like and wants the same concept with their own name, their own pricing, their own logo and colors — still requires a designer, a round of revisions, and days of turnaround for what is conceptually a small change.</p>
+      </section>
+
+      <section>
+        <h2>Analysis</h2>
+        <p>Two problems needing two different solutions in one system. The "what to post" gap needs live trend signal about what's currently resonating, not static best practices. The "make it ours" gap needs the brand's actual visual identity encoded somewhere the generation pipeline can enforce automatically — otherwise you get generic output that needs a human to fix, which defeats the purpose.</p>
+        <p>A third failure mode had to be designed around: a single "describe your ad" prompt burns an entire generation cycle before anyone discovers the output isn't what they wanted. For video generation, that's expensive in both time and API cost.</p>
+      </section>
+
+      <section>
+        <h2>Solution & Architecture</h2>
+        <p>The pipeline starts by scraping the client's own website with Playwright — visual style, typography, logos, color palette, product imagery — and passes that through a multimodal vision model to infer brand voice, audience, and differentiators. The result is a structured, persistent brand profile that every later stage is checked against, which makes "with our logo and our colors" automatic rather than a manual step.</p>
+        <p>From there, a small hierarchy of specialist agents each owns one stage rather than one long prompt chain: a <strong>creative director</strong> proposing a few distinct directions grounded in the brand profile; a <strong>script writer</strong> turning an approved direction into a shot-by-shot script sized to the video model's per-generation limits; a <strong>reference selector</strong> mapping specific brand assets to specific scenes; a <strong>voice agent</strong> choosing and timing a Cartesia TTS voice against the script; a <strong>video generator</strong> splitting longer scripts into segments generated with Google's Veo model and stitched with FFmpeg — carrying the final frame of each segment forward as the visual anchor for the next, so there's no visible style jump across cuts; and a <strong>reviewer agent</strong> checking the assembled result against the script before it's presented as finished.</p>
+        <p>A separate trend tool pulls trending posts and audience sentiment from relevant subreddits, giving the creative director live signal on what's currently landing in a given niche — this is what drives concept suggestions for businesses that don't know what to post.</p>
+        <p>The interface is deliberately step-by-step rather than single-prompt: text inputs, multiple-choice creative direction picks, keyframe confirmation, generation progress. The user makes several small guided decisions and can course-correct at each one, instead of discovering a mismatch only after a full video render. Every model call — LLM tokens, image generation, video seconds, TTS characters — is metered per session in real time, using Python <code>contextvars</code> to keep accounting correct across concurrent async sessions.</p>
+      </section>
+
+      <section>
+        <h2>Outcome</h2>
+        <p>A system where a business without a social media manager gets both halves of the problem covered: suggestions for what to post grounded in current trends, and finished on-brand creative from a handful of guided decisions rather than a design brief and a week of turnaround.</p>
+      </section>
+    </article>
+  </main>
+
+  <footer>
+    <hr>
+    <p><a href="/case-studies/">← Back to All Case Studies</a> | Related System: <a href="/projects/mage/">MAGe Media Engine Project Page</a></p>
+  </footer>
+</body>
+</html>

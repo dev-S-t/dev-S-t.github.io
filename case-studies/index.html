@@ -20,7 +20,7 @@
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     "name": "Engineering Case Studies — Sahil Tomar (dev-S-t)",
-    "description": "Problem-to-architecture case studies covering production Voice AI, privacy RAG, WhatsApp automation, and generative media.",
+    "description": "Problem-to-architecture case studies covering production Voice AI, privacy RAG, WhatsApp automation, real-time avatars, and ad generation.",
     "url": "https://dev-s-t.github.io/case-studies/",
     "mainEntity": {
       "@type": "ItemList",
@@ -28,44 +28,44 @@
         {
           "@type": "ListItem",
           "position": 1,
-          "name": "Data That Can't Leave the Building (Privacy-First On-Prem RAG)",
-          "url": "https://dev-s-t.github.io/case-studies/#case-study-1"
+          "name": "Data That Can't Leave the Building",
+          "url": "https://dev-s-t.github.io/case-studies/on-prem-privacy-rag/"
         },
         {
           "@type": "ListItem",
           "position": 2,
-          "name": "Multi-Tenant AI Without Cross-Contamination (AnyAssist)",
-          "url": "https://dev-s-t.github.io/case-studies/#case-study-2"
+          "name": "Multi-Tenant AI Without Cross-Contamination",
+          "url": "https://dev-s-t.github.io/case-studies/multi-tenant-isolation/"
         },
         {
           "@type": "ListItem",
           "position": 3,
           "name": "30 Minutes to Under a Minute — Automating a Manual Dispatch Desk",
-          "url": "https://dev-s-t.github.io/case-studies/#case-study-3"
+          "url": "https://dev-s-t.github.io/case-studies/manual-dispatch-automation/"
         },
         {
           "@type": "ListItem",
           "position": 4,
-          "name": "Filtering Signal From a Thousand Messages a Day (Independent Musician)",
-          "url": "https://dev-s-t.github.io/case-studies/#case-study-4"
+          "name": "Filtering Signal From a Thousand Messages a Day",
+          "url": "https://dev-s-t.github.io/case-studies/message-filtering/"
         },
         {
           "@type": "ListItem",
           "position": 5,
-          "name": "Unblocking a Real-Time Avatar Product After Months Stuck (Hireups / MGS)",
-          "url": "https://dev-s-t.github.io/case-studies/#case-study-5"
+          "name": "Unblocking a Real-Time Avatar Product After Months Stuck",
+          "url": "https://dev-s-t.github.io/case-studies/avatar-product-rescue/"
         },
         {
           "@type": "ListItem",
           "position": 6,
-          "name": "One Voice Platform, Two Opposite Conversational Goals (VOAG)",
-          "url": "https://dev-s-t.github.io/case-studies/#case-study-6"
+          "name": "One Voice Platform, Two Opposite Conversational Goals",
+          "url": "https://dev-s-t.github.io/case-studies/one-platform-two-goals/"
         },
         {
           "@type": "ListItem",
           "position": 7,
-          "name": "Consistent Brand Content Without a Social Media Manager (MAGe)",
-          "url": "https://dev-s-t.github.io/case-studies/#case-study-7"
+          "name": "Consistent Brand Content Without a Social Media Manager",
+          "url": "https://dev-s-t.github.io/case-studies/brand-content-without-a-manager/"
         }
       ]
     }
@@ -84,74 +84,58 @@
     <section>
       <h2>Engineering Case Studies Overview</h2>
       <p>Most of my project write-ups describe what got built. This page describes how I got there — the problem as it was first handed to me, what I found once I dug in, why the obvious first approach usually didn't hold, and the architecture that did. Written for anyone evaluating problem-solving process rather than just output.</p>
-
-      <p><em>Client Naming Note:</em> Engagements where I was the direct, sole contracted engineer are named (Quantashift / MGS Technology / Hireups). Engagements that were TechieMaya's client relationships are described by industry and geography only.</p>
     </section>
 
-    <!-- Case Study 1 -->
-    <article id="case-study-1">
-      <h2>Case Study 1: Data That Can't Leave the Building</h2>
-      <p><strong>Problem:</strong> A client needed AI-powered access to internal documents, but would not send data to any external service — ruling out standard cloud RAG architectures.</p>
-      <p><strong>Analysis:</strong> A topology problem, not a modeling problem. The core question was whether reasoning could happen where data already lives, rather than moving data to cloud models.</p>
-      <p><strong>Solution & Architecture:</strong> Inverted the RAG topology: deployed reasoning agents onto the client's local infrastructure using Agent-to-Agent (A2A) protocol. External tools query local agent endpoints while raw documents never cross the client's network boundary. Local index pairs dense vector search with keyword search across contracts, code, spreadsheets, and scanned PDFs.</p>
-      <p><strong>Outcome:</strong> Established a repeatable pattern for "AI over data that can't move."</p>
+    <!-- Case Study 1 Hub Entry -->
+    <article>
+      <h2>1. Data That Can't Leave the Building</h2>
+      <p><strong>Problem:</strong> A client needed AI-powered access to their own internal documents and knowledge base, but would not send that data to any external service — regardless of encryption or access-control guarantees offered. That rules out essentially every standard RAG architecture, all of which assume documents get uploaded somewhere the model can reach.</p>
+      <p><a href="/case-studies/on-prem-privacy-rag/">Read full case study →</a> | <a href="/case-studies/case-study-1/">/case-studies/case-study-1/</a></p>
     </article>
 
-    <!-- Case Study 2 -->
-    <article id="case-study-2">
-      <h2>Case Study 2: Multi-Tenant AI Without Cross-Contamination</h2>
-      <p><strong>Problem:</strong> Businesses need personalized support agents, but dedicated per-client infrastructure doesn't scale, while naive shared infrastructure risks cross-tenant data leaks.</p>
-      <p><strong>Analysis:</strong> The hard part was making RAG safely multi-tenant: strict isolation, per-client cost visibility, and avoiding single-vendor model lock-in.</p>
-      <p><strong>Solution & Architecture:</strong> Agent-per-tenant model built on Google Agent Development Kit (ADK), with logical namespace vector isolation. A LiteLLM gateway manages cross-provider routing, rate limiting, and per-tenant cost attribution.</p>
-      <p><strong>Outcome:</strong> One scalable backend serving multiple distinct clients securely with per-tenant billing transparency.</p>
+    <!-- Case Study 2 Hub Entry -->
+    <article>
+      <h2>2. Multi-Tenant AI Without Cross-Contamination</h2>
+      <p><strong>Problem:</strong> Many businesses want the same fundamental thing: a support agent that knows their content and can talk to their customers. Building dedicated infrastructure per business doesn't scale. Naive shared infrastructure risks one tenant's data or conversational context surfacing in another's session.</p>
+      <p><a href="/case-studies/multi-tenant-isolation/">Read full case study →</a> | <a href="/case-studies/case-study-2/">/case-studies/case-study-2/</a></p>
     </article>
 
-    <!-- Case Study 3 -->
-    <article id="case-study-3">
-      <h2>Case Study 3: 30 Minutes to Under a Minute — Automating a Manual Dispatch Desk</h2>
-      <p><em>Client: A Dubai-based luxury ground transportation company (engagement held by TechieMaya).</em></p>
-      <p><strong>Problem:</strong> B2B partner bookings were handled manually via WhatsApp group messages. Turnaround was ~30 minutes (2+ hours off-hours). WhatsApp Business API offers zero support for group messages.</p>
-      <p><strong>Analysis:</strong> Two stacked problems: establishing a connection into group chats without official API support, and handling messy, incomplete, or contradictory booking requests through reasoning rather than keyword matching.</p>
-      <p><strong>Solution & Architecture:</strong> Connection layer in Go built on `whatsmeow`. Multi-agent system on Google ADK (Orchestrator, Booking Agent with Google Maps and backend tools, Support Agent) plus an independent Flight Data service on Cloud Run.</p>
-      <p><strong>Outcome:</strong> Turnaround dropped from ~30 minutes to under a minute with zero recurring API fees.</p>
+    <!-- Case Study 3 Hub Entry -->
+    <article>
+      <h2>3. 30 Minutes to Under a Minute — Automating a Manual Dispatch Desk</h2>
+      <p><em>Client: a Dubai-based luxury ground transportation company (engagement held by TechieMaya).</em></p>
+      <p><strong>Problem:</strong> The company ran their entire B2B partner booking flow through WhatsApp groups. A partner posted a request; a human had to notice it, manually check vehicle and driver availability, calculate a fare, and reply. Typical turnaround was around 30 minutes with staff on hand — and well over two hours for requests arriving outside working hours. WhatsApp's official Business API offers no support for reading or acting on group messages, so there was no vendor-sanctioned automation path at all.</p>
+      <p><a href="/case-studies/manual-dispatch-automation/">Read full case study →</a> | <a href="/case-studies/case-study-3/">/case-studies/case-study-3/</a></p>
     </article>
 
-    <!-- Case Study 4 -->
-    <article id="case-study-4">
-      <h2>Case Study 4: Filtering Signal From a Thousand Messages a Day</h2>
-      <p><em>Client: An independent musician (engagement held by TechieMaya).</em></p>
-      <p><strong>Problem:</strong> Received 1,000+ daily messages across community groups, burying rare booking/session inquiries. Outbound announcements required manual reposting across dozens of chats.</p>
-      <p><strong>Analysis:</strong> Inbound was a filtering/routing problem; outbound was a fan-out problem. Both could be solved by extending the existing WhatsApp connection layer.</p>
-      <p><strong>Solution & Architecture:</strong> Added three services to the gateway: unknown sender support agent, group monitoring service forwarding actionable messages to a private admin group, and a fan-out forwarding service.</p>
-      <p><strong>Outcome:</strong> Reduced daily read volume from 1,000+ to only actionable messages, solving inbound noise and outbound effort on existing infrastructure.</p>
+    <!-- Case Study 4 Hub Entry -->
+    <article>
+      <h2>4. Filtering Signal From a Thousand Messages a Day</h2>
+      <p><em>Client: an independent musician (engagement held by TechieMaya).</em></p>
+      <p><strong>Problem:</strong> Active across dozens of community groups, receiving 1,000+ messages a day. Buried in that volume were the few that actually mattered — a booking request, a performance inquiry, someone asking about sessions — with no way to surface them short of reading everything. Separately, every time he had something to announce (a show, a release, a class), he had to manually repost it across a long list of individual contacts and groups.</p>
+      <p><a href="/case-studies/message-filtering/">Read full case study →</a> | <a href="/case-studies/case-study-4/">/case-studies/case-study-4/</a></p>
     </article>
 
-    <!-- Case Study 5 -->
-    <article id="case-study-5">
-      <h2>Case Study 5: Unblocking a Real-Time Avatar Product After Months Stuck</h2>
-      <p><em>Client: MGS Technology Pvt Ltd, via Quantashift Consultancy Services (sole engineer).</em></p>
-      <p><strong>Problem:</strong> Internal team was blocked for months getting LiveKit real-time video working for a photorealistic avatar interviewer product.</p>
-      <p><strong>Analysis:</strong> The blocker was the real-time infrastructure layer. LiveKit self-hosting documentation was sparse, and client private servers on untrusted IP ranges broke standard SSL provisioning.</p>
-      <p><strong>Solution & Architecture:</strong> Self-hosted LiveKit on GCP driving a photorealistic video avatar through Gemini Realtime (English & Arabic). Three deployments (GCP VM, Cloud Run persistent WebRTC, client private server with custom LiveKit build + ZeroSSL). Multi-LLM fallback chain (Gemini ➡️ Groq/Ultravox).</p>
-      <p><strong>Outcome:</strong> Working real-time avatar interview system delivered end-to-end across three environments in a ~2-month engagement.</p>
+    <!-- Case Study 5 Hub Entry -->
+    <article>
+      <h2>5. Unblocking a Real-Time Avatar Product After Months Stuck</h2>
+      <p><em>Client: MGS Technology Pvt Ltd, via Quantashift Consultancy Services. Sole engineer on the engagement.</em></p>
+      <p><strong>Problem:</strong> MGS's internal team had been blocked for months and could not get LiveKit's real-time video and infrastructure working — holding up a product meant to conduct interviews through a live photorealistic avatar rather than a plain audio bot. What existed was audio-only.</p>
+      <p><a href="/case-studies/avatar-product-rescue/">Read full case study →</a> | <a href="/case-studies/case-study-5/">/case-studies/case-study-5/</a></p>
     </article>
 
-    <!-- Case Study 6 -->
-    <article id="case-study-6">
-      <h2>Case Study 6: One Voice Platform, Two Opposite Conversational Goals</h2>
-      <p><strong>Problem:</strong> Higher-ed consultancy needed natural, unhurried follow-up calls, while a real estate client needed persistent cold-calling. Both required sub-200ms audio round-trip latency.</p>
-      <p><strong>Analysis:</strong> How a call is handled must be separated from what a call sounds like. Round-trip latency above 200ms breaks conversation realism.</p>
-      <p><strong>Solution & Architecture:</strong> Self-hosted LiveKit on DigitalOcean (India) + UAE local LAN SIP modem deployment behind NAT. Dual regional workers + 3 Cloud Run bulk workers (scale-to-zero). Per-tenant configuration controlling tone, pacing, and goals on shared core infrastructure.</p>
-      <p><strong>Outcome:</strong> One platform handling 1,000+ daily calls across education, real estate, and travel outreach without per-client codebase forks.</p>
+    <!-- Case Study 6 Hub Entry -->
+    <article>
+      <h2>6. One Voice Platform, Two Opposite Conversational Goals</h2>
+      <p><strong>Problem:</strong> Different clients on the same voice platform needed fundamentally different conversational behavior. A higher-education consultancy wanted natural, unhurried outreach and follow-up calls — explicitly <em>not</em> salesy — to take pressure off their human counselors. A real estate client needed close to the opposite: a persistent, harder-to-brush-off cold-calling agent, because real estate cold calls are otherwise trivially easy to end in five seconds.</p>
+      <p><a href="/case-studies/one-platform-two-goals/">Read full case study →</a> | <a href="/case-studies/case-study-6/">/case-studies/case-study-6/</a></p>
     </article>
 
-    <!-- Case Study 7 -->
-    <article id="case-study-7">
-      <h2>Case Study 7: Consistent Brand Content Without a Social Media Manager</h2>
-      <p><strong>Problem:</strong> Small/mid-size businesses lack social media managers, leading to uncertainty about what to post and slow execution when trying to recreate competitor concepts.</p>
-      <p><strong>Analysis:</strong> The "what to post" gap needs live trend signal. The execution gap needs brand visual identity encoded into automated generation. Guided decision steps are required to prevent costly single-prompt video generation mismatches.</p>
-      <p><strong>Solution & Architecture:</strong> Playwright brand website crawler + multimodal vision model compiling a persistent brand profile. Multi-agent hierarchy (Creative Director, Script Writer, Reference Selector, Dialogue & Voice, Video Generator with Google Veo + FFmpeg frame-anchoring, Reviewer). Subreddit sentiment scanner for trend signal. React/Next.js step-by-step decision UI with `contextvars` session cost accounting.</p>
-      <p><strong>Outcome:</strong> Automated system providing trend-grounded post suggestions and finished on-brand creative without a design team.</p>
+    <!-- Case Study 7 Hub Entry -->
+    <article>
+      <h2>7. Consistent Brand Content Without a Social Media Manager</h2>
+      <p><strong>Problem:</strong> Maintaining a consistent brand presence on social media effectively requires a dedicated social media manager — daily posting, on-brand creative, and staying current with what's actually working. Most small and mid-size businesses don't have one, and two failure modes follow directly. First: businesses often don't know <em>what</em> to post. Second: even when there's a clear idea, execution is slow. A common real pattern — a CEO sees a post they like and wants the same concept with their own name, their own pricing, their own logo and colors — still requires a designer, a round of revisions, and days of turnaround for what is conceptually a small change.</p>
+      <p><a href="/case-studies/brand-content-without-a-manager/">Read full case study →</a> | <a href="/case-studies/case-study-7/">/case-studies/case-study-7/</a></p>
     </article>
   </main>
 

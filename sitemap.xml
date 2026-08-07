@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- HTML Endpoints -->
+  <!-- Primary HTML Endpoints -->
   <url>
     <loc>https://dev-s-t.github.io/</loc>
     <priority>1.0</priority>
@@ -10,6 +10,41 @@
     <loc>https://dev-s-t.github.io/case-studies/</loc>
     <priority>0.9</priority>
     <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/case-studies/on-prem-privacy-rag/</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/case-studies/multi-tenant-isolation/</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/case-studies/manual-dispatch-automation/</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/case-studies/message-filtering/</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/case-studies/avatar-product-rescue/</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/case-studies/one-platform-two-goals/</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/case-studies/brand-content-without-a-manager/</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
   </url>
   <url>
     <loc>https://dev-s-t.github.io/experience/</loc>
@@ -102,6 +137,41 @@
     <loc>https://dev-s-t.github.io/case-studies.md</loc>
     <priority>0.8</priority>
     <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/case-studies/on-prem-privacy-rag.md</loc>
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/case-studies/multi-tenant-isolation.md</loc>
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/case-studies/manual-dispatch-automation.md</loc>
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/case-studies/message-filtering.md</loc>
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/case-studies/avatar-product-rescue.md</loc>
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/case-studies/one-platform-two-goals.md</loc>
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/case-studies/brand-content-without-a-manager.md</loc>
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
   </url>
   <url>
     <loc>https://dev-s-t.github.io/experience.md</loc>

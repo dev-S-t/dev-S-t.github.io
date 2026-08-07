@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unblocking a Real-Time Avatar Product After Months Stuck — Case Study | Sahil Tomar (dev-S-t)</title>
+  <meta name="description" content="Engineering Case Study by Sahil Tomar (dev-S-t): Unblocking Hireups photorealistic video avatar interviewer product for MGS Technology via Quantashift across 3 GCP environments.">
+  <link rel="canonical" href="https://dev-s-t.github.io/case-studies/avatar-product-rescue/">
+  <link rel="alternate" type="text/markdown" title="Case Study 5 Markdown" href="https://dev-s-t.github.io/case-studies/avatar-product-rescue.md">
+  
+  <meta property="og:title" content="Unblocking a Real-Time Avatar Product After Months Stuck — Sahil Tomar (dev-S-t)">
+  <meta property="og:description" content="Photorealistic video avatar interviewer infrastructure rescue on GCP LiveKit by Sahil Tomar (dev-S-t).">
+  <meta property="og:url" content="https://dev-s-t.github.io/case-studies/avatar-product-rescue/">
+  <meta property="og:type" content="article">
+</head>
+<body>
+  <header>
+    <h1>Unblocking a Real-Time Avatar Product After Months Stuck</h1>
+    <p>Engineering Case Study 5 — <strong>Sahil Tomar (dev-S-t)</strong></p>
+    <p><em>Client: MGS Technology Pvt Ltd, via Quantashift Consultancy Services. Sole engineer on the engagement.</em></p>
+    <p><a href="/case-studies/">Back to Case Studies Hub</a> | <a href="/projects/hireups/">View Project: Hireups AI Avatar</a> | <a href="/case-studies/avatar-product-rescue.md">Raw Markdown</a></p>
+  </header>
+
+  <main>
+    <article>
+      <section>
+        <h2>Problem</h2>
+        <p>MGS's internal team had been blocked for months and could not get LiveKit's real-time video and infrastructure working — holding up a product meant to conduct interviews through a live photorealistic avatar rather than a plain audio bot. What existed was audio-only.</p>
+      </section>
+
+      <section>
+        <h2>Analysis</h2>
+        <p>The blocker wasn't the AI model, it was the real-time infrastructure layer. LiveKit had removed most of their SIP and self-hosting documentation after launching their own hosted phone number product. And the client's private server sat on an untrusted IP range, which broke standard certificate provisioning. That specific combination isn't documented anywhere, because it isn't a common one — which is exactly why an internal team without prior LiveKit experience stalled on it.</p>
+      </section>
+
+      <section>
+        <h2>Solution & Architecture</h2>
+        <p>Self-hosted LiveKit on GCP rather than using LiveKit Cloud, driving a photorealistic video avatar through Gemini's realtime audio-native model — capable of understanding and responding in effectively any language and switching mid-conversation in roughly a second, though scoped to English and Arabic for this client's production requirements.</p>
+        <p>Three separate deployments:</p>
+        <ul>
+          <li><strong>A GCP VM</strong> — the baseline working deployment.</li>
+          <li><strong>Cloud Run</strong> — considerably harder than it sounds, since LiveKit's workers require persistent connections, which works directly against Cloud Run's normal scale-to-zero behavior.</li>
+          <li><strong>The client's own private server</strong> — requiring ZeroSSL certificates because of the untrusted IP range, which in turn required a newer LiveKit release than had officially shipped. Rather than wait on an official release, a compatible build was assembled and deployed directly.</li>
+        </ul>
+        <p>Reliability was handled with a fallback chain: if the primary Gemini Live connection drops mid-call, the system fails over to Groq or Ultravox rather than dropping the interview entirely.</p>
+      </section>
+
+      <section>
+        <h2>Outcome</h2>
+        <p>A working real-time avatar interview system delivered end to end across three environments, inside a roughly two-month engagement, after the internal team had been stuck for months.</p>
+      </section>
+    </article>
+  </main>
+
+  <footer>
+    <hr>
+    <p><a href="/case-studies/">← Back to All Case Studies</a> | Related System: <a href="/projects/hireups/">Hireups AI Avatar Project Page</a></p>
+  </footer>
+</body>
+</html>

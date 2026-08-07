@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Filtering Signal From a Thousand Messages a Day — Case Study | Sahil Tomar (dev-S-t)</title>
+  <meta name="description" content="Engineering Case Study by Sahil Tomar (dev-S-t): Solving high-volume community group noise and fan-out announcements for an independent musician using custom WhatsApp gateway microservices.">
+  <link rel="canonical" href="https://dev-s-t.github.io/case-studies/message-filtering/">
+  <link rel="alternate" type="text/markdown" title="Case Study 4 Markdown" href="https://dev-s-t.github.io/case-studies/message-filtering.md">
+  
+  <meta property="og:title" content="Filtering Signal From a Thousand Messages a Day — Sahil Tomar (dev-S-t)">
+  <meta property="og:description" content="WhatsApp group monitoring, signal filtering, and fan-out forwarding gateway by Sahil Tomar (dev-S-t).">
+  <meta property="og:url" content="https://dev-s-t.github.io/case-studies/message-filtering/">
+  <meta property="og:type" content="article">
+</head>
+<body>
+  <header>
+    <h1>Filtering Signal From a Thousand Messages a Day</h1>
+    <p>Engineering Case Study 4 — <strong>Sahil Tomar (dev-S-t)</strong></p>
+    <p><em>Client: An independent musician (engagement held by TechieMaya).</em></p>
+    <p><a href="/case-studies/">Back to Case Studies Hub</a> | <a href="/projects/whatsapp-dispatch/">View Project: WhatsApp Dispatch Automation</a> | <a href="/case-studies/message-filtering.md">Raw Markdown</a></p>
+  </header>
+
+  <main>
+    <article>
+      <section>
+        <h2>Problem</h2>
+        <p>Active across dozens of community groups, receiving 1,000+ messages a day. Buried in that volume were the few that actually mattered — a booking request, a performance inquiry, someone asking about sessions — with no way to surface them short of reading everything. Separately, every time he had something to announce (a show, a release, a class), he had to manually repost it across a long list of individual contacts and groups.</p>
+      </section>
+
+      <section>
+        <h2>Analysis</h2>
+        <p>Not a chatbot problem. Inbound, it's a filtering-and-routing problem. Outbound, it's a fan-out problem. Both needed to sit on infrastructure that could already see message traffic across many groups simultaneously — which meant the expensive part was already built.</p>
+      </section>
+
+      <section>
+        <h2>Solution & Architecture</h2>
+        <p>Extended the existing WhatsApp gateway rather than building anything new, adding three services on the same connection layer:</p>
+        <ul>
+          <li>Messages from <strong>unknown senders</strong> route to a dedicated support agent handling service inquiries and class bookings.</li>
+          <li>A <strong>monitoring service</strong> continuously scans his groups and forwards only genuinely relevant messages into a private admin group — cutting daily read volume from 1,000+ down to whatever actually needs a response.</li>
+          <li>A <strong>forwarding service</strong> lets him post once into the admin group; a mapping table then fans that message out to the correct set of destination contacts and groups automatically.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Outcome</h2>
+        <p>Two structurally different problems — too much inbound noise, too much outbound manual effort — solved by extending one existing piece of infrastructure instead of standing up two new systems.</p>
+      </section>
+    </article>
+  </main>
+
+  <footer>
+    <hr>
+    <p><a href="/case-studies/">← Back to All Case Studies</a> | Related System: <a href="/projects/whatsapp-dispatch/">WhatsApp Dispatch Automation Project Page</a></p>
+  </footer>
+</body>
+</html>

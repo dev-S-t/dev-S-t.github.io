@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Tenant AI Without Cross-Contamination — Case Study | Sahil Tomar (dev-S-t)</title>
+  <meta name="description" content="Engineering Case Study by Sahil Tomar (dev-S-t): Architecting safe multi-tenant RAG using Google ADK agent-per-tenant model, logical vector namespace isolation, and LiteLLM cost attribution.">
+  <link rel="canonical" href="https://dev-s-t.github.io/case-studies/multi-tenant-isolation/">
+  <link rel="alternate" type="text/markdown" title="Case Study 2 Markdown" href="https://dev-s-t.github.io/case-studies/multi-tenant-isolation.md">
+  
+  <meta property="og:title" content="Multi-Tenant AI Without Cross-Contamination — Sahil Tomar (dev-S-t)">
+  <meta property="og:description" content="Safe multi-tenant RAG vector isolation, Google ADK agents, and LiteLLM cost tracking by Sahil Tomar (dev-S-t).">
+  <meta property="og:url" content="https://dev-s-t.github.io/case-studies/multi-tenant-isolation/">
+  <meta property="og:type" content="article">
+</head>
+<body>
+  <header>
+    <h1>Multi-Tenant AI Without Cross-Contamination</h1>
+    <p>Engineering Case Study 2 — <strong>Sahil Tomar (dev-S-t)</strong></p>
+    <p><a href="/case-studies/">Back to Case Studies Hub</a> | <a href="/projects/anyassist/">View Project: AnyAssist Multi-Tenant RAG</a> | <a href="/case-studies/multi-tenant-isolation.md">Raw Markdown</a></p>
+  </header>
+
+  <main>
+    <article>
+      <section>
+        <h2>Problem</h2>
+        <p>Many businesses want the same fundamental thing: a support agent that knows their content and can talk to their customers. Building dedicated infrastructure per business doesn't scale. Naive shared infrastructure risks one tenant's data or conversational context surfacing in another's session.</p>
+      </section>
+
+      <section>
+        <h2>Analysis</h2>
+        <p>The RAG pipeline itself is well-understood and wasn't the hard part. The hard part was making it safely multi-tenant: strict isolation, per-client cost visibility (the business model breaks the moment one tenant sends 100× the traffic of another and nobody can see it), and avoiding hard-locking every client to a single model vendor.</p>
+      </section>
+
+      <section>
+        <h2>Solution & Architecture</h2>
+        <p>An agent-per-tenant model on Google's Agent Development Kit (ADK), with logical namespace isolation in the vector store so tenants never share an index.</p>
+        <p>A LiteLLM gateway sits between the agents and the underlying models, handling cross-provider routing, rate limiting, and per-tenant cost attribution — which makes moving a client between model providers a configuration change rather than a rebuild.</p>
+      </section>
+
+      <section>
+        <h2>Outcome</h2>
+        <p>One backend serving multiple distinct clients securely, with per-tenant cost visibility designed in from the start instead of retrofitted once billing became a problem.</p>
+      </section>
+    </article>
+  </main>
+
+  <footer>
+    <hr>
+    <p><a href="/case-studies/">← Back to All Case Studies</a> | Related System: <a href="/projects/anyassist/">AnyAssist Multi-Tenant RAG Project Page</a></p>
+  </footer>
+</body>
+</html>

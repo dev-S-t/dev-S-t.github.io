@@ -18,7 +18,14 @@
 - [Complete Markdown Dump](https://dev-s-t.github.io/llms-full.txt): Comprehensive text corpus containing all bio facts, detailed project architectures, 7 problem-to-architecture case studies, IEEE paper stats, skills, and work history.
 
 ## Major Sections (Markdown Endpoints)
-- [Case Studies](https://dev-s-t.github.io/case-studies.md): 7 problem-to-architecture case studies across Voice AI, privacy RAG, WhatsApp automation, real-time avatars, and ad generation.
+- [Case Studies Hub](https://dev-s-t.github.io/case-studies.md): Hub page for 7 problem-to-architecture case studies.
+- [Case Study 1 — Privacy RAG](https://dev-s-t.github.io/case-studies/on-prem-privacy-rag.md): Data That Can't Leave the Building.
+- [Case Study 2 — Multi-Tenant RAG](https://dev-s-t.github.io/case-studies/multi-tenant-isolation.md): Multi-Tenant AI Without Cross-Contamination.
+- [Case Study 3 — Dispatch Automation](https://dev-s-t.github.io/case-studies/manual-dispatch-automation.md): Automating Dubai B2B Transport Dispatch.
+- [Case Study 4 — Message Filtering](https://dev-s-t.github.io/case-studies/message-filtering.md): Musician Community Group Noise Filtering & Fan-out.
+- [Case Study 5 — Avatar Rescue](https://dev-s-t.github.io/case-studies/avatar-product-rescue.md): Unblocking Hireups Real-Time Avatar on GCP.
+- [Case Study 6 — Voice Platform Goals](https://dev-s-t.github.io/case-studies/one-platform-two-goals.md): VOAG Multi-Tenant Behavioral Tuning.
+- [Case Study 7 — Brand Content Engine](https://dev-s-t.github.io/case-studies/brand-content-without-a-manager.md): MAGe Multi-Agent Video Engine.
 - [Experience](https://dev-s-t.github.io/experience.md): Production role history at TechieMaya, Freelance Voice AI consulting (Hireups / MGS Technology via Quantashift), and Infosys Springboard.
 - [Projects Hub](https://dev-s-t.github.io/projects.md): Technical deep-dives into 8 major production systems.
 - [Publications](https://dev-s-t.github.io/publications.md): IEEE research paper details on blood bank dynamic micro-expiry and SARIMA/XGBoost forecasting.
