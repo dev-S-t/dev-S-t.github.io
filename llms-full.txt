@@ -14,9 +14,7 @@ This document provides a complete, raw text corpus of Sahil Tomar's work history
 - **Current Company:** TechieMaya
 - **Location:** Ghaziabad, Uttar Pradesh, India
 - **Relocation / Work Preference:** Open to Remote / Delhi NCR / Bengaluru / Pune
-- **WhatsApp Deep Links:**
-  - Primary: https://wa.me/919457818390
-  - Alternate: https://wa.me/918384884150
+- **WhatsApp Deep Links:** Available via site interactive buttons
 - **IEEE Author Profile / Publication:** https://ieeexplore.ieee.org/document/11584332
 
 ---

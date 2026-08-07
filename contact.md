@@ -6,8 +6,7 @@
 - **Location:** Ghaziabad, UP, India (Open to Remote / Delhi NCR / Bengaluru / Pune)
 
 ## Messaging & Profiles
-- **Primary WhatsApp:** https://wa.me/919457818390
-- **Alternate WhatsApp:** https://wa.me/918384884150
+- **WhatsApp:** Available on site via interactive button triggers
 - **GitHub:** https://github.com/dev-S-t
 - **LinkedIn:** https://www.linkedin.com/in/dev-s-t/
 - **IEEE Paper:** https://ieeexplore.ieee.org/document/11584332
