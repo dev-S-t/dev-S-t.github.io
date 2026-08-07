@@ -7,6 +7,11 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
+    <loc>https://dev-s-t.github.io/case-studies/</loc>
+    <priority>0.9</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
     <loc>https://dev-s-t.github.io/experience/</loc>
     <priority>0.9</priority>
     <changefreq>monthly</changefreq>
@@ -17,12 +22,7 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://dev-s-t.github.io/projects/voag/</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://dev-s-t.github.io/projects/audalimo/</loc>
+    <loc>https://dev-s-t.github.io/projects/anyassist/</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
@@ -32,7 +32,22 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://dev-s-t.github.io/projects/anyassist/</loc>
+    <loc>https://dev-s-t.github.io/projects/whatsapp-dispatch/</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/projects/voag/</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/projects/hireups/</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/projects/mage/</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
@@ -84,6 +99,11 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
+    <loc>https://dev-s-t.github.io/case-studies.md</loc>
+    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
     <loc>https://dev-s-t.github.io/experience.md</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
@@ -94,12 +114,7 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://dev-s-t.github.io/projects/voag.md</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://dev-s-t.github.io/projects/audalimo.md</loc>
+    <loc>https://dev-s-t.github.io/projects/anyassist.md</loc>
     <priority>0.7</priority>
     <changefreq>monthly</changefreq>
   </url>
@@ -109,7 +124,22 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://dev-s-t.github.io/projects/anyassist.md</loc>
+    <loc>https://dev-s-t.github.io/projects/whatsapp-dispatch.md</loc>
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/projects/voag.md</loc>
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/projects/hireups.md</loc>
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://dev-s-t.github.io/projects/mage.md</loc>
     <priority>0.7</priority>
     <changefreq>monthly</changefreq>
   </url>

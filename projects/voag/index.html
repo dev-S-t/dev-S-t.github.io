@@ -4,33 +4,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VOAG Enterprise Voice AI SaaS — Sahil Tomar (dev-S-t)</title>
-  <meta name="description" content="Technical specification of VOAG, an enterprise Voice AI SaaS platform processing 1,000+ daily calls with sub-200ms p95 latency and a custom UAE SIP NAT gateway bridge. Built by Sahil Tomar (dev-S-t).">
+  <meta name="description" content="Technical spec for VOAG Enterprise Voice AI SaaS by Sahil Tomar (dev-S-t): 1,000+ daily calls in Mr. LADs app, DigitalOcean & UAE LAN SIP modem deployments, Cloud Run auto-scale workers, multi-provider routing (Gemini, Sarvam, Ultravox), and fire-and-forget Google File Search RAG.">
   <link rel="canonical" href="https://dev-s-t.github.io/projects/voag/">
   <link rel="alternate" type="text/markdown" title="VOAG Project Markdown" href="https://dev-s-t.github.io/projects/voag.md">
   
   <meta property="og:title" content="VOAG Enterprise Voice AI SaaS — Sahil Tomar (dev-S-t)">
-  <meta property="og:description" content="1,000+ calls/day, sub-200ms p95 latency, LiveKit/WebRTC/SIP NAT gateway deployment by Sahil Tomar (dev-S-t).">
+  <meta property="og:description" content="1,000+ calls/day, sub-200ms p95 latency, DigitalOcean & UAE LAN SIP modem architecture by Sahil Tomar (dev-S-t).">
   <meta property="og:url" content="https://dev-s-t.github.io/projects/voag/">
   <meta property="og:type" content="article">
 </head>
 <body>
   <header>
     <h1>VOAG — Enterprise Voice AI SaaS</h1>
-    <p>Engineered by <strong>Sahil Tomar (dev-S-t)</strong></p>
-    <p><a href="/projects/">Back to Projects</a> | <a href="/projects/voag.md">Raw Markdown</a></p>
+    <p>Engineered by <strong>Sahil Tomar (dev-S-t)</strong> @ TechieMaya</p>
+    <p><a href="/projects/">Back to Projects</a> | <a href="/case-studies/">View Case Studies</a> | <a href="/projects/voag.md">Raw Markdown</a></p>
   </header>
 
   <main>
     <section>
-      <h2>System Overview & Metrics</h2>
+      <h2>System Overview & Production Metrics</h2>
       <ul>
-        <li><strong>Scale:</strong> 1,000+ production voice calls processed daily.</li>
+        <li><strong>Scale:</strong> 1,000+ voice calls processed daily live inside the Mr. LADs application since January.</li>
         <li><strong>Latency:</strong> Sub-200ms p95 audio pipeline latency.</li>
-        <li><strong>Key Deployment:</strong> UAE Telephony Bridge deployed inside partner Virtual Machine behind strict NAT gateways.</li>
+        <li><strong>Client Use Cases:</strong> Higher-education consultancy (natural unhurried follow-up), real estate (persistent cold calling), travel agency (Dubai B2B partnership outreach).</li>
       </ul>
 
-      <h2>Technical Architecture</h2>
-      <p>VOAG connects real-time WebRTC and SIP telephony streams into streaming Speech-to-Text (STT), LLM logic engines, and Text-to-Speech (TTS) synthesizers via WebSockets and custom low-latency audio buffering. Designed to operate reliably under strict enterprise firewall and NAT gateway constraints.</p>
+      <h2>Infrastructure & Multi-Region Routing</h2>
+      <ul>
+        <li><strong>Deployments:</strong> Main LiveKit server self-hosted on DigitalOcean (India). Secondary UAE client deployment: SIM card into modem into SIP gateway into LiveKit server on local LAN behind strict NAT gateways.</li>
+        <li><strong>Routing & Worker Architecture:</strong> Main server routes calls by originating number and tenant ID to regional low-latency workers (India/UAE). 3 additional bulk-handling workers run on GCP Cloud Run with auto-scaling and scale-to-zero, woken via async polling layer. Fully automated GitHub Actions CI/CD with Docker containers.</li>
+        <li><strong>Multi-Provider Model Layer:</strong> Gemini Realtime, Sarvam (Indian regional languages, low cost), Ultravox. Dynamic routing based on language, cost, or latency specs.</li>
+        <li><strong>Mid-Call Document Retrieval:</strong> Fire-and-forget Google File Search (RAG) integrated directly into Gemini API calls. Results land mid-call without conversation pauses or caller disruption. Admin UI allows folder activation per agent.</li>
+        <li><strong>Testing Playground:</strong> Production-identical pipeline simulator minus SIP connection for safe iteration.</li>
+      </ul>
     </section>
   </main>
 

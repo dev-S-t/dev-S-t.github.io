@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatsApp Dispatch Automation — Sahil Tomar (dev-S-t)</title>
+  <meta name="description" content="Technical specification of WhatsApp Dispatch Automation built by Sahil Tomar (dev-S-t): Go connection layer (whatsmeow), Google ADK multi-agent system, and independent musician community management.">
+  <link rel="canonical" href="https://dev-s-t.github.io/projects/whatsapp-dispatch/">
+  <link rel="alternate" type="text/markdown" title="WhatsApp Dispatch Project Markdown" href="https://dev-s-t.github.io/projects/whatsapp-dispatch.md">
+  
+  <meta property="og:title" content="WhatsApp Dispatch Automation — Sahil Tomar (dev-S-t)">
+  <meta property="og:description" content="Multi-agent WhatsApp dispatch and community automation platform by Sahil Tomar (dev-S-t).">
+  <meta property="og:url" content="https://dev-s-t.github.io/projects/whatsapp-dispatch/">
+  <meta property="og:type" content="article">
+</head>
+<body>
+  <header>
+    <h1>WhatsApp Dispatch Automation</h1>
+    <p>Engineered by <strong>Sahil Tomar (dev-S-t)</strong></p>
+    <p><a href="/projects/">Back to Projects</a> | <a href="/case-studies/">View Case Studies</a> | <a href="/projects/whatsapp-dispatch.md">Raw Markdown</a></p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Enterprise Ground Transport (Dubai Client)</h2>
+      <p><strong>Context:</strong> A Dubai-based luxury ground transportation company ran their entire B2B partner booking flow through WhatsApp groups. Partners posted requests into group chats; staff manually checked vehicle/driver availability, calculated fares, and replied (~30 min turnaround during working hours, 2+ hours off-hours). WhatsApp's official Business API provides no support for group messages, ruling out vendor-sanctioned options.</p>
+
+      <h3>Architecture & Components</h3>
+      <ul>
+        <li><strong>Connection Layer (Go):</strong> Built on `whatsmeow`, managing WhatsApp session state, receiving/sending messages, read receipts, and typing indicators.</li>
+        <li><strong>Agent Layer (Python / Google ADK):</strong> Multi-agent system:
+          <ul>
+            <li><strong>Orchestrator:</strong> Supervises sub-agents and maintains shared conversational context.</li>
+            <li><strong>Booking Agent:</strong> Extracts booking details from free-form messages; uses tools (flight data lookups, layered Google Maps queries for location resolution, backend availability/fare estimation). Asks targeted follow-up questions when requests are incomplete or contradictory.</li>
+            <li><strong>Support Agent:</strong> Handles cancellations, modifications, rescheduling, and general inquiries.</li>
+          </ul>
+        </li>
+        <li><strong>Flight Data Service:</strong> Independent Python/ADK microservice on GCP Cloud Run acting as shared flight-lookup backend.</li>
+      </ul>
+      <p><strong>Outcome:</strong> Booking turnaround dropped from ~30 minutes to under a minute with zero recurring API costs.</p>
+
+      <h2>Vertical Extension — Independent Musician</h2>
+      <p>Extended the gateway for a musician handling 1,000+ daily messages across community groups:</p>
+      <ul>
+        <li><strong>Unknown Senders:</strong> Routed to dedicated support agent for service inquiries and class bookings.</li>
+        <li><strong>Monitoring Service:</strong> Scans groups for relevant requests (call requests, performance bookings) and forwards only actionable messages into a private admin group.</li>
+        <li><strong>Forwarding Service:</strong> Fan-out publishing allowing single post in admin group to auto-distribute to target destination contacts/groups.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <hr>
+    <p><strong>Sahil Tomar (dev-S-t)</strong> — <a href="https://github.com/dev-S-t">GitHub</a></p>
+  </footer>
+</body>
+</html>

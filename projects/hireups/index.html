@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hireups Real-Time AI Avatar Interviewer — Sahil Tomar (dev-S-t)</title>
+  <meta name="description" content="Technical spec for Hireups Photorealistic Avatar Interviewer built by Sahil Tomar (dev-S-t) for MGS Technology via Quantashift: Gemini Realtime, self-hosted LiveKit on GCP, ZeroSSL private server deployment, and Groq/Ultravox fallback chain.">
+  <link rel="canonical" href="https://dev-s-t.github.io/projects/hireups/">
+  <link rel="alternate" type="text/markdown" title="Hireups Project Markdown" href="https://dev-s-t.github.io/projects/hireups.md">
+  
+  <meta property="og:title" content="Hireups Real-Time AI Avatar Interviewer — Sahil Tomar (dev-S-t)">
+  <meta property="og:description" content="Photorealistic video avatar interviewer built on Gemini Realtime and self-hosted LiveKit by Sahil Tomar (dev-S-t).">
+  <meta property="og:url" content="https://dev-s-t.github.io/projects/hireups/">
+  <meta property="og:type" content="article">
+</head>
+<body>
+  <header>
+    <h1>Hireups — Real-Time AI Interviewer with Photorealistic Avatar</h1>
+    <p>Client: <strong>MGS Technology Pvt Ltd</strong> (via Quantashift Consultancy Services)</p>
+    <p>Sole Engineer: <strong>Sahil Tomar (dev-S-t)</strong></p>
+    <p><a href="/projects/">Back to Projects</a> | <a href="/case-studies/">View Case Studies</a> | <a href="/projects/hireups.md">Raw Markdown</a></p>
+  </header>
+
+  <main>
+    <section>
+      <h2>System Overview</h2>
+      <p>A real-time AI interview platform where a photorealistic video avatar conducts interviews live. Powered by Gemini Realtime audio-native models for multi-lingual understanding (English and Arabic production requirements) with sub-second language switching.</p>
+
+      <h2>Engineering Highlights & Deployments</h2>
+      <ul>
+        <li><strong>LiveKit Self-Hosted GCP Deployments:</strong>
+          <ul>
+            <li><strong>GCP VM:</strong> Baseline production deployment.</li>
+            <li><strong>Cloud Run:</strong> Custom container configuration overcoming Cloud Run scale-to-zero model for persistent WebRTC connections.</li>
+            <li><strong>Client Private Server:</strong> Overcame untrusted IP range restrictions by deploying custom LiveKit build integrated with ZeroSSL certificates.</li>
+          </ul>
+        </li>
+        <li><strong>Multi-LLM Fallback Chain:</strong> If primary Gemini Live connection degrades mid-interview, automated failover routes traffic to Groq or Ultravox to prevent interview drops.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <hr>
+    <p><strong>Sahil Tomar (dev-S-t)</strong> — <a href="https://github.com/dev-S-t">GitHub</a></p>
+  </footer>
+</body>
+</html>

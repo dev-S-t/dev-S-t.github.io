@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Engineering Case Studies — Sahil Tomar (dev-S-t) | Problem-Solving in Production AI Systems</title>
+  <meta name="description" content="Problem-to-architecture case studies from Sahil Tomar (dev-S-t): voice AI infrastructure, WhatsApp dispatch automation, privacy-constrained RAG, and multi-agent media generation — each broken down from problem through analysis to solution.">
+  <link rel="canonical" href="https://dev-s-t.github.io/case-studies/">
+  <link rel="alternate" type="text/markdown" title="Case Studies Markdown" href="https://dev-s-t.github.io/case-studies.md">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Engineering Case Studies — Sahil Tomar (dev-S-t)">
+  <meta property="og:description" content="7 detailed problem-to-architecture case studies in Voice AI, RAG, WebRTC avatars, and multi-agent systems by Sahil Tomar (dev-S-t).">
+  <meta property="og:url" content="https://dev-s-t.github.io/case-studies/">
+  <meta property="og:type" content="article">
+
+  <!-- CollectionPage JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Engineering Case Studies — Sahil Tomar (dev-S-t)",
+    "description": "Problem-to-architecture case studies covering production Voice AI, privacy RAG, WhatsApp automation, and generative media.",
+    "url": "https://dev-s-t.github.io/case-studies/",
+    "mainEntity": {
+      "@type": "ItemList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Data That Can't Leave the Building (Privacy-First On-Prem RAG)",
+          "url": "https://dev-s-t.github.io/case-studies/#case-study-1"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Multi-Tenant AI Without Cross-Contamination (AnyAssist)",
+          "url": "https://dev-s-t.github.io/case-studies/#case-study-2"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "30 Minutes to Under a Minute — Automating a Manual Dispatch Desk",
+          "url": "https://dev-s-t.github.io/case-studies/#case-study-3"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Filtering Signal From a Thousand Messages a Day (Independent Musician)",
+          "url": "https://dev-s-t.github.io/case-studies/#case-study-4"
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "name": "Unblocking a Real-Time Avatar Product After Months Stuck (Hireups / MGS)",
+          "url": "https://dev-s-t.github.io/case-studies/#case-study-5"
+        },
+        {
+          "@type": "ListItem",
+          "position": 6,
+          "name": "One Voice Platform, Two Opposite Conversational Goals (VOAG)",
+          "url": "https://dev-s-t.github.io/case-studies/#case-study-6"
+        },
+        {
+          "@type": "ListItem",
+          "position": 7,
+          "name": "Consistent Brand Content Without a Social Media Manager (MAGe)",
+          "url": "https://dev-s-t.github.io/case-studies/#case-study-7"
+        }
+      ]
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <header>
+    <h1>Sahil Tomar (dev-S-t) — Engineering Case Studies</h1>
+    <p>Problem-to-Architecture Analysis in Production AI & Infrastructure</p>
+    <p><a href="/">Home</a> | <a href="/experience/">Experience</a> | <a href="/projects/">Projects</a> | <a href="/publications/">Publications</a> | <a href="/skills/">Skills</a> | <a href="/contact/">Contact</a> | <a href="/case-studies.md">Raw Markdown</a></p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Engineering Case Studies Overview</h2>
+      <p>Most of my project write-ups describe what got built. This page describes how I got there — the problem as it was first handed to me, what I found once I dug in, why the obvious first approach usually didn't hold, and the architecture that did. Written for anyone evaluating problem-solving process rather than just output.</p>
+
+      <p><em>Client Naming Note:</em> Engagements where I was the direct, sole contracted engineer are named (Quantashift / MGS Technology / Hireups). Engagements that were TechieMaya's client relationships are described by industry and geography only.</p>
+    </section>
+
+    <!-- Case Study 1 -->
+    <article id="case-study-1">
+      <h2>Case Study 1: Data That Can't Leave the Building</h2>
+      <p><strong>Problem:</strong> A client needed AI-powered access to internal documents, but would not send data to any external service — ruling out standard cloud RAG architectures.</p>
+      <p><strong>Analysis:</strong> A topology problem, not a modeling problem. The core question was whether reasoning could happen where data already lives, rather than moving data to cloud models.</p>
+      <p><strong>Solution & Architecture:</strong> Inverted the RAG topology: deployed reasoning agents onto the client's local infrastructure using Agent-to-Agent (A2A) protocol. External tools query local agent endpoints while raw documents never cross the client's network boundary. Local index pairs dense vector search with keyword search across contracts, code, spreadsheets, and scanned PDFs.</p>
+      <p><strong>Outcome:</strong> Established a repeatable pattern for "AI over data that can't move."</p>
+    </article>
+
+    <!-- Case Study 2 -->
+    <article id="case-study-2">
+      <h2>Case Study 2: Multi-Tenant AI Without Cross-Contamination</h2>
+      <p><strong>Problem:</strong> Businesses need personalized support agents, but dedicated per-client infrastructure doesn't scale, while naive shared infrastructure risks cross-tenant data leaks.</p>
+      <p><strong>Analysis:</strong> The hard part was making RAG safely multi-tenant: strict isolation, per-client cost visibility, and avoiding single-vendor model lock-in.</p>
+      <p><strong>Solution & Architecture:</strong> Agent-per-tenant model built on Google Agent Development Kit (ADK), with logical namespace vector isolation. A LiteLLM gateway manages cross-provider routing, rate limiting, and per-tenant cost attribution.</p>
+      <p><strong>Outcome:</strong> One scalable backend serving multiple distinct clients securely with per-tenant billing transparency.</p>
+    </article>
+
+    <!-- Case Study 3 -->
+    <article id="case-study-3">
+      <h2>Case Study 3: 30 Minutes to Under a Minute — Automating a Manual Dispatch Desk</h2>
+      <p><em>Client: A Dubai-based luxury ground transportation company (engagement held by TechieMaya).</em></p>
+      <p><strong>Problem:</strong> B2B partner bookings were handled manually via WhatsApp group messages. Turnaround was ~30 minutes (2+ hours off-hours). WhatsApp Business API offers zero support for group messages.</p>
+      <p><strong>Analysis:</strong> Two stacked problems: establishing a connection into group chats without official API support, and handling messy, incomplete, or contradictory booking requests through reasoning rather than keyword matching.</p>
+      <p><strong>Solution & Architecture:</strong> Connection layer in Go built on `whatsmeow`. Multi-agent system on Google ADK (Orchestrator, Booking Agent with Google Maps and backend tools, Support Agent) plus an independent Flight Data service on Cloud Run.</p>
+      <p><strong>Outcome:</strong> Turnaround dropped from ~30 minutes to under a minute with zero recurring API fees.</p>
+    </article>
+
+    <!-- Case Study 4 -->
+    <article id="case-study-4">
+      <h2>Case Study 4: Filtering Signal From a Thousand Messages a Day</h2>
+      <p><em>Client: An independent musician (engagement held by TechieMaya).</em></p>
+      <p><strong>Problem:</strong> Received 1,000+ daily messages across community groups, burying rare booking/session inquiries. Outbound announcements required manual reposting across dozens of chats.</p>
+      <p><strong>Analysis:</strong> Inbound was a filtering/routing problem; outbound was a fan-out problem. Both could be solved by extending the existing WhatsApp connection layer.</p>
+      <p><strong>Solution & Architecture:</strong> Added three services to the gateway: unknown sender support agent, group monitoring service forwarding actionable messages to a private admin group, and a fan-out forwarding service.</p>
+      <p><strong>Outcome:</strong> Reduced daily read volume from 1,000+ to only actionable messages, solving inbound noise and outbound effort on existing infrastructure.</p>
+    </article>
+
+    <!-- Case Study 5 -->
+    <article id="case-study-5">
+      <h2>Case Study 5: Unblocking a Real-Time Avatar Product After Months Stuck</h2>
+      <p><em>Client: MGS Technology Pvt Ltd, via Quantashift Consultancy Services (sole engineer).</em></p>
+      <p><strong>Problem:</strong> Internal team was blocked for months getting LiveKit real-time video working for a photorealistic avatar interviewer product.</p>
+      <p><strong>Analysis:</strong> The blocker was the real-time infrastructure layer. LiveKit self-hosting documentation was sparse, and client private servers on untrusted IP ranges broke standard SSL provisioning.</p>
+      <p><strong>Solution & Architecture:</strong> Self-hosted LiveKit on GCP driving a photorealistic video avatar through Gemini Realtime (English & Arabic). Three deployments (GCP VM, Cloud Run persistent WebRTC, client private server with custom LiveKit build + ZeroSSL). Multi-LLM fallback chain (Gemini ➡️ Groq/Ultravox).</p>
+      <p><strong>Outcome:</strong> Working real-time avatar interview system delivered end-to-end across three environments in a ~2-month engagement.</p>
+    </article>
+
+    <!-- Case Study 6 -->
+    <article id="case-study-6">
+      <h2>Case Study 6: One Voice Platform, Two Opposite Conversational Goals</h2>
+      <p><strong>Problem:</strong> Higher-ed consultancy needed natural, unhurried follow-up calls, while a real estate client needed persistent cold-calling. Both required sub-200ms audio round-trip latency.</p>
+      <p><strong>Analysis:</strong> How a call is handled must be separated from what a call sounds like. Round-trip latency above 200ms breaks conversation realism.</p>
+      <p><strong>Solution & Architecture:</strong> Self-hosted LiveKit on DigitalOcean (India) + UAE local LAN SIP modem deployment behind NAT. Dual regional workers + 3 Cloud Run bulk workers (scale-to-zero). Per-tenant configuration controlling tone, pacing, and goals on shared core infrastructure.</p>
+      <p><strong>Outcome:</strong> One platform handling 1,000+ daily calls across education, real estate, and travel outreach without per-client codebase forks.</p>
+    </article>
+
+    <!-- Case Study 7 -->
+    <article id="case-study-7">
+      <h2>Case Study 7: Consistent Brand Content Without a Social Media Manager</h2>
+      <p><strong>Problem:</strong> Small/mid-size businesses lack social media managers, leading to uncertainty about what to post and slow execution when trying to recreate competitor concepts.</p>
+      <p><strong>Analysis:</strong> The "what to post" gap needs live trend signal. The execution gap needs brand visual identity encoded into automated generation. Guided decision steps are required to prevent costly single-prompt video generation mismatches.</p>
+      <p><strong>Solution & Architecture:</strong> Playwright brand website crawler + multimodal vision model compiling a persistent brand profile. Multi-agent hierarchy (Creative Director, Script Writer, Reference Selector, Dialogue & Voice, Video Generator with Google Veo + FFmpeg frame-anchoring, Reviewer). Subreddit sentiment scanner for trend signal. React/Next.js step-by-step decision UI with `contextvars` session cost accounting.</p>
+      <p><strong>Outcome:</strong> Automated system providing trend-grounded post suggestions and finished on-brand creative without a design team.</p>
+    </article>
+  </main>
+
+  <footer>
+    <hr>
+    <p><strong>Sahil Tomar (dev-S-t)</strong> — <a href="https://github.com/dev-S-t">GitHub</a> | <a href="https://www.linkedin.com/in/dev-s-t/">LinkedIn</a></p>
+  </footer>
+
+</body>
+</html>

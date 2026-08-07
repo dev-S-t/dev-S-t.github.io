@@ -4,32 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AnyAssist Multi-Tenant RAG Platform — Sahil Tomar (dev-S-t)</title>
-  <meta name="description" content="Technical spec for AnyAssist multi-tenant RAG platform built by Sahil Tomar (dev-S-t), featuring vector namespace isolation and LiteLLM model routing.">
+  <meta name="description" content="Technical spec for AnyAssist Multi-Tenant RAG Platform by Sahil Tomar (dev-S-t): Self-service document chat, Google ADK agents, LiteLLM gateway, and logical vector namespace isolation.">
   <link rel="canonical" href="https://dev-s-t.github.io/projects/anyassist/">
   <link rel="alternate" type="text/markdown" title="AnyAssist Project Markdown" href="https://dev-s-t.github.io/projects/anyassist.md">
   
   <meta property="og:title" content="AnyAssist Multi-Tenant RAG Platform — Sahil Tomar (dev-S-t)">
-  <meta property="og:description" content="Multi-tenant vector DB isolation, hybrid keyword/vector search, LiteLLM cost optimization by Sahil Tomar (dev-S-t).">
+  <meta property="og:description" content="Multi-tenant vector namespace isolation, Google ADK agents, LiteLLM cost routing by Sahil Tomar (dev-S-t).">
   <meta property="og:url" content="https://dev-s-t.github.io/projects/anyassist/">
   <meta property="og:type" content="article">
 </head>
 <body>
   <header>
     <h1>AnyAssist — Multi-Tenant RAG Platform</h1>
-    <p>Engineered by <strong>Sahil Tomar (dev-S-t)</strong></p>
-    <p><a href="/projects/">Back to Projects</a> | <a href="/projects/anyassist.md">Raw Markdown</a></p>
+    <p>Engineered by <strong>Sahil Tomar (dev-S-t)</strong> @ TechieMaya</p>
+    <p><a href="/projects/">Back to Projects</a> | <a href="/case-studies/">View Case Studies</a> | <a href="/projects/anyassist.md">Raw Markdown</a></p>
   </header>
 
   <main>
     <section>
       <h2>System Overview</h2>
-      <p>An enterprise-grade multi-tenant RAG platform delivering isolated retrieval namespaces across organizational tenants.</p>
+      <p>Self-service "chat with your data" SaaS platform. Users upload documents to generate a personalized AI agent isolated per tenant, guaranteeing one tenant's data is never reachable from another session.</p>
 
       <h2>Engineering Highlights</h2>
       <ul>
-        <li><strong>Vector Isolation:</strong> Tenant-level namespace partitioning in vector databases preventing cross-tenant data leaks.</li>
-        <li><strong>Hybrid Search:</strong> Combines keyword-dense BM25 indexing with dense semantic vector embeddings.</li>
-        <li><strong>Model Gateway:</strong> Uses LiteLLM for dynamic model routing, latency load balancing, and cost tracking.</li>
+        <li><strong>Google ADK Agent Hierarchy:</strong> Agent-per-tenant architecture built on Google Agent Development Kit.</li>
+        <li><strong>LiteLLM Gateway Layer:</strong> Handles cross-provider model routing, rate limiting, and per-tenant cost attribution. Moving a tenant between LLM providers is a zero-rebuild config change.</li>
+        <li><strong>Logical Vector Isolation:</strong> Shared vector storage partitioned via strict namespace boundaries, keeping indices completely isolated.</li>
       </ul>
     </section>
   </main>

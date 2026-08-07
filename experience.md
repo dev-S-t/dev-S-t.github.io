@@ -1,24 +1,15 @@
 # Work Experience — Sahil Tomar (dev-S-t)
 
 ## AI Solutions Engineer — TechieMaya
-- **Role:** AI Solutions Engineer
-- **Domain:** Voice AI Infrastructure, RAG Systems, Agentic Workflows
-- **Key Achievements:**
-  - Engineered VOAG (Enterprise Voice AI SaaS) processing 1,000+ production calls daily with sub-200ms p95 latency.
-  - Deployed UAE SIP/WebRTC telephony bridge inside private VM behind strict NAT gateways.
-  - Built agentic pipelines using Google Agent Development Kit (ADK) and LangGraph with tenant-aware tool registries and OAuth 2.0 integration.
-  - Developed multi-tenant RAG systems with vector DB namespace isolation and LiteLLM model routing.
+- **Timeline:** Ongoing (~1 year) · Remote (Dubai, UAE)
+- **Arc:** Trial prototype ➡️ Paid Internship core shipping ➡️ Contract scaling & product lead.
+- **Scope:** Led Voice AI vertical (VOAG), RAG engines, WhatsApp dispatch automation, and generative media infrastructure.
+- **Sub-Projects:** VOAG · WhatsApp Dispatch Automation · Privacy-First On-Prem RAG · Multi-Tenant RAG Platform · MAGe
 
-## Freelance Voice AI Consultant — Quantashift / MGS Technology (Hireups Engagement)
-- **Role:** Voice AI & Infrastructure Consultant
-- **Domain:** System Rescue, WebRTC, GCP Cloud Migration
-- **Key Achievements:**
-  - Re-architected failing WebRTC monolith into scalable GCP Cloud Run & Compute Engine microservices.
-  - Configured LiveKit Simulcast and Dynacast for dynamic audio/video adaptation under low bandwidth.
-  - Built multi-LLM fallback routing for uptime stability and implemented browser-side CV inference.
+## Freelance Voice AI Consultant — Quantashift Consultancy Services (contracted to MGS Technology Pvt Ltd)
+- **Timeline:** Jan – Mar 2026 (~2 months) · Remote
+- **Scope:** Delivered real-time photorealistic video avatar interview system (Hireups) across 3 GCP production deployments (GCP VM, Cloud Run WebRTC, private server ZeroSSL) after internal team stalled.
 
 ## Machine Learning Intern — Infosys Springboard
-- **Role:** ML Intern
-- **Domain:** Predictive Modeling, Data Science
-- **Key Achievements:**
-  - Constructed ML training workflows and performed feature engineering for predictive analytics.
+- **Timeline:** Mar – Jul 2024 · Remote
+- **Scope:** End-to-end fraud detection pipeline on 400+ feature imbalanced dataset and time-series demand forecasting models (ARIMA/Prophet).

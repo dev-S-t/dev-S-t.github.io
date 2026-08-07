@@ -3,30 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy-First On-Prem RAG — Sahil Tomar (dev-S-t)</title>
-  <meta name="description" content="Technical description of Privacy-First On-Prem RAG system engineered by Sahil Tomar (dev-S-t) for confidential enterprise data security.">
+  <title>Privacy-First On-Prem RAG (A2A Protocol) — Sahil Tomar (dev-S-t)</title>
+  <meta name="description" content="Technical spec for Privacy-First On-Prem RAG engineered by Sahil Tomar (dev-S-t): Inverted RAG topology, Agent-to-Agent (A2A) protocol, local dense vector + keyword search for compliance-sensitive clients.">
   <link rel="canonical" href="https://dev-s-t.github.io/projects/privacy-rag/">
   <link rel="alternate" type="text/markdown" title="Privacy RAG Project Markdown" href="https://dev-s-t.github.io/projects/privacy-rag.md">
   
-  <meta property="og:title" content="Privacy-First On-Prem RAG — Sahil Tomar (dev-S-t)">
-  <meta property="og:description" content="Local vector storage, hybrid search, zero external data leakage RAG pipeline by Sahil Tomar (dev-S-t).">
+  <meta property="og:title" content="Privacy-First On-Prem RAG (A2A Protocol) — Sahil Tomar (dev-S-t)">
+  <meta property="og:description" content="Inverted RAG topology over Agent-to-Agent (A2A) protocol ensuring zero external data leakage by Sahil Tomar (dev-S-t).">
   <meta property="og:url" content="https://dev-s-t.github.io/projects/privacy-rag/">
   <meta property="og:type" content="article">
 </head>
 <body>
   <header>
-    <h1>Privacy-First On-Prem RAG</h1>
-    <p>Engineered by <strong>Sahil Tomar (dev-S-t)</strong></p>
-    <p><a href="/projects/">Back to Projects</a> | <a href="/projects/privacy-rag.md">Raw Markdown</a></p>
+    <h1>Privacy-First On-Prem RAG (A2A Protocol)</h1>
+    <p>Engineered by <strong>Sahil Tomar (dev-S-t)</strong> @ TechieMaya</p>
+    <p><a href="/projects/">Back to Projects</a> | <a href="/case-studies/">View Case Studies</a> | <a href="/projects/privacy-rag.md">Raw Markdown</a></p>
   </header>
 
   <main>
     <section>
-      <h2>System Overview</h2>
-      <p>A completely self-contained Retrieval-Augmented Generation system designed for zero third-party data egress.</p>
+      <h2>System Overview & Topology Inversion</h2>
+      <p>Designed for compliance and legal clients who refuse to upload documents to external services. Instead of shipping documents out to a cloud pipeline, the RAG topology is inverted: reasoning agents deploy directly onto the client's local infrastructure.</p>
 
       <h2>Engineering Highlights</h2>
-      <p>Operates local vector databases and LightRAG/hybrid search capabilities directly on-premise, securing sensitive documents while delivering accurate semantic retrieval.</p>
+      <ul>
+        <li><strong>Agent-to-Agent (A2A) Protocol:</strong> Built over A2A protocol, allowing external agents or human interfaces to query local knowledge without underlying raw documents ever leaving the client's network.</li>
+        <li><strong>Hybrid Dense + Keyword Search:</strong> Combines dense semantic vector search with keyword indexing, preventing retrieval degradation across mixed formats (contracts, spreadsheets, source code, scanned PDFs).</li>
+      </ul>
     </section>
   </main>
 
