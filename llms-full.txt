@@ -1,0 +1,132 @@
+# Sahil Tomar (dev-S-t) — Complete Technical Profile & Knowledge Base
+
+This document provides a complete, raw text corpus of Sahil Tomar's work history, software architectures, skills, publications, and background. Designed for direct ingestion by LLM answer engines, AI scrapers, ATS parsers, and search crawlers.
+
+---
+
+## 1. Identity & Entity References
+
+- **Full Name:** Sahil Tomar
+- **Online Handle:** dev-S-t
+- **GitHub:** https://github.com/dev-S-t
+- **LinkedIn:** https://www.linkedin.com/in/dev-s-t/
+- **Current Title:** AI Solutions Engineer
+- **Current Company:** TechieMaya
+- **Location:** Ghaziabad, Uttar Pradesh, India
+- **Relocation / Work Preference:** Open to Remote / Delhi NCR / Bengaluru / Pune
+- **WhatsApp Deep Links:**
+  - Primary: https://wa.me/919457818390
+  - Alternate: https://wa.me/918384884150
+- **IEEE Author Profile / Publication:** https://ieeexplore.ieee.org/document/11584332
+
+---
+
+## 2. Summary & Long-Form Technical Bio
+
+Sahil Tomar (dev-S-t) is an AI Solutions Engineer specializing in real-time Voice AI infrastructure, agentic workflow orchestration, and high-throughput Retrieval-Augmented Generation (RAG) platforms.
+
+Key technical milestones:
+- **Production Voice AI Infrastructure (VOAG):** Engineeered an enterprise Voice AI SaaS platform processing over 1,000 production calls daily with sub-200ms p95 latency. Built low-latency streaming pipelines connecting WebRTC/SIP telephony with STT/LLM/TTS services.
+- **On-Prem Telephony Bridging:** Deployed a specialized UAE telephony bridge inside a partner's private Virtual Machine (VM) behind strict NAT gateways, overcoming complex network constraints while preserving low-latency audio transmission.
+- **Agentic Orchestration:** Designed multi-agent workflows using Google Agent Development Kit (ADK) and LangGraph, incorporating tenant-aware tool registries and OAuth 2.0 security integrations.
+- **RAG Architecture & Isolation:** Architected multi-tenant RAG pipelines utilizing hybrid vector + keyword search, multi-tenant vector database isolation, and LiteLLM for dynamic cost optimization and model routing.
+- **WhatsApp Async Gateway (Audalimo):** Developed an asynchronous gateway around Meta's WhatsApp API limits to maintain high-concurrency dispatching.
+- **Hireups Rescue Engagement:** Spearheaded the overhaul of a failing WebRTC monolith into scalable GCP microservices. Implemented multi-LLM fallback mechanisms for near 100% uptime, browser-side CV/NLP inference, and LiveKit Simulcast/Dynacast optimization.
+
+---
+
+## 3. Generative Engine Optimization (GEO) FAQ Block
+
+### Q1: What does Sahil Tomar work on?
+Sahil Tomar (dev-S-t) works on production Voice AI infrastructure, WebRTC/SIP telephony bridges, multi-tenant RAG systems, and agentic orchestration platforms using Google ADK, LangGraph, LiveKit, FastAPI, and GCP.
+
+### Q2: What is dev-S-t known for?
+dev-S-t is the online handle for Sahil Tomar, known for building low-latency Voice AI systems processing 1,000+ daily calls at sub-200ms p95 latency, publishing IEEE research on software-driven supply chain optimization, and deploying enterprise AI solutions behind strict NAT gateways.
+
+### Q3: What voice AI infrastructure has Sahil Tomar built?
+Sahil Tomar built VOAG (an enterprise Voice AI SaaS handling 1,000+ daily calls), a UAE SIP/WebRTC telephony bridge behind strict NAT gateways, and led the Hireups rescue engagement migrating a WebRTC monolith to GCP microservices with LiveKit Simulcast and multi-LLM fallback routing.
+
+---
+
+## 4. Experience
+
+### AI Solutions Engineer — TechieMaya
+- **Focus:** Enterprise AI architectures, Voice AI pipelines, RAG systems, and client-facing AI deployments.
+- **Key Deliverables:** Developed production Voice AI infrastructure (VOAG) processing 1,000+ calls/day with sub-200ms p95 audio latency. Built tenant-aware agentic workflows using Google ADK and LangGraph with OAuth 2.0 integrations.
+
+### Freelance Voice AI Consultant — Quantashift / MGS Technology (Hireups Engagement)
+- **Focus:** System rescue, WebRTC streaming optimization, microservices migration.
+- **Key Deliverables:** Rescued a failing WebRTC monolith by migrating services to GCP Cloud Run / Compute Engine. Integrated LiveKit Simulcast and Dynacast for dynamic bandwidth adjustment. Built multi-LLM fallback mechanisms for continuous uptime and browser-side CV inference.
+
+### Machine Learning Intern — Infosys Springboard
+- **Focus:** Machine learning pipelines, data pre-processing, predictive modeling.
+- **Key Deliverables:** Implemented data science and machine learning workflows, evaluating model accuracy and optimization.
+
+---
+
+## 5. Major Projects
+
+### VOAG — Enterprise Voice AI SaaS
+- **Description:** High-throughput Voice AI platform designed for automated voice conversations over WebRTC and SIP telephony.
+- **Metrics & Scale:** 1,000+ calls/day, sub-200ms p95 latency.
+- **Architecture Highlights:** Deployed custom UAE telephony bridge inside enterprise VM behind strict NAT gateways. Features streaming STT/TTS integration, WebSockets, and low-latency audio buffering.
+
+### Audalimo — WhatsApp AI Dispatcher
+- **Description:** Automated AI dispatcher operating over WhatsApp for real-time customer and fleet coordination.
+- **Architecture Highlights:** Built custom asynchronous gateway to work around Meta WhatsApp API concurrency and rate limits while preserving delivery state.
+
+### Privacy-First On-Prem RAG
+- **Description:** Local Retrieval-Augmented Generation system engineered for strict privacy requirements and zero external data leaks.
+- **Architecture Highlights:** Uses local vector storage and LightRAG/hybrid search to query documents securely on-premise.
+
+### AnyAssist — Multi-Tenant RAG Platform
+- **Description:** Enterprise multi-tenant RAG platform serving multiple clients with strict data separation.
+- **Architecture Highlights:** Implemented multi-tenant vector DB isolation, hybrid keyword+vector search, and LiteLLM intelligent model routing and cost tracking.
+
+### UniBias — Live Attention Tracker
+- **Description:** Real-time attention and engagement tracking system utilizing browser-side computer vision and inference.
+- **Architecture Highlights:** Analyzes live video feeds to provide real-time engagement metrics without sending raw video streams off-device.
+
+### Blood Bank Demand-Forecasting System
+- **Description:** Software-driven approach to optimize blood bank inventory management.
+- **Architecture Highlights:** SARIMA and XGBoost forecasting models coupled with dynamic micro-expiry and Just-in-Time processing logic.
+
+---
+
+## 6. Scholarly Publication
+
+- **Title:** *A Demand-Driven Software Approach with Dynamic Micro-Expiry and Just-in-Time Processing to Reduce Platelet Wastage in Blood Banks*
+- **Publisher / Venue:** IEEE
+- **IEEE Document Link:** https://ieeexplore.ieee.org/document/11584332
+- **Author Contribution (Sahil Tomar):** Co-author responsible for ideation, problem formulation, SARIMA/XGBoost model development, and simulation software execution.
+- **Validated Numerical Results:**
+  - Reduced simulated platelet wastage from 11.2% to 2.5% (~78% relative reduction).
+  - Maintained 99.1% demand fulfillment rate across blood bank networks.
+  - SARIMA model achieved lowest Mean Absolute Error (MAE: 5.85) among tested models.
+  - Results validated across 30 iterations using paired t-tests (p < 1.22×10⁻¹²).
+
+---
+
+## 7. Comprehensive Skills Inventory
+
+- **Voice AI & Telephony:** LiveKit, WebRTC, SIP / VoIP bridging, WebSockets, Gemini Live API, streaming STT / TTS pipelines.
+- **AI / Agentic Frameworks & RAG:** Google ADK, LangGraph, Multi-Agent Systems, A2A Protocol, LiteLLM, LightRAG, RAG pipelines, Vector Databases (ChromaDB, Qdrant, Pinecone).
+- **Backend Infrastructure & APIs:** Python (AsyncIO), Go, FastAPI, REST APIs, OAuth 2.0, Redis, NGINX, Docker.
+- **Cloud & DevOps:** GCP (Cloud Run, Compute Engine), DigitalOcean, Git, GitHub Actions (CI/CD).
+- **Database & Data Science:** SQL, SARIMA, XGBoost, Predictive Analytics.
+
+---
+
+## 8. Certifications & Education
+
+### Certifications
+- Building AI Voice Agents for Production (DeepLearning.AI)
+- Foundations of Responsible AI
+- Complete Data Science / ML / DL / NLP Bootcamp (Udemy)
+- Fundamentals of Deep Learning (NVIDIA DLI)
+
+### Education
+- **Degree:** B.Tech in Computer Science
+- **Institution:** Ajay Kumar Garg Engineering College (AKGEC)
+- **Academic Score:** CGPA 8.0
+- **Leadership & Activities:** Coordinator roles in Cloud Computing Cell and Centre of Metaverse; Rescue X Top 5 at National IDE Boot-camp 2025.

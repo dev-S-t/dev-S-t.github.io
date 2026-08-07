@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOAG Enterprise Voice AI SaaS — Sahil Tomar (dev-S-t)</title>
+  <meta name="description" content="Technical specification of VOAG, an enterprise Voice AI SaaS platform processing 1,000+ daily calls with sub-200ms p95 latency and a custom UAE SIP NAT gateway bridge. Built by Sahil Tomar (dev-S-t).">
+  <link rel="canonical" href="https://dev-s-t.github.io/projects/voag/">
+  <link rel="alternate" type="text/markdown" title="VOAG Project Markdown" href="https://dev-s-t.github.io/projects/voag.md">
+  
+  <meta property="og:title" content="VOAG Enterprise Voice AI SaaS — Sahil Tomar (dev-S-t)">
+  <meta property="og:description" content="1,000+ calls/day, sub-200ms p95 latency, LiveKit/WebRTC/SIP NAT gateway deployment by Sahil Tomar (dev-S-t).">
+  <meta property="og:url" content="https://dev-s-t.github.io/projects/voag/">
+  <meta property="og:type" content="article">
+</head>
+<body>
+  <header>
+    <h1>VOAG — Enterprise Voice AI SaaS</h1>
+    <p>Engineered by <strong>Sahil Tomar (dev-S-t)</strong></p>
+    <p><a href="/projects/">Back to Projects</a> | <a href="/projects/voag.md">Raw Markdown</a></p>
+  </header>
+
+  <main>
+    <section>
+      <h2>System Overview & Metrics</h2>
+      <ul>
+        <li><strong>Scale:</strong> 1,000+ production voice calls processed daily.</li>
+        <li><strong>Latency:</strong> Sub-200ms p95 audio pipeline latency.</li>
+        <li><strong>Key Deployment:</strong> UAE Telephony Bridge deployed inside partner Virtual Machine behind strict NAT gateways.</li>
+      </ul>
+
+      <h2>Technical Architecture</h2>
+      <p>VOAG connects real-time WebRTC and SIP telephony streams into streaming Speech-to-Text (STT), LLM logic engines, and Text-to-Speech (TTS) synthesizers via WebSockets and custom low-latency audio buffering. Designed to operate reliably under strict enterprise firewall and NAT gateway constraints.</p>
+    </section>
+  </main>
+
+  <footer>
+    <hr>
+    <p><strong>Sahil Tomar (dev-S-t)</strong> — <a href="https://github.com/dev-S-t">GitHub</a></p>
+  </footer>
+</body>
+</html>

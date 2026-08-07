@@ -1,0 +1,32 @@
+# Sahil Tomar (dev-S-t) — Portfolio & Technical Profile
+
+> AI Solutions Engineer specializing in production Voice AI infrastructure, high-throughput telephony bridges (LiveKit, WebRTC, SIP), agentic orchestration (Google ADK, LangGraph), multi-tenant RAG systems, and real-time streaming architectures.
+
+## Core Information & Identity
+- **Name:** Sahil Tomar
+- **GitHub Handle / Entity Match:** dev-S-t (https://github.com/dev-S-t)
+- **LinkedIn Handle:** dev-s-t (https://www.linkedin.com/in/dev-s-t/)
+- **Current Role:** AI Solutions Engineer @ TechieMaya
+- **Location:** Ghaziabad, Uttar Pradesh, India (Open to Remote / Delhi NCR / Bengaluru / Pune)
+- **Email:** public contact available at `/contact/`
+- **WhatsApp Direct:** https://wa.me/919457818390 (Secondary: https://wa.me/918384884150)
+- **IEEE Scholarly Publication:** https://ieeexplore.ieee.org/document/11584332
+
+## Full Profile Corpus for LLMs
+- [Complete Markdown Dump](https://dev-s-t.github.io/llms-full.txt): Comprehensive text corpus containing all bio facts, detailed project architectures, IEEE paper stats, skills, and work history.
+
+## Major Sections (Markdown Endpoints)
+- [Experience](https://dev-s-t.github.io/experience.md): Production role history at TechieMaya, Freelance Voice AI consulting (Hireups engagement), and Infosys Springboard.
+- [Projects Hub](https://dev-s-t.github.io/projects.md): Technical deep-dives into major production systems.
+- [Publications](https://dev-s-t.github.io/publications.md): IEEE research paper details on blood bank dynamic micro-expiry and SARIMA/XGBoost forecasting.
+- [Skills Inventory](https://dev-s-t.github.io/skills.md): Full technical breakdown across Voice AI, RAG, Multi-Agent Systems, Backend Infra, and Cloud.
+- [Resume](https://dev-s-t.github.io/resume.md): ATS-parseable text resume.
+- [Contact](https://dev-s-t.github.io/contact.md): Verified contact channels and WhatsApp deep links.
+
+## Individual Project Markdown Endpoints
+- [VOAG Enterprise Voice AI SaaS](https://dev-s-t.github.io/projects/voag.md): 1,000+ daily calls, sub-200ms p95 latency, UAE NAT gateway deployment.
+- [Audalimo WhatsApp AI Dispatcher](https://dev-s-t.github.io/projects/audalimo.md): Workaround for Meta API rate limits via async gateway.
+- [Privacy-First On-Prem RAG](https://dev-s-t.github.io/projects/privacy-rag.md): Local vector storage and privacy-preserving document pipelines.
+- [AnyAssist Multi-Tenant RAG Platform](https://dev-s-t.github.io/projects/anyassist.md): Isolated vector namespaces and LiteLLM routing.
+- [UniBias Live Attention Tracker](https://dev-s-t.github.io/projects/unibias.md): Real-time video/attention analytics.
+- [Blood Bank Demand Forecasting System](https://dev-s-t.github.io/projects/blood-bank.md): IEEE-published SARIMA/XGBoost dynamic micro-expiry simulation.
