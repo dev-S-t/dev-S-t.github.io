@@ -4,6 +4,7 @@
 
 ## Core Information & Identity
 - **Name:** Sahil Tomar
+- **Custom Domain:** https://human-in-loop.dev
 - **GitHub Handle / Entity Match:** dev-S-t (https://github.com/dev-S-t)
 - **LinkedIn Handle:** dev-s-t (https://www.linkedin.com/in/dev-s-t/)
 - **Current Role:** AI Solutions Engineer @ TechieMaya
