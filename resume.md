@@ -28,7 +28,7 @@
 
 #### VOAG — Enterprise Voice AI SaaS (Mr. LADs App)
 - **Lead the Voice AI vertical:** scaled to **1,000+ calls/day at sub-200ms p95 latency**; replaced persistent WebSockets with an *async polling layer* waking Cloud Run workers on demand, cutting infrastructure cost **30%**.
-- **Hybrid cloud SIP:** engineered a UAE telephony bridge (SIM ➡️ modem ➡️ SIP ➡️ LiveKit) deployed *inside a client's own VM behind a strict NAT gateway* for ultra-low-latency local calling; self-hosted LiveKit across India and UAE regions with tenant-aware call routing.
+- **Hybrid cloud SIP:** engineered a UAE telephony bridge (SIM -> modem -> SIP -> LiveKit) deployed *inside a client's own VM behind a strict NAT gateway* for ultra-low-latency local calling; self-hosted LiveKit across India and UAE regions with tenant-aware call routing.
 - **Agentic workflows:** built a tenant-aware tool registry over OAuth 2.0 enabling live calendar scheduling, omnichannel messaging, and human handoff mid-call; added *fire-and-forget RAG* so agents reference long documents without conversational dead air.
 - **Multi-provider & delivery:** integrated Gemini Live, Sarvam, and Ultravox for cost/language routing; containerised all workers with **GitHub Actions** CI/CD, plus a playground for testing agents against the production pipeline.
 
@@ -37,7 +37,7 @@
 - Cut booking turnaround **from ~30 minutes to under 1 minute**; extended the same gateway for a second client with message-monitoring and multi-mapping forwarding services across 1,000+ daily community messages.
 
 #### MAGe — Multi-Agent Media Generation Engine
-- Hierarchical agent pipeline (creative director ➡️ scriptwriter ➡️ reference selector ➡️ generator ➡️ reviewer) producing on-brand video ads from a **Playwright**-scraped brand profile, using Google Veo with frame-carry continuity and FFmpeg assembly.
+- Hierarchical agent pipeline (creative director -> scriptwriter -> reference selector -> generator -> reviewer) producing on-brand video ads from a **Playwright**-scraped brand profile, using Google Veo with frame-carry continuity and FFmpeg assembly.
 - Added Reddit trend intelligence for creative direction and per-session API cost accounting via Python `contextvars` across concurrent async workers.
 
 #### Privacy-First On-Premise RAG (A2A Protocol)
@@ -85,7 +85,7 @@
 ## 6. Scholarly Publication
 - **A Demand-Driven Software Approach with Dynamic Micro-Expiry and Just-in-Time Processing to Reduce Platelet Wastage in Blood Banks**  
   *IEEE IC2PCT 2026, pp. 978–983* — [IEEE Xplore #11584332](https://ieeexplore.ieee.org/document/11584332) | [Full Publication Page](https://human-in-loop.dev/publications/)  
-  Co-author — led problem formulation, forecasting-model development (SARIMA/XGBoost; SARIMA lowest MAE at 5.85), and simulation software execution. Reduced simulated wastage **11.2% ➡️ 2.5%** while holding **99.1%** fulfillment; validated over 30 iterations (paired t-tests, p < 1.22 × 10⁻¹²).
+  Co-author — led problem formulation, forecasting-model development (SARIMA/XGBoost; SARIMA lowest MAE at 5.85), and simulation software execution. Reduced simulated wastage **11.2% -> 2.5%** while holding **99.1%** fulfillment; validated over 30 iterations (paired t-tests, p < 1.22 × 10⁻¹²).
 
 ---
 
