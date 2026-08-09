@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Multi-Tenant AI Without Cross-Contamination — Case Study | Sahil Tomar (dev-S-t)</title>
+  <title>Isolating Multi-Tenant Vector DBs & ADK Agents — Case Study | Sahil Tomar (dev-S-t)</title>
   <meta name="description" content="Engineering Case Study by Sahil Tomar (dev-S-t): Architecting safe multi-tenant RAG using Google ADK agent-per-tenant model, logical vector namespace isolation, and LiteLLM cost attribution.">
-  <link rel="canonical" href="https://dev-s-t.github.io/case-studies/multi-tenant-isolation/">
-  <link rel="alternate" type="text/markdown" title="Case Study 2 Markdown" href="https://dev-s-t.github.io/case-studies/multi-tenant-isolation.md">
+  <link rel="canonical" href="https://human-in-loop.dev/case-studies/multi-tenant-isolation/">
+  <link rel="alternate" type="text/markdown" title="Case Study 2 Markdown" href="https://human-in-loop.dev/case-studies/multi-tenant-isolation.md">
   
-  <meta property="og:title" content="Multi-Tenant AI Without Cross-Contamination — Sahil Tomar (dev-S-t)">
+  <meta property="og:title" content="Isolating Multi-Tenant Vector DBs & ADK Agents — Sahil Tomar (dev-S-t)">
   <meta property="og:description" content="Safe multi-tenant RAG vector isolation, Google ADK agents, and LiteLLM cost tracking by Sahil Tomar (dev-S-t).">
-  <meta property="og:url" content="https://dev-s-t.github.io/case-studies/multi-tenant-isolation/">
+  <meta property="og:url" content="https://human-in-loop.dev/case-studies/multi-tenant-isolation/">
   <meta property="og:type" content="article">
 </head>
 <body>
@@ -41,6 +41,15 @@
       <section>
         <h2>Outcome</h2>
         <p>One backend serving multiple distinct clients securely, with per-tenant cost visibility designed in from the start instead of retrofitted once billing became a problem.</p>
+      </section>
+
+      <!-- GEO Natural Question FAQ Block -->
+      <section id="faq">
+        <h2>Frequently Asked Questions</h2>
+        <article>
+          <h3>How do you prevent data leaks in multi-tenant RAG platforms?</h3>
+          <p>By implementing strict logical namespace partitioning in vector databases combined with dedicated agent instances per tenant (Google ADK) and centralized gateway cost attribution via LiteLLM.</p>
+        </article>
       </section>
     </article>
   </main>

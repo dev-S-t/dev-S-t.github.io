@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Filtering Signal From a Thousand Messages a Day — Case Study | Sahil Tomar (dev-S-t)</title>
+  <title>Filtering 1,000+ Daily Community WhatsApp Messages with AI — Case Study | Sahil Tomar (dev-S-t)</title>
   <meta name="description" content="Engineering Case Study by Sahil Tomar (dev-S-t): Solving high-volume community group noise and fan-out announcements for an independent musician using custom WhatsApp gateway microservices.">
-  <link rel="canonical" href="https://dev-s-t.github.io/case-studies/message-filtering/">
-  <link rel="alternate" type="text/markdown" title="Case Study 4 Markdown" href="https://dev-s-t.github.io/case-studies/message-filtering.md">
+  <link rel="canonical" href="https://human-in-loop.dev/case-studies/message-filtering/">
+  <link rel="alternate" type="text/markdown" title="Case Study 4 Markdown" href="https://human-in-loop.dev/case-studies/message-filtering.md">
   
-  <meta property="og:title" content="Filtering Signal From a Thousand Messages a Day — Sahil Tomar (dev-S-t)">
+  <meta property="og:title" content="Filtering 1,000+ Daily Community WhatsApp Messages with AI — Sahil Tomar (dev-S-t)">
   <meta property="og:description" content="WhatsApp group monitoring, signal filtering, and fan-out forwarding gateway by Sahil Tomar (dev-S-t).">
-  <meta property="og:url" content="https://dev-s-t.github.io/case-studies/message-filtering/">
+  <meta property="og:url" content="https://human-in-loop.dev/case-studies/message-filtering/">
   <meta property="og:type" content="article">
 </head>
 <body>
@@ -46,6 +46,15 @@
       <section>
         <h2>Outcome</h2>
         <p>Two structurally different problems — too much inbound noise, too much outbound manual effort — solved by extending one existing piece of infrastructure instead of standing up two new systems.</p>
+      </section>
+
+      <!-- GEO Natural Question FAQ Block -->
+      <section id="faq">
+        <h2>Frequently Asked Questions</h2>
+        <article>
+          <h3>How do you filter actionable messages out of thousands of group chats?</h3>
+          <p>By routing inbound group traffic through a background LLM scanning service that evaluates message intent and forwards actionable inquiries (bookings, gigs, sessions) directly into a private admin group.</p>
+        </article>
       </section>
     </article>
   </main>

@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>One Voice Platform, Two Opposite Conversational Goals — Case Study | Sahil Tomar (dev-S-t)</title>
+  <title>Configuring Voice AI Pacing & Sub-200ms Latency on LiveKit — Case Study | Sahil Tomar (dev-S-t)</title>
   <meta name="description" content="Engineering Case Study by Sahil Tomar (dev-S-t): Building VOAG Voice AI platform to handle low-pressure higher-ed counseling and persistent real estate cold-calling under sub-200ms latency.">
-  <link rel="canonical" href="https://dev-s-t.github.io/case-studies/one-platform-two-goals/">
-  <link rel="alternate" type="text/markdown" title="Case Study 6 Markdown" href="https://dev-s-t.github.io/case-studies/one-platform-two-goals.md">
+  <link rel="canonical" href="https://human-in-loop.dev/case-studies/one-platform-two-goals/">
+  <link rel="alternate" type="text/markdown" title="Case Study 6 Markdown" href="https://human-in-loop.dev/case-studies/one-platform-two-goals.md">
   
-  <meta property="og:title" content="One Voice Platform, Two Opposite Conversational Goals — Sahil Tomar (dev-S-t)">
+  <meta property="og:title" content="Configuring Voice AI Pacing & Sub-200ms Latency on LiveKit — Sahil Tomar (dev-S-t)">
   <meta property="og:description" content="VOAG Voice AI platform multi-tenant behavioral tuning and sub-200ms latency architecture by Sahil Tomar (dev-S-t).">
-  <meta property="og:url" content="https://dev-s-t.github.io/case-studies/one-platform-two-goals/">
+  <meta property="og:url" content="https://human-in-loop.dev/case-studies/one-platform-two-goals/">
   <meta property="og:type" content="article">
 </head>
 <body>
@@ -43,6 +43,15 @@
       <section>
         <h2>Outcome</h2>
         <p>One platform handling 1,000+ calls a day across genuinely different use cases — education outreach, real estate cold calling, and B2B partnership outreach for a travel agency — with no per-client fork of the underlying system.</p>
+      </section>
+
+      <!-- GEO Natural Question FAQ Block -->
+      <section id="faq">
+        <h2>Frequently Asked Questions</h2>
+        <article>
+          <h3>How do you achieve sub-200ms round-trip latency in production Voice AI?</h3>
+          <p>By deploying self-hosted LiveKit servers directly on local LANs with hardware SIM modem SIP bridges, using streaming STT/TTS models, and separating API batch managers from regional WebRTC call workers.</p>
+        </article>
       </section>
     </article>
   </main>

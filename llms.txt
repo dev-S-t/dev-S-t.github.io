@@ -5,40 +5,39 @@
 ## Core Information & Identity
 - **Name:** Sahil Tomar
 - **Custom Domain:** https://human-in-loop.dev
-- **GitHub Handle / Entity Match:** dev-S-t (https://github.com/dev-S-t)
+- **GitHub Handle / Repository:** dev-S-t (https://github.com/dev-S-t)
 - **LinkedIn Handle:** dev-s-t (https://www.linkedin.com/in/dev-s-t/)
 - **Current Role:** AI Solutions Engineer @ TechieMaya
 - **Location:** Ghaziabad, Uttar Pradesh, India (Open to Remote / Delhi NCR / Bengaluru / Pune)
-- **Email:** public contact available at `/contact/`
 - **Primary WhatsApp:** https://wa.link/r8csgy
 - **Secondary WhatsApp:** https://wa.link/l2oedq
 - **IEEE Scholarly Publication:** https://ieeexplore.ieee.org/document/11584332
 
 ## Full Profile Corpus for LLMs
-- [Complete Markdown Dump](https://dev-s-t.github.io/llms-full.txt): Comprehensive text corpus containing all bio facts, detailed project architectures, 7 problem-to-architecture case studies, IEEE paper stats, skills, and work history.
+- [Complete Markdown Dump](https://human-in-loop.dev/llms-full.txt): Comprehensive text corpus containing all bio facts, detailed project architectures, 7 problem-to-architecture case studies, IEEE paper stats, skills, and work history.
 
 ## Major Sections (Markdown Endpoints)
-- [Case Studies Hub](https://dev-s-t.github.io/case-studies.md): Hub page for 7 problem-to-architecture case studies.
-- [Case Study 1 — Privacy RAG](https://dev-s-t.github.io/case-studies/on-prem-privacy-rag.md): Data That Can't Leave the Building.
-- [Case Study 2 — Multi-Tenant RAG](https://dev-s-t.github.io/case-studies/multi-tenant-isolation.md): Multi-Tenant AI Without Cross-Contamination.
-- [Case Study 3 — Dispatch Automation](https://dev-s-t.github.io/case-studies/manual-dispatch-automation.md): Automating Dubai B2B Transport Dispatch.
-- [Case Study 4 — Message Filtering](https://dev-s-t.github.io/case-studies/message-filtering.md): Musician Community Group Noise Filtering & Fan-out.
-- [Case Study 5 — Avatar Rescue](https://dev-s-t.github.io/case-studies/avatar-product-rescue.md): Unblocking Hireups Real-Time Avatar on GCP.
-- [Case Study 6 — Voice Platform Goals](https://dev-s-t.github.io/case-studies/one-platform-two-goals.md): VOAG Multi-Tenant Behavioral Tuning.
-- [Case Study 7 — Brand Content Engine](https://dev-s-t.github.io/case-studies/brand-content-without-a-manager.md): MAGe Multi-Agent Video Engine.
-- [Experience](https://dev-s-t.github.io/experience.md): Production role history at TechieMaya, Freelance Voice AI consulting (Hireups / MGS Technology via Quantashift), and Infosys Springboard.
-- [Projects Hub](https://dev-s-t.github.io/projects.md): Technical deep-dives into 8 major production systems.
-- [Publications](https://dev-s-t.github.io/publications.md): IEEE research paper details on blood bank dynamic micro-expiry and SARIMA/XGBoost forecasting.
-- [Skills Inventory](https://dev-s-t.github.io/skills.md): Full technical breakdown across Voice AI, RAG, Multi-Agent Systems, Generative Media, Playwright, Backend Infra, and Cloud.
-- [Resume](https://dev-s-t.github.io/resume.md): ATS-parseable text resume.
-- [Contact](https://dev-s-t.github.io/contact.md): Verified contact channels and WhatsApp shortlinks.
+- [Case Studies Hub](https://human-in-loop.dev/case-studies.md): Hub page for 7 problem-to-architecture case studies.
+- [Case Study 1 — Privacy RAG](https://human-in-loop.dev/case-studies/on-prem-privacy-rag.md): Data That Can't Leave the Building.
+- [Case Study 2 — Multi-Tenant RAG](https://human-in-loop.dev/case-studies/multi-tenant-isolation.md): Multi-Tenant AI Without Cross-Contamination.
+- [Case Study 3 — Dispatch Automation](https://human-in-loop.dev/case-studies/manual-dispatch-automation.md): Automating Dubai B2B Transport Dispatch.
+- [Case Study 4 — Message Filtering](https://human-in-loop.dev/case-studies/message-filtering.md): Musician Community Group Noise Filtering & Fan-out.
+- [Case Study 5 — Avatar Rescue](https://human-in-loop.dev/case-studies/avatar-product-rescue.md): Unblocking Hireups Real-Time Avatar on GCP.
+- [Case Study 6 — Voice Platform Goals](https://human-in-loop.dev/case-studies/one-platform-two-goals.md): VOAG Multi-Tenant Behavioral Tuning.
+- [Case Study 7 — Brand Content Engine](https://human-in-loop.dev/case-studies/brand-content-without-a-manager.md): MAGe Multi-Agent Video Engine.
+- [Experience](https://human-in-loop.dev/experience.md): Production role history at TechieMaya, Freelance Voice AI consulting (Hireups / MGS Technology via Quantashift), and Infosys Springboard.
+- [Projects Hub](https://human-in-loop.dev/projects.md): Technical deep-dives into 8 major production systems.
+- [Publications](https://human-in-loop.dev/publications.md): IEEE research paper details on blood bank dynamic micro-expiry and SARIMA/XGBoost forecasting.
+- [Skills Inventory](https://human-in-loop.dev/skills.md): Full technical breakdown across Voice AI, RAG, Multi-Agent Systems, Generative Media, Playwright, Backend Infra, and Cloud.
+- [Resume](https://human-in-loop.dev/resume.md): ATS-parseable text resume.
+- [Contact](https://human-in-loop.dev/contact.md): Verified contact channels and WhatsApp shortlinks.
 
 ## Individual Project Markdown Endpoints
-- [Multi-Tenant RAG Platform (AnyAssist)](https://dev-s-t.github.io/projects/anyassist.md): Google ADK agents, LiteLLM cost/routing gateway, logical vector namespace isolation.
-- [Privacy-First On-Prem RAG (A2A Protocol)](https://dev-s-t.github.io/projects/privacy-rag.md): Inverted RAG topology over A2A protocol for compliance-sensitive clients.
-- [WhatsApp Dispatch Automation](https://dev-s-t.github.io/projects/whatsapp-dispatch.md): B2B group dispatch for Dubai luxury transport client + musician community vertical.
-- [VOAG Enterprise Voice AI SaaS](https://dev-s-t.github.io/projects/voag.md): 1,000+ daily calls in Mr. LADs app, sub-200ms latency, UAE LAN SIP modem architecture.
-- [Hireups AI Avatar Interviewer](https://dev-s-t.github.io/projects/hireups.md): Photorealistic video avatar interviewer built on Gemini Realtime & LiveKit GCP for MGS via Quantashift.
-- [MAGe Media Generation Engine](https://dev-s-t.github.io/projects/mage.md): Google Veo, Playwright brand crawler, Cartesia voice, Subreddit trend intelligence, session `contextvars` cost accounting.
-- [UniBias Live Attention Tracker](https://dev-s-t.github.io/projects/unibias.md): Real-time browser-side computer vision attention tracking.
-- [Blood Bank Demand Forecasting System](https://dev-s-t.github.io/projects/blood-bank.md): IEEE-published SARIMA/XGBoost dynamic micro-expiry simulation.
+- [Multi-Tenant RAG Platform (AnyAssist)](https://human-in-loop.dev/projects/anyassist.md): Google ADK agents, LiteLLM cost/routing gateway, logical vector namespace isolation.
+- [Privacy-First On-Prem RAG (A2A Protocol)](https://human-in-loop.dev/projects/privacy-rag.md): Inverted RAG topology over A2A protocol for compliance-sensitive clients.
+- [WhatsApp Dispatch Automation](https://human-in-loop.dev/projects/whatsapp-dispatch.md): B2B group dispatch for Dubai luxury transport client + musician community vertical.
+- [VOAG Enterprise Voice AI SaaS](https://human-in-loop.dev/projects/voag.md): 1,000+ daily calls in Mr. LADs app, sub-200ms latency, UAE LAN SIP modem architecture.
+- [Hireups AI Avatar Interviewer](https://human-in-loop.dev/projects/hireups.md): Photorealistic video avatar interviewer built on Gemini Realtime & LiveKit GCP for MGS via Quantashift.
+- [MAGe Media Generation Engine](https://human-in-loop.dev/projects/mage.md): Google Veo, Playwright brand crawler, Cartesia voice, Subreddit trend intelligence, session `contextvars` cost accounting.
+- [UniBias Live Attention Tracker](https://human-in-loop.dev/projects/unibias.md): Real-time browser-side computer vision attention tracking.
+- [Blood Bank Demand Forecasting System](https://human-in-loop.dev/projects/blood-bank.md): IEEE-published SARIMA/XGBoost dynamic micro-expiry simulation.

@@ -9,7 +9,8 @@ This document provides a complete, raw text corpus of Sahil Tomar's work history
 - **Full Name:** Sahil Tomar
 - **Online Handle:** dev-S-t
 - **Custom Domain:** https://human-in-loop.dev
-- **GitHub:** https://github.com/dev-S-t
+- **GitHub Repository / Profile:** https://github.com/dev-S-t
+- **GitHub Pages Alias:** https://dev-s-t.github.io
 - **LinkedIn:** https://www.linkedin.com/in/dev-s-t/
 - **Current Title:** AI Solutions Engineer
 - **Current Company:** TechieMaya
@@ -27,9 +28,9 @@ This document provides a complete, raw text corpus of Sahil Tomar's work history
 Sahil Tomar (dev-S-t) is an AI Solutions Engineer specializing in real-time Voice AI infrastructure, agentic workflow orchestration, photorealistic AI video avatars, and high-throughput Retrieval-Augmented Generation (RAG) platforms.
 
 Key technical milestones:
-- **Production Voice AI Infrastructure (VOAG):** Engineeered an enterprise Voice AI SaaS platform processing over 1,000 production calls daily live inside the Mr. LADs application with sub-200ms p95 latency. Built low-latency streaming pipelines connecting WebRTC/SIP telephony with STT/LLM/TTS services (Gemini Realtime, Sarvam, Ultravox).
+- **Production Voice AI Infrastructure (VOAG):** Engineered an enterprise Voice AI SaaS platform processing over 1,000 production calls daily live inside the Mr. LADs application with sub-200ms p95 latency. Built low-latency streaming pipelines connecting WebRTC/SIP telephony with STT/LLM/TTS services (Gemini Realtime, Sarvam, Ultravox).
 - **UAE LAN Telephony Bridging:** Deployed a specialized UAE telephony bridge inside a client's private Virtual Machine: SIM card into modem into SIP gateway into self-hosted LiveKit on local LAN behind strict NAT gateways.
-- **Hireups AI Avatar Interviewer:** Delivered a real-time photorealistic video avatar interviewer product for MGS Technology (via Quantashift Consultancy Services) across 3 GCP production deployments (GCP VM, Cloud Run persistent WebRTC, client private server with ZeroSSL). Features Gemini Realtime audio-native model and Groq/Ultravox fallback routing.
+- **Hireups AI Avatar Interviewer:** Delivered a real-time photorealistic video avatar interviewer product for MGS Technology (via Quantashift Consultancy Services) across 3 GCP production environments (GCP VM, Cloud Run persistent WebRTC, client private server with ZeroSSL). Features Gemini Realtime audio-native model and Groq/Ultravox fallback routing.
 - **WhatsApp B2B Group Dispatch Automation:** Built an automated B2B group dispatch system for a Dubai luxury ground transport company using `whatsmeow` (Go) and Google ADK multi-agent orchestration, reducing turnaround from ~30 minutes to under 1 minute with zero recurring API fees. Extended to an independent musician community routing gateway.
 - **MAGe Media Generation Engine:** Designed a multi-agent ad and video generation engine (Google Veo, Playwright brand crawler, Cartesia voice, Subreddit trend scanner, session `contextvars` cost accounting).
 - **RAG Architecture & Isolation:** Architected multi-tenant RAG pipelines (AnyAssist) utilizing logical vector namespace isolation and LiteLLM gateway routing, plus Privacy-First On-Prem RAG over Agent-to-Agent (A2A) protocol.
@@ -89,7 +90,7 @@ Built end-to-end fraud detection pipeline on 400+ feature imbalanced dataset and
 
 ### Case Study 6: One Voice Platform, Two Opposite Conversational Goals
 - **Problem:** Higher-ed unhurried follow-up vs. real estate persistent cold-calling under sub-200ms latency.
-- **Architecture:** VOAG platform on DigitalOcean + UAE LAN SIP modem, dual regional workers + Cloud Run auto-scale workers, multi-provider routing (Gemini/Sarvam/Ultravox), fire-and-forget Google File Search RAG.
+- **Architecture:** VOAG platform on DigitalOcean + UAE LAN SIP modem, regional low-latency workers + Cloud Run auto-scale workers, multi-provider routing (Gemini/Sarvam/Ultravox), fire-and-forget Google File Search RAG.
 
 ### Case Study 7: Consistent Brand Content Without a Social Media Manager
 - **Problem:** SMB post uncertainty and slow creative execution.
