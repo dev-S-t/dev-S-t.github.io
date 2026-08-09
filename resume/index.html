@@ -3,61 +3,183 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Resume — Sahil Tomar (dev-S-t)</title>
-  <meta name="description" content="ATS-friendly resume page for Sahil Tomar (dev-S-t), AI Solutions Engineer @ TechieMaya specializing in Voice AI, LiveKit/WebRTC, RAG systems, and generative media engines.">
+  <title>Resume — Sahil Tomar (dev-S-t) | AI Solutions Engineer & Voice AI Specialist</title>
+  <meta name="description" content="Official ATS-friendly technical resume for Sahil Tomar (dev-S-t), AI Solutions Engineer specializing in Voice AI infrastructure, LiveKit/WebRTC, RAG systems, B2B automation, and multi-agent media engines.">
   <link rel="canonical" href="https://human-in-loop.dev/resume/">
   <link rel="alternate" type="text/markdown" title="Resume Markdown" href="https://human-in-loop.dev/resume.md">
   
   <meta property="og:title" content="Resume — Sahil Tomar (dev-S-t)">
-  <meta property="og:description" content="Resume and qualification summary for Sahil Tomar (dev-S-t), AI Solutions Engineer.">
+  <meta property="og:description" content="Comprehensive ATS technical resume of Sahil Tomar (dev-S-t), AI Solutions Engineer.">
   <meta property="og:url" content="https://human-in-loop.dev/resume/">
   <meta property="og:type" content="article">
 </head>
 <body>
 
+  <!-- 1. Header -->
   <header>
-    <h1>Sahil Tomar (dev-S-t) — Resume</h1>
-    <p>AI Solutions Engineer @ TechieMaya | Ghaziabad, UP, India</p>
-    <p><a href="/">Home</a> | <a href="/case-studies/">Case Studies</a> | <a href="/experience/">Experience</a> | <a href="/projects/">Projects</a> | <a href="/skills/">Skills</a></p>
+    <h1>Sahil Tomar (dev-S-t)</h1>
+    <p><strong>AI Solutions Engineer & Voice AI Specialist</strong></p>
+    <p><a href="/">Home</a> | <a href="/case-studies/">Case Studies</a> | <a href="/experience/">Experience</a> | <a href="/projects/">Projects</a> | <a href="/publications/">Publications</a> | <a href="/skills/">Skills</a> | <a href="/contact/">Contact</a></p>
   </header>
 
   <main>
-    <section>
-      <h2>Summary</h2>
-      <p>AI Solutions Engineer with proven expertise in building production Voice AI infrastructure (VOAG, 1,000+ daily calls in Mr. LADs app, sub-200ms latency), photorealistic video avatars (Hireups on GCP LiveKit), multi-tenant RAG systems (AnyAssist), WhatsApp group dispatch automation (`whatsmeow` + Google ADK), and multi-agent media engines (MAGe with Google Veo and Playwright).</p>
+    <!-- Downloadable PDF Resume Link -->
+    <section id="download-pdf">
+      <p style="font-size: 1.1em; background-color: #f4f4f4; padding: 12px; border-left: 4px solid #0066cc;">
+        <strong>📄 Official PDF Version:</strong> 
+        <a href="/assets/sahil-tomar-resume.pdf" target="_blank" download="sahil-tomar-resume.pdf"><strong>Download PDF Resume (sahil-tomar-resume.pdf)</strong></a>
+      </p>
+    </section>
 
-      <h2>Experience</h2>
+    <!-- 2. Contact -->
+    <section id="contact">
+      <h2>Contact Information</h2>
+      <ul>
+        <li><strong>Email:</strong> <a href="mailto:dev.sahil.tomar@gmail.com">dev.sahil.tomar@gmail.com</a></li>
+        <li><strong>WhatsApp:</strong> <a href="https://wa.link/r8csgy" target="_blank" rel="noopener">Primary WhatsApp (wa.link/r8csgy)</a> | <a href="https://wa.link/l2oedq" target="_blank" rel="noopener">Secondary WhatsApp (wa.link/l2oedq)</a></li>
+        <li><strong>GitHub:</strong> <a href="https://github.com/dev-S-t" target="_blank" rel="noopener">github.com/dev-S-t</a></li>
+        <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/dev-s-t/" target="_blank" rel="noopener">linkedin.com/in/dev-s-t</a></li>
+        <li><strong>ORCID:</strong> <a href="https://orcid.org/0009-0005-9222-9121" target="_blank" rel="noopener">0009-0005-9222-9121</a></li>
+        <li><strong>Location:</strong> Ghaziabad, Uttar Pradesh, India (Open to Remote / Delhi NCR / Bengaluru / Pune)</li>
+      </ul>
+    </section>
+
+    <!-- 3. Summary -->
+    <section id="summary">
+      <h2>Professional Summary</h2>
+      <ul>
+        <li><strong>AI Solutions Engineer leading the Voice AI vertical (VOAG) at TechieMaya</strong> — production real-time voice infrastructure on LiveKit/WebRTC and SIP telephony, running <strong>1,000+ calls/day at sub-200ms p95 latency</strong>.</li>
+        <li>Owns systems end to end: architecture, deployment inside client infrastructure under NAT and compliance constraints, and production monitoring. Builds agentic systems with Google ADK, RAG over private data, and generative media pipelines.</li>
+      </ul>
+    </section>
+
+    <!-- 4. Experience -->
+    <section id="experience">
+      <h2>Work Experience</h2>
+
+      <!-- TechieMaya -->
       <article>
-        <h3>AI Solutions Engineer — TechieMaya</h3>
-        <p><em>Ongoing (~1 year) · Remote (Dubai, UAE)</em></p>
-        <p>Led Voice AI vertical (VOAG), multi-tenant RAG engines, WhatsApp group dispatch automation, and MAGe generative media infrastructure.</p>
+        <h3>AI Solutions Engineer (Intern → Full-Time Contract) — TechieMaya</h3>
+        <p><em>Apr. 2025 – Present · Remote (Dubai, UAE)</em></p>
+        
+        <h4>VOAG — Enterprise Voice AI SaaS (<a href="http://web.mrlads.com/" target="_blank" rel="noopener">Mr. LADs App</a>)</h4>
+        <ul>
+          <li><strong>Lead the Voice AI vertical:</strong> scaled to <strong>1,000+ calls/day at sub-200ms p95 latency</strong>; replaced persistent WebSockets with an <em>async polling layer</em> waking Cloud Run workers on demand, cutting infrastructure cost <strong>30%</strong>.</li>
+          <li><strong>Hybrid cloud SIP:</strong> engineered a UAE telephony bridge (SIM ➡️ modem ➡️ SIP ➡️ LiveKit) deployed <em>inside a client's own VM behind a strict NAT gateway</em> for ultra-low-latency local calling; self-hosted LiveKit across India and UAE regions with tenant-aware call routing.</li>
+          <li><strong>Agentic workflows:</strong> built a tenant-aware tool registry over OAuth 2.0 enabling live calendar scheduling, omnichannel messaging, and human handoff mid-call; added <em>fire-and-forget RAG</em> so agents reference long documents without conversational dead air.</li>
+          <li><strong>Multi-provider & delivery:</strong> integrated Gemini Live, Sarvam, and Ultravox for cost/language routing; containerised all workers with <strong>GitHub Actions</strong> CI/CD, plus a playground for testing agents against the production pipeline.</li>
+        </ul>
+
+        <h4>WhatsApp Dispatch Automation — B2B Luxury Ground Transport (Dubai)</h4>
+        <ul>
+          <li>Built a Go gateway (<code>whatsmeow</code>) for group-chat messaging unsupported by Meta's official API, paired with a <strong>Google ADK multi-agent system</strong> — orchestrator, booking agent, and support agent — resolving flight, maps, fleet-availability and fare data via tools, and asking targeted follow-ups on incomplete requests.</li>
+          <li>Cut booking turnaround <strong>from ~30 minutes to under 1 minute</strong>; extended the same gateway for a second client with message-monitoring and multi-mapping forwarding services across 1,000+ daily community messages.</li>
+        </ul>
+
+        <h4>MAGe — Multi-Agent Media Generation Engine</h4>
+        <ul>
+          <li>Hierarchical agent pipeline (creative director ➡️ scriptwriter ➡️ reference selector ➡️ generator ➡️ reviewer) producing on-brand video ads from a <strong>Playwright</strong>-scraped brand profile, using Google Veo with frame-carry continuity and FFmpeg assembly.</li>
+          <li>Added Reddit trend intelligence for creative direction and per-session API cost accounting via Python <code>contextvars</code> across concurrent async workers.</li>
+        </ul>
+
+        <h4>Privacy-First On-Premise RAG (A2A Protocol)</h4>
+        <ul>
+          <li>Inverted RAG topology for compliance-sensitive clients — the reasoning agent deploys <em>onto client infrastructure</em> over an <strong>Agent-to-Agent protocol</strong>, queryable by any external agent with <strong>zero data exfiltration</strong>; hybrid dense-vector and keyword index for mixed document types.</li>
+        </ul>
       </article>
 
+      <!-- Quantashift / MGS -->
       <article>
-        <h3>Freelance Voice AI Consultant — Quantashift Consultancy Services (contracted to MGS Technology Pvt Ltd)</h3>
-        <p><em>Jan – Mar 2026 (~2 months) · Remote</em></p>
-        <p>Delivered Hireups real-time photorealistic video avatar interviewer across 3 GCP production environments (GCP VM, Cloud Run, private server with ZeroSSL).</p>
+        <h3>Freelance Voice AI Consultant — Quantashift Consultancy Services (contracted to MGS Technology)</h3>
+        <p><em>Jan. 2026 – Mar. 2026 · Remote (Pune, India)</em></p>
+
+        <h4>Hireups — Real-Time AI Interviewer with Photorealistic Video Avatar (<a href="https://hireups.net/" target="_blank" rel="noopener">Hireups</a>)</h4>
+        <ul>
+          <li>Brought in after the internal team was blocked for months on LiveKit real-time <em>video</em>; delivered a <strong>live photorealistic avatar interviewer</strong> on Gemini's realtime audio-native model with sub-second, interruptible multilingual dialogue (English/Arabic in production).</li>
+          <li>Shipped <strong>three production deployments</strong> — GCP VM, Cloud Run (non-trivial: LiveKit workers require persistent connections), and the client's private server, which needed a <em>custom LiveKit build</em> to satisfy ZeroSSL on an untrusted IP range.</li>
+          <li>Rearchitected a failing WebRTC monolith into scalable GCP microservices; added a <strong>multi-LLM failover mesh</strong> (Gemini/Groq/Ultravox) for uninterrupted sessions, and moved proctoring inference in-browser (TensorFlow.js, MediaPipe, COCO-SSD) to eliminate server video compute.</li>
+        </ul>
       </article>
 
+      <!-- Infosys Springboard -->
       <article>
         <h3>Machine Learning Intern — Infosys Springboard</h3>
-        <p><em>Mar – Jul 2024 · Remote</em></p>
-        <p>Constructed 400+ feature fraud detection pipeline and time-series demand forecasting models (ARIMA/Prophet).</p>
+        <p><em>Mar. 2024 – Jul. 2024 · Remote (<a href="https://github.com/dev-S-t/FraudDetectionSystem" target="_blank" rel="noopener">GitHub Repo</a>)</em></p>
+        <ul>
+          <li>Built a hybrid fraud-detection pipeline on a highly imbalanced <strong>400+ feature</strong> dataset (ARIMA/Prophet + XGBoost), achieving <strong>96% fraud recall</strong> with an optimised F1-score.</li>
+        </ul>
       </article>
+    </section>
 
-      <h2>Scholarly Publication</h2>
-      <p>IEEE Publication: <em>A Demand-Driven Software Approach with Dynamic Micro-Expiry and Just-in-Time Processing to Reduce Platelet Wastage in Blood Banks</em> (IEEE Xplore Document #11584332).</p>
-
-      <h2>Education</h2>
-      <p>B.Tech Computer Science — Ajay Kumar Garg Engineering College (CGPA 8.0). Coordinator in Cloud Computing Cell and Centre of Metaverse; Rescue X Top 5 at National IDE Boot-camp 2025.</p>
-
-      <h2>Certifications</h2>
+    <!-- 5. Major Projects Hub -->
+    <section id="projects">
+      <h2>Major Production Projects</h2>
       <ul>
-        <li>Building AI Voice Agents for Production (DeepLearning.AI)</li>
-        <li>Foundations of Responsible AI</li>
-        <li>Complete Data Science/ML/DL/NLP Bootcamp (Udemy)</li>
-        <li>Fundamentals of Deep Learning (NVIDIA DLI)</li>
+        <li><strong><a href="/projects/anyassist/">AnyAssist — Multi-Tenant RAG Platform</a>:</strong> GCP, LiteLLM, LightRAG, FastAPI, Google ADK. Self-service document chat SaaS with strict per-tenant vector isolation; LiteLLM gateway handles cross-provider routing, rate limiting, and per-tenant cost tracking.</li>
+        <li><strong><a href="/projects/privacy-rag/">Privacy-First On-Premise RAG</a>:</strong> Inverted RAG topology over A2A protocol for compliance-sensitive clients with zero external document exfiltration.</li>
+        <li><strong><a href="/projects/whatsapp-dispatch/">WhatsApp Dispatch Automation</a>:</strong> B2B group dispatch for Dubai luxury transport company (`whatsmeow` Go + Google ADK) plus independent musician community vertical.</li>
+        <li><strong><a href="/projects/voag/">VOAG — Enterprise Voice AI SaaS</a>:</strong> 1,000+ daily calls in Mr. LADs app, sub-200ms latency, UAE LAN SIP modem architecture, fire-and-forget RAG.</li>
+        <li><strong><a href="/projects/hireups/">Hireups — Real-Time AI Avatar Interviewer</a>:</strong> Photorealistic video avatar interviewer built on Gemini Realtime and self-hosted LiveKit GCP for MGS via Quantashift.</li>
+        <li><strong><a href="/projects/mage/">MAGe — Multi-Agent Advertising & Media Generation Engine</a>:</strong> Multi-agent creative ad pipeline (Google Veo, Playwright brand crawler, Cartesia, Subreddit trend scanner, session `contextvars` cost accounting).</li>
+        <li><strong><a href="/projects/unibias/">UniBias — Live Attention Tracker</a>:</strong> Vision Transformers, FastAPI, OpenCV. Privacy-first tracker analysing periodic webcam and screen frames to detect distraction and trigger alerts, with no recording.</li>
+        <li><strong><a href="/projects/blood-bank/">Blood Bank Demand-Forecasting System</a>:</strong> IEEE-published SARIMA/XGBoost dynamic micro-expiry simulation reducing platelet wastage from 11.2% to 2.5%.</li>
       </ul>
+    </section>
+
+    <!-- 6. Technical Skills -->
+    <section id="skills">
+      <h2>Technical Skills Inventory</h2>
+      <ul>
+        <li><strong>Languages & Infra:</strong> Python (AsyncIO), Go, SQL, Docker, GCP (Cloud Run, Compute Engine, Vertex AI), DigitalOcean</li>
+        <li><strong>Voice & Real-Time:</strong> LiveKit (WebRTC), SIP/VoIP bridging, WebSockets, Gemini Live API, Sarvam, Ultravox, streaming STT/TTS</li>
+        <li><strong>AI & Agents:</strong> Google ADK, LangGraph, LiteLLM, LightRAG, Multi-Agent Systems, A2A Protocol, RAG, Vector DBs</li>
+        <li><strong>Generative Media:</strong> Google Veo, Imagen, Cartesia TTS, FFmpeg, Playwright</li>
+        <li><strong>Backend & DevOps:</strong> FastAPI, REST APIs, OAuth 2.0, Redis, NGINX, GitHub Actions (CI/CD), Fail2Ban</li>
+      </ul>
+    </section>
+
+    <!-- 7. Publication -->
+    <section id="publication">
+      <h2>Scholarly Publication</h2>
+      <article>
+        <h3>A Demand-Driven Software Approach with Dynamic Micro-Expiry and Just-in-Time Processing to Reduce Platelet Wastage in Blood Banks</h3>
+        <p><em>IEEE IC2PCT 2026, pp. 978–983</em> — <a href="https://ieeexplore.ieee.org/document/11584332" target="_blank" rel="noopener">IEEE Xplore #11584332</a> | <a href="/publications/">Full Publication Page</a></p>
+        <ul>
+          <li><strong>Co-author:</strong> Led problem formulation, forecasting-model development (SARIMA/XGBoost; SARIMA lowest MAE at 5.85), and simulation software execution. Reduced simulated wastage <strong>11.2% ➡️ 2.5%</strong> while holding <strong>99.1%</strong> fulfillment; validated over 30 iterations (paired t-tests, p &lt; 1.22 × 10⁻¹²).</li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- 8. Education & Extracurricular -->
+    <section id="education">
+      <h2>Education & Extracurricular Leadership</h2>
+      <article>
+        <h3>Ajay Kumar Garg Engineering College (AKGEC)</h3>
+        <p><strong>B.Tech in Computer Science</strong> · CGPA: 8.0 | <em>Sept. 2022 – Jun. 2026 · Ghaziabad, India</em></p>
+        <ul>
+          <li><strong>Coordinator, Cloud Computing Cell:</strong> Organised ML and cloud workshops for 200+ students.</li>
+          <li><strong>Coordinator, Centre of Metaverse:</strong> Led "Rescue X", a VR first-responder platform, to <strong>Top 5</strong> at the National IDE Boot-camp 2025.</li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- 9. Certifications -->
+    <section id="certifications">
+      <h2>Professional Certifications</h2>
+      <ul>
+        <li>Building AI Voice Agents for Production, LiveKit / DeepLearning.AI (Sep. 2025)</li>
+        <li>Foundations of Responsible AI (Sep. 2025)</li>
+        <li>Complete Data Science, ML, DL &amp; NLP Bootcamp, Udemy (Jul. 2025)</li>
+        <li>Fundamentals of Deep Learning, NVIDIA DLI (Mar. 2025)</li>
+      </ul>
+    </section>
+
+    <!-- 10. PDF Download Footer Link -->
+    <section id="download-pdf-footer">
+      <hr>
+      <p style="font-size: 1.1em; text-align: center;">
+        📥 <strong>Need a print/ATS copy for your pipeline?</strong> <a href="/assets/sahil-tomar-resume.pdf" target="_blank" download="sahil-tomar-resume.pdf"><strong>Download PDF Resume (sahil-tomar-resume.pdf)</strong></a>
+      </p>
     </section>
   </main>
 
