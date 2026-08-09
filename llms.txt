@@ -5,6 +5,7 @@
 ## Core Information & Identity
 - **Name:** Sahil Tomar
 - **Custom Domain:** https://human-in-loop.dev
+- **ORCID iD:** https://orcid.org/0009-0005-9222-9121
 - **GitHub Handle / Repository:** dev-S-t (https://github.com/dev-S-t)
 - **LinkedIn Handle:** dev-s-t (https://www.linkedin.com/in/dev-s-t/)
 - **Current Role:** AI Solutions Engineer @ TechieMaya

@@ -18,22 +18,22 @@
   {
     "@context": "https://schema.org",
     "@type": "ScholarlyArticle",
-    "headline": "A Demand-Driven Software Approach with Dynamic Micro-Expiry and Just-in-Time Processing to Reduce Platelet Wastage in Blood Banks",
     "name": "A Demand-Driven Software Approach with Dynamic Micro-Expiry and Just-in-Time Processing to Reduce Platelet Wastage in Blood Banks",
     "author": [
-      {
-        "@type": "Person",
-        "name": "Sahil Tomar",
-        "url": "https://human-in-loop.dev"
-      }
+      { "@type": "Person", "name": "Pranav Kaushik" },
+      { "@type": "Person", "name": "Sahil Tomar", "identifier": "https://orcid.org/0009-0005-9222-9121" },
+      { "@type": "Person", "name": "Saranya Sisodia" },
+      { "@type": "Person", "name": "Pawan Malik" },
+      { "@type": "Person", "name": "Anuradha M. Dhumale" }
     ],
-    "publisher": {
-      "@type": "Organization",
-      "name": "IEEE"
+    "datePublished": "2026-05-15",
+    "publisher": { "@type": "Organization", "name": "IEEE" },
+    "isPartOf": {
+      "@type": "PublicationEvent",
+      "name": "2026 IEEE 6th International Conference on Computing, Power, and Communication Technologies (IC2PCT)"
     },
-    "url": "https://human-in-loop.dev/publications/",
-    "sameAs": "https://ieeexplore.ieee.org/document/11584332",
-    "description": "IEEE research on blood bank demand-forecasting software using SARIMA and XGBoost combined with dynamic micro-expiry rules to reduce platelet wastage from 11.2% to 2.5%."
+    "url": "https://ieeexplore.ieee.org/document/11584332",
+    "abstract": "Platelet wastage in blood banks is a critical healthcare challenge due to short 5-day shelf life and volatile demand. This paper proposes a demand-driven software system integrating Just-in-Time (JIT) platelet component processing with dynamic micro-expiry management, where near-expiry units are selectively extended and stored as a buffer reserve to absorb forecast misses. Across 30 independent simulation iterations, the proposed JIT with micro-expiry system reduced wastage to 2.5% (compared to 11.2% traditional) and improved demand fulfillment to 99.1% (compared to 94.4% JIT-only), validated with high statistical significance (wastage p = 1.22 × 10⁻¹², shortage p = 7.16 × 10⁻¹⁰)."
   }
   </script>
 </head>
@@ -41,7 +41,7 @@
 
   <header>
     <h1>Sahil Tomar (dev-S-t) — Scholarly Publication</h1>
-    <p><a href="/">Home</a> | <a href="/experience/">Experience</a> | <a href="/case-studies/">Case Studies</a> | <a href="/projects/">Projects</a> | <a href="/skills/">Skills</a> | <a href="/contact/">Contact</a> | <a href="/publications.md">Raw Markdown</a></p>
+    <p><a href="/">Home</a> | <a href="/experience/">Experience</a> | <a href="/case-studies/">Case Studies</a> | <a href="/projects/">Projects</a> | <a href="/skills/">Skills</a> | <a href="/contact/">Contact</a></p>
   </header>
 
   <main>
@@ -50,18 +50,19 @@
       
       <article>
         <h3>A Demand-Driven Software Approach with Dynamic Micro-Expiry and Just-in-Time Processing to Reduce Platelet Wastage in Blood Banks</h3>
-        <p><strong>Publisher:</strong> IEEE | <strong>Document ID:</strong> <a href="https://ieeexplore.ieee.org/document/11584332" target="_blank" rel="noopener">IEEE Xplore #11584332</a></p>
-        <p><strong>Authors:</strong> Sahil Tomar (Co-Author & Lead Software Simulation Modeler)</p>
+        <p><strong>Publisher:</strong> IEEE | <strong>Conference:</strong> 2026 IEEE 6th International Conference on Computing, Power, and Communication Technologies (IC2PCT) | <strong>Document ID:</strong> <a href="https://ieeexplore.ieee.org/document/11584332" target="_blank" rel="noopener">IEEE Xplore #11584332</a></p>
+        <p><strong>Authors:</strong> Pranav Kaushik, <strong>Sahil Tomar</strong> (Co-Author & Lead Simulation Modeler, ORCID: <a href="https://orcid.org/0009-0005-9222-9121">0009-0005-9222-9121</a>), Saranya Sisodia, Pawan Malik, Anuradha M. Dhumale</p>
         
-        <h4>Abstract & Key Contribution</h4>
-        <p>Platelet concentrates have a short shelf life of 5 days, resulting in significant wastage in blood banks due to inventory mismatch. This paper presents a software framework combining time-series forecasting (SARIMA, XGBoost, Prophet, ARIMA) with dynamic micro-expiry logic and Just-in-Time (JIT) preparation routines.</p>
-        
+        <h4>Abstract Summary</h4>
+        <p>Platelet wastage in blood banks is a critical healthcare challenge due to short 5-day shelf life and volatile demand. Present methods attempt to resolve this via demand forecasting or Just-in-Time (JIT) processing, but residual forecast errors still cause shortage events. This paper introduces a demand-driven software system integrating JIT platelet processing with dynamic micro-expiry management, where near-expiry units are selectively extended and stored as a buffer reserve to absorb forecast misses instead of being discarded.</p>
+
         <h4>Empirical Results & Statistical Validation</h4>
         <ul>
-          <li><strong>Wastage Reduction:</strong> Reduced simulated platelet wastage from 11.2% to 2.5% (~78% relative reduction).</li>
-          <li><strong>Fulfillment Rate:</strong> Maintained a 99.1% patient demand fulfillment rate under peak demand conditions.</li>
-          <li><strong>Forecasting Accuracy:</strong> SARIMA model achieved the lowest Mean Absolute Error (MAE = 5.85) among tested algorithms.</li>
-          <li><strong>Statistical Significance:</strong> Validated across 30 Monte Carlo simulation runs using paired t-tests (p &lt; 1.22×10⁻¹²).</li>
+          <li><strong>Wastage Reduction:</strong> Reduced simulated platelet wastage from 11.2% (traditional) down to 2.5% (~78% relative reduction).</li>
+          <li><strong>Fulfillment Rate:</strong> Improved demand fulfillment to 99.1% compared to 94.4% under pure JIT.</li>
+          <li><strong>Shortage Mitigation:</strong> Shortage events decreased by 85% relative to JIT-only approaches.</li>
+          <li><strong>Forecasting Accuracy:</strong> SARIMA model achieved the lowest Mean Absolute Error (MAE = 5.85) among tested time-series models.</li>
+          <li><strong>Statistical Significance:</strong> Validated across 30 independent simulation iterations via paired t-tests (wastage: p = 1.22 × 10⁻¹², shortage: p = 7.16 × 10⁻¹⁰).</li>
         </ul>
 
         <p><a href="/projects/blood-bank/">View Project Implementation Page</a> | <a href="https://ieeexplore.ieee.org/document/11584332" target="_blank" rel="noopener">IEEE Xplore Direct Link</a></p>
@@ -71,7 +72,7 @@
 
   <footer>
     <hr>
-    <p><strong>Sahil Tomar (dev-S-t)</strong> — <a href="https://github.com/dev-S-t">GitHub</a> | <a href="https://www.linkedin.com/in/dev-s-t/">LinkedIn</a></p>
+    <p><strong>Sahil Tomar (dev-S-t)</strong> — <a href="https://github.com/dev-S-t">GitHub</a> | <a href="https://www.linkedin.com/in/dev-s-t/">LinkedIn</a> | <a href="https://orcid.org/0009-0005-9222-9121">ORCID</a></p>
   </footer>
 
 </body>

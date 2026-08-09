@@ -14,28 +14,28 @@
   <meta property="og:type" content="article">
 </head>
 <body>
+
   <header>
     <h1>Privacy-First On-Prem RAG (A2A Protocol)</h1>
-    <p>Engineered by <strong>Sahil Tomar (dev-S-t)</strong> @ TechieMaya</p>
-    <p><a href="/projects/">Back to Projects</a> | <a href="/case-studies/">View Case Studies</a> | <a href="/projects/privacy-rag.md">Raw Markdown</a></p>
+    <p>Engineering Specification — <strong>Sahil Tomar (dev-S-t) @ TechieMaya</strong></p>
+    <p><a href="/projects/">Back to Projects Hub</a> | <a href="/case-studies/on-prem-privacy-rag/">View Case Study 1</a></p>
   </header>
 
   <main>
-    <section>
-      <h2>System Overview & Topology Inversion</h2>
-      <p>Designed for compliance and legal clients who refuse to upload documents to external services. Instead of shipping documents out to a cloud pipeline, the RAG topology is inverted: reasoning agents deploy directly onto the client's local infrastructure.</p>
-
-      <h2>Engineering Highlights</h2>
+    <article>
+      <h2>Inverted RAG Architecture</h2>
+      <p>Designed for compliance and legal clients requiring strict local data retention. Key features:</p>
       <ul>
-        <li><strong>Agent-to-Agent (A2A) Protocol:</strong> Built over A2A protocol, allowing external agents or human interfaces to query local knowledge without underlying raw documents ever leaving the client's network.</li>
-        <li><strong>Hybrid Dense + Keyword Search:</strong> Combines dense semantic vector search with keyword indexing, preventing retrieval degradation across mixed formats (contracts, spreadsheets, source code, scanned PDFs).</li>
+        <li><strong>Agent-to-Agent (A2A) Protocol:</strong> Local reasoning agents deployed inside client boundaries that answer queries without transmitting raw documents externally.</li>
+        <li><strong>Hybrid Search Index:</strong> Dense vector semantic search paired with BM25 keyword matching over contracts, scanned PDFs, and codebases.</li>
       </ul>
-    </section>
+    </article>
   </main>
 
   <footer>
     <hr>
-    <p><strong>Sahil Tomar (dev-S-t)</strong> — <a href="https://github.com/dev-S-t">GitHub</a></p>
+    <p><a href="/projects/">← Back to Projects Hub</a> | Related Case Study: <a href="/case-studies/on-prem-privacy-rag/">Privacy-First On-Prem RAG Case Study</a></p>
   </footer>
+
 </body>
 </html>

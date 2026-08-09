@@ -14,29 +14,29 @@
   <meta property="og:type" content="article">
 </head>
 <body>
+
   <header>
-    <h1>AnyAssist — Multi-Tenant RAG Platform</h1>
-    <p>Engineered by <strong>Sahil Tomar (dev-S-t)</strong> @ TechieMaya</p>
-    <p><a href="/projects/">Back to Projects</a> | <a href="/case-studies/">View Case Studies</a> | <a href="/projects/anyassist.md">Raw Markdown</a></p>
+    <h1>Multi-Tenant RAG Platform (AnyAssist)</h1>
+    <p>Engineering Specification — <strong>Sahil Tomar (dev-S-t) @ TechieMaya</strong></p>
+    <p><a href="/projects/">Back to Projects Hub</a> | <a href="/case-studies/multi-tenant-isolation/">View Case Study 2</a></p>
   </header>
 
   <main>
-    <section>
-      <h2>System Overview</h2>
-      <p>Self-service "chat with your data" SaaS platform. Users upload documents to generate a personalized AI agent isolated per tenant, guaranteeing one tenant's data is never reachable from another session.</p>
-
-      <h2>Engineering Highlights</h2>
+    <article>
+      <h2>Architecture & Implementation</h2>
+      <p>AnyAssist is a self-service document chat SaaS platform designed for multi-tenant enterprise isolation. Key architectural features include:</p>
       <ul>
-        <li><strong>Google ADK Agent Hierarchy:</strong> Agent-per-tenant architecture built on Google Agent Development Kit.</li>
-        <li><strong>LiteLLM Gateway Layer:</strong> Handles cross-provider model routing, rate limiting, and per-tenant cost attribution. Moving a tenant between LLM providers is a zero-rebuild config change.</li>
-        <li><strong>Logical Vector Isolation:</strong> Shared vector storage partitioned via strict namespace boundaries, keeping indices completely isolated.</li>
+        <li><strong>Google ADK Agent-per-Tenant:</strong> Dedicated agent context and execution logic per client session.</li>
+        <li><strong>LiteLLM Cost & Gateway Router:</strong> Real-time cross-provider model routing, rate limiting, and per-tenant cost attribution.</li>
+        <li><strong>Logical Vector Namespace Isolation:</strong> Shared vector storage partitioned via strict namespace boundaries to guarantee zero cross-tenant data leakage.</li>
       </ul>
-    </section>
+    </article>
   </main>
 
   <footer>
     <hr>
-    <p><strong>Sahil Tomar (dev-S-t)</strong> — <a href="https://github.com/dev-S-t">GitHub</a></p>
+    <p><a href="/projects/">← Back to Projects Hub</a> | Related Case Study: <a href="/case-studies/multi-tenant-isolation/">Multi-Tenant Isolation Case Study</a></p>
   </footer>
+
 </body>
 </html>

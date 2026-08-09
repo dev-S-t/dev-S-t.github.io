@@ -14,35 +14,28 @@
   <meta property="og:type" content="article">
 </head>
 <body>
+
   <header>
     <h1>Hireups — Real-Time AI Interviewer with Photorealistic Avatar</h1>
-    <p>Client: <strong>MGS Technology Pvt Ltd</strong> (via Quantashift Consultancy Services)</p>
-    <p>Sole Engineer: <strong>Sahil Tomar (dev-S-t)</strong></p>
-    <p><a href="/projects/">Back to Projects</a> | <a href="/case-studies/">View Case Studies</a> | <a href="/projects/hireups.md">Raw Markdown</a></p>
+    <p>Engineering Specification — <strong>Sahil Tomar (dev-S-t) @ Quantashift Consultancy Services (for MGS Technology)</strong></p>
+    <p><a href="/projects/">Back to Projects Hub</a> | <a href="/case-studies/avatar-product-rescue/">View Case Study 5</a></p>
   </header>
 
   <main>
-    <section>
-      <h2>System Overview</h2>
-      <p>A real-time AI interview platform where a photorealistic video avatar conducts interviews live. Powered by Gemini Realtime audio-native models for multi-lingual understanding (English and Arabic production requirements) with sub-second language switching.</p>
-
-      <h2>Engineering Highlights & Deployments</h2>
+    <article>
+      <h2>Photorealistic Avatar & LiveKit WebRTC</h2>
+      <p>Real-time AI interviewer conducting video interviews using a photorealistic avatar driven by Gemini Realtime audio-native models in English and Arabic.</p>
       <ul>
-        <li><strong>LiveKit Self-Hosted GCP Deployments:</strong>
-          <ul>
-            <li><strong>GCP VM:</strong> Baseline production deployment.</li>
-            <li><strong>Cloud Run:</strong> Custom container configuration overcoming Cloud Run scale-to-zero model for persistent WebRTC connections.</li>
-            <li><strong>Client Private Server:</strong> Overcame untrusted IP range restrictions by deploying custom LiveKit build integrated with ZeroSSL certificates.</li>
-          </ul>
-        </li>
-        <li><strong>Multi-LLM Fallback Chain:</strong> If primary Gemini Live connection degrades mid-interview, automated failover routes traffic to Groq or Ultravox to prevent interview drops.</li>
+        <li><strong>Deployments:</strong> GCP VM, Cloud Run persistent WebRTC container, and client private server with custom LiveKit build + ZeroSSL certificates.</li>
+        <li><strong>Fallback Chain:</strong> Primary Gemini Realtime audio connection with automated failover to Groq or Ultravox.</li>
       </ul>
-    </section>
+    </article>
   </main>
 
   <footer>
     <hr>
-    <p><strong>Sahil Tomar (dev-S-t)</strong> — <a href="https://github.com/dev-S-t">GitHub</a></p>
+    <p><a href="/projects/">← Back to Projects Hub</a> | Related Case Study: <a href="/case-studies/avatar-product-rescue/">Avatar Product Rescue Case Study</a></p>
   </footer>
+
 </body>
 </html>

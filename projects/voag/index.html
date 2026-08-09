@@ -14,35 +14,30 @@
   <meta property="og:type" content="article">
 </head>
 <body>
+
   <header>
     <h1>VOAG — Enterprise Voice AI SaaS</h1>
-    <p>Engineered by <strong>Sahil Tomar (dev-S-t)</strong> @ TechieMaya</p>
-    <p><a href="/projects/">Back to Projects</a> | <a href="/case-studies/">View Case Studies</a> | <a href="/projects/voag.md">Raw Markdown</a></p>
+    <p>Engineering Specification — <strong>Sahil Tomar (dev-S-t) @ TechieMaya</strong></p>
+    <p><a href="/projects/">Back to Projects Hub</a> | <a href="/case-studies/one-platform-two-goals/">View Case Study 6</a></p>
   </header>
 
   <main>
-    <section>
-      <h2>System Overview & Production Metrics</h2>
+    <article>
+      <h2>Production Voice Infrastructure</h2>
+      <p>High-throughput Voice AI SaaS platform handling over 1,000 production calls daily in the Mr. LADs app with sub-200ms p95 latency.</p>
       <ul>
-        <li><strong>Scale:</strong> 1,000+ voice calls processed daily live inside the Mr. LADs application since January.</li>
-        <li><strong>Latency:</strong> Sub-200ms p95 audio pipeline latency.</li>
-        <li><strong>Client Use Cases:</strong> Higher-education consultancy (natural unhurried follow-up), real estate (persistent cold calling), travel agency (Dubai B2B partnership outreach).</li>
+        <li><strong>Infrastructure:</strong> Self-hosted LiveKit on DigitalOcean (India) + UAE local LAN SIP modem deployment (SIM ➡️ modem ➡️ SIP gateway ➡️ LiveKit on local LAN behind NAT).</li>
+        <li><strong>Worker Scaling:</strong> VM-hosted API & batch manager paired with 3 Cloud Run auto-scale workers (scale-to-zero).</li>
+        <li><strong>Multi-Provider LLM/TTS:</strong> Dynamic routing across Gemini Realtime, Sarvam, and Ultravox.</li>
+        <li><strong>Fire-and-Forget RAG:</strong> Google File Search RAG returning context without stalling streaming audio loops.</li>
       </ul>
-
-      <h2>Infrastructure & Multi-Region Routing</h2>
-      <ul>
-        <li><strong>Deployments:</strong> Main LiveKit server self-hosted on DigitalOcean (India). Secondary UAE client deployment: SIM card into modem into SIP gateway into LiveKit server on local LAN behind strict NAT gateways.</li>
-        <li><strong>Routing & Worker Architecture:</strong> Main server routes calls by originating number and tenant ID to regional low-latency workers (India/UAE). 3 additional bulk-handling workers run on GCP Cloud Run with auto-scaling and scale-to-zero, woken via async polling layer. Fully automated GitHub Actions CI/CD with Docker containers.</li>
-        <li><strong>Multi-Provider Model Layer:</strong> Gemini Realtime, Sarvam (Indian regional languages, low cost), Ultravox. Dynamic routing based on language, cost, or latency specs.</li>
-        <li><strong>Mid-Call Document Retrieval:</strong> Fire-and-forget Google File Search (RAG) integrated directly into Gemini API calls. Results land mid-call without conversation pauses or caller disruption. Admin UI allows folder activation per agent.</li>
-        <li><strong>Testing Playground:</strong> Production-identical pipeline simulator minus SIP connection for safe iteration.</li>
-      </ul>
-    </section>
+    </article>
   </main>
 
   <footer>
     <hr>
-    <p><strong>Sahil Tomar (dev-S-t)</strong> — <a href="https://github.com/dev-S-t">GitHub</a></p>
+    <p><a href="/projects/">← Back to Projects Hub</a> | Related Case Study: <a href="/case-studies/one-platform-two-goals/">VOAG Latency & Pacing Case Study</a></p>
   </footer>
+
 </body>
 </html>

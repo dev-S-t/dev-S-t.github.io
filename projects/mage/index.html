@@ -14,40 +14,31 @@
   <meta property="og:type" content="article">
 </head>
 <body>
+
   <header>
     <h1>MAGe — Multi-Agent Advertising & Media Generation Engine</h1>
-    <p>Engineered by <strong>Sahil Tomar (dev-S-t)</strong></p>
-    <p><a href="/projects/">Back to Projects</a> | <a href="/case-studies/">View Case Studies</a> | <a href="/projects/mage.md">Raw Markdown</a></p>
+    <p>Engineering Specification — <strong>Sahil Tomar (dev-S-t) @ TechieMaya</strong></p>
+    <p><a href="/projects/">Back to Projects Hub</a> | <a href="/case-studies/brand-content-without-a-manager/">View Case Study 7</a></p>
   </header>
 
   <main>
-    <section>
-      <h2>System Overview</h2>
-      <p>MAGe bridges the gap between trend discovery and finished brand video creative. Discovers what content is currently working in a client's niche and turns approved concepts into on-brand video assets automatically.</p>
-
-      <h2>Architecture & Specialized Agents</h2>
+    <article>
+      <h2>Multi-Agent Media Pipeline</h2>
+      <p>Automated creative advertising and video generation engine designed for businesses without dedicated social media managers.</p>
       <ul>
-        <li><strong>Brand Extraction:</strong> Playwright-driven crawler scrapes client websites (typography, logos, color palette, product shots), feeding a multimodal vision model to compile a persistent brand profile.</li>
-        <li><strong>Agent Hierarchy:</strong>
-          <ul>
-            <li><strong>Creative Director:</strong> Generates distinct creative directions aligned with brand profile.</li>
-            <li><strong>Script Writer:</strong> Formats directions into shot-by-shot scripts matched to video model limits.</li>
-            <li><strong>Reference Selector:</strong> Maps visual brand assets to script scenes.</li>
-            <li><strong>Dialogue & Voice:</strong> Selects and times Cartesia TTS voices against script frames.</li>
-            <li><strong>Video Generator:</strong> Segments scripts, generates video via Google Veo, stitches with FFmpeg, and passes final frames as visual anchors for smooth cut transitions.</li>
-            <li><strong>Reviewer Agent:</strong> Validates assembled video against script for continuity.</li>
-          </ul>
-        </li>
-        <li><strong>Trend Intelligence:</strong> Subreddit sentiment and audience engagement scanner providing live signal to Creative Director.</li>
-        <li><strong>Real-Time Accounting:</strong> Python `contextvars` session metering tracking LLM tokens, image renders, video seconds, and TTS characters under high async concurrency.</li>
-        <li><strong>Interface:</strong> React/Next.js guided decision UI maintaining session state across tab reloads.</li>
+        <li><strong>Brand Profiler:</strong> Playwright headless website crawler + multimodal vision model extracting typography, colors, logos, and voice.</li>
+        <li><strong>Agent Hierarchy:</strong> Creative Director, Script Writer, Reference Selector, Cartesia Voice Agent, Google Veo Video Generator, and Reviewer Agent.</li>
+        <li><strong>Frame Continuity:</strong> FFmpeg segment stitching carrying final frame forward as visual anchor for subsequent cuts.</li>
+        <li><strong>Trend Signal:</strong> Subreddit sentiment scanner pulling live post ideas.</li>
+        <li><strong>Cost Metering:</strong> Session-level real-time token/render cost accounting via Python <code>contextvars</code>.</li>
       </ul>
-    </section>
+    </article>
   </main>
 
   <footer>
     <hr>
-    <p><strong>Sahil Tomar (dev-S-t)</strong> — <a href="https://github.com/dev-S-t">GitHub</a></p>
+    <p><a href="/projects/">← Back to Projects Hub</a> | Related Case Study: <a href="/case-studies/brand-content-without-a-manager/">Brand Content Engine Case Study</a></p>
   </footer>
+
 </body>
 </html>

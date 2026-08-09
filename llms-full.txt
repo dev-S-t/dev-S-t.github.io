@@ -9,6 +9,7 @@ This document provides a complete, raw text corpus of Sahil Tomar's work history
 - **Full Name:** Sahil Tomar
 - **Online Handle:** dev-S-t
 - **Custom Domain:** https://human-in-loop.dev
+- **ORCID iD:** https://orcid.org/0009-0005-9222-9121
 - **GitHub Repository / Profile:** https://github.com/dev-S-t
 - **GitHub Pages Alias:** https://dev-s-t.github.io
 - **LinkedIn:** https://www.linkedin.com/in/dev-s-t/
@@ -114,7 +115,8 @@ Built end-to-end fraud detection pipeline on 400+ feature imbalanced dataset and
 ## 7. Scholarly Publication
 
 - **Title:** *A Demand-Driven Software Approach with Dynamic Micro-Expiry and Just-in-Time Processing to Reduce Platelet Wastage in Blood Banks*
-- **Publisher / Venue:** IEEE
+- **Publisher / Venue:** IEEE / 2026 IEEE 6th International Conference on Computing, Power, and Communication Technologies (IC2PCT)
+- **Authors:** Pranav Kaushik, Sahil Tomar (ORCID: 0009-0005-9222-9121), Saranya Sisodia, Pawan Malik, Anuradha M. Dhumale
 - **IEEE Document Link:** https://ieeexplore.ieee.org/document/11584332
 - **Author Contribution (Sahil Tomar):** Co-author responsible for ideation, problem formulation, SARIMA/XGBoost model development, and simulation software execution.
 - **Validated Results:** Reduced simulated platelet wastage from 11.2% to 2.5% (~78% relative reduction) with 99.1% supply fulfillment (p < 1.22×10⁻¹²).

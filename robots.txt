@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /*.md$
+Allow: /llms.txt
+Allow: /llms-full.txt
 
-Sitemap: https://dev-s-t.github.io/sitemap.xml
+Sitemap: https://human-in-loop.dev/sitemap.xml
