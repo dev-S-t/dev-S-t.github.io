@@ -89,7 +89,6 @@
 ---
 
 ## 8. Professional Certifications
-- Google Cloud Associate Cloud Engineer (in progress)
 - Building AI Voice Agents for Production, LiveKit / DeepLearning.AI (Sep. 2025)
 - Foundations of Responsible AI (Sep. 2025)
 - Complete Data Science, ML, DL & NLP Bootcamp, Udemy (Jul. 2025)
