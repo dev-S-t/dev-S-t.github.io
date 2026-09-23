@@ -7,7 +7,7 @@ LiveKit, WebRTC, SIP telephony, VoIP bridging, WebSockets, Gemini Live API, Sarv
 Google Agent Development Kit (ADK), LangGraph, Multi-Agent Systems, A2A Protocol, Retrieval-Augmented Generation (RAG), LiteLLM, LightRAG, Vector DBs (ChromaDB, Qdrant, Pinecone).
 
 ## Generative Media & Web Automation
-Google Veo (video), Imagen (image), Cartesia (TTS/voice cloning), FFmpeg, Playwright (headless scraping & brand extraction).
+Google Veo (video), Imagen (image), Cartesia (primary TTS and voice cloning in VOAG), Fish Audio (voice cloning), FFmpeg, Playwright (headless scraping & brand extraction).
 
 ## Backend & Concurrency
 Python (`asyncio`, `contextvars` session cost accounting), Go (`whatsmeow`), SQL, FastAPI, REST APIs, OAuth 2.0, Redis, NGINX, Docker.

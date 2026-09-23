@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Configuring Voice AI Pacing & Sub-200ms Latency on LiveKit — Case Study | Sahil Tomar (dev-S-t)</title>
-  <meta name="description" content="Engineering Case Study by Sahil Tomar (dev-S-t): Building VOAG Voice AI platform to handle low-pressure higher-ed counseling and persistent real estate cold-calling under sub-200ms latency.">
+  <title>Configuring Voice AI Pacing & Sub-300ms Latency on LiveKit — Case Study | Sahil Tomar (dev-S-t)</title>
+  <meta name="description" content="Engineering Case Study by Sahil Tomar (dev-S-t): Building VOAG Voice AI platform to handle low-pressure higher-ed counseling and persistent real estate cold-calling under sub-300ms latency.">
   <link rel="canonical" href="https://human-in-loop.dev/case-studies/one-platform-two-goals/">
   <link rel="alternate" type="text/markdown" title="Case Study 6 Markdown" href="https://human-in-loop.dev/case-studies/one-platform-two-goals.md">
   
-  <meta property="og:title" content="Configuring Voice AI Pacing & Sub-200ms Latency on LiveKit — Sahil Tomar (dev-S-t)">
-  <meta property="og:description" content="VOAG Voice AI platform multi-tenant behavioral tuning and sub-200ms latency architecture by Sahil Tomar (dev-S-t).">
+  <meta property="og:title" content="Configuring Voice AI Pacing & Sub-300ms Latency on LiveKit — Sahil Tomar (dev-S-t)">
+  <meta property="og:description" content="VOAG Voice AI platform multi-tenant behavioral tuning and sub-300ms latency architecture by Sahil Tomar (dev-S-t).">
   <meta property="og:url" content="https://human-in-loop.dev/case-studies/one-platform-two-goals/">
   <meta property="og:type" content="article">
 </head>
@@ -29,7 +29,7 @@
 
       <section>
         <h2>Analysis</h2>
-        <p>A single generically-tuned voice bot fails at least one of these outright. And underneath both sits a harder constraint: neither use case works at all if the conversation doesn't feel genuinely real-time. Past roughly 200ms round-trip, an agent starts getting talked over, feels robotic, and breaks the premise the entire product rests on.</p>
+        <p>A single generically-tuned voice bot fails at least one of these outright. And underneath both sits a harder constraint: neither use case works at all if the conversation doesn't feel genuinely real-time. Once round-trip latency drifts much past a few hundred milliseconds, an agent starts getting talked over, feels robotic, and breaks the premise the entire product rests on.</p>
       </section>
 
       <section>
@@ -49,7 +49,7 @@
       <section id="faq">
         <h2>Frequently Asked Questions</h2>
         <article>
-          <h3>How do you achieve sub-200ms round-trip latency in production Voice AI?</h3>
+          <h3>How do you achieve sub-300ms round-trip latency in production Voice AI?</h3>
           <p>By deploying self-hosted LiveKit servers directly on local LANs with hardware SIM modem SIP bridges, using streaming STT/TTS models, and separating API batch managers from regional WebRTC call workers.</p>
         </article>
       </section>

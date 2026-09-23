@@ -26,7 +26,7 @@
 - [Case Study 5 — Avatar Rescue](https://human-in-loop.dev/case-studies/avatar-product-rescue.md): Unblocking Hireups Real-Time Avatar on GCP.
 - [Case Study 6 — Voice Platform Goals](https://human-in-loop.dev/case-studies/one-platform-two-goals.md): VOAG Multi-Tenant Behavioral Tuning.
 - [Case Study 7 — Brand Content Engine](https://human-in-loop.dev/case-studies/brand-content-without-a-manager.md): MAGe Multi-Agent Video Engine.
-- [Experience](https://human-in-loop.dev/experience.md): Production role history at TechieMaya, Freelance Voice AI consulting (Hireups / MGS Technology via Quantashift), and Infosys Springboard.
+- [Experience](https://human-in-loop.dev/experience.md): Production role history at TechieMaya and Freelance Voice AI consulting (Hireups / MGS Technology via Quantashift).
 - [Projects Hub](https://human-in-loop.dev/projects.md): Technical deep-dives into 8 major production systems.
 - [Publications](https://human-in-loop.dev/publications.md): IEEE research paper details on blood bank dynamic micro-expiry and SARIMA/XGBoost forecasting.
 - [Skills Inventory](https://human-in-loop.dev/skills.md): Full technical breakdown across Voice AI, RAG, Multi-Agent Systems, Generative Media, Playwright, Backend Infra, and Cloud.
@@ -37,8 +37,9 @@
 - [Multi-Tenant RAG Platform (AnyAssist)](https://human-in-loop.dev/projects/anyassist.md): Google ADK agents, LiteLLM cost/routing gateway, logical vector namespace isolation.
 - [Privacy-First On-Prem RAG (A2A Protocol)](https://human-in-loop.dev/projects/privacy-rag.md): Inverted RAG topology over A2A protocol for compliance-sensitive clients.
 - [WhatsApp Dispatch Automation](https://human-in-loop.dev/projects/whatsapp-dispatch.md): B2B group dispatch for Dubai luxury transport client + musician community vertical.
-- [VOAG Enterprise Voice AI SaaS](https://human-in-loop.dev/projects/voag.md): 1,000+ daily calls in Mr. LADs app, sub-200ms latency, UAE LAN SIP modem architecture.
+- [VOAG Enterprise Voice AI SaaS](https://human-in-loop.dev/projects/voag.md): 1,000+ daily calls in Mr. LADs app, sub-300ms latency, UAE LAN SIP modem architecture.
 - [Hireups AI Avatar Interviewer](https://human-in-loop.dev/projects/hireups.md): Photorealistic video avatar interviewer built on Gemini Realtime & LiveKit GCP for MGS via Quantashift.
 - [MAGe Media Generation Engine](https://human-in-loop.dev/projects/mage.md): Google Veo, Playwright brand crawler, Cartesia voice, Subreddit trend intelligence, session `contextvars` cost accounting.
 - [UniBias Live Attention Tracker](https://human-in-loop.dev/projects/unibias.md): Real-time browser-side computer vision attention tracking.
 - [Blood Bank Demand Forecasting System](https://human-in-loop.dev/projects/blood-bank.md): IEEE-published SARIMA/XGBoost dynamic micro-expiry simulation.
+- [Fraud Detection System (GitHub)](https://github.com/dev-S-t/FraudDetectionSystem): Infosys Springboard ML internship project. Hybrid fraud-detection pipeline (ARIMA/Prophet + XGBoost) on a highly imbalanced 400+ feature dataset, reaching 96% fraud recall with an optimised F1-score.

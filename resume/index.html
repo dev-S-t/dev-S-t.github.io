@@ -39,8 +39,6 @@
         <li><strong>WhatsApp:</strong> <a href="https://wa.link/r8csgy" target="_blank" rel="noopener">Primary WhatsApp (wa.link/r8csgy)</a> | <a href="https://wa.link/l2oedq" target="_blank" rel="noopener">Secondary WhatsApp (wa.link/l2oedq)</a></li>
         <li><strong>GitHub:</strong> <a href="https://github.com/dev-S-t" target="_blank" rel="noopener">github.com/dev-S-t</a></li>
         <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/dev-s-t/" target="_blank" rel="noopener">linkedin.com/in/dev-s-t</a></li>
-        <li><strong>ORCID:</strong> <a href="https://orcid.org/0009-0005-9222-9121" target="_blank" rel="noopener">0009-0005-9222-9121</a></li>
-        <li><strong>Location:</strong> Ghaziabad, Uttar Pradesh, India (Open to Remote / Delhi NCR / Bengaluru / Pune)</li>
       </ul>
     </section>
 
@@ -48,8 +46,9 @@
     <section id="summary">
       <h2>Professional Summary</h2>
       <ul>
-        <li><strong>AI Solutions Engineer leading the Voice AI vertical (VOAG) at TechieMaya</strong> — production real-time voice infrastructure on LiveKit/WebRTC and SIP telephony, running <strong>1,000+ calls/day at sub-200ms p95 latency</strong>.</li>
-        <li>Owns systems end to end: architecture, deployment inside client infrastructure under NAT and compliance constraints, and production monitoring. Builds agentic systems with Google ADK, RAG over private data, and generative media pipelines.</li>
+        <li><strong>AI Solutions Engineer building production AI systems, not prototypes.</strong> Leading TechieMaya's Voice AI vertical (VOAG): <strong>1,000+ calls/day at sub-300ms p95 latency</strong> on self-hosted LiveKit and SIP telephony, with multi-provider model routing and per-tenant cost tracking.</li>
+        <li>Comfortable shipping into constrained, real-world environments — client VMs, on-premise networks, strict NAT gateways — and staying accountable for the system long after go-live, from monitoring and debugging to cost tuning, without a dedicated ops team.</li>
+        <li>Equally hands-on with multi-agent systems (Google ADK, LangGraph), RAG over private data, and real-time speech pipelines in <strong>Python and Go</strong> on GCP.</li>
       </ul>
     </section>
 
@@ -59,27 +58,24 @@
 
       <!-- TechieMaya -->
       <article>
-        <h3>AI Solutions Engineer (Intern → Full-Time Contract) — TechieMaya</h3>
+        <h3>AI Solutions Engineer — TechieMaya</h3>
         <p><em>Apr. 2025 – Present · Remote (Dubai, UAE)</em></p>
         
         <h4>VOAG — Enterprise Voice AI SaaS (<a href="http://web.mrlads.com/" target="_blank" rel="noopener">Mr. LADs App</a>)</h4>
         <ul>
-          <li><strong>Lead the Voice AI vertical:</strong> scaled to <strong>1,000+ calls/day at sub-200ms p95 latency</strong>; replaced persistent WebSockets with an <em>async polling layer</em> waking Cloud Run workers on demand, cutting infrastructure cost <strong>30%</strong>.</li>
-          <li><strong>Hybrid cloud SIP:</strong> engineered a UAE telephony bridge (SIM -> modem -> SIP -> LiveKit) deployed <em>inside a client's own VM behind a strict NAT gateway</em> for ultra-low-latency local calling; self-hosted LiveKit across India and UAE regions with tenant-aware call routing.</li>
-          <li><strong>Agentic workflows:</strong> built a tenant-aware tool registry over OAuth 2.0 enabling live calendar scheduling, omnichannel messaging, and human handoff mid-call; added <em>fire-and-forget RAG</em> so agents reference long documents without conversational dead air.</li>
-          <li><strong>Multi-provider & delivery:</strong> integrated Gemini Live, Sarvam, and Ultravox for cost/language routing; containerised all workers with <strong>GitHub Actions</strong> CI/CD, plus a playground for testing agents against the production pipeline.</li>
+          <li><strong>Lead the Voice AI vertical:</strong> scaled to <strong>1,000+ calls/day at sub-300ms p95 latency</strong>; replaced persistent WebSockets with an <em>async polling layer</em> waking Cloud Run workers on demand, cutting infrastructure cost <strong>30%</strong>.</li>
+          <li><strong>Hybrid cloud SIP:</strong> engineered a UAE telephony bridge (SIM -> modem -> SIP -> LiveKit) deployed <em>inside a client's own VM behind a strict NAT gateway</em>; self-hosted LiveKit across India and UAE with tenant-aware routing and <strong>GitHub Actions</strong>-driven CI/CD.</li>
+          <li><strong>Agentic workflows &amp; multi-provider routing:</strong> built a tenant-aware tool registry over OAuth 2.0 for live calendar scheduling, omnichannel messaging, and mid-call human handoff; added <em>fire-and-forget RAG</em> for long-document reference with no conversational dead air, routed across Gemini Live, Sarvam, and Ultravox for cost/language optimisation, with <strong>Cartesia</strong> as the primary TTS layer (plus Fish Audio) for brand-matched <em>voice cloning</em>.</li>
         </ul>
 
         <h4>WhatsApp Dispatch Automation — B2B Luxury Ground Transport (Dubai)</h4>
         <ul>
-          <li>Built a Go gateway (<code>whatsmeow</code>) for group-chat messaging unsupported by Meta's official API, paired with a <strong>Google ADK multi-agent system</strong> — orchestrator, booking agent, and support agent — resolving flight, maps, fleet-availability and fare data via tools, and asking targeted follow-ups on incomplete requests.</li>
-          <li>Cut booking turnaround <strong>from ~30 minutes to under 1 minute</strong>; extended the same gateway for a second client with message-monitoring and multi-mapping forwarding services across 1,000+ daily community messages.</li>
+          <li>Built a Go gateway (<code>whatsmeow</code>) for group-chat messaging unsupported by Meta's official API, paired with a <strong>Google ADK multi-agent system</strong> (orchestrator, booking, support agents) resolving flight, maps, fleet-availability and fare data via tools — cutting booking turnaround <strong>from ~30 minutes to under 1 minute</strong>; extended the gateway to a second client for message-monitoring and forwarding across 1,000+ daily messages.</li>
         </ul>
 
         <h4>MAGe — Multi-Agent Media Generation Engine</h4>
         <ul>
-          <li>Hierarchical agent pipeline (creative director -> scriptwriter -> reference selector -> generator -> reviewer) producing on-brand video ads from a <strong>Playwright</strong>-scraped brand profile, using Google Veo with frame-carry continuity and FFmpeg assembly.</li>
-          <li>Added Reddit trend intelligence for creative direction and per-session API cost accounting via Python <code>contextvars</code> across concurrent async workers.</li>
+          <li>Hierarchical agent pipeline (creative director -> scriptwriter -> reference selector -> generator -> reviewer) producing on-brand video ads from a <strong>Playwright</strong>-scraped brand profile, using Google Veo with frame-carry continuity and FFmpeg assembly; tracks per-session API cost via Python <code>contextvars</code> across concurrent async workers.</li>
         </ul>
 
         <h4>Privacy-First On-Premise RAG (A2A Protocol)</h4>
@@ -100,25 +96,17 @@
           <li>Rearchitected a failing WebRTC monolith into scalable GCP microservices; added a <strong>multi-LLM failover mesh</strong> (Gemini/Groq/Ultravox) for uninterrupted sessions, and moved proctoring inference in-browser (TensorFlow.js, MediaPipe, COCO-SSD) to eliminate server video compute.</li>
         </ul>
       </article>
-
-      <!-- Infosys Springboard -->
-      <article>
-        <h3>Machine Learning Intern — Infosys Springboard</h3>
-        <p><em>Mar. 2024 – Jul. 2024 · Remote (<a href="https://github.com/dev-S-t/FraudDetectionSystem" target="_blank" rel="noopener">GitHub Repo</a>)</em></p>
-        <ul>
-          <li>Built a hybrid fraud-detection pipeline on a highly imbalanced <strong>400+ feature</strong> dataset (ARIMA/Prophet + XGBoost), achieving <strong>96% fraud recall</strong> with an optimised F1-score.</li>
-        </ul>
-      </article>
     </section>
 
     <!-- 5. Major Projects Hub -->
     <section id="projects">
       <h2>Major Production Projects</h2>
       <ul>
+        <li><strong><a href="https://github.com/dev-S-t/FraudDetectionSystem" target="_blank" rel="noopener">Fraud Detection System — Infosys Springboard ML Internship</a>:</strong> ARIMA/Prophet, XGBoost. Hybrid fraud-detection pipeline on a highly imbalanced <strong>400+ feature</strong> dataset, achieving <strong>96% fraud recall</strong> with an optimised F1-score.</li>
         <li><strong><a href="/projects/anyassist/">AnyAssist — Multi-Tenant RAG Platform</a>:</strong> GCP, LiteLLM, LightRAG, FastAPI, Google ADK. Self-service document chat SaaS with strict per-tenant vector isolation; LiteLLM gateway handles cross-provider routing, rate limiting, and per-tenant cost tracking.</li>
         <li><strong><a href="/projects/privacy-rag/">Privacy-First On-Premise RAG</a>:</strong> Inverted RAG topology over A2A protocol for compliance-sensitive clients with zero external document exfiltration.</li>
         <li><strong><a href="/projects/whatsapp-dispatch/">WhatsApp Dispatch Automation</a>:</strong> B2B group dispatch for Dubai luxury transport company (`whatsmeow` Go + Google ADK) plus independent musician community vertical.</li>
-        <li><strong><a href="/projects/voag/">VOAG — Enterprise Voice AI SaaS</a>:</strong> 1,000+ daily calls in Mr. LADs app, sub-200ms latency, UAE LAN SIP modem architecture, fire-and-forget RAG.</li>
+        <li><strong><a href="/projects/voag/">VOAG — Enterprise Voice AI SaaS</a>:</strong> 1,000+ daily calls in Mr. LADs app, sub-300ms latency, UAE LAN SIP modem architecture, fire-and-forget RAG.</li>
         <li><strong><a href="/projects/hireups/">Hireups — Real-Time AI Avatar Interviewer</a>:</strong> Photorealistic video avatar interviewer built on Gemini Realtime and self-hosted LiveKit GCP for MGS via Quantashift.</li>
         <li><strong><a href="/projects/mage/">MAGe — Multi-Agent Advertising & Media Generation Engine</a>:</strong> Multi-agent creative ad pipeline (Google Veo, Playwright brand crawler, Cartesia, Subreddit trend scanner, session `contextvars` cost accounting).</li>
         <li><strong><a href="/projects/unibias/">UniBias — Live Attention Tracker</a>:</strong> Vision Transformers, FastAPI, OpenCV. Privacy-first tracker analysing periodic webcam and screen frames to detect distraction and trigger alerts, with no recording.</li>
@@ -130,11 +118,10 @@
     <section id="skills">
       <h2>Technical Skills Inventory</h2>
       <ul>
-        <li><strong>Languages & Infra:</strong> Python (AsyncIO), Go, SQL, Docker, GCP (Cloud Run, Compute Engine, Vertex AI), DigitalOcean</li>
-        <li><strong>Voice & Real-Time:</strong> LiveKit (WebRTC), SIP/VoIP bridging, WebSockets, Gemini Live API, Sarvam, Ultravox, streaming STT/TTS</li>
-        <li><strong>AI & Agents:</strong> Google ADK, LangGraph, LiteLLM, LightRAG, Multi-Agent Systems, A2A Protocol, RAG, Vector DBs</li>
-        <li><strong>Generative Media:</strong> Google Veo, Imagen, Cartesia TTS, FFmpeg, Playwright</li>
-        <li><strong>Backend & DevOps:</strong> FastAPI, REST APIs, OAuth 2.0, Redis, NGINX, GitHub Actions (CI/CD), Fail2Ban</li>
+        <li><strong>AI &amp; Agents:</strong> Google ADK, LangGraph, LiteLLM, LightRAG, Multi-Agent Systems, A2A Protocol, RAG, Vector DBs</li>
+        <li><strong>Languages &amp; Cloud:</strong> Python (AsyncIO), Go, SQL, Docker, GCP (Cloud Run, Compute Engine, Vertex AI), DigitalOcean</li>
+        <li><strong>Voice &amp; Real-Time Systems:</strong> LiveKit (WebRTC), SIP/VoIP telephony, WebSockets, Gemini Live API, streaming STT/TTS</li>
+        <li><strong>Backend &amp; DevOps:</strong> FastAPI, REST APIs, OAuth 2.0, Redis, NGINX, GitHub Actions (CI/CD), Fail2Ban</li>
       </ul>
     </section>
 
@@ -145,7 +132,7 @@
         <h3>A Demand-Driven Software Approach with Dynamic Micro-Expiry and Just-in-Time Processing to Reduce Platelet Wastage in Blood Banks</h3>
         <p><em>IEEE IC2PCT 2026, pp. 978–983</em> — <a href="https://ieeexplore.ieee.org/document/11584332" target="_blank" rel="noopener">IEEE Xplore #11584332</a> | <a href="/publications/">Full Publication Page</a></p>
         <ul>
-          <li><strong>Co-author:</strong> Led problem formulation, forecasting-model development (SARIMA/XGBoost; SARIMA lowest MAE at 5.85), and simulation software execution. Reduced simulated wastage <strong>11.2% -> 2.5%</strong> while holding <strong>99.1%</strong> fulfillment; validated over 30 iterations (paired t-tests, p &lt; 1.22 × 10⁻¹²).</li>
+          <li><strong>Co-author:</strong> Led problem formulation, forecasting-model development (SARIMA/XGBoost; SARIMA lowest MAE at 5.85), and simulation. Reduced simulated wastage <strong>11.2% -> 2.5%</strong> while holding <strong>99.1%</strong> fulfillment, statistically validated across 30 iterations (paired t-tests).</li>
         </ul>
       </article>
     </section>

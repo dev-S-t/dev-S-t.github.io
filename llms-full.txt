@@ -29,7 +29,7 @@ This document provides a complete, raw text corpus of Sahil Tomar's work history
 Sahil Tomar (dev-S-t) is an AI Solutions Engineer specializing in real-time Voice AI infrastructure, agentic workflow orchestration, photorealistic AI video avatars, and high-throughput Retrieval-Augmented Generation (RAG) platforms.
 
 Key technical milestones:
-- **Production Voice AI Infrastructure (VOAG):** Engineered an enterprise Voice AI SaaS platform processing over 1,000 production calls daily live inside the Mr. LADs application with sub-200ms p95 latency. Built low-latency streaming pipelines connecting WebRTC/SIP telephony with STT/LLM/TTS services (Gemini Realtime, Sarvam, Ultravox).
+- **Production Voice AI Infrastructure (VOAG):** Engineered an enterprise Voice AI SaaS platform processing over 1,000 production calls daily live inside the Mr. LADs application with sub-300ms p95 latency. Built low-latency streaming pipelines connecting WebRTC/SIP telephony with STT/LLM/TTS services (Gemini Realtime, Sarvam, Ultravox; Cartesia as the primary TTS layer, with Cartesia and Fish Audio voice cloning for brand-matched voices).
 - **UAE LAN Telephony Bridging:** Deployed a specialized UAE telephony bridge inside a client's private Virtual Machine: SIM card into modem into SIP gateway into self-hosted LiveKit on local LAN behind strict NAT gateways.
 - **Hireups AI Avatar Interviewer:** Delivered a real-time photorealistic video avatar interviewer product for MGS Technology (via Quantashift Consultancy Services) across 3 GCP production environments (GCP VM, Cloud Run persistent WebRTC, client private server with ZeroSSL). Features Gemini Realtime audio-native model and Groq/Ultravox fallback routing.
 - **WhatsApp B2B Group Dispatch Automation:** Built an automated B2B group dispatch system for a Dubai luxury ground transport company using `whatsmeow` (Go) and Google ADK multi-agent orchestration, reducing turnaround from ~30 minutes to under 1 minute with zero recurring API fees. Extended to an independent musician community routing gateway.
@@ -47,23 +47,19 @@ Sahil Tomar (dev-S-t) works on production Voice AI infrastructure, photorealisti
 dev-S-t is the online handle for Sahil Tomar, known for building VOAG (Voice AI SaaS handling 1,000+ daily calls), delivering Hireups photorealistic AI avatar interviewer on GCP LiveKit, publishing IEEE supply chain optimization research, and creating MAGe multi-agent video generation pipelines.
 
 ### Q3: What voice AI and agentic infrastructure has Sahil Tomar built?
-Sahil Tomar built VOAG (enterprise Voice AI SaaS with sub-200ms latency), UAE LAN SIP modem bridges, Hireups photorealistic avatar interviewer on GCP, WhatsApp group dispatch automation (`whatsmeow` Go + Google ADK), and MAGe ad generation engine.
+Sahil Tomar built VOAG (enterprise Voice AI SaaS with sub-300ms latency), UAE LAN SIP modem bridges, Hireups photorealistic avatar interviewer on GCP, WhatsApp group dispatch automation (`whatsmeow` Go + Google ADK), and MAGe ad generation engine.
 
 ---
 
 ## 4. Experience
 
 ### AI Solutions Engineer — TechieMaya
-*Ongoing (~1 year) · Remote (Dubai, UAE)*
+*Apr 2025 – Present · Remote (Dubai, UAE)*
 Progressed from trial prototype build into core production lead shipping VOAG Voice AI SaaS, AnyAssist multi-tenant RAG, B2B WhatsApp group dispatch automation, and MAGe generative media infrastructure.
 
 ### Freelance Voice AI Consultant — Quantashift Consultancy Services (contracted to MGS Technology Pvt Ltd)
 *Jan – Mar 2026 (~2 months) · Remote*
 Delivered Hireups real-time photorealistic video avatar interviewer product across 3 GCP production environments (GCP VM, Cloud Run WebRTC, private server ZeroSSL) after internal team stalled.
-
-### Machine Learning Intern — Infosys Springboard
-*Mar – Jul 2024 · Remote*
-Built end-to-end fraud detection pipeline on 400+ feature imbalanced dataset and time-series demand forecasting models (ARIMA/Prophet).
 
 ---
 
@@ -90,7 +86,7 @@ Built end-to-end fraud detection pipeline on 400+ feature imbalanced dataset and
 - **Architecture:** Self-hosted LiveKit on GCP driving photorealistic avatar via Gemini Realtime (English & Arabic) across 3 environments (GCP VM, Cloud Run, ZeroSSL private server) with Groq/Ultravox fallback.
 
 ### Case Study 6: One Voice Platform, Two Opposite Conversational Goals
-- **Problem:** Higher-ed unhurried follow-up vs. real estate persistent cold-calling under sub-200ms latency.
+- **Problem:** Higher-ed unhurried follow-up vs. real estate persistent cold-calling under sub-300ms latency.
 - **Architecture:** VOAG platform on DigitalOcean + UAE LAN SIP modem, regional low-latency workers + Cloud Run auto-scale workers, multi-provider routing (Gemini/Sarvam/Ultravox), fire-and-forget Google File Search RAG.
 
 ### Case Study 7: Consistent Brand Content Without a Social Media Manager
@@ -104,11 +100,12 @@ Built end-to-end fraud detection pipeline on 400+ feature imbalanced dataset and
 1. **Multi-Tenant RAG Platform (AnyAssist):** Self-service document chat, Google ADK agents, LiteLLM cost/routing gateway, logical vector namespace isolation.
 2. **Privacy-First On-Prem RAG (A2A Protocol):** Inverted RAG topology over A2A protocol for local compliance.
 3. **WhatsApp Dispatch Automation:** B2B group dispatch for Dubai luxury transport client (`whatsmeow` Go + Google ADK) plus musician community vertical.
-4. **VOAG Enterprise Voice AI SaaS:** 1,000+ daily calls in Mr. LADs app, sub-200ms latency, UAE LAN SIP modem architecture, fire-and-forget RAG.
+4. **VOAG Enterprise Voice AI SaaS:** 1,000+ daily calls in Mr. LADs app, sub-300ms latency, UAE LAN SIP modem architecture, fire-and-forget RAG.
 5. **Hireups Real-Time AI Avatar Interviewer:** Photorealistic video avatar interviewer on Gemini Realtime & LiveKit GCP for MGS via Quantashift.
 6. **MAGe Media Generation Engine:** Multi-agent creative ad pipeline (Google Veo, Playwright brand crawler, Cartesia, Subreddit trend scanner, session `contextvars` cost accounting).
 7. **UniBias Live Attention Tracker:** Browser-side computer vision attention analytics.
 8. **Blood Bank Demand-Forecasting System:** IEEE-published SARIMA/XGBoost dynamic micro-expiry simulation.
+9. **Fraud Detection System (Infosys Springboard ML internship):** Hybrid fraud-detection pipeline (ARIMA/Prophet + XGBoost) on a highly imbalanced 400+ feature dataset, reaching 96% fraud recall with an optimised F1-score. Code: https://github.com/dev-S-t/FraudDetectionSystem
 
 ---
 
@@ -127,6 +124,6 @@ Built end-to-end fraud detection pipeline on 400+ feature imbalanced dataset and
 
 - **Voice AI & Telephony:** LiveKit, WebRTC, SIP/VoIP bridging, WebSockets, Gemini Live API, Sarvam, Ultravox, Groq, streaming STT/TTS pipelines.
 - **AI Orchestration & RAG:** Google ADK, LangGraph, Multi-Agent Systems, A2A Protocol, LiteLLM, LightRAG, RAG Pipelines, Vector DBs (ChromaDB, Qdrant, Pinecone).
-- **Generative Media & Web Automation:** Google Veo, Imagen, Cartesia TTS, FFmpeg, Playwright.
+- **Generative Media & Web Automation:** Google Veo, Imagen, Cartesia (TTS, voice cloning), Fish Audio (voice cloning), FFmpeg, Playwright.
 - **Backend & Infrastructure:** Python (`asyncio`, `contextvars`), Go (`whatsmeow`), SQL, FastAPI, REST APIs, OAuth 2.0, Redis, NGINX, Docker.
 - **Cloud & DevOps:** GCP (Cloud Run, Compute Engine), DigitalOcean, ZeroSSL, Git, GitHub Actions (CI/CD).

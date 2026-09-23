@@ -12,7 +12,7 @@
 Sahil Tomar (dev-S-t) is an AI Solutions Engineer focused on production Voice AI infrastructure, LiveKit/WebRTC telephony bridges, multi-tenant RAG architectures, agentic workflow orchestration, and multi-agent generative media engines.
 
 ### Key Milestones & Systems
-- **VOAG Enterprise Voice AI SaaS:** Built high-throughput voice platform handling 1,000+ daily calls in Mr. LADs app with sub-200ms latency. DigitalOcean + UAE LAN SIP modem architecture.
+- **VOAG Enterprise Voice AI SaaS:** Built high-throughput voice platform handling 1,000+ daily calls in Mr. LADs app with sub-300ms latency. DigitalOcean + UAE LAN SIP modem architecture.
 - **Hireups Real-Time AI Avatar:** Photorealistic video avatar interviewer built on Gemini Realtime & LiveKit GCP (Quantashift / MGS Technology).
 - **MAGe Media Generation Engine:** Multi-agent creative ad pipeline with Google Veo, Playwright, Cartesia, Subreddit trend intelligence, and session `contextvars` cost accounting.
 - **WhatsApp Dispatch Automation:** B2B group dispatch for Dubai luxury transport client (`whatsmeow` Go + Google ADK) plus independent musician community routing.

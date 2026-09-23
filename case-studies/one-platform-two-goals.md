@@ -7,7 +7,7 @@
 Different clients on the same voice platform needed fundamentally different conversational behavior. A higher-education consultancy wanted natural, unhurried outreach and follow-up calls — explicitly *not* salesy — to take pressure off their human counselors. A real estate client needed close to the opposite: a persistent, harder-to-brush-off cold-calling agent, because real estate cold calls are otherwise trivially easy to end in five seconds.
 
 ## Analysis
-A single generically-tuned voice bot fails at least one of these outright. And underneath both sits a harder constraint: neither use case works at all if the conversation doesn't feel genuinely real-time. Past roughly 200ms round-trip, an agent starts getting talked over, feels robotic, and breaks the premise the entire product rests on.
+A single generically-tuned voice bot fails at least one of these outright. And underneath both sits a harder constraint: neither use case works at all if the conversation doesn't feel genuinely real-time. Once round-trip latency drifts much past a few hundred milliseconds, an agent starts getting talked over, feels robotic, and breaks the premise the entire product rests on.
 
 ## Solution & Architecture
 Built VOAG so that *how a call is handled* is separate from *what a call sounds like*.
