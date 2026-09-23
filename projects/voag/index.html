@@ -27,9 +27,11 @@
       <p>High-throughput Voice AI SaaS platform handling over 1,000 production calls daily in the Mr. LADs app with sub-300ms p95 latency.</p>
       <ul>
         <li><strong>Infrastructure:</strong> Self-hosted LiveKit on DigitalOcean (India) + UAE local LAN SIP modem deployment (SIM ➡️ modem ➡️ SIP gateway ➡️ LiveKit on local LAN behind NAT).</li>
-        <li><strong>Worker Scaling:</strong> VM-hosted API & batch manager paired with 3 Cloud Run auto-scale workers (scale-to-zero).</li>
+        <li><strong>Worker Scaling:</strong> VM-hosted API & batch manager paired with 3 Cloud Run auto-scale workers. LiveKit agents expect always-on connections, yet run on scale-to-zero Cloud Run through a keep-alive, hold, and polling layer (about 30% lower infrastructure cost).</li>
         <li><strong>Multi-Provider LLM/TTS:</strong> Dynamic routing across Gemini Realtime, Sarvam, and Ultravox; Cartesia as the primary TTS layer, with Cartesia and Fish Audio voice cloning for brand-matched voices.</li>
         <li><strong>Fire-and-Forget RAG:</strong> Google File Search RAG returning context without stalling streaming audio loops.</li>
+        <li><strong>Data Layer:</strong> Relational SQL schema for the platform, designed end to end by Sahil.</li>
+        <li><strong>Call Evaluation:</strong> Recorded call audio and transcripts scored by an LLM-as-a-judge plus human review for task completion, grounding, and word-level language confusion across Indic languages; reviewer-annotated error spans feed a correction lexicon applied from the next call onward.</li>
       </ul>
     </article>
   </main>

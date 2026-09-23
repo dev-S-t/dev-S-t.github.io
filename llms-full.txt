@@ -49,13 +49,16 @@ dev-S-t is the online handle for Sahil Tomar, known for building VOAG (Voice AI 
 ### Q3: What voice AI and agentic infrastructure has Sahil Tomar built?
 Sahil Tomar built VOAG (enterprise Voice AI SaaS with sub-300ms latency), UAE LAN SIP modem bridges, Hireups photorealistic avatar interviewer on GCP, WhatsApp group dispatch automation (`whatsmeow` Go + Google ADK), and MAGe ad generation engine.
 
+### Q4: How does Sahil Tomar evaluate voice AI agents?
+On VOAG he is building call evals over recorded audio and transcripts: an LLM-as-a-judge scores task completion, grounding, and word-level language confusion (for example, a Telugu word surfacing in a Tamil call), human reviewers annotate the exact error spans, and those corrections are applied from the next call onward.
+
 ---
 
 ## 4. Experience
 
 ### AI Solutions Engineer — TechieMaya
 *Apr 2025 – Present · Remote (Dubai, UAE)*
-Progressed from trial prototype build into core production lead shipping VOAG Voice AI SaaS, AnyAssist multi-tenant RAG, B2B WhatsApp group dispatch automation, and MAGe generative media infrastructure.
+Progressed from trial prototype build into core production lead shipping VOAG Voice AI SaaS, AnyAssist multi-tenant RAG, B2B WhatsApp group dispatch automation, and MAGe generative media infrastructure. Also client-facing in scoping meetings as the voice AI lead, owns TechieMaya's GCP environment (least-privilege IAM, VM hardening, cost control), designed VOAG's relational SQL schema, and is building call evals (LLM-as-a-judge plus human review) for multilingual voice agents.
 
 ### Freelance Voice AI Consultant — Quantashift Consultancy Services (contracted to MGS Technology Pvt Ltd)
 *Jan – Mar 2026 (~2 months) · Remote*
@@ -123,7 +126,8 @@ Delivered Hireups real-time photorealistic video avatar interviewer product acro
 ## 8. Comprehensive Skills Inventory
 
 - **Voice AI & Telephony:** LiveKit, WebRTC, SIP/VoIP bridging, WebSockets, Gemini Live API, Sarvam, Ultravox, Groq, streaming STT/TTS pipelines.
-- **AI Orchestration & RAG:** Google ADK, LangGraph, Multi-Agent Systems, A2A Protocol, LiteLLM, LightRAG, RAG Pipelines, Vector DBs (ChromaDB, Qdrant, Pinecone).
+- **AI Orchestration & RAG:** Google ADK, LangGraph, Multi-Agent Systems, A2A Protocol, Model Context Protocol (MCP), LiteLLM, LightRAG, RAG Pipelines, Vector DBs (ChromaDB, Qdrant, Pinecone).
+- **Evaluation & Quality:** LLM-as-a-judge scoring, human review, span-level error annotation, word-level language-confusion tracking for multilingual voice calls.
 - **Generative Media & Web Automation:** Google Veo, Imagen, Cartesia (TTS, voice cloning), Fish Audio (voice cloning), FFmpeg, Playwright.
-- **Backend & Infrastructure:** Python (`asyncio`, `contextvars`), Go (`whatsmeow`), SQL, FastAPI, REST APIs, OAuth 2.0, Redis, NGINX, Docker.
-- **Cloud & DevOps:** GCP (Cloud Run, Compute Engine), DigitalOcean, ZeroSSL, Git, GitHub Actions (CI/CD).
+- **Backend & Infrastructure:** Python (`asyncio`, `contextvars`), Go (`whatsmeow`), SQL (relational schema design), JavaScript / Next.js, FastAPI, REST APIs, OAuth 2.0, Redis, NGINX, Docker.
+- **Cloud & DevOps:** GCP (Cloud Run, Compute Engine, IAM, VM hardening, cost control), DigitalOcean, ZeroSSL, Git, GitHub Actions (CI/CD).

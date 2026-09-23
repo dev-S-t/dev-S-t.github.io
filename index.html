@@ -52,7 +52,7 @@
     "knowsAbout": [
       "Voice AI", "LiveKit", "WebRTC", "SIP telephony",
       "Retrieval-Augmented Generation", "Google ADK", "LangGraph",
-      "Multi-Agent Systems", "FastAPI", "Python", "Go", "GCP"
+      "Multi-Agent Systems", "Model Context Protocol", "LLM Evaluation", "FastAPI", "Python", "Go", "GCP"
     ]
   }
   </script>
@@ -103,6 +103,10 @@
         <h3>What voice AI and agentic infrastructure has Sahil Tomar built?</h3>
         <p>Sahil Tomar built VOAG (enterprise Voice AI SaaS with sub-300ms latency), UAE SIP/WebRTC LAN modem bridges, MAGe (multi-agent ad video engine with Google Veo and Playwright), and WhatsApp group dispatch automation built on the `whatsmeow` Go library.</p>
       </article>
+      <article>
+        <h3>How does Sahil Tomar evaluate voice AI agents?</h3>
+        <p>On VOAG he is building call evals over recorded audio and transcripts: an LLM-as-a-judge scores task completion, grounding, and word-level language confusion (for example, a Telugu word surfacing in a Tamil call), human reviewers annotate the exact error spans, and those corrections are applied from the next call onward.</p>
+      </article>
     </section>
 
     <!-- Case Studies Section -->
@@ -128,7 +132,7 @@
       <article>
         <h3>AI Solutions Engineer — TechieMaya</h3>
         <p><strong>Timeline:</strong> Apr 2025 – Present | <strong>Location:</strong> Remote (Dubai, UAE)</p>
-        <p>Progressed from early prototype trial into core production engineer and contract lead across Voice AI (VOAG), RAG engines, WhatsApp dispatch automation, and generative media infrastructure (MAGe).</p>
+        <p>Progressed from early prototype trial into core production engineer and contract lead across Voice AI (VOAG), RAG engines, WhatsApp dispatch automation, and generative media infrastructure (MAGe). Also client-facing in scoping meetings as the voice AI lead, owns TechieMaya's GCP environment (least-privilege IAM, VM hardening, cost control), designed VOAG's relational SQL schema, and is building call evals (LLM-as-a-judge plus human review) for multilingual voice agents.</p>
       </article>
 
       <article>
@@ -222,10 +226,11 @@
       <p><a href="/skills/">View full Skills Page</a></p>
       <ul>
         <li><strong>Voice AI & Telephony:</strong> LiveKit, WebRTC, SIP/VoIP bridging, WebSockets, Gemini Live API, Sarvam, Ultravox, Groq, streaming STT/TTS pipelines.</li>
-        <li><strong>AI Orchestration & RAG:</strong> Google ADK, LangGraph, Multi-Agent Systems, A2A Protocol, LiteLLM, LightRAG, RAG Pipelines, Vector DBs (ChromaDB, Qdrant, Pinecone).</li>
+        <li><strong>AI Orchestration & RAG:</strong> Google ADK, LangGraph, Multi-Agent Systems, A2A Protocol, Model Context Protocol (MCP), LiteLLM, LightRAG, RAG Pipelines, Vector DBs (ChromaDB, Qdrant, Pinecone).</li>
+        <li><strong>Evaluation & Quality:</strong> LLM-as-a-judge scoring, human review, span-level error annotation, word-level language-confusion tracking for multilingual voice calls.</li>
         <li><strong>Generative Media & Web Automation:</strong> Google Veo, Imagen, Cartesia (TTS, voice cloning), Fish Audio (voice cloning), FFmpeg, Playwright.</li>
-        <li><strong>Backend & Infrastructure:</strong> Python (`asyncio`, `contextvars`), Go (`whatsmeow`), SQL, FastAPI, REST APIs, OAuth 2.0, Redis, NGINX, Docker.</li>
-        <li><strong>Cloud & DevOps:</strong> GCP (Cloud Run, Compute Engine), DigitalOcean, Git, GitHub Actions (CI/CD).</li>
+        <li><strong>Backend & Infrastructure:</strong> Python (`asyncio`, `contextvars`), Go (`whatsmeow`), SQL (relational schema design), JavaScript / Next.js, FastAPI, REST APIs, OAuth 2.0, Redis, NGINX, Docker.</li>
+        <li><strong>Cloud & DevOps:</strong> GCP (Cloud Run, Compute Engine, IAM, VM hardening, cost control), DigitalOcean, Git, GitHub Actions (CI/CD).</li>
       </ul>
     </section>
 

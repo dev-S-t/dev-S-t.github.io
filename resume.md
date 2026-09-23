@@ -15,7 +15,7 @@
 
 ## 2. Professional Summary
 - **AI Solutions Engineer building production AI systems, not prototypes.** Leading TechieMaya's Voice AI vertical (VOAG): **1,000+ calls/day at sub-300ms p95 latency** on self-hosted LiveKit and SIP telephony, with multi-provider model routing and per-tenant cost tracking.
-- Comfortable shipping into constrained, real-world environments — client VMs, on-premise networks, strict NAT gateways — and staying accountable for the system long after go-live, from monitoring and debugging to cost tuning, without a dedicated ops team.
+- Client-facing from scoping calls to go-live, shipping into constrained environments — client VMs, on-premise networks, strict NAT gateways — and staying accountable after launch, from evals and monitoring to cost tuning, with no ops team.
 - Equally hands-on with multi-agent systems (Google ADK, LangGraph), RAG over private data, and real-time speech pipelines in **Python and Go** on GCP.
 
 ---
@@ -26,9 +26,11 @@
 *Apr. 2025 – Present · Remote (Dubai, UAE)*
 
 #### VOAG — Enterprise Voice AI SaaS (Mr. LADs App)
-- **Lead the Voice AI vertical:** scaled to **1,000+ calls/day at sub-300ms p95 latency**; replaced persistent WebSockets with an *async polling layer* waking Cloud Run workers on demand, cutting infrastructure cost **30%**.
+- **Lead the Voice AI vertical:** scaled to **1,000+ calls/day at sub-300ms p95 latency**; kept LiveKit agents — built for always-on connections — running on serverless **Cloud Run** through a keep-alive, hold, and polling layer, cutting infrastructure cost **30%**.
 - **Hybrid cloud SIP:** engineered a UAE telephony bridge (SIM -> modem -> SIP -> LiveKit) deployed *inside a client's own VM behind a strict NAT gateway*; self-hosted LiveKit across India and UAE with tenant-aware routing and **GitHub Actions**-driven CI/CD.
 - **Agentic workflows & multi-provider routing:** built a tenant-aware tool registry over OAuth 2.0 for live calendar scheduling, omnichannel messaging, and mid-call human handoff; added *fire-and-forget RAG* for long-document reference with no conversational dead air, routed across Gemini Live, Sarvam, and Ultravox for cost/language optimisation, with **Cartesia** as the primary TTS layer (plus Fish Audio) for brand-matched *voice cloning*.
+- **Call evals:** recorded audio and transcripts scored by an **LLM-as-a-judge** plus human review for task completion, grounding, and *word-level language confusion* across Indic languages; reviewer-annotated error spans feed a correction lexicon applied from the next call onward.
+- **Ownership:** voice AI lead in client scoping meetings; administer GCP for VOAG and the wider company (least-privilege IAM, VM hardening, cost control); designed VOAG's complete relational SQL schema.
 
 #### WhatsApp Dispatch Automation — B2B Luxury Ground Transport (Dubai)
 - Built a Go gateway (`whatsmeow`) for group-chat messaging unsupported by Meta's official API, paired with a **Google ADK multi-agent system** (orchestrator, booking, support agents) resolving flight, maps, fleet-availability and fare data via tools — cutting booking turnaround **from ~30 minutes to under 1 minute**; extended the gateway to a second client for message-monitoring and forwarding across 1,000+ daily messages.
@@ -65,8 +67,8 @@
 ---
 
 ## 5. Technical Skills Inventory
-- **AI & Agents:** Google ADK, LangGraph, LiteLLM, LightRAG, Multi-Agent Systems, A2A Protocol, RAG, Vector DBs
-- **Languages & Cloud:** Python (AsyncIO), Go, SQL, Docker, GCP (Cloud Run, Compute Engine, Vertex AI), DigitalOcean
+- **AI & Agents:** Google ADK, LangGraph, LiteLLM, LightRAG, Multi-Agent Systems, A2A Protocol, MCP, RAG, Vector DBs, LLM-as-a-judge
+- **Languages & Cloud:** Python (AsyncIO), Go, JavaScript, SQL (schema design), Docker, GCP (Cloud Run, Compute Engine, Vertex AI, IAM), DigitalOcean
 - **Voice & Real-Time Systems:** LiveKit (WebRTC), SIP/VoIP telephony, WebSockets, Gemini Live API, streaming STT/TTS
 - **Backend & DevOps:** FastAPI, REST APIs, OAuth 2.0, Redis, NGINX, GitHub Actions (CI/CD), Fail2Ban
 
@@ -87,6 +89,7 @@
 ---
 
 ## 8. Professional Certifications
+- Google Cloud Associate Cloud Engineer (in progress)
 - Building AI Voice Agents for Production, LiveKit / DeepLearning.AI (Sep. 2025)
 - Foundations of Responsible AI (Sep. 2025)
 - Complete Data Science, ML, DL & NLP Bootcamp, Udemy (Jul. 2025)
