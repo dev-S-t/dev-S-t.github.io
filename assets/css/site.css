@@ -329,7 +329,7 @@ html:not(.lines-live) .seal { border-radius: 50%; background: repeating-radial-g
 .orbit li strong { display: block; font-size: 12px; }
 /* wide screens: the engine places the links along an orbit under the hole */
 .contact.orbit-on .orbit { position: absolute; inset: 0; margin: 0; display: block; pointer-events: none; }
-.contact.orbit-on .orbit li { position: absolute; transform: translate(-50%, -50%); white-space: nowrap; pointer-events: auto; }
+.contact.orbit-on .orbit li { position: absolute; width: max-content; transform: translate(-50%, -50%); white-space: nowrap; pointer-events: auto; }
 @media (max-width: 700px) {
   .contact { --rsh: min(40vw, 170px); }
   .contact-core { width: 100%; height: auto; padding-top: 0; margin-top: calc(var(--rsh) * .3); }
