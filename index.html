@@ -74,7 +74,7 @@
 
   <!-- Header Identity Block -->
   <header class="hero" id="top" data-scene="tunnel" data-polarity="same">
-    <h1 class="hero-name"><span class="n1">Sahil Tomar</span> <span class="n2" data-plate="clear">(dev-S-t)</span></h1>
+    <h1 class="hero-name"><span class="n1">Sahil Tomar</span> <span class="n2">(dev-S-t)</span></h1>
     <div class="hero-id" data-cliff>
       <p class="hero-title"><strong>Title:</strong> AI Solutions Engineer @ TechieMaya</p>
       <p class="hero-handles"><strong>Handles:</strong> GitHub: <a href="https://github.com/dev-S-t">dev-S-t</a> | LinkedIn: <a href="https://www.linkedin.com/in/dev-s-t/">dev-s-t</a> | Custom Domain: <a href="https://human-in-loop.dev">human-in-loop.dev</a> | ORCID: <a href="https://orcid.org/0009-0005-9222-9121">0009-0005-9222-9121</a></p>
@@ -154,10 +154,10 @@
         <p><a href="/experience/">View full Work Experience Page</a></p>
       </div>
 
-      <div class="timeline" data-timeline data-plate="clear" aria-hidden="true">
+      <div class="timeline" data-timeline aria-hidden="true">
         <canvas class="tl-canvas" data-art="timeline"></canvas>
-        <span class="tl-year" data-year="2025"></span>
-        <span class="tl-year" data-year="2026"></span>
+        <span class="tl-year" data-year="2025" data-plate="clear"></span>
+        <span class="tl-year" data-year="2026" data-plate="clear"></span>
       </div>
 
       <article class="role r1" data-plate data-from="2025-04" data-to="now">
@@ -212,12 +212,14 @@
         <h3>5. Hireups — Real-Time AI Avatar Interviewer</h3>
         <p><strong>URL:</strong> <a href="/projects/hireups/">/projects/hireups/</a></p>
         <p>Photorealistic video avatar interviewer built on Gemini Realtime and self-hosted LiveKit on GCP for MGS Technology via Quantashift.</p>
+        <span class="lics" aria-hidden="true"><canvas class="lic" data-icon="googlegemini"></canvas><canvas class="lic" data-icon="livekit"></canvas><canvas class="lic" data-icon="googlecloud"></canvas></span>
       </article>
 
       <article id="project-mage" class="proj p6" data-plate>
         <h3>6. MAGe — Multi-Agent Advertising & Media Generation Engine</h3>
         <p><strong>URL:</strong> <a href="/projects/mage/">/projects/mage/</a></p>
         <p>Multi-agent creative ad pipeline (Google Veo, Playwright brand crawler, Cartesia voice, Subreddit trend scanner, session `contextvars` cost accounting).</p>
+        <span class="lics" aria-hidden="true"><canvas class="lic" data-icon="google"></canvas><canvas class="lic" data-icon="reddit"></canvas></span>
       </article>
 
       <article id="project-unibias" class="proj p7 has-art" data-plate>
@@ -231,12 +233,14 @@
         <h3>8. Blood Bank Demand-Forecasting System</h3>
         <p><strong>URL:</strong> <a href="/projects/blood-bank/">/projects/blood-bank/</a></p>
         <p>IEEE-published blood supply optimization engine combining SARIMA/XGBoost forecasting with dynamic micro-expiry logic.</p>
+        <span class="lics" aria-hidden="true"><canvas class="lic" data-icon="ieee"></canvas></span>
       </article>
 
       <article id="project-fraud-detection" class="proj p9" data-plate>
         <h3>9. Fraud Detection System (Infosys Springboard ML Internship)</h3>
         <p><strong>Code:</strong> <a href="https://github.com/dev-S-t/FraudDetectionSystem">github.com/dev-S-t/FraudDetectionSystem</a></p>
         <p>Hybrid fraud-detection pipeline (ARIMA/Prophet + XGBoost) on a highly imbalanced 400+ feature dataset, reaching 96% fraud recall with an optimised F1-score.</p>
+        <span class="lics" aria-hidden="true"><canvas class="lic" data-icon="github"></canvas></span>
       </article>
     </section>
 
@@ -267,44 +271,45 @@
         <p><a href="/skills/">View full Skills Page</a></p>
       </div>
       <ul class="legend">
-        <li data-plate data-peak><strong>Voice AI & Telephony:</strong> LiveKit, WebRTC, SIP/VoIP bridging, WebSockets, Gemini Live API, Sarvam, Ultravox, Groq, streaming STT/TTS pipelines.</li>
-        <li data-plate data-peak><strong>AI Orchestration & RAG:</strong> Google ADK, LangGraph, Multi-Agent Systems, A2A Protocol, Model Context Protocol (MCP), LiteLLM, LightRAG, RAG Pipelines, Vector DBs (ChromaDB, Qdrant, Pinecone).</li>
+        <li data-plate data-peak><strong>Voice AI & Telephony:</strong> LiveKit, WebRTC, SIP/VoIP bridging, WebSockets, Gemini Live API, Sarvam, Ultravox, Groq, streaming STT/TTS pipelines.<span class="lics" aria-hidden="true"><canvas class="lic" data-icon="livekit"></canvas><canvas class="lic" data-icon="webrtc"></canvas><canvas class="lic" data-icon="googlegemini"></canvas></span></li>
+        <li data-plate data-peak><strong>AI Orchestration & RAG:</strong> Google ADK, LangGraph, Multi-Agent Systems, A2A Protocol, Model Context Protocol (MCP), LiteLLM, LightRAG, RAG Pipelines, Vector DBs (ChromaDB, Qdrant, Pinecone).<span class="lics" aria-hidden="true"><canvas class="lic" data-icon="google"></canvas><canvas class="lic" data-icon="langgraph"></canvas><canvas class="lic" data-icon="modelcontextprotocol"></canvas><canvas class="lic" data-icon="qdrant"></canvas></span></li>
         <li data-plate data-peak><strong>Evaluation & Quality:</strong> LLM-as-a-judge scoring, human review, span-level error annotation, word-level language-confusion tracking for multilingual voice calls.</li>
-        <li data-plate data-peak><strong>Generative Media & Web Automation:</strong> Google Veo, Imagen, Cartesia (TTS, voice cloning), Fish Audio (voice cloning), FFmpeg, Playwright.</li>
-        <li data-plate data-peak><strong>Backend & Infrastructure:</strong> Python (`asyncio`, `contextvars`), Go (`whatsmeow`), SQL (relational schema design), JavaScript / Next.js, FastAPI, REST APIs, OAuth 2.0, Redis, NGINX, Docker.</li>
-        <li data-plate data-peak><strong>Cloud & DevOps:</strong> GCP (Cloud Run, Compute Engine, IAM, VM hardening, cost control), DigitalOcean, Git, GitHub Actions (CI/CD).</li>
+        <li data-plate data-peak><strong>Generative Media & Web Automation:</strong> Google Veo, Imagen, Cartesia (TTS, voice cloning), Fish Audio (voice cloning), FFmpeg, Playwright.<span class="lics" aria-hidden="true"><canvas class="lic" data-icon="google"></canvas><canvas class="lic" data-icon="ffmpeg"></canvas></span></li>
+        <li data-plate data-peak><strong>Backend & Infrastructure:</strong> Python (`asyncio`, `contextvars`), Go (`whatsmeow`), SQL (relational schema design), JavaScript / Next.js, FastAPI, REST APIs, OAuth 2.0, Redis, NGINX, Docker.<span class="lics" aria-hidden="true"><canvas class="lic" data-icon="python"></canvas><canvas class="lic" data-icon="go"></canvas><canvas class="lic" data-icon="javascript"></canvas><canvas class="lic" data-icon="nextdotjs"></canvas><canvas class="lic" data-icon="fastapi"></canvas><canvas class="lic" data-icon="redis"></canvas><canvas class="lic" data-icon="nginx"></canvas><canvas class="lic" data-icon="docker"></canvas></span></li>
+        <li data-plate data-peak><strong>Cloud & DevOps:</strong> GCP (Cloud Run, Compute Engine, IAM, VM hardening, cost control), DigitalOcean, Git, GitHub Actions (CI/CD).<span class="lics" aria-hidden="true"><canvas class="lic" data-icon="googlecloud"></canvas><canvas class="lic" data-icon="digitalocean"></canvas><canvas class="lic" data-icon="git"></canvas><canvas class="lic" data-icon="githubactions"></canvas></span></li>
       </ul>
     </section>
 
     <!-- Resume Section -->
-    <section id="resume" class="resume" data-scene="blackhole" data-polarity="inverse" data-seam="cliff">
+    <section id="resume" class="resume" data-scene="seal" data-polarity="same" data-seam="cliff">
       <div class="sheet" data-plate>
         <h2>Resume</h2>
         <p class="sheet-link"><a href="/resume/">View HTML Resume Page</a></p>
-        <p class="sheet-dl"><a href="/assets/sahil-tomar-resume.pdf" download="sahil-tomar-resume.pdf"><svg class="dl-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M16 4v17M9 14.5l7 7 7-7M6 27h20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Download PDF Resume</a></p>
         <p>B.Tech Computer Science @ Ajay Kumar Garg Engineering College (CGPA 8.0). Coordinator in Cloud Computing Cell and Centre of Metaverse.</p>
       </div>
-      <div class="bh-space" data-bh aria-hidden="true"></div>
+      <div class="seal" data-seal>
+        <a class="seal-dl" href="/assets/sahil-tomar-resume.pdf" download="sahil-tomar-resume.pdf" aria-label="Download PDF Resume"><svg class="dl-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M16 5v16M9.5 15l6.5 6.5 6.5-6.5M7 27h18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="vh">Download PDF Resume</span></a>
+      </div>
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="contact" data-scene="wrap" data-polarity="same" data-seam="wave">
-      <div class="contact-core" data-plate="clear">
+    <section id="contact" class="contact" data-scene="blackhole" data-polarity="inverse" data-seam="wave">
+      <div class="contact-core">
         <h2>Contact Sahil Tomar (dev-S-t)</h2>
         <p><a href="/contact/">View Contact Page</a></p>
       </div>
-      <ul class="loop" data-loop>
-        <li data-plate="glass"><strong>Primary WhatsApp:</strong> <a href="https://wa.link/r8csgy" target="_blank" rel="noopener">Connect via Primary WhatsApp (wa.link/r8csgy)</a></li>
-        <li data-plate="glass"><strong>Secondary WhatsApp:</strong> <a href="https://wa.link/l2oedq" target="_blank" rel="noopener">Connect via Secondary WhatsApp (wa.link/l2oedq)</a></li>
-        <li data-plate="glass"><strong>GitHub:</strong> <a href="https://github.com/dev-S-t">https://github.com/dev-S-t</a></li>
-        <li data-plate="glass"><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/dev-s-t/">https://www.linkedin.com/in/dev-s-t/</a></li>
-        <li data-plate="glass"><strong>ORCID:</strong> <a href="https://orcid.org/0009-0005-9222-9121">0009-0005-9222-9121</a></li>
+      <ul class="orbit" data-orbit>
+        <li data-plate="glass"><canvas class="lic" data-icon="whatsapp" aria-hidden="true"></canvas><strong>Primary WhatsApp:</strong> <a href="https://wa.link/r8csgy" target="_blank" rel="noopener">Connect via Primary WhatsApp (wa.link/r8csgy)</a></li>
+        <li data-plate="glass"><canvas class="lic" data-icon="whatsapp" aria-hidden="true"></canvas><strong>Secondary WhatsApp:</strong> <a href="https://wa.link/l2oedq" target="_blank" rel="noopener">Connect via Secondary WhatsApp (wa.link/l2oedq)</a></li>
+        <li data-plate="glass"><canvas class="lic" data-icon="github" aria-hidden="true"></canvas><strong>GitHub:</strong> <a href="https://github.com/dev-S-t">https://github.com/dev-S-t</a></li>
+        <li data-plate="glass"><canvas class="lic" data-icon="linkedin" aria-hidden="true"></canvas><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/dev-s-t/">https://www.linkedin.com/in/dev-s-t/</a></li>
+        <li data-plate="glass"><canvas class="lic" data-icon="orcid" aria-hidden="true"></canvas><strong>ORCID:</strong> <a href="https://orcid.org/0009-0005-9222-9121">0009-0005-9222-9121</a></li>
       </ul>
     </section>
   </main>
 
   <!-- Footer Identity Block -->
-  <footer class="foot" data-scene="ocean" data-polarity="inverse" data-seam="cliff">
+  <footer class="foot" data-scene="ocean" data-polarity="inverse">
     <hr>
     <p data-plate><strong>Sahil Tomar (dev-S-t)</strong> — AI Solutions Engineer & Voice AI Specialist</p>
     <p data-plate>GitHub: <a href="https://github.com/dev-S-t">dev-S-t</a> | LinkedIn: <a href="https://www.linkedin.com/in/dev-s-t/">dev-s-t</a> | ORCID: <a href="https://orcid.org/0009-0005-9222-9121">0009-0005-9222-9121</a> | IEEE: <a href="https://ieeexplore.ieee.org/document/11584332">IEEE Publication</a></p>

@@ -23,7 +23,7 @@
     root.setAttribute('data-theme', next);
     try { localStorage.setItem('hil-theme', next); } catch (e) { /* storage blocked */ }
     syncToggle();
-    requestAnimationFrame(() => arts.forEach((a) => { a.dirty = true; }));
+    requestAnimationFrame(() => { arts.forEach((a) => { a.dirty = true; }); drawIcons(); });
   });
   syncToggle();
 
@@ -68,54 +68,86 @@
 
   /* ---------- the interactive drawings (Canvas2D) ---------- */
   const DRAW = {
-    // VOAG: a caller speaks (your pointer is the voice); the agent answers under 300 ms later
+    // VOAG: two faces in profile, a person and the agent, and the call is the space between them (Rubin's vase).
+    // Your pointer is the caller's voice. When the caller stops, the agent answers after a short pause.
     voice(c, w, h, t, a) {
-      const col = 5, cols = Math.floor((w * 0.86) / col), speed = 26; // columns per second
-      const idle = (tt) => { const cyc = ((tt % 3.4) + 3.4) % 3.4; return cyc < 2.6 ? (0.35 + 0.55 * Math.abs(Math.sin(cyc * 7.3)) * Math.abs(Math.sin(cyc * 2.1 + 1))) : 0.02; };
-      if (!a.state) { // start mid-call: the history is already full when the tile first appears
-        a.state = { caller: [], last: t, px: null, acc: 0, amp: idle(t) };
-        for (let k = cols + 40; k > 0; k--) a.state.caller.push(idle(t - k / speed) * (0.55 + 0.45 * Math.random()));
-      }
-      const st = a.state;
+      const st = a.state || (a.state = { last: t, px: null, turn: 0, turnT: t - 0.4, quiet: 0, spoke: 0, len: 1.6, hH: new Float32Array(200), hA: new Float32Array(200), acc: 0, ampH: 0, ampA: 0, blinkT: t + 2, gap: 0.24, gapT: -9 });
       const dt = Math.min(0.1, Math.max(0, t - st.last)); st.last = t;
-      let target;
-      const p = a.pointer;
-      if (p && p.inside) {
-        const v = st.px ? Math.hypot(p.x - st.px[0], p.y - st.px[1]) / Math.max(dt, 0.016) : 0;
-        st.px = [p.x, p.y];
-        target = clamp(v / 900, 0, 1);
-      } else {
-        st.px = null;
-        target = idle(t); // speak for 2.6 s, then a short pause
+      const p = a.pointer && a.pointer.inside ? a.pointer : null;
+      const syll = (x) => 0.3 + 0.7 * Math.abs(Math.sin(x * 7.3)) * Math.abs(Math.sin(x * 2.1 + 1));
+      let tH = 0, tA = 0;
+      if (p) { const v = st.px ? Math.hypot(p.x - st.px[0], p.y - st.px[1]) / Math.max(dt, 0.016) : 0; st.px = [p.x, p.y]; tH = clamp(v / 700, 0, 1); } else st.px = null;
+      const since = t - st.turnT;
+      if (st.turn === 0) { // the caller's turn: scripted when nobody is pointing
+        if (!p) tH = since > 0.3 && since < 2.4 ? syll(since) : 0;
+        if (tH > 0.08) { st.spoke += dt; st.quiet = 0; } else st.quiet += dt;
+        if (st.spoke > 0.4 && st.quiet > 0.24) { st.turn = 1; st.turnT = t; st.len = clamp(st.spoke * 0.8, 1, 2.2); st.gap = st.quiet; st.gapT = t; st.spoke = 0; }
+      } else { // the agent's turn
+        tA = since < st.len ? syll(since + 0.9) : 0;
+        if (since > st.len + 0.7) { st.turn = 0; st.turnT = t; st.quiet = 0; }
       }
-      st.amp = lerp(st.amp, target, 0.25);
-      st.acc += dt * speed;
-      while (st.acc >= 1) { st.acc -= 1; st.caller.push(st.amp * (0.55 + 0.45 * Math.random())); if (st.caller.length > cols + 40) st.caller.shift(); }
-      const delayCols = Math.round(0.28 * speed); // 280 ms
-      const mid = h * 0.5, nowX = w * 0.9, amp = h * 0.36;
-      c.lineWidth = 1; c.globalAlpha = 0.5; c.beginPath(); c.moveTo(0, mid); c.lineTo(nowX, mid); c.stroke(); c.globalAlpha = 1;
-      const n = st.caller.length;
-      c.lineWidth = 2.2;
-      c.beginPath();
-      for (let i = 0; i < Math.min(n, cols); i++) {
-        const x = nowX - i * col, v = st.caller[n - 1 - i];
-        if (v > 0.03) { c.moveTo(x, mid - 3); c.lineTo(x, mid - 3 - v * amp); }
+      st.ampH = lerp(st.ampH, tH, 0.35); st.ampA = lerp(st.ampA, tA, 0.35);
+      st.acc += dt * 50; // voice histories, 50 samples a second
+      while (st.acc >= 1) { st.acc -= 1; st.hH.copyWithin(1, 0); st.hA.copyWithin(1, 0); st.hH[0] = st.ampH; st.hA[0] = st.ampA; }
+      // one face profile, facing right (forehead, brow, eye, nose, lips, chin, neck)
+      const PROF = [[0, 0.4], [0.08, 0.5], [0.2, 0.555], [0.3, 0.578], [0.35, 0.556], [0.41, 0.6], [0.5, 0.74], [0.54, 0.66], [0.575, 0.632], [0.6, 0.668], [0.628, 0.622], [0.655, 0.655], [0.71, 0.6], [0.77, 0.646], [0.83, 0.56], [0.9, 0.47], [1, 0.47]];
+      const prof = (yn) => {
+        let i = 1; while (i < PROF.length - 1 && PROF[i][0] < yn) i++;
+        const p0 = PROF[Math.max(0, i - 2)][1], p1 = PROF[i - 1][1], p2 = PROF[i][1], p3 = PROF[Math.min(PROF.length - 1, i + 1)][1];
+        const u = clamp((yn - PROF[i - 1][0]) / (PROF[i][0] - PROF[i - 1][0]), 0, 1);
+        return 0.5 * (2 * p1 + (p2 - p0) * u + (2 * p0 - 5 * p1 + 4 * p2 - p3) * u * u + (3 * p1 - p0 - 3 * p2 + p3) * u * u * u);
+      };
+      const top = h * 0.04, H = h * 0.92, sp = 5;
+      const fh = Math.min(H, w * 0.9) * 0.62;
+      const gapHalf = Math.max(12, w * 0.03);
+      const xb = w / 2 - gapHalf - (0.74 - 0.47) * fh;
+      const mouthY = top + H * 0.628, eyeY = top + H * 0.352;
+      const xL = (y, open) => { const yn = (y - top) / H; const m = (yn - 0.628) / 0.022; return xb + (prof(yn) - 0.47) * fh - open * fh * 0.05 * Math.exp(-m * m); };
+      const q = 6; // the agent is the same face, quantised to a grid
+      const xR = (y) => w - Math.round(xL(y, st.ampA) / q) * q;
+      const mL = xL(mouthY, 0), mR = w - mL;
+      if (t > st.blinkT + 0.15) st.blinkT = t + 2.4 + Math.random() * 3.6;
+      const blink = t > st.blinkT && t < st.blinkT + 0.15;
+      const eyeX = xL(eyeY, 0) - fh * 0.12, eRx = fh * 0.055, eRy = fh * 0.021;
+      const wave = (hist, d, y) => {
+        if (d < 0) return 0;
+        const i = Math.floor(d / 360 * 50); if (i >= hist.length) return 0;
+        const amp = hist[i]; if (amp < 0.02) return 0;
+        const sg = 5 + d * 0.3, e = (y - mouthY) / sg;
+        return amp * Math.exp(-e * e) * Math.sin(d * 0.34 - t * 11) * 9 * Math.sqrt(8 / sg);
+      };
+      c.lineCap = 'butt';
+      for (let y = top; y <= top + H + 0.1; y += sp) {
+        const k = Math.round((y - top) / sp);
+        const l = xL(y, st.ampH), r = xR(y);
+        // the person: uneven, hand-drawn weight
+        c.lineWidth = sp * (0.5 + 0.16 * ((k * 37) % 11) / 10); c.beginPath();
+        if (!blink && Math.abs(y - eyeY) < eRy) { const hw = eRx * Math.sqrt(1 - Math.pow((y - eyeY) / eRy, 2)); c.moveTo(0, y); c.lineTo(eyeX - hw, y); c.moveTo(eyeX + hw, y); c.lineTo(l, y); }
+        else { c.moveTo(0, y); c.lineTo(l, y); }
+        c.stroke();
+        // the agent: even weight, in regular cells
+        c.lineWidth = sp * 0.56; c.setLineDash([9, 3]); c.beginPath(); c.moveTo(w, y); c.lineTo(r, y); c.stroke(); c.setLineDash([]);
+        // the call between them
+        c.lineWidth = 0.9; c.beginPath();
+        for (let x = l + 3; x <= r - 3; x += 4) { const dy = wave(st.hH, x - mL, y) + wave(st.hA, mR - x, y); if (x === l + 3) c.moveTo(x, y + dy); else c.lineTo(x, y + dy); }
+        c.stroke();
       }
-      c.stroke();
-      // the agent: same rhythm, delayed, answered below the line
-      c.lineWidth = 1.2; c.beginPath();
-      for (let i = delayCols; i < Math.min(n, cols); i++) {
-        const x = nowX - i * col, v = st.caller[n - 1 - i + delayCols] || 0;
-        const r = Math.min(1, v * 1.1);
-        if (r > 0.03) { c.moveTo(x, mid + 3); c.lineTo(x, mid + 3 + r * amp * 0.8); }
+      if (!blink) { c.beginPath(); c.arc(eyeX + eRx * 0.3, eyeY, eRy * 0.75, 0, TAU); c.fill(); }
+      // the agent's eye: a ring that opens while it speaks
+      const ax = w - eyeX, er = eRy * 1.25 + st.ampA * 3;
+      c.save(); c.globalCompositeOperation = 'destination-out'; c.beginPath(); c.arc(ax, eyeY, er + 4, 0, TAU); c.fill(); c.restore();
+      c.lineWidth = 1.3; c.beginPath(); c.arc(ax, eyeY, er, 0, TAU); c.stroke();
+      c.beginPath(); c.arc(ax, eyeY, 1.8, 0, TAU); c.fill();
+      // the pause before the answer, shown for a moment after each turn
+      const shown = t - st.gapT;
+      if (shown < 1.8) {
+        const gy = top + H * 0.955, gw = Math.max(18, st.gap * 220), gx = w / 2 - gw / 2;
+        c.save(); c.globalCompositeOperation = 'destination-out'; c.fillRect(w / 2 - 70, gy - 16, 140, 30); c.restore();
+        c.globalAlpha = Math.min(1, (1.8 - shown) * 2);
+        c.lineWidth = 1; c.beginPath(); c.moveTo(gx, gy - 5); c.lineTo(gx, gy + 5); c.moveTo(gx, gy); c.lineTo(gx + gw, gy); c.moveTo(gx + gw, gy - 5); c.lineTo(gx + gw, gy + 5); c.stroke();
+        c.font = '11px Workbench, ui-monospace, monospace'; c.textAlign = 'center'; c.fillText('p95 < 300 ms', w / 2, gy - 7);
+        c.globalAlpha = 1;
       }
-      c.stroke();
-      // the gap: under 300 ms between hearing and answering
-      const gx = nowX - delayCols * col;
-      c.lineWidth = 1; c.beginPath();
-      c.moveTo(gx, mid + 8); c.lineTo(gx, mid + 20); c.moveTo(nowX, mid + 8); c.lineTo(nowX, mid + 20); c.moveTo(gx, mid + 14); c.lineTo(nowX, mid + 14);
-      c.stroke();
-      c.beginPath(); c.arc(nowX, mid, 3.2 + (reduce ? 0 : Math.sin(t * 6) * 0.8), 0, TAU); c.fill();
     },
     // UniBias: an eye that watches the pointer
     eye(c, w, h, t, a) {
@@ -245,51 +277,38 @@
       const move = (f) => f * f * (3 - 2 * f);
       for (let i = 0; i < N; i++) { const f = ((t * 0.32 + i * 0.137) % 1); const [x, y] = pointAt(st.paths[i], move(f)); c.beginPath(); c.arc(x, y, 2.3, 0, TAU); c.fill(); }
       for (let k = st.extra.length - 1; k >= 0; k--) { const e = st.extra[k], f = (t - e.t0) * 0.6; if (f > 1) { st.extra.splice(k, 1); continue; } const [x, y] = pointAt(st.paths[e.i], move(f)); c.beginPath(); c.arc(x, y, 3.2, 0, TAU); c.fill(); }
+      // the agent sits in the knot where every chat passes; its rings swell as each message goes through
+      let pulse = 0;
+      for (let i = 0; i < N; i++) { const fm = move((t * 0.32 + i * 0.137) % 1); pulse += Math.exp(-Math.pow((fm - 0.5) / 0.05, 2)); }
+      const kx = w * 0.515, ky = h * 0.5;
+      c.save(); c.globalCompositeOperation = 'destination-out'; c.beginPath(); c.arc(kx, ky, 9, 0, TAU); c.fill(); c.restore();
       c.lineWidth = 0.9; c.beginPath();
-      for (let r = 3; r < 16; r += 3.2) { c.moveTo(w * 0.87 + r, h * 0.9); c.arc(w * 0.87, h * 0.9, r, 0, TAU); }
+      for (let k = 0; k < 4; k++) { const r = 12 + k * 4.4 + Math.min(pulse, 1.5) * (1.5 + k * 1.4); c.moveTo(kx + r, ky); c.arc(kx, ky, r, 0, TAU); }
       c.stroke();
+      c.beginPath(); c.arc(kx, ky, 3, 0, TAU); c.fill();
+      // each group chat the messages are routed into
+      c.lineWidth = 1;
+      for (let g = 0; g < 3; g++) { const gy = h * (0.2 + 0.3 * g); c.beginPath(); c.arc(w * 0.955, gy, 5.5, 0, TAU); c.stroke(); c.beginPath(); c.arc(w * 0.955, gy, 2, 0, TAU); c.fill(); }
     },
-    // Experience: a real time axis, from April 2025 to today
+    // Experience: the record in the rock. The engine draws the layers, the faults and the role lenses;
+    // this adds the month ticks, the leaders down to each role, and today's line.
     timeline(c, w, h, t, a) {
       const tl = a.tl; if (!tl) return;
-      const X = (m) => (m / tl.months) * w;
-      const base = h - 18;
-      // month ticks, a taller line at each new year
+      const H = tl.bandH, x1 = tl.x0 + tl.months * tl.pxm;
       c.lineWidth = 1; c.beginPath();
-      for (let m = 0; m <= tl.months; m++) { const x = Math.round(X(m)) + 0.5; const yr = (tl.startMonth + m) % 12 === 0; c.moveTo(x, base); c.lineTo(x, base - (yr ? h - 26 : 9)); }
-      c.moveTo(0, base + 0.5); c.lineTo(w, base + 0.5); c.stroke();
-      // the roles: bundles of lines between their dates; the longer one thickens as responsibility grows
-      tl.roles.forEach((r, ri) => {
-        const x0 = X(r.from), x1 = X(r.to), y = r.y * h;
-        let top = y;
-        if (ri === 0) {
-          // the long role: a wedge of lines that widens as the responsibility grew
-          const hMax = h * 0.34, gap = 4, n = Math.floor(hMax / gap);
-          c.lineWidth = 1.5; c.beginPath();
-          for (let k = 0; k < n; k++) {
-            const off = (k - (n - 1) / 2) * gap;
-            const start = lerp(x0, x1, Math.pow(Math.abs(off) / (hMax / 2), 1.3) * 0.85);
-            c.moveTo(start, y + off); c.lineTo(x1, y + off);
-          }
-          c.stroke();
-          top = y - 4;
-        } else {
-          // the short contract: a dense block of upright hatching
-          const hh = h * 0.2;
-          c.lineWidth = 1.3; c.beginPath();
-          for (let x = x0; x <= x1; x += 3.4) { c.moveTo(x, y - hh / 2); c.lineTo(x, y + hh / 2); }
-          c.stroke();
-          top = y + hh / 2;
-        }
-        c.lineWidth = 1; c.beginPath(); c.moveTo(x0, top); c.lineTo(x0, base); c.stroke();
-        if (r.card) { c.setLineDash([2, 4]); c.beginPath(); c.moveTo(x0, base); c.lineTo(x0, h); c.stroke(); c.setLineDash([]); }
-        c.beginPath(); c.arc(x0, y, 3, 0, TAU); c.fill();
+      for (let m = 0; m <= tl.months; m++) { const x = Math.round(tl.x0 + m * tl.pxm) + 0.5; const yr = (tl.startMonth + m) % 12 === 0; c.moveTo(x, H - (yr ? 22 : 10)); c.lineTo(x, H + 1); }
+      c.moveTo(tl.x0, H + 0.5); c.lineTo(x1, H + 0.5);
+      c.stroke();
+      tl.roles.forEach((r) => {
+        c.beginPath(); c.arc(r.x0, r.yc, 4, 0, TAU); c.fill();
+        if (!tl.leaders || !r.tile) return;
+        const tx = r.tile.x + 30, ty = r.tile.y, ey = H + 30;
+        c.lineWidth = 1.6; c.beginPath(); c.moveTo(r.x0, r.yc + 4); c.lineTo(r.x0, ey); c.lineTo(tx, ey); c.lineTo(tx, ty); c.stroke();
+        c.beginPath(); c.arc(tx, ey, 3, 0, TAU); c.fill();
       });
-      // today: a line that keeps moving, with a slow pulse
-      const nx = X(tl.now);
-      c.lineWidth = 1.4; c.beginPath(); c.moveTo(nx, 8); c.lineTo(nx, base); c.stroke();
-      const pr = reduce ? 0 : (t % 2.2) / 2.2;
-      c.globalAlpha = 1 - pr; c.lineWidth = 1; c.beginPath(); c.arc(nx, tl.roles[0].y * h, 4 + pr * 16, 0, TAU); c.stroke(); c.globalAlpha = 1;
+      const nx = tl.nowX, ny = tl.roles[0] ? tl.roles[0].yc : H / 2, pr = reduce ? 0 : (t % 2.4) / 2.4;
+      c.lineWidth = 1.5; c.beginPath(); c.moveTo(nx, 4); c.lineTo(nx, H); c.stroke();
+      c.globalAlpha = 1 - pr; c.lineWidth = 1; c.beginPath(); c.arc(nx, ny, 5 + pr * 24, 0, TAU); c.stroke(); c.globalAlpha = 1;
     },
     wastage(c, w, h) { // 1,000 units twice: 112 broken before, 25 after
       const blocks = [112, 25], gap = 18, bw = (w - gap) / 2, cols = 40, rows = 25;
@@ -381,40 +400,101 @@
     const idx = (y, m) => (y - origin.y) * 12 + (m - origin.m);
     const nowF = idx(now.getFullYear(), now.getMonth()) + now.getDate() / new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
     const months = Math.ceil(nowF) + 1;
-    const parse = (s) => { if (s === 'now') return nowF; const [y, m] = s.split('-').map(Number); return idx(y, m - 1); };
-    const roles = [...document.querySelectorAll('.role[data-from]')].map((el, i) => ({
-      el, from: parse(el.dataset.from), to: el.dataset.to === 'now' ? nowF : parse(el.dataset.to) + 1, y: i === 0 ? 0.62 : 0.3, card: true
-    }));
-    tlArt.tl = { months, now: nowF, startMonth: origin.m, roles };
-    const w = tlEl.clientWidth;
-    tlEl.querySelectorAll('[data-year]').forEach((s) => { const m = idx(Number(s.dataset.year), 0); s.style.left = Math.max(0, (m / months) * w) + 'px'; });
+    const parse = (v) => { const [y, m] = v.split('-').map(Number); return idx(y, m - 1); };
+    const W = tlEl.clientWidth, H = tlEl.clientHeight;
+    const pad = parseFloat(getComputedStyle(tlEl.parentElement).paddingLeft) || 24;
+    const x0 = pad, pxm = (W - 2 * pad) / months, X = (m) => x0 + m * pxm;
+    const tr = tlEl.getBoundingClientRect();
+    const roles = [...document.querySelectorAll('.role[data-from]')].map((el, i) => {
+      const from = parse(el.dataset.from), to = el.dataset.to === 'now' ? nowF : parse(el.dataset.to) + 1;
+      const er = el.getBoundingClientRect();
+      return { el, x0: X(from), x1: X(to), yc: H * (i === 0 ? 0.64 : 0.27), hh: H * (i === 0 ? 0.2 : 0.1), tile: { x: er.left - tr.left, y: er.top - tr.top } };
+    });
+    tlArt.tl = { months, x0, pxm, nowX: X(nowF), startMonth: origin.m, roles, bandH: H, leaders: W >= 900, yearX: X(idx(2026, 0)) };
+    tlEl.querySelectorAll('[data-year]').forEach((el) => { el.style.left = Math.max(x0 + 40, X(idx(Number(el.dataset.year), 0))) + 'px'; });
     tlArt.dirty = true;
   }
 
-  /* ---------- contact: link tiles sit just outside the loop, never on its text ---------- */
+  /* ---------- contact: the links ride an orbit under the black hole on wide screens ---------- */
   const contactEl = document.getElementById('contact');
-  const loopEl = document.querySelector('[data-loop]');
-  const LOOP_ANGLES = [-90, -12, 58, 122, 192];
-  function layoutLoop() {
-    if (!contactEl || !loopEl) return;
-    const items = [...loopEl.children];
-    contactEl.classList.remove('ring-on');
+  const orbitEl = document.querySelector('[data-orbit]');
+  const coreEl = contactEl ? contactEl.querySelector('.contact-core') : null;
+  const ORBIT = [150, 125, 90, 55, 30]; // degrees below the hole's centre line
+  function layoutOrbit() {
+    if (!contactEl || !orbitEl || !coreEl) return;
+    const items = [...orbitEl.children];
+    contactEl.classList.remove('orbit-on');
     items.forEach((li) => { li.style.left = ''; li.style.top = ''; });
-    const vw = document.documentElement.clientWidth, vh = innerHeight;
+    const W = contactEl.clientWidth;
+    if (W < 1000) return;
+    contactEl.classList.add('orbit-on');
+    const rs = coreEl.offsetWidth / 1.6;
+    const cx = coreEl.offsetLeft + coreEl.offsetWidth / 2, cy = coreEl.offsetTop + coreEl.offsetHeight / 2;
     const pad = parseFloat(getComputedStyle(contactEl).paddingLeft) || 24;
-    contactEl.classList.add('ring-on');
-    const sizes = items.map((li) => [li.offsetWidth, li.offsetHeight]);
-    const maxW = Math.max(...sizes.map((s) => s[0]));
-    const R = Math.min(vh * 0.3, 300, vw / 2 - pad - maxW - 28);
-    if (R < 150) { contactEl.classList.remove('ring-on'); contactEl.style.removeProperty('--ring'); return; }
-    contactEl.style.setProperty('--ring', (R * 2) + 'px');
+    const ea = Math.min(W / 2 - pad - 40, rs * 2.9), eb = rs * 1.62;
     items.forEach((li, i) => {
-      const ang = LOOP_ANGLES[i % LOOP_ANGLES.length] * Math.PI / 180, cs = Math.cos(ang), sn = Math.sin(ang);
-      const [w, h] = sizes[i];
-      const ext = Math.abs(cs) * w / 2 + Math.abs(sn) * h / 2 + 22;
-      li.style.left = (R + cs * (R + ext) - w / 2) + 'px';
-      li.style.top = (R + sn * (R + ext) - h / 2) + 'px';
+      const ang = ORBIT[i % ORBIT.length] * Math.PI / 180, lw = li.offsetWidth;
+      li.style.left = clamp(cx + Math.cos(ang) * ea, pad + lw / 2, W - pad - lw / 2) + 'px';
+      li.style.top = (cy + Math.sin(ang) * eb * (i === 2 ? 1.12 : 1)) + 'px';
     });
+  }
+
+  /* ---------- marks of tools, drawn as lines from the open Simple Icons set ---------- */
+  const icons = [...document.querySelectorAll('canvas.lic[data-icon]')].map((cv) => ({ cv, slug: cv.dataset.icon, mask: null, hover: 0, thover: 0 }));
+  let drawIcons = () => {};
+  if (icons.length && window.fetch && window.Promise) {
+    root.classList.add('icons-on');
+    const VER = { linkedin: 13 }; // LinkedIn left the set after version 13
+    const masks = new Map();
+    const loadMask = (slug) => {
+      if (masks.has(slug)) return masks.get(slug);
+      const pr = fetch('https://cdn.jsdelivr.net/npm/simple-icons@' + (VER[slug] || 16) + '/icons/' + slug + '.svg')
+        .then((r) => (r.ok ? r.text() : Promise.reject(new Error(slug))))
+        .then((svg) => new Promise((res, rej) => { const img = new Image(); img.onload = () => res(img); img.onerror = rej; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); }))
+        .then((img) => {
+          const S = 96, cv2 = document.createElement('canvas'); cv2.width = cv2.height = S;
+          const c2 = cv2.getContext('2d'); c2.drawImage(img, 4, 4, S - 8, S - 8);
+          const d = c2.getImageData(0, 0, S, S).data, m = new Float32Array(S * S);
+          for (let i = 0; i < S * S; i++) m[i] = d[i * 4 + 3] / 255;
+          return { S, m };
+        });
+      masks.set(slug, pr); return pr;
+    };
+    // horizontal lines that thicken inside the mark, like the name in the hero
+    const drawIcon = (ic, t) => {
+      const cv = ic.cv, size = cv.clientWidth; if (!size || !ic.mask) return;
+      const dpr = Math.min(devicePixelRatio || 1, 2), px = Math.round(size * dpr);
+      if (cv.width !== px) { cv.width = px; cv.height = px; }
+      const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, size, size);
+      c.fillStyle = getComputedStyle(cv).color;
+      const { S, m } = ic.mask, sp = Math.max(2, size / 15), k = S / size, cw = 1 / k;
+      c.beginPath();
+      for (let y = sp / 2; y < size; y += sp) {
+        const r0 = Math.max(0, Math.floor((y - sp / 2) * k)), r1 = Math.min(S - 1, Math.ceil((y + sp / 2) * k));
+        const shift = ic.hover * 1.8 * Math.sin(y * 0.8 - t * 8);
+        for (let xs = 0; xs < S; xs++) {
+          let cov = 0; for (let r = r0; r <= r1; r++) cov += m[r * S + xs]; cov /= (r1 - r0 + 1);
+          if (cov < 0.04) continue;
+          const th = sp * 0.86 * Math.min(1, cov * 1.15);
+          c.rect(xs * cw + shift, y - th / 2, cw + 0.05, th);
+        }
+      }
+      c.fill();
+    };
+    let animating = false;
+    const tick = (now) => {
+      const t = now / 1000; let any = false;
+      icons.forEach((ic) => { const prev = ic.hover; ic.hover += (ic.thover - ic.hover) * 0.12; if (Math.abs(ic.hover - prev) > 0.002 || ic.hover > 0.01) { any = true; drawIcon(ic, t); } });
+      if (any && !reduce) requestAnimationFrame(tick); else animating = false;
+    };
+    icons.forEach((ic) => {
+      const host = ic.cv.closest('li, article') || ic.cv;
+      host.addEventListener('pointerenter', () => { ic.thover = 1; if (!animating && !reduce) { animating = true; requestAnimationFrame(tick); } });
+      host.addEventListener('pointerleave', () => { ic.thover = 0; });
+      loadMask(ic.slug).then((mk) => { ic.mask = mk; drawIcon(ic, 0); }).catch(() => { ic.cv.style.display = 'none'; });
+    });
+    drawIcons = () => icons.forEach((ic) => drawIcon(ic, 0));
+    addEventListener('resize', () => drawIcons());
   }
 
   /* ---------- 3D models, loaded only when their sections come near ---------- */
@@ -446,7 +526,7 @@ uniform vec4 uHero;uniform vec4 uTun;uniform vec4 uCliff;uniform vec4 uFig;
 uniform sampler2D uName;uniform float uNameOn;
 uniform vec4 uGrip;
 uniform int uPeakN;uniform vec4 uPeak[8];
-uniform vec4 uLoop;uniform vec4 uFig2;
+uniform vec4 uTL;uniform vec4 uTLm;uniform vec4 uRA;uniform vec4 uRB;uniform vec4 uSeal;uniform vec4 uSeal2;uniform vec4 uBH2;
 uniform vec4 uBH;
 uniform vec4 uMoon;uniform vec4 uFoot;uniform sampler2D uCode;uniform float uCodeOn;
 out vec4 o;
@@ -571,8 +651,9 @@ void main(){
   float fr=1.41*pow(rr+2.0,0.641)*clamp(sqrt(1000.0*uDpr/uRes.x),1.0,1.55); // finer rings on small screens, so the name keeps enough lines
   v1=fr-th*0.15915494-uTun.w*22.0-t*0.12;vd1=fr;
   vec2 uvN=hl/uHero.zw;
-  float m=(uNameOn>0.5&&uvN.x>0.0&&uvN.x<1.0&&uvN.y>0.0&&uvN.y<1.0)?texture(uName,uvN).r:0.0;
-  cov=0.84*m;
+  vec4 nm=(uNameOn>0.5&&uvN.x>0.0&&uvN.x<1.0&&uvN.y>0.0&&uvN.y<1.0)?texture(uName,uvN):vec4(0.0);
+  cov=0.84*nm.r;
+  clr2=max(clr2,nm.g);rim=max(rim,nm.b);
   w=mix(0.7,1.25,rough)*wvar*0.8;
   float ct=cliffTop(hl.x,uHero.z,uHero.w);
   solid=max(solid,smoothstep(ct-0.8,ct+0.8,hl.y));
@@ -604,11 +685,30 @@ void main(){
   for(int i=0;i<8;i++){if(i>=uPeakN)break;vec4 pk=uPeak[i];vec2 d=(pw-pk.xy)/(pk.z*1.05+110.0);h+=(1.6+0.9*pk.w)*exp(-dot(d,d)*1.1);}
   v1=h*(scene==3?12.5:10.0)+bump;vd1=v1;
  }else if(scene==4){
-  // EXPERIENCE: strata
+  // EXPERIENCE: strata. The timeline is a calm band through the rock: each month a small fault,
+  // each role a lens where the layers crowd together (the long role thickens as it grew), a clean cut at the new year.
   float sy=pw.y-secTop;
-  float fold=18.0*sin(pw.x/340.0+sy/560.0)+8.0*sin(pw.x/113.0-sy/260.0)+n*30.0;
-  float u=sy+fold;
-  v1=u/8.5+6.0*sin(u/75.0)+bump;vd1=v1;w=wvar*0.9;
+  float tb=smoothstep(uTL.y-70.0,uTL.y+10.0,p.y)*(1.0-smoothstep(uTL.y+uTL.w-10.0,uTL.y+uTL.w+70.0,p.y));
+  float fold=(18.0*sin(pw.x/340.0+sy/560.0)+8.0*sin(pw.x/113.0-sy/260.0)+n*30.0)*(1.0-0.92*tb);
+  float mo=(p.x-uTLm.x)/max(uTLm.y,1.0);
+  float inT=step(0.0,mo)*step(mo,uTLm.z);
+  float fault=tb*inT*(hash(vec2(floor(mo),3.7))-0.5)*6.0;
+  float g=0.0,lens=0.0;
+  if(uRA.y>uRA.x){
+   float wx=smoothstep(uRA.x-4.0,uRA.x+22.0,p.x)*(1.0-smoothstep(uRA.y-4.0,uRA.y+14.0+5.0*sn(vec2(p.y/9.0,t*0.7)),p.x));
+   float q=clamp((p.x-uRA.x)/max(uRA.y-uRA.x,1.0),0.0,1.0);
+   float hh=uRA.w*mix(0.16,1.0,pow(q,0.75))*(1.0+0.05*sin(t*1.4));
+   float dy1=(p.y-uRA.z)/hh;g+=wx*2.8*hh*tanh(dy1)*exp(-dy1*dy1/14.0);
+   lens=max(lens,wx*(1.0-smoothstep(hh*0.85,hh*1.1,abs(p.y-uRA.z))));
+  }
+  if(uRB.y>uRB.x){
+   float wx=smoothstep(uRB.x-4.0,uRB.x+14.0,p.x)*(1.0-smoothstep(uRB.y-14.0,uRB.y+4.0,p.x));
+   float dy2=(p.y-uRB.z)/uRB.w;g+=wx*2.8*uRB.w*tanh(dy2)*exp(-dy2*dy2/14.0);
+   lens=max(lens,wx*(1.0-smoothstep(uRB.w*0.85,uRB.w*1.1,abs(p.y-uRB.z))));
+  }
+  float u=sy+fold+fault+g;
+  v1=u/8.5+6.0*sin(u/75.0)*(1.0-tb)+bump;vd1=v1;w=wvar*0.9*(1.0+0.9*lens);
+  clr2=max(clr2,tb*inT*(1.0-smoothstep(0.8,2.2,abs(p.x-uTLm.w))));
  }else if(scene==5){
   // PROJECTS: water passing stones
   float sy=pw.y-secTop;
@@ -619,55 +719,85 @@ void main(){
   v1=(sy+5.0*sin(pw.x/220.0+sy/160.0)+n*7.0)/4.6+bump*0.6;vd1=v1;w=0.6;
   v2=(sy*0.94+pw.x*0.34+n*9.0)/6.5;vd2=v2;f2=0.6*smoothstep(0.05,0.45,n);w2=0.7;
  }else if(scene==8){
-  // RESUME: a black hole bending the lines behind it (point-mass lens), with an inclined accretion disk
-  vec2 C=uBH.xy;float RE=uBH.z;float Rh=RE*0.46;
-  vec2 th=p-C;float r=length(th);
-  vec2 src=C+th-RE*RE*th/max(r*r,1.0);
-  float ns=fbm(src/420.0,t*0.03);
-  v1=(src.y*0.93+src.x*0.37)/6.2+ns*2.4;vd1=v1;
-  float hz=1.0-smoothstep(Rh-0.8,Rh+0.8,r);
-  f1=1.0-hz;w=0.8+0.9*smoothstep(RE*2.2,RE*0.9,r);
-  vec2 dd=vec2(th.x,th.y/0.2);float rho=length(dd);
-  float disk=smoothstep(Rh*1.25,Rh*1.5,rho)*(1.0-smoothstep(Rh*2.8,Rh*3.4,rho));
-  v2=rho/5.0+atan(dd.y,dd.x)*0.31830989-t*0.9*(1.0+uBH.w);vd2=rho/5.0;
-  f2=disk*(th.y>0.0?1.0:(1.0-hz));
-  w2=mix(1.7,0.5,smoothstep(-Rh*2.6,Rh*2.6,th.x));
-  float ar=r/3.0;float ad=abs(fract(ar+0.5)-0.5)*3.0;
-  float band=smoothstep(Rh*1.03,Rh*1.1,r)*(1.0-smoothstep(Rh*1.4,Rh*1.7,r));
-  extra=max(extra,(1.0-smoothstep(0.3,1.2,ad))*band*(th.y<0.0?1.0:0.4)*(1.0-f2));
-  extra=max(extra,(1.0-smoothstep(0.5,1.6,abs(r-Rh*1.02))));
+  // CONTACT: a black hole seen almost edge-on (after Gargantua in Interstellar), made only of lines.
+  // The disk is streaks on circular orbits turning at Kepler speed; its far side is bent over the top of the
+  // shadow by gravity (with a thin copy underneath); the photon ring edges the shadow. The heading sits in the shadow.
+  vec2 C=uBH.xy;float Rs=uBH.z;float k=uBH2.x;float spin=uBH.w;
+  vec2 dp=p-C;float r=length(dp);
+  vec2 d=rot(uBH2.y)*dp;
+  float shadow=1.0-smoothstep(Rs-0.8,Rs+0.8,r);
+  float rin=Rs*1.45,rout=Rs*4.4;
+  vec2 q=vec2(d.x,d.y/k);float rho=length(q);float ph=atan(q.y,q.x);
+  float disk=smoothstep(rin,rin*1.05,rho)*(1.0-smoothstep(rout*0.7,rout,rho));
+  float near=step(0.0,d.y);
+  float lane=log(max(rho,1.0)/rin)*rin/2.6;float li=floor(lane);
+  float h1=hash(vec2(li,1.3)),h2=hash(vec2(li,8.1));
+  float s1=fract(ph*(2.0+floor(h1*7.0))*0.15915494-spin*pow(rin/max(rho,1.0),1.5)*(0.7+0.6*h1)+h1*9.0);
+  float dash=smoothstep(0.0,0.02,s1)*(1.0-smoothstep(0.3+0.55*h2,0.34+0.55*h2,s1));
+  v2=lane;vd2=lane;
+  f2=disk*mix(1.0,dash,mix(0.45,0.85,smoothstep(rin,rin*2.2,rho)))*mix(1.0-shadow,1.0,near);
+  w2=mix(2.3,0.55,smoothstep(rin,rout,rho))*(1.0+0.45*clamp(-d.x/(Rs*3.0),-1.0,1.0));
+  float al=atan(-d.y,d.x);float sa=sin(al);
+  float T=Rs*(sa>0.0?(0.12+0.62*pow(sa,1.3)):(0.04+0.06*sa*sa));
+  float e=r-Rs*1.035;
+  float arc=step(0.0,e)*(1.0-smoothstep(T*0.85,T,e));
+  float rl=rin+(e/max(T,1.0))*(rout-rin)*0.42;
+  float lane2=log(max(rl,1.0)/rin)*rin/2.4;float lj=floor(lane2);
+  float g1=hash(vec2(lj,4.4)),g2=hash(vec2(lj,2.2));
+  float s2=fract(al*(2.0+floor(g1*7.0))*0.15915494+spin*pow(rin/rl,1.5)*(0.7+0.6*g1)+g1*5.0);
+  float dash2=smoothstep(0.0,0.02,s2)*(1.0-smoothstep(0.35+0.5*g2,0.39+0.5*g2,s2));
+  v1=lane2;vd1=lane2;
+  f1=arc*mix(1.0,dash2,0.75)*(1.0-f2*near);
+  w=mix(1.6,0.7,clamp(e/max(T,1.0),0.0,1.0));
+  extra=max(extra,1.0-smoothstep(0.5,1.6,abs(r-Rs*1.012)));
+  extra=max(extra,(1.0-smoothstep(0.3,1.0,abs(r-Rs*1.03)))*0.4);
+  extra=max(extra,stars(vec2(p.x,p.y-secTop),t)*(1.0-shadow)*(1.0-arc)*(1.0-disk));
  }else if(scene==9){
-  // CONTACT: lines wrap the loop the way they wrap the figure in reference 4
-  vec2 d=pw-uLoop.xy;float band=length(d)-uLoop.z;float T=uLoop.w;
-  float tube=1.0-(band*band)/(T*T);float H=tube>0.0?sqrt(tube):0.0;
-  float sy=pw.y-secTop;
-  v1=(sy+n*26.0+7.0*sin(pw.x/95.0)-H*T*2.4)/7.5+bump;vd1=v1;
-  w=wvar*mix(1.0,1.35,H);
-  vec2 fq=(p-uFig2.xy)/uFig2.w;float fd=sdFigure(fq)*uFig2.w;
-  clr2=1.0-smoothstep(-0.7,0.7,fd);rim=1.0-smoothstep(0.2,1.3,abs(fd-0.4));
+  // RESUME: a guilloche seal, like the security printing on a certificate. Two rosettes interfere; the second
+  // one's centre follows the pointer, so moire fringes sweep through the seal. As the pointer comes close, a
+  // download arrow printed as a half-line shift appears in the rings. The seal's centre is the download link.
+  vec2 C=uSeal.xy;float R=uSeal.z;
+  vec2 d=pw-C;float r=length(d);float a=atan(d.y,d.x);
+  if(r<R*1.05){
+   vec2 d2=pw-C-uSeal2.xy;float r2=length(d2);float a2=atan(d2.y,d2.x);
+   float env=(1.0-smoothstep(R*0.95,R*0.985,r))*smoothstep(R*0.25,R*0.28,r);
+   vec2 u=d/R;
+   float ad=min(sdSeg(u,vec2(0.0,-0.66),vec2(0.0,0.24)),min(sdSeg(u,vec2(-0.3,-0.05),vec2(0.0,0.26)),sdSeg(u,vec2(0.3,-0.05),vec2(0.0,0.26))));
+   ad=min(ad,sdSeg(u,vec2(-0.46,0.6),vec2(0.46,0.6)));
+   float lat=(1.0-smoothstep(0.08,0.1,ad))*uSeal.w;
+   v1=(r+R*0.05*sin(9.0*a+r/(R*0.09)+uSeal2.z))/5.4;vd1=r/5.4;
+   v2=(r2+R*0.05*sin(9.0*a2-r2/(R*0.09)+3.14159-uSeal2.z))/5.4+0.5*lat;vd2=r2/5.4;
+   f1=env;f2=env;w=0.7;w2=0.7;
+  }else{
+   float sy=pw.y-secTop;
+   v1=(sy+n*34.0+9.0*sin(pw.x/180.0))/10.0+bump;vd1=v1;
+   f1=smoothstep(R*1.05,R*1.35,r);w=wvar*0.8;
+  }
+  extra=max(extra,1.0-smoothstep(0.4,1.2,abs(r-R)));
+  extra=max(extra,1.0-smoothstep(0.3,1.0,abs(r-R*1.028)));
+  extra=max(extra,(1.0-smoothstep(0.3,1.0,abs(r-R*0.245)))*0.85);
  }else{
-  // FOOTER: a night ocean; the moon is a barcode that scans as human-in-loop.dev
+  // FOOTER: a night ocean. A small moon rises at the left edge, part below the water; the barcode on the
+  // horizon (in the page) throws its reflection on the waves.
   float hz=uMoon.w;float dy=pw.y-hz;
   vec2 mc=uMoon.xy;float R=uMoon.z;
-  vec2 fuv=(p-uFoot.xy)/uFoot.zw;
   if(dy>0.0){
    float Z=620.0/(dy+4.0);float X=(pw.x-mc.x)/(dy+4.0)*0.7;
    float H=0.35*sin(X*1.3+Z*0.9-t*1.2)+0.22*sin(-X*2.1+Z*1.4-t*0.9)+0.12*sin(X*3.7+Z*2.6-t*1.7);
    v1=Z*1.5+H*1.3+bump*0.3;vd1=Z*1.5;
-   float path=exp(-pow((pw.x-mc.x)/(R*(0.55+dy/280.0)),2.0));
-   w=wvar*(1.0+1.8*path);
-   vec2 mu=(vec2(pw.x+H*7.0,hz-dy*0.9)-uFoot.xy)/uFoot.zw;
-   float bar=uCodeOn>0.5?texture(uCode,mu).r:0.0;
-   v2=v1*2.7;vd2=vd1*2.7;f2=path*0.85*(1.0-bar*0.9);w2=0.9;
-   f1*=1.0-0.75*bar*path;
+   float path=exp(-pow((pw.x-mc.x)/(R*(0.8+dy/220.0)),2.0));
+   vec2 mu=(vec2(pw.x+H*6.0,hz-dy*0.9)-uFoot.xy)/uFoot.zw;
+   float bar=(uCodeOn>0.5&&mu.x>0.0&&mu.x<1.0&&mu.y>0.0&&mu.y<1.0)?texture(uCode,mu).r:0.0;
+   bar*=1.0-smoothstep(10.0,150.0,dy);
+   w=wvar*(1.0+1.8*path+2.4*bar);
+   v2=v1*2.7;vd2=vd1*2.7;f2=max(path*0.85,bar*0.8);w2=0.9;
   }else{
    f1=0.0;
    float md=length(p-mc);
-   float bar=uCodeOn>0.5?texture(uCode,fuv).r:0.0;
-   solid=(1.0-smoothstep(R-0.8,R+0.8,md))*(1.0-bar);
-   float halo=md/7.0;float hd=abs(fract(halo+0.5)-0.5)*7.0;
-   extra=max(extra,(1.0-smoothstep(0.35,1.1,hd))*smoothstep(R*1.08,R*1.14,md)*(1.0-smoothstep(R*1.2,R*2.1,md))*0.75);
-   extra=max(extra,stars(vec2(p.x,p.y-secTop),t)*step(R*1.3,md));
+   solid=1.0-smoothstep(R-0.8,R+0.8,md);
+   float halo=md/6.0;float hd=abs(fract(halo+0.5)-0.5)*6.0;
+   extra=max(extra,(1.0-smoothstep(0.35,1.1,hd))*smoothstep(R*1.1,R*1.16,md)*(1.0-smoothstep(R*1.3,R*2.6,md))*0.8);
+   extra=max(extra,stars(vec2(p.x,p.y-secTop),t)*step(R*1.35,md));
   }
   extra=max(extra,1.0-smoothstep(0.6,1.6,abs(p.y-hz)));
  }
@@ -693,7 +823,7 @@ void main(){
   function startArtsOnly() {
     root.classList.add('no-lines');
     const loop = (now) => { tickArts(now / 1000); requestAnimationFrame(loop); };
-    layoutTimeline(); layoutLoop();
+    layoutTimeline(); layoutOrbit();
     requestAnimationFrame(loop);
   }
   if (!gl) { startArtsOnly(); return; }
@@ -716,7 +846,7 @@ void main(){
   const al = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(al); gl.vertexAttribPointer(al, 2, gl.FLOAT, false, 0, 0);
   const U = {};
   ['uRes', 'uDpr', 'uTime', 'uMouse', 'uMouseAmt', 'uInvert', 'uSecN', 'uSec', 'uSecB', 'uRectN', 'uRect', 'uKind', 'uHero', 'uTun', 'uCliff', 'uFig',
-    'uName', 'uNameOn', 'uGrip', 'uPeakN', 'uPeak', 'uLoop', 'uFig2', 'uBH', 'uMoon', 'uFoot', 'uCode', 'uCodeOn']
+    'uName', 'uNameOn', 'uGrip', 'uPeakN', 'uPeak', 'uTL', 'uTLm', 'uRA', 'uRB', 'uSeal', 'uSeal2', 'uBH', 'uBH2', 'uMoon', 'uFoot', 'uCode', 'uCodeOn']
     .forEach((n) => { U[n] = gl.getUniformLocation(prog, n); });
   function makeTex(unit) {
     const tex = gl.createTexture();
@@ -730,7 +860,7 @@ void main(){
   function upload(unit, tex, canvas) { gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, tex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas); }
 
   /* ---------- the page model ---------- */
-  const SCENE = { tunnel: 0, head: 1, face: 1, cloth: 2, terrain: 3, strata: 4, stream: 5, engrave: 6, contour: 7, blackhole: 8, wrap: 9, ocean: 10 };
+  const SCENE = { tunnel: 0, head: 1, face: 1, cloth: 2, terrain: 3, strata: 4, stream: 5, engrave: 6, contour: 7, blackhole: 8, seal: 9, ocean: 10 };
   const SEAM = { cliff: [1, 44], wave: [2, 26], rule: [3, 0] };
   const KIND = { plate: 1, '': 1, glass: 2, clear: 3, sparse: 4 };
   const secs = [...document.querySelectorAll('[data-scene]')].map((el) => ({
@@ -748,7 +878,8 @@ void main(){
   const n1 = hero ? hero.querySelector('.n1') : null;
   const heroId = hero ? hero.querySelector('[data-cliff]') : null;
   const handEl = document.querySelector('[data-hand]');
-  const bhEl = document.querySelector('[data-bh]');
+  const sealEl = document.querySelector('[data-seal]');
+  const n2 = hero ? hero.querySelector('.n2') : null;
   const footEl = document.querySelector('.foot');
   const nav = document.querySelector('.topbar');
 
@@ -767,6 +898,22 @@ void main(){
     let widest = 0; const re = /\S+/g; let m;
     while ((m = re.exec(node.textContent))) { range.setStart(node, m.index); range.setEnd(node, m.index + m[0].length); widest = Math.max(widest, range.getBoundingClientRect().width); }
     if (widest > avail) n1.style.fontSize = (size * avail / widest * 0.985).toFixed(2) + 'px';
+    if (!n2 || !root.classList.contains('lines-live')) return;
+    n2.style.left = ''; n2.style.top = '';
+    const fsz = parseFloat(getComputedStyle(n1).fontSize);
+    n2.style.fontSize = (fsz * 0.34).toFixed(2) + 'px';
+    const hr2 = n1.parentElement.getBoundingClientRect();
+    const words = []; re.lastIndex = 0;
+    while ((m = re.exec(node.textContent))) { range.setStart(node, m.index); range.setEnd(node, m.index + m[0].length); words.push(range.getBoundingClientRect()); }
+    if (!words.length) return;
+    const w2 = n2.offsetWidth, gap = fsz * 0.14, first = words[0], last = words[words.length - 1];
+    if (first.right - hr2.left + gap + w2 <= hr2.width) {
+      n2.style.left = (first.right - hr2.left + gap) + 'px';
+      n2.style.top = (first.top - hr2.top + fsz * 0.05) + 'px';
+    } else {
+      n2.style.left = (hr2.width - w2) + 'px';
+      n2.style.top = (last.bottom - hr2.top + fsz * 0.04) + 'px';
+    }
   }
   function drawName() {
     if (!hero || !n1) return;
@@ -781,7 +928,7 @@ void main(){
     c.font = `${cs.fontStyle} ${cs.fontWeight} ${stretch} ${cs.fontSize} ${cs.fontFamily}`;
     if ('fontStretch' in c) c.fontStretch = stretch;
     if ('letterSpacing' in c) c.letterSpacing = cs.letterSpacing === 'normal' ? '0px' : cs.letterSpacing;
-    c.fillStyle = '#fff'; c.strokeStyle = '#fff'; c.lineJoin = 'round'; c.lineWidth = size * 0.022; c.textBaseline = 'alphabetic';
+    c.fillStyle = '#f00'; c.strokeStyle = '#f00'; c.lineJoin = 'round'; c.lineWidth = size * 0.022; c.textBaseline = 'alphabetic';
     const node = n1.firstChild; if (!node || node.nodeType !== 3) return;
     const text = node.textContent; const range = document.createRange();
     const re = /\S+/g; let m;
@@ -792,6 +939,21 @@ void main(){
       const asc = mt.fontBoundingBoxAscent || size * 0.8, desc = mt.fontBoundingBoxDescent || size * 0.2;
       const base = r.top - hr.top + (r.height - (asc + desc)) / 2 + asc;
       c.strokeText(m[0], r.left - hr.left, base); c.fillText(m[0], r.left - hr.left, base);
+    }
+    // the handle: green is cut out of the spiral, blue is its fine outline
+    if (n2 && n2.firstChild && root.classList.contains('lines-live')) {
+      const r2 = n2.getBoundingClientRect(), cs2 = getComputedStyle(n2), s2 = parseFloat(cs2.fontSize);
+      const stretch2 = parseFloat(cs2.fontStretch) >= 120 ? 'expanded' : 'normal';
+      c.font = cs2.fontStyle + ' ' + cs2.fontWeight + ' ' + stretch2 + ' ' + cs2.fontSize + ' ' + cs2.fontFamily;
+      if ('fontStretch' in c) c.fontStretch = stretch2;
+      if ('letterSpacing' in c) c.letterSpacing = cs2.letterSpacing === 'normal' ? '0px' : cs2.letterSpacing;
+      const mt2 = c.measureText(n2.textContent);
+      const asc2 = mt2.fontBoundingBoxAscent || s2 * 0.8, desc2 = mt2.fontBoundingBoxDescent || s2 * 0.2;
+      const b2 = r2.top - hr.top + (r2.height - (asc2 + desc2)) / 2 + asc2;
+      c.globalCompositeOperation = 'lighter';
+      c.fillStyle = '#0f0'; c.fillText(n2.textContent, r2.left - hr.left, b2);
+      c.strokeStyle = '#00f'; c.lineWidth = 1.3; c.strokeText(n2.textContent, r2.left - hr.left, b2);
+      c.globalCompositeOperation = 'source-over';
     }
     upload(0, nameTex, nameCanvas);
     nameOn = 1;
@@ -805,9 +967,9 @@ void main(){
     if (!footEl) return null;
     const r = footEl.getBoundingClientRect();
     const hz = r.height * 0.52;
-    // on phones the moon grows so the barcode keeps at least about a pixel per module
-    const R = r.width < 700 ? Math.min(r.width * 0.33, 150) : clamp(Math.min(r.width * 0.12, r.height * 0.17), 76, 220);
-    return { x: r.width * (r.width < 700 ? 0.5 : 0.74), y: hz - R * 1.25, R, hz };
+    // a tenth of the moon is past the left edge and a fiftieth is under the water
+    const R = clamp(Math.min(r.width * 0.075, r.height * 0.11), 40, 120);
+    return { x: R * 0.8, y: hz - R + R * 0.04, R, hz };
   }
   function drawCode() {
     if (!footEl) return;
@@ -816,17 +978,14 @@ void main(){
     codeCanvas.width = Math.max(1, Math.round(r.width * md)); codeCanvas.height = Math.max(1, Math.round(r.height * md));
     const c = codeCanvas.getContext('2d');
     c.setTransform(md, 0, 0, md, 0, 0); c.clearRect(0, 0, r.width, r.height);
-    c.font = '100px "Libre Barcode 128"';
-    const w100 = c.measureText(CODE).width; if (!w100) return;
-    const size = 100 * (moon.R * 1.56) / w100;
-    c.font = `${size}px "Libre Barcode 128"`;
-    const mt = c.measureText(CODE);
-    const barH = (mt.actualBoundingBoxAscent || size * 0.7) + (mt.actualBoundingBoxDescent || 0);
-    const k = (moon.R * 0.82) / Math.max(barH, 1);
-    c.save(); c.translate(moon.x - mt.width / 2, moon.y); c.scale(1, k);
-    c.fillStyle = '#fff'; c.textBaseline = 'alphabetic';
-    c.fillText(CODE, 0, (mt.actualBoundingBoxAscent - (mt.actualBoundingBoxDescent || 0)) / 2);
-    c.restore();
+    // same box as .foot::after: right: var(--pad); bottom: 48% + 34px; font-size clamp(46px, 5.6vw, 88px)
+    const fsz = clamp(innerWidth * 0.056, 46, 88);
+    c.font = fsz + 'px "Libre Barcode 128"';
+    const cw = c.measureText(CODE).width; if (!cw) return;
+    footEl.style.setProperty('--code-w', cw.toFixed(1) + 'px');
+    const pad = parseFloat(getComputedStyle(footEl).paddingRight) || 24;
+    c.fillStyle = '#fff'; c.textBaseline = 'bottom';
+    c.fillText(CODE, r.width - pad - cw, r.height * 0.52 - 34 + fsz * 0.39);
     upload(1, codeTex, codeCanvas);
     codeOn = 1;
   }
@@ -853,7 +1012,8 @@ void main(){
   const secBuf = new Float32Array(48), secBBuf = new Float32Array(48);
   const rectBuf = new Float32Array(96), kindBuf = new Float32Array(96), peakBuf = new Float32Array(32);
   const smooth = (x) => x * x * (3 - 2 * x);
-  const bh = { x: 0, y: 0, lift: 0, init: false };
+  const bh = { lift: 0, spin: 0 };
+  const seal = { x: 0, y: 0, show: 0 };
 
   function frameParams(vw, vh) {
     let n = 0;
@@ -910,25 +1070,40 @@ void main(){
       peakBuf.set([r.left + r.width / 2, r.top + r.height / 2, Math.max(r.width, r.height) * 0.5, p.lift], k * 4); if (++k >= 8) break;
     }
     gl.uniform1i(U.uPeakN, k); gl.uniform4fv(U.uPeak, peakBuf);
-    if (contactEl) {
-      const sr = contactEl.getBoundingClientRect();
-      let cx, cy, R;
-      if (contactEl.classList.contains('ring-on') && loopEl) { const r = loopEl.getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; R = r.width / 2; }
-      else { R = Math.min(sr.width * 0.3, 140); cx = sr.left + sr.width / 2; cy = sr.top + 96 + R; } // narrow: the loop gets its own space above the heading
-      const T = R * 0.15;
-      gl.uniform4f(U.uLoop, cx, cy, R, T);
-      gl.uniform4f(U.uFig2, cx, cy + (R - T) * 0.97, 0, (R - T) * 0.22); // standing on the inside of the loop, below the text
+    if (tlEl && tlArt && tlArt.tl) {
+      const r = tlEl.getBoundingClientRect(), tl = tlArt.tl, R0 = tl.roles[0], R1 = tl.roles[1];
+      gl.uniform4f(U.uTL, r.left, r.top, r.width, r.height);
+      gl.uniform4f(U.uTLm, r.left + tl.x0, tl.pxm, tl.months, r.left + tl.yearX);
+      if (R0) gl.uniform4f(U.uRA, r.left + R0.x0, r.left + R0.x1, r.top + R0.yc, R0.hh); else gl.uniform4f(U.uRA, 0, 0, 0, 1);
+      if (R1) gl.uniform4f(U.uRB, r.left + R1.x0, r.left + R1.x1, r.top + R1.yc, R1.hh); else gl.uniform4f(U.uRB, 0, 0, 0, 1);
     }
-    if (bhEl) {
-      const r = bhEl.getBoundingClientRect();
-      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-      const inside = P.x > r.left && P.x < r.right && P.y > r.top && P.y < r.bottom && P.amt > 0.1;
-      const tx = inside ? cx + clamp(P.x - cx, -r.width * 0.3, r.width * 0.3) * 0.4 : cx;
-      const ty = inside ? cy + clamp(P.y - cy, -r.height * 0.3, r.height * 0.3) * 0.4 : cy;
-      if (!bh.init) { bh.x = tx - cx; bh.y = ty - cy; bh.init = true; }
-      bh.x += ((tx - cx) - bh.x) * 0.04; bh.y += ((ty - cy) - bh.y) * 0.04; bh.lift += ((inside ? 1 : 0) - bh.lift) * 0.05;
-      const RE = Math.min(r.width, r.height) * 0.19 * (1 + 0.22 * bh.lift);
-      gl.uniform4f(U.uBH, cx + bh.x, cy + bh.y, RE, bh.lift);
+    if (coreEl) {
+      const cr = coreEl.getBoundingClientRect(), sr = contactEl.getBoundingClientRect();
+      // phones: the heading sits above the hole rather than inside its shadow
+      const narrowC = sr.width < 700;
+      const Rs = narrowC ? sr.width * 0.3 : cr.width / 1.6, cx = cr.left + cr.width / 2, cy = narrowC ? cr.bottom + Rs * 1.45 : cr.top + cr.height / 2;
+      const near = Math.hypot(P.x - cx, P.y - cy) < Rs * 2.2 && P.amt > 0.1 ? 1 : 0;
+      bh.lift += (near - bh.lift) * 0.04;
+      bh.spin += (reduce ? 0 : 1 / 60) * (0.5 + 0.9 * bh.lift);
+      // scrolling through the section opens the disk a little, as if the view rose above its plane
+      const prog = clamp((vh - sr.top) / (vh + sr.height), 0, 1);
+      const px = P.amt > 0.1 ? clamp((P.x - cx) / vw, -0.5, 0.5) * 24 : 0, py = P.amt > 0.1 ? clamp((P.y - cy) / vh, -0.5, 0.5) * 16 : 0;
+      gl.uniform4f(U.uBH, cx + px * 0.5, cy + py * 0.5, Rs, bh.spin);
+      gl.uniform4f(U.uBH2, lerp(0.11, 0.2, prog), lerp(-0.075, -0.025, prog), bh.lift, 0);
+    }
+    if (sealEl) {
+      const r = sealEl.getBoundingClientRect();
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2, R = r.width * 0.48;
+      const dx = P.x - cx, dy = P.y - cy, dist = Math.hypot(dx, dy);
+      const on = P.amt > 0.1 && dist < R * 1.6;
+      // near the centre the rosettes line up and the arrow shows; further out they slide apart into moire
+      const pull = on ? clamp((dist - R * 0.25) / (R * 1.2), 0, 1) : 0;
+      const tx = on ? (dx / Math.max(dist, 1)) * R * 0.07 * pull : Math.cos(time * 0.21) * R * 0.025;
+      const ty = on ? (dy / Math.max(dist, 1)) * R * 0.07 * pull : Math.sin(time * 0.17) * R * 0.025;
+      seal.x += (tx - seal.x) * 0.06; seal.y += (ty - seal.y) * 0.06;
+      seal.show += ((on && dist < R * 0.7 ? 1 : 0) - seal.show) * 0.05;
+      gl.uniform4f(U.uSeal, cx, cy, R, seal.show);
+      gl.uniform4f(U.uSeal2, seal.x, seal.y, time * 0.05, 0);
     }
     if (footEl && moon) {
       const r = footEl.getBoundingClientRect();
@@ -948,7 +1123,7 @@ void main(){
   /* ---------- loop ---------- */
   let last = performance.now(), time = 0, slow = 0, frames = 0;
   function relayout() {
-    fitName(); measureRadii(); resize(); drawName(); drawCode(); layoutTimeline(); layoutLoop();
+    fitName(); measureRadii(); resize(); drawName(); drawCode(); layoutTimeline(); layoutOrbit();
     arts.forEach((a) => { a.dirty = true; });
   }
   function frame(now) {
@@ -968,7 +1143,7 @@ void main(){
     if (frames >= 90) { if (slow > 45 && quality > 0.55) { quality -= 0.15; relayoutPending = true; } frames = 0; slow = 0; }
     requestAnimationFrame(frame);
   }
-  relayout();
   root.classList.add('lines-live');
+  relayout();
   requestAnimationFrame(frame);
 })();

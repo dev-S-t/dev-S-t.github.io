@@ -12,7 +12,7 @@ const HAND_URL = 'https://cdn.jsdelivr.net/npm/@webxr-input-profiles/assets@1.0/
 const VERT = `
 #include <common>
 #include <skinning_pars_vertex>
-varying vec3 vN; varying vec3 vV; varying float vDepth;
+varying vec3 vN; varying vec3 vV; varying float vDepth; varying vec3 vMV;
 void main(){
   #include <beginnormal_vertex>
   #include <skinbase_vertex>
@@ -24,19 +24,21 @@ void main(){
   vN = normalize(transformedNormal);
   vV = -mvPosition.xyz;
   vDepth = -mvPosition.z;
+  vMV = mvPosition.xyz;
 }`;
 
 // contour lines of distance from the eye (like reference image 5), thicker where the light falls (like an engraving)
 // constant pixel-width lines weighted by light, so flat areas get sparse thin lines rather than blobs
 const FRAG = `
-uniform vec3 uGround; uniform vec3 uLine; uniform float uDensity; uniform vec3 uLight; uniform float uRim; uniform float uMaxW; uniform float uDpr;
-varying vec3 vN; varying vec3 vV; varying float vDepth;
+uniform vec3 uGround; uniform vec3 uLine; uniform float uDensity; uniform vec3 uLight; uniform float uRim; uniform float uMaxW; uniform float uDpr; uniform float uFlow;
+varying vec3 vN; varying vec3 vV; varying float vDepth; varying vec3 vMV;
 float lineAt(float v, float fw, float wpx){ float d = abs(fract(v + 0.5) - 0.5) / fw; return 1.0 - smoothstep(wpx * 0.5 - 0.7, wpx * 0.5 + 0.7, d); }
 void main(){
   vec3 n = normalize(vN); if (!gl_FrontFacing) n = -n;
   vec3 vv = normalize(vV);
   float lam = clamp(dot(n, normalize(uLight)), 0.0, 1.0);
-  float v = vDepth * uDensity;
+  // uFlow 0: contours of distance from the eye; 1: upright lines that bend over the form (the cloth running on through the hand)
+  float v = mix(vDepth, vMV.x + 0.9 * vDepth, uFlow) * uDensity;
   float fw = max(fwidth(v), 1e-4);
   float l = max(0.0, log2(fw / 0.28)); float l0 = floor(l); float f = l - l0; float s0 = exp2(l0);
   float wpx = mix(0.45, uMaxW, pow(lam, 1.1)) * uDpr;
@@ -46,11 +48,11 @@ void main(){
   gl_FragColor = vec4(mix(uGround, uLine, a), 1.0);
 }`;
 
-function engraving(density, rim = 0.9, maxW = 2.2) {
+function engraving(density, rim = 0.9, maxW = 2.2, flow = 0) {
   return new THREE.ShaderMaterial({
     uniforms: {
       uGround: { value: new THREE.Color(0x0d0d0c) }, uLine: { value: new THREE.Color(0xf3f1ec) },
-      uDensity: { value: density }, uLight: { value: new THREE.Vector3(-0.45, 0.55, 0.75) }, uRim: { value: rim }, uMaxW: { value: maxW }, uDpr: { value: Math.min(devicePixelRatio || 1, 2) }
+      uDensity: { value: density }, uLight: { value: new THREE.Vector3(-0.45, 0.55, 0.75) }, uRim: { value: rim }, uMaxW: { value: maxW }, uFlow: { value: flow }, uDpr: { value: Math.min(devicePixelRatio || 1, 2) }
     },
     vertexShader: VERT, fragmentShader: FRAG
   });
@@ -111,17 +113,30 @@ if (headCanvas) {
   const v = makeView(headCanvas);
   const mat = engraving(120, 0.75, 2.4); v.mats.push(mat);
   const pivot = new THREE.Group(); v.scene.add(pivot);
-  v.camera.position.set(0, 0.05, 9.2);
-  let head = null, yaw = 0, pitch = 0;
+  let head = null, box = null, yaw = 0, pitch = 0;
   loader.load(HEAD_URL, (gltf) => {
     const holder = new THREE.Group();
     gltf.scene.traverse((o) => { if (o.isMesh) { o.material = mat; } });
     holder.add(gltf.scene);
     normalize(holder, 4.1);
-    holder.position.y -= 0.72;
     pivot.add(holder);
     head = holder;
+    box = new THREE.Box3().setFromObject(holder);
+    v.fit();
   }, undefined, (err) => console.warn('[models] head:', err));
+  v.fit = () => {
+    if (!box) return;
+    // the crown sits 8% below the top edge and the cut of the scan runs just past the bottom edge,
+    // so the bust carries on to the end of the section instead of stopping at the shoulders
+    const fov = v.camera.fov * Math.PI / 180;
+    const aspect = Math.max(v.camera.aspect, 0.2);
+    let visH = (box.max.y - box.min.y) / 0.95;
+    visH = Math.max(visH, (box.max.x - box.min.x) / (1.6 * aspect));
+    const cy = box.min.y - 0.03 * visH + visH / 2;
+    const dist = visH / (2 * Math.tan(fov / 2));
+    v.camera.position.set(0, cy, dist);
+    v.camera.lookAt(0, cy, 0);
+  };
   v.update = (t) => {
     const r = headCanvas.getBoundingClientRect();
     const cx = r.left + r.width / 2, cy = r.top + r.height * 0.42;
@@ -137,7 +152,7 @@ if (headCanvas) {
 const handCanvas = document.querySelector('canvas[data-model="hand"]');
 if (handCanvas) {
   const v = makeView(handCanvas);
-  const mat = engraving(95, 0.9, 2.2); const armMat = engraving(95, 0.9, 2.2); v.mats.push(mat, armMat);
+  const mat = engraving(70, 0.9, 1.8, 1); const armMat = engraving(70, 0.9, 1.8, 1); v.mats.push(mat, armMat);
   const rig = new THREE.Group(); v.scene.add(rig);
   let grip = null, fist = null;
   const tmp = new THREE.Vector3();
@@ -150,49 +165,22 @@ if (handCanvas) {
     });
     const B = (n) => bones[n];
     if (!B('wrist') || !B('middle-finger-metacarpal')) { console.warn('[models] hand: unexpected rig'); return; }
-    // The joints of this rig are siblings, not a chain, so the fist is posed by hand (forward kinematics):
-    // bending at a joint turns every joint after it around that joint, toward the palm.
-    const P = (n) => B(n).position.clone();
-    const thumbDir = P('thumb-phalanx-proximal').sub(P('middle-finger-metacarpal')).normalize();
-    const fingerDir = P('middle-finger-phalanx-proximal').sub(P('wrist')).normalize();
-    const palm = new THREE.Vector3().crossVectors(thumbDir, fingerDir).normalize(); // right hand: palm faces thumb x fingers
-    // the right hand is a mirrored copy (negative scale), which flips cross products in its local space
-    const armature = B('wrist').parent; if (armature) { armature.updateMatrixWorld(true); if (armature.matrixWorld.determinant() < 0) palm.negate(); }
-    const bend = (chain, angles) => {
-      for (let k = 0; k < angles.length; k++) {
-        const j = B(chain[k + 1]), next = B(chain[k + 2]); if (!j || !next) break;
-        const pivot = j.position.clone();
-        const seg = next.position.clone().sub(pivot).normalize();
-        const axis = new THREE.Vector3().crossVectors(seg, palm).normalize();
-        const q = new THREE.Quaternion().setFromAxisAngle(axis, angles[k]);
-        j.quaternion.premultiply(q);
-        for (let m = k + 2; m < chain.length; m++) { const b = B(chain[m]); if (!b) continue; b.position.sub(pivot).applyQuaternion(q).add(pivot); b.quaternion.premultiply(q); }
-      }
+    // The joints of this rig are siblings, not a chain, so the fist is posed with forward kinematics.
+    // Each joint's own X axis is its bending axis (WebXR joint frames: -Z along the bone, +Y out of the back
+    // of the hand), and a negative turn curls toward the palm. Turning a joint carries every later joint.
+    const X = new THREE.Vector3(1, 0, 0);
+    const flex = (chain, k, ang) => {
+      const j = B(chain[k]); const pivot = j.position.clone();
+      const q = new THREE.Quaternion().setFromAxisAngle(X.clone().applyQuaternion(j.quaternion).normalize(), ang);
+      for (let m = k; m < chain.length; m++) { const bn = B(chain[m]); if (!bn) continue; if (m > k) bn.position.sub(pivot).applyQuaternion(q).add(pivot); bn.quaternion.premultiply(q); }
     };
-    // the thumb swings in front of the curled fingers (opposition), then folds
-    function bendThumb() {
-      const chain = ['thumb-metacarpal', 'thumb-phalanx-proximal', 'thumb-phalanx-distal', 'thumb-tip'];
-      const base = B(chain[0]).position.clone();
-      const across = P('index-finger-phalanx-intermediate').sub(base).normalize();
-      const swing = new THREE.Quaternion().setFromUnitVectors(P(chain[1]).sub(base).normalize(), across.clone().lerp(palm, 0.35).normalize());
-      const q = new THREE.Quaternion().slerp(swing, 0.62);
-      B(chain[0]).quaternion.premultiply(q);
-      for (let m = 1; m < chain.length; m++) { const b = B(chain[m]); b.position.sub(base).applyQuaternion(q).add(base); b.quaternion.premultiply(q); }
-      bend(chain, [0.55, 0.7]);
-    }
-    {
-      // a pinch: thumb and index meet on the gathered lines, the other fingers curl into the palm
-      const chainOf = (f) => [f + '-metacarpal', f + '-phalanx-proximal', f + '-phalanx-intermediate', f + '-phalanx-distal', f + '-tip'];
-      bend(chainOf('index-finger'), [0.72, 0.95, 0.5]);
-      bend(chainOf('middle-finger'), [1.3, 1.55, 0.95]);
-      bend(chainOf('ring-finger'), [1.45, 1.6, 1.0]);
-      bend(chainOf('pinky-finger'), [1.55, 1.65, 1.05]);
-      const tchain = ['thumb-metacarpal', 'thumb-phalanx-proximal', 'thumb-phalanx-distal', 'thumb-tip'];
-      bend(tchain, [0.25, 0.35]);
-      const base = B(tchain[0]).position.clone();
-      const aim = new THREE.Quaternion().setFromUnitVectors(P('thumb-tip').sub(base).normalize(), P('index-finger-tip').sub(base).normalize());
-      tchain.forEach((n, m) => { const b = B(n); b.quaternion.premultiply(aim); if (m > 0) b.position.sub(base).applyQuaternion(aim).add(base); });
-    }
+    const chainOf = (f) => [f + '-metacarpal', f + '-phalanx-proximal', f + '-phalanx-intermediate', f + '-phalanx-distal', f + '-tip'];
+    // a closed fist gathering the cloth: the fingers curl a little more toward the little finger,
+    // and the thumb folds over to press the lines against the side of the index finger
+    [['index-finger', [-1.05, -1.35, -0.8]], ['middle-finger', [-1.3, -1.45, -0.85]], ['ring-finger', [-1.4, -1.45, -0.8]], ['pinky-finger', [-1.5, -1.4, -0.75]]]
+      .forEach(([f, angles]) => angles.forEach((ang, i) => flex(chainOf(f), i + 1, ang)));
+    const thumb = ['thumb-metacarpal', 'thumb-phalanx-proximal', 'thumb-phalanx-distal', 'thumb-tip'];
+    flex(thumb, 1, -0.8); flex(thumb, 2, -0.75);
     model.updateMatrixWorld(true);
     // orient: knuckles up, palm toward the viewer and turned a little, wrist below
     const W = (n) => B(n).getWorldPosition(new THREE.Vector3());
@@ -214,9 +202,9 @@ if (handCanvas) {
     const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.42, 12, 64, 1, false), armMat);
     arm.position.set(wp.x, wp.y - 6 + 0.5, wp.z - 0.04);
     v.wristW = wp.clone();
-    v.gripW = W('thumb-tip').add(W('index-finger-tip')).multiplyScalar(0.5);
+    v.gripW = W('thumb-tip').add(W('index-finger-phalanx-intermediate')).multiplyScalar(0.5);
     rig.add(holder, arm);
-    grip = [B('thumb-tip'), B('index-finger-tip')];
+    grip = [B('thumb-tip'), B('index-finger-phalanx-intermediate')];
     v.fit();
   }, undefined, (err) => console.warn('[models] hand:', err));
   v.fit = () => {
