@@ -61,8 +61,10 @@
   <script>try{var t=localStorage.getItem('hil-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalnia:wdth,wght@100..125,100..700&family=Geologica:slnt,wght,CRSV,SHRP@-12..0,100..900,0..1,0..100&family=Workbench:BLED,SCAN@0..100,-53..100&family=Monoton&family=Sankofa+Display&family=Libre+Barcode+128+Text&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalnia:wdth,wght@100..125,100..700&family=Geologica:slnt,wght,CRSV,SHRP@-12..0,100..900,0..1,0..100&family=Workbench:BLED,SCAN@0..100,-53..100&family=Monoton&family=Michroma&family=Libre+Barcode+128&display=swap">
   <link rel="stylesheet" href="/assets/css/site.css">
+  <!-- 3D models (head, hand) load lazily through three.js when their sections come near -->
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
   <script src="/assets/js/lines.js" defer></script>
 </head>
 <body>
@@ -72,10 +74,12 @@
 
   <!-- Header Identity Block -->
   <header class="hero" id="top" data-scene="tunnel" data-polarity="same">
-    <h1 class="hero-name"><span class="n1">Sahil Tomar</span> <span class="n2" data-plate>(dev-S-t)</span></h1>
-    <p class="hero-title" data-plate><strong>Title:</strong> AI Solutions Engineer @ TechieMaya</p>
-    <p class="hero-handles" data-plate><strong>Handles:</strong> GitHub: <a href="https://github.com/dev-S-t">dev-S-t</a> | LinkedIn: <a href="https://www.linkedin.com/in/dev-s-t/">dev-s-t</a> | Custom Domain: <a href="https://human-in-loop.dev">human-in-loop.dev</a> | ORCID: <a href="https://orcid.org/0009-0005-9222-9121">0009-0005-9222-9121</a></p>
-    <p class="hero-loc" data-plate><strong>Location:</strong> Ghaziabad, Uttar Pradesh, India (Open to Remote / Delhi NCR / Bengaluru / Pune)</p>
+    <h1 class="hero-name"><span class="n1">Sahil Tomar</span> <span class="n2" data-plate="clear">(dev-S-t)</span></h1>
+    <div class="hero-id" data-cliff>
+      <p class="hero-title"><strong>Title:</strong> AI Solutions Engineer @ TechieMaya</p>
+      <p class="hero-handles"><strong>Handles:</strong> GitHub: <a href="https://github.com/dev-S-t">dev-S-t</a> | LinkedIn: <a href="https://www.linkedin.com/in/dev-s-t/">dev-s-t</a> | Custom Domain: <a href="https://human-in-loop.dev">human-in-loop.dev</a> | ORCID: <a href="https://orcid.org/0009-0005-9222-9121">0009-0005-9222-9121</a></p>
+      <p class="hero-loc"><strong>Location:</strong> Ghaziabad, Uttar Pradesh, India (Open to Remote / Delhi NCR / Bengaluru / Pune)</p>
+    </div>
     <nav class="topbar" data-plate="glass" aria-label="Sections">
       <svg class="mark" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path d="M20 5a15 15 0 1 1-6.2 1.34M20 10a10 10 0 1 1-4.1.9M20 15a5 5 0 1 1-2 .42" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="20" cy="24.2" r="1.35" fill="currentColor"/><path d="M20 25.8v4.4M20 30.2l-1.6 3.4M20 30.2l1.6 3.4M18.2 27.4h3.6" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
       <ul>
@@ -101,29 +105,29 @@
         <p>Sahil Tomar (dev-S-t) is an AI Solutions Engineer specializing in production Voice AI infrastructure, real-time LiveKit/WebRTC telephony bridges, multi-tenant RAG platforms, agentic orchestration engines, and multi-agent generative media pipelines.</p>
         <p>His engineering accomplishments include leading the Voice AI vertical (VOAG) at TechieMaya (1,000+ daily calls in Mr. LADs app, sub-300ms latency, UAE LAN SIP modem architecture), building multi-tenant RAG engines on Google ADK and LiteLLM, constructing B2B WhatsApp dispatch automation for a Dubai luxury transport client, and delivering a real-time photorealistic video avatar interviewer (Hireups for MGS Technology via Quantashift Consultancy Services).</p>
       </div>
-      <div class="face-space" data-face aria-hidden="true"></div>
+      <div class="face-space" data-face aria-hidden="true"><canvas class="model" data-model="head"></canvas></div>
     </section>
 
     <!-- FAQ Section -->
-    <section id="faq" class="faq" data-scene="wings" data-polarity="inverse" data-seam="wave">
+    <section id="faq" class="faq" data-scene="cloth" data-polarity="inverse" data-seam="wave">
       <h2 data-plate="clear">Frequently Asked Questions</h2>
-      <article class="q q1" data-plate>
+      <article class="q q1" data-plate="clear">
         <h3>What does Sahil Tomar work on?</h3>
         <p>Sahil Tomar (dev-S-t) works on production Voice AI infrastructure, WebRTC/SIP telephony bridges, multi-tenant RAG systems, photorealistic AI avatars, and multi-agent generative media engines using Google ADK, LangGraph, LiveKit, Python, Go, and GCP.</p>
       </article>
-      <article class="q q2" data-plate>
+      <article class="q q2" data-plate="clear">
         <h3>What is dev-S-t known for?</h3>
         <p>dev-S-t is the online handle for Sahil Tomar. He is known for building VOAG (Voice AI SaaS handling 1,000+ calls/day), unblocking Hireups real-time avatar interviewer (GCP LiveKit + Gemini Realtime), publishing IEEE supply chain optimization research, and engineering privacy-first A2A-protocol RAG architectures.</p>
       </article>
-      <article class="q q3" data-plate>
+      <article class="q q3" data-plate="clear">
         <h3>What voice AI and agentic infrastructure has Sahil Tomar built?</h3>
         <p>Sahil Tomar built VOAG (enterprise Voice AI SaaS with sub-300ms latency), UAE SIP/WebRTC LAN modem bridges, MAGe (multi-agent ad video engine with Google Veo and Playwright), and WhatsApp group dispatch automation built on the `whatsmeow` Go library.</p>
       </article>
-      <article class="q q4" data-plate>
+      <article class="q q4" data-plate="clear">
         <h3>How does Sahil Tomar evaluate voice AI agents?</h3>
         <p>On VOAG he is building call evals over recorded audio and transcripts: an LLM-as-a-judge scores task completion, grounding, and word-level language confusion (for example, a Telugu word surfacing in a Tamil call), human reviewers annotate the exact error spans, and those corrections are applied from the next call onward.</p>
       </article>
-      <div class="hand-space" data-hand aria-hidden="true"></div>
+      <div class="hand-space" data-hand aria-hidden="true"><canvas class="model" data-model="hand"></canvas></div>
     </section>
 
     <!-- Case Studies Section -->
@@ -150,13 +154,19 @@
         <p><a href="/experience/">View full Work Experience Page</a></p>
       </div>
 
-      <article class="role r1" data-plate>
+      <div class="timeline" data-timeline data-plate="clear" aria-hidden="true">
+        <canvas class="tl-canvas" data-art="timeline"></canvas>
+        <span class="tl-year" data-year="2025"></span>
+        <span class="tl-year" data-year="2026"></span>
+      </div>
+
+      <article class="role r1" data-plate data-from="2025-04" data-to="now">
         <h3>AI Solutions Engineer — TechieMaya</h3>
         <p><strong>Timeline:</strong> Apr 2025 – Present | <strong>Location:</strong> Remote (Dubai, UAE)</p>
         <p>Progressed from early prototype trial into core production engineer and contract lead across Voice AI (VOAG), RAG engines, WhatsApp dispatch automation, and generative media infrastructure (MAGe). Also client-facing in scoping meetings as the voice AI lead, owns TechieMaya's GCP environment (least-privilege IAM, VM hardening, cost control), designed VOAG's relational SQL schema, and is building call evals (LLM-as-a-judge plus human review) for multilingual voice agents.</p>
       </article>
 
-      <article class="role r2" data-plate>
+      <article class="role r2" data-plate data-from="2026-01" data-to="2026-03">
         <h3>Freelance Voice AI Consultant — Quantashift Consultancy Services (contracted to MGS Technology Pvt Ltd)</h3>
         <p><strong>Timeline:</strong> Jan – Mar 2026 (~2 months) | <strong>Location:</strong> Remote</p>
         <p>Delivered working real-time photorealistic video avatar interviewer product (Hireups) across three GCP production environments (VM, Cloud Run, private server with ZeroSSL) after internal team stalled.</p>
@@ -170,64 +180,60 @@
         <p><a href="/projects/">View full Projects Hub</a></p>
       </div>
 
-      <article id="project-anyassist" class="proj p1" data-plate="clear">
+      <article id="project-anyassist" class="proj p1 has-art" data-plate>
         <canvas class="emblem" data-emblem="tenants" aria-hidden="true"></canvas>
         <h3>1. Multi-Tenant RAG Platform (AnyAssist)</h3>
         <p><strong>URL:</strong> <a href="/projects/anyassist/">/projects/anyassist/</a></p>
         <p>Self-service document chat SaaS platform with Google ADK agent-per-tenant architecture, LiteLLM cost/routing gateway, and logical vector namespace isolation.</p>
       </article>
 
-      <article id="project-privacy-rag" class="proj p2" data-plate="clear">
+      <article id="project-privacy-rag" class="proj p2 has-art" data-plate>
         <canvas class="emblem" data-emblem="enclosure" aria-hidden="true"></canvas>
         <h3>2. Privacy-First On-Prem RAG (A2A Protocol)</h3>
         <p><strong>URL:</strong> <a href="/projects/privacy-rag/">/projects/privacy-rag/</a></p>
         <p>Inverted RAG topology for legal/compliance clients over Agent-to-Agent (A2A) protocol. Local reasoning agents with hybrid dense vector + keyword search.</p>
       </article>
 
-      <article id="project-whatsapp-dispatch" class="proj p3" data-plate="clear">
+      <article id="project-whatsapp-dispatch" class="proj p3 has-art" data-plate>
         <canvas class="emblem" data-emblem="converge" aria-hidden="true"></canvas>
         <h3>3. WhatsApp Dispatch Automation — Enterprise Ground Transport</h3>
         <p><strong>URL:</strong> <a href="/projects/whatsapp-dispatch/">/projects/whatsapp-dispatch/</a></p>
         <p>Automated B2B group dispatch for a Dubai luxury transport client (`whatsmeow` Go + Google ADK) plus independent musician community group routing.</p>
       </article>
 
-      <article id="project-voag" class="proj p4" data-plate="clear">
-        <canvas class="emblem" data-emblem="ridgeline" aria-hidden="true"></canvas>
+      <article id="project-voag" class="proj p4 has-art" data-plate>
+        <canvas class="emblem" data-emblem="voice" aria-hidden="true"></canvas>
         <h3>4. VOAG — Enterprise Voice AI SaaS</h3>
         <p><strong>URL:</strong> <a href="/projects/voag/">/projects/voag/</a></p>
         <p>High-throughput Voice AI SaaS (1,000+ daily calls in Mr. LADs app, sub-300ms p95 latency, DigitalOcean & UAE LAN SIP modem architecture, fire-and-forget RAG).</p>
       </article>
 
-      <article id="project-hireups" class="proj p5" data-plate="clear">
-        <canvas class="emblem" data-emblem="face" aria-hidden="true"></canvas>
+      <article id="project-hireups" class="proj p5" data-plate>
         <h3>5. Hireups — Real-Time AI Avatar Interviewer</h3>
         <p><strong>URL:</strong> <a href="/projects/hireups/">/projects/hireups/</a></p>
         <p>Photorealistic video avatar interviewer built on Gemini Realtime and self-hosted LiveKit on GCP for MGS Technology via Quantashift.</p>
       </article>
 
-      <article id="project-mage" class="proj p6" data-plate="clear">
-        <canvas class="emblem" data-emblem="frames" aria-hidden="true"></canvas>
+      <article id="project-mage" class="proj p6" data-plate>
         <h3>6. MAGe — Multi-Agent Advertising & Media Generation Engine</h3>
         <p><strong>URL:</strong> <a href="/projects/mage/">/projects/mage/</a></p>
         <p>Multi-agent creative ad pipeline (Google Veo, Playwright brand crawler, Cartesia voice, Subreddit trend scanner, session `contextvars` cost accounting).</p>
       </article>
 
-      <article id="project-unibias" class="proj p7" data-plate="clear">
+      <article id="project-unibias" class="proj p7 has-art" data-plate>
         <canvas class="emblem" data-emblem="eye" aria-hidden="true"></canvas>
         <h3>7. UniBias — Live Attention Tracker</h3>
         <p><strong>URL:</strong> <a href="/projects/unibias/">/projects/unibias/</a></p>
         <p>Real-time video attention tracking tool utilizing browser-side computer vision inference.</p>
       </article>
 
-      <article id="project-blood-bank" class="proj p8" data-plate="clear">
-        <canvas class="emblem" data-emblem="forecast" aria-hidden="true"></canvas>
+      <article id="project-blood-bank" class="proj p8" data-plate>
         <h3>8. Blood Bank Demand-Forecasting System</h3>
         <p><strong>URL:</strong> <a href="/projects/blood-bank/">/projects/blood-bank/</a></p>
         <p>IEEE-published blood supply optimization engine combining SARIMA/XGBoost forecasting with dynamic micro-expiry logic.</p>
       </article>
 
-      <article id="project-fraud-detection" class="proj p9" data-plate="clear">
-        <canvas class="emblem" data-emblem="anomaly" aria-hidden="true"></canvas>
+      <article id="project-fraud-detection" class="proj p9" data-plate>
         <h3>9. Fraud Detection System (Infosys Springboard ML Internship)</h3>
         <p><strong>Code:</strong> <a href="https://github.com/dev-S-t/FraudDetectionSystem">github.com/dev-S-t/FraudDetectionSystem</a></p>
         <p>Hybrid fraud-detection pipeline (ARIMA/Prophet + XGBoost) on a highly imbalanced 400+ feature dataset, reaching 96% fraud recall with an optimised F1-score.</p>
@@ -235,7 +241,7 @@
     </section>
 
     <!-- Publications Section -->
-    <section id="publications" class="pub" data-scene="engrave" data-polarity="same" data-seam="rule">
+    <section id="publications" class="pub" data-scene="engrave" data-polarity="inverse" data-seam="cliff">
       <div class="pub-head" data-plate>
         <h2>Scholarly Publication</h2>
         <p><a href="/publications/">View full Publication Page</a></p>
@@ -255,33 +261,35 @@
     </section>
 
     <!-- Skills Section -->
-    <section id="skills" class="skills" data-scene="contour" data-polarity="inverse" data-seam="wave">
+    <section id="skills" class="skills" data-scene="contour" data-polarity="same" data-seam="wave">
       <div class="skills-head" data-plate>
         <h2>Comprehensive Technical Skills</h2>
         <p><a href="/skills/">View full Skills Page</a></p>
       </div>
       <ul class="legend">
-        <li data-plate><canvas class="swatch" data-swatch="voice" aria-hidden="true"></canvas><strong>Voice AI & Telephony:</strong> LiveKit, WebRTC, SIP/VoIP bridging, WebSockets, Gemini Live API, Sarvam, Ultravox, Groq, streaming STT/TTS pipelines.</li>
-        <li data-plate><canvas class="swatch" data-swatch="lanes" aria-hidden="true"></canvas><strong>AI Orchestration & RAG:</strong> Google ADK, LangGraph, Multi-Agent Systems, A2A Protocol, Model Context Protocol (MCP), LiteLLM, LightRAG, RAG Pipelines, Vector DBs (ChromaDB, Qdrant, Pinecone).</li>
-        <li data-plate><canvas class="swatch" data-swatch="spans" aria-hidden="true"></canvas><strong>Evaluation & Quality:</strong> LLM-as-a-judge scoring, human review, span-level error annotation, word-level language-confusion tracking for multilingual voice calls.</li>
-        <li data-plate><canvas class="swatch" data-swatch="frames" aria-hidden="true"></canvas><strong>Generative Media & Web Automation:</strong> Google Veo, Imagen, Cartesia (TTS, voice cloning), Fish Audio (voice cloning), FFmpeg, Playwright.</li>
-        <li data-plate><canvas class="swatch" data-swatch="rules" aria-hidden="true"></canvas><strong>Backend & Infrastructure:</strong> Python (`asyncio`, `contextvars`), Go (`whatsmeow`), SQL (relational schema design), JavaScript / Next.js, FastAPI, REST APIs, OAuth 2.0, Redis, NGINX, Docker.</li>
-        <li data-plate><canvas class="swatch" data-swatch="contours" aria-hidden="true"></canvas><strong>Cloud & DevOps:</strong> GCP (Cloud Run, Compute Engine, IAM, VM hardening, cost control), DigitalOcean, Git, GitHub Actions (CI/CD).</li>
+        <li data-plate data-peak><strong>Voice AI & Telephony:</strong> LiveKit, WebRTC, SIP/VoIP bridging, WebSockets, Gemini Live API, Sarvam, Ultravox, Groq, streaming STT/TTS pipelines.</li>
+        <li data-plate data-peak><strong>AI Orchestration & RAG:</strong> Google ADK, LangGraph, Multi-Agent Systems, A2A Protocol, Model Context Protocol (MCP), LiteLLM, LightRAG, RAG Pipelines, Vector DBs (ChromaDB, Qdrant, Pinecone).</li>
+        <li data-plate data-peak><strong>Evaluation & Quality:</strong> LLM-as-a-judge scoring, human review, span-level error annotation, word-level language-confusion tracking for multilingual voice calls.</li>
+        <li data-plate data-peak><strong>Generative Media & Web Automation:</strong> Google Veo, Imagen, Cartesia (TTS, voice cloning), Fish Audio (voice cloning), FFmpeg, Playwright.</li>
+        <li data-plate data-peak><strong>Backend & Infrastructure:</strong> Python (`asyncio`, `contextvars`), Go (`whatsmeow`), SQL (relational schema design), JavaScript / Next.js, FastAPI, REST APIs, OAuth 2.0, Redis, NGINX, Docker.</li>
+        <li data-plate data-peak><strong>Cloud & DevOps:</strong> GCP (Cloud Run, Compute Engine, IAM, VM hardening, cost control), DigitalOcean, Git, GitHub Actions (CI/CD).</li>
       </ul>
     </section>
 
     <!-- Resume Section -->
-    <section id="resume" class="resume" data-scene="guilloche" data-polarity="same" data-seam="cliff">
+    <section id="resume" class="resume" data-scene="blackhole" data-polarity="inverse" data-seam="cliff">
       <div class="sheet" data-plate>
         <h2>Resume</h2>
         <p class="sheet-link"><a href="/resume/">View HTML Resume Page</a></p>
+        <p class="sheet-dl"><a href="/assets/sahil-tomar-resume.pdf" download="sahil-tomar-resume.pdf"><svg class="dl-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M16 4v17M9 14.5l7 7 7-7M6 27h20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Download PDF Resume</a></p>
         <p>B.Tech Computer Science @ Ajay Kumar Garg Engineering College (CGPA 8.0). Coordinator in Cloud Computing Cell and Centre of Metaverse.</p>
       </div>
+      <div class="bh-space" data-bh aria-hidden="true"></div>
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="contact" data-scene="wrap" data-polarity="inverse" data-seam="wave">
-      <div class="contact-core">
+    <section id="contact" class="contact" data-scene="wrap" data-polarity="same" data-seam="wave">
+      <div class="contact-core" data-plate="clear">
         <h2>Contact Sahil Tomar (dev-S-t)</h2>
         <p><a href="/contact/">View Contact Page</a></p>
       </div>
@@ -296,7 +304,7 @@
   </main>
 
   <!-- Footer Identity Block -->
-  <footer class="foot" data-scene="horizon" data-polarity="inverse" data-seam="rule">
+  <footer class="foot" data-scene="ocean" data-polarity="inverse" data-seam="cliff">
     <hr>
     <p data-plate><strong>Sahil Tomar (dev-S-t)</strong> — AI Solutions Engineer & Voice AI Specialist</p>
     <p data-plate>GitHub: <a href="https://github.com/dev-S-t">dev-S-t</a> | LinkedIn: <a href="https://www.linkedin.com/in/dev-s-t/">dev-s-t</a> | ORCID: <a href="https://orcid.org/0009-0005-9222-9121">0009-0005-9222-9121</a> | IEEE: <a href="https://ieeexplore.ieee.org/document/11584332">IEEE Publication</a></p>

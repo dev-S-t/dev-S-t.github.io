@@ -1,6 +1,7 @@
 /* human-in-loop.dev — line engine.
    One WebGL2 canvas paints every section's line field behind the content.
-   Small Canvas2D drawings add the emblems and data figures.
+   Canvas2D drawings add the interactive project assets and data figures.
+   models.js (loaded lazily) draws the 3D head and hand in engraved lines.
    Content never depends on this file: without it the page is plain, readable HTML. */
 (() => {
   'use strict';
@@ -12,6 +13,7 @@
   if (reduceMQ.addEventListener) reduceMQ.addEventListener('change', (e) => { reduce = e.matches; });
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const lerp = (a, b, t) => a + (b - a) * t;
+  const TAU = Math.PI * 2;
 
   /* ---------- theme switch ---------- */
   const toggle = document.querySelector('.theme-toggle');
@@ -34,164 +36,94 @@
   }, { passive: true });
   document.addEventListener('pointerout', (e) => { if (!e.relatedTarget) P.tamt = 0; });
 
-  /* ---------- small helpers for the drawings ---------- */
+  // shared with models.js
+  const HIL = window.__HIL = { P, isDark, reduced: () => reduce, grip: null };
+
+  /* ---------- helpers ---------- */
   function rng(seed) {
     let s = seed >>> 0;
     return () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
   }
-  function iso(ctx, w, h, f, lo, hi, step, cell) {
-    const nx = Math.ceil(w / cell) + 1, ny = Math.ceil(h / cell) + 1;
-    const g = new Float32Array(nx * ny);
-    for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) g[j * nx + i] = f(i * cell, j * cell);
-    ctx.beginPath();
-    const seg = (p, q) => { ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); };
-    for (let L = lo; L <= hi; L += step) {
-      for (let j = 0; j < ny - 1; j++) for (let i = 0; i < nx - 1; i++) {
-        const a = g[j * nx + i], b = g[j * nx + i + 1], c = g[(j + 1) * nx + i + 1], d = g[(j + 1) * nx + i];
-        if (a !== a || b !== b || c !== c || d !== d) continue;
-        const idx = (a > L ? 8 : 0) | (b > L ? 4 : 0) | (c > L ? 2 : 0) | (d > L ? 1 : 0);
-        if (idx === 0 || idx === 15) continue;
-        const x = i * cell, y = j * cell;
-        const top = [x + cell * (L - a) / (b - a), y];
-        const right = [x + cell, y + cell * (L - b) / (c - b)];
-        const bottom = [x + cell * (L - d) / (c - d), y + cell];
-        const left = [x, y + cell * (L - a) / (d - a)];
-        switch (idx) {
-          case 1: case 14: seg(left, bottom); break;
-          case 2: case 13: seg(bottom, right); break;
-          case 3: case 12: seg(left, right); break;
-          case 4: case 11: seg(top, right); break;
-          case 5: seg(left, top); seg(bottom, right); break;
-          case 6: case 9: seg(top, bottom); break;
-          case 7: case 8: seg(left, top); break;
-          case 10: seg(top, right); seg(left, bottom); break;
-        }
-      }
+  // Code 128 (set B) for the Libre Barcode 128 font: start, data, mod-103 checksum, stop
+  function code128B(s) {
+    let sum = 104; let out = String.fromCharCode(204);
+    for (let i = 0; i < s.length; i++) { sum += (s.charCodeAt(i) - 32) * (i + 1); out += s[i]; }
+    const c = sum % 103;
+    return out + String.fromCharCode(c < 95 ? c + 32 : c + 100) + String.fromCharCode(206);
+  }
+  function pathLen(pts) { let L = 0; for (let i = 2; i < pts.length; i += 2) L += Math.hypot(pts[i] - pts[i - 2], pts[i + 1] - pts[i - 1]); return L; }
+  function pointAt(pts, f) {
+    const target = f * pathLen(pts); let acc = 0;
+    for (let i = 2; i < pts.length; i += 2) {
+      const seg = Math.hypot(pts[i] - pts[i - 2], pts[i + 1] - pts[i - 1]);
+      if (acc + seg >= target) { const u = (target - acc) / (seg || 1); return [lerp(pts[i - 2], pts[i], u), lerp(pts[i - 1], pts[i + 1], u)]; }
+      acc += seg;
     }
-    ctx.stroke();
+    return [pts[pts.length - 2], pts[pts.length - 1]];
   }
-  // the same stylised face the About section draws, in JS for the avatar emblem
-  function faceH(x, y, turn) {
-    const fx = x - turn * 0.11, fy = y;
-    const head = 1 - (x / 0.78) ** 2 - ((y + 0.05) / 1.08) ** 2;
-    let h = head > 0 ? Math.sqrt(head) : head * 0.6;
-    if (y > 0.7) h = Math.max(h, (1 - (x / 0.36) ** 2) * 0.55 - (y - 0.7) * 0.2);
-    const g = (u, v) => Math.exp(-(u * u + v * v));
-    h += 0.16 * Math.exp(-(((fy + 0.36) / 0.07) ** 2)) * Math.exp(-((fx / 0.45) ** 2));
-    h -= 0.26 * g((fx - 0.27) / 0.14, (fy + 0.2) / 0.085) + 0.26 * g((fx + 0.27) / 0.14, (fy + 0.2) / 0.085);
-    const nose = Math.exp(-(((fx - turn * 0.07) / 0.075) ** 2)) * sstep(-0.32, 0.15, fy) * sstep(0.34, 0.18, fy);
-    h += 0.34 * nose + 0.12 * g((fx - turn * 0.07) / 0.12, (fy - 0.2) / 0.07);
-    h += 0.1 * g((Math.abs(fx) - 0.36) / 0.17, (fy - 0.12) / 0.2);
-    h -= 0.07 * g(fx / 0.24, (fy - 0.46) / 0.035);
-    h += 0.06 * g(fx / 0.2, (fy - 0.52) / 0.05) + 0.1 * g(fx / 0.2, (fy - 0.78) / 0.1);
-    return h;
+  function bez(x0, y0, x1, y1, x2, y2, x3, y3, n, out) {
+    for (let i = 0; i <= n; i++) { const t = i / n, u = 1 - t; out.push(u * u * u * x0 + 3 * u * u * t * x1 + 3 * u * t * t * x2 + t * t * t * x3, u * u * u * y0 + 3 * u * u * t * y1 + 3 * u * t * t * y2 + t * t * t * y3); }
+    return out;
   }
-  function sstep(a, b, x) { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); }
 
-  /* ---------- the drawings (Canvas2D) ---------- */
+  /* ---------- the interactive drawings (Canvas2D) ---------- */
   const DRAW = {
-    tenants(c, w, h, t) { // AnyAssist: tenants in their own boundaries, one shared gateway line
-      const n = 4, gap = w * 0.035, bw = (w - gap * (n + 1)) / n, bh = h * 0.62, y0 = h * 0.06, gy = h * 0.9;
-      c.lineWidth = 1.6; c.beginPath(); c.moveTo(gap * 0.4, gy); c.lineTo(w - gap * 0.4, gy); c.stroke();
-      for (let i = 0; i < n; i++) {
-        const x0 = gap + i * (bw + gap), cx = x0 + bw / 2, cy = y0 + bh / 2;
-        c.lineWidth = 1.4; c.beginPath(); c.roundRect(x0, y0, bw, bh, Math.min(18, bw * 0.2)); c.stroke();
-        c.lineWidth = 0.9; c.beginPath(); c.moveTo(cx, y0 + bh); c.lineTo(cx, gy); c.stroke();
-        c.beginPath(); c.arc(cx, gy, 2.6, 0, Math.PI * 2); c.fill();
-        const sp = 3.6 + i * 1.7, breathe = reduce ? 0 : Math.sin(t * 0.6 + i) * 0.8;
-        c.lineWidth = 0.8; c.beginPath();
-        for (let r = sp + breathe; r < Math.min(bw, bh) / 2 - 5; r += sp) { c.moveTo(cx + r, cy); c.arc(cx, cy, r, 0, Math.PI * 2); }
-        c.stroke();
+    // VOAG: a caller speaks (your pointer is the voice); the agent answers under 300 ms later
+    voice(c, w, h, t, a) {
+      const col = 5, cols = Math.floor((w * 0.86) / col), speed = 26; // columns per second
+      const idle = (tt) => { const cyc = ((tt % 3.4) + 3.4) % 3.4; return cyc < 2.6 ? (0.35 + 0.55 * Math.abs(Math.sin(cyc * 7.3)) * Math.abs(Math.sin(cyc * 2.1 + 1))) : 0.02; };
+      if (!a.state) { // start mid-call: the history is already full when the tile first appears
+        a.state = { caller: [], last: t, px: null, acc: 0, amp: idle(t) };
+        for (let k = cols + 40; k > 0; k--) a.state.caller.push(idle(t - k / speed) * (0.55 + 0.45 * Math.random()));
       }
-    },
-    enclosure(c, w, h) { // Privacy RAG: flow passes around a closed boundary; one query touches it and returns
-      const cx = w * 0.4, cy = h * 0.5, R = h * 0.3;
-      c.lineWidth = 0.8;
-      iso(c, w, h, (x, y) => { const dx = x - cx, dy = y - cy, r2 = dx * dx + dy * dy; return r2 < (R + 3) * (R + 3) ? NaN : dy * (1 - (R * R) / r2); }, -h * 0.6, h * 0.6, 6.5, 3);
-      c.lineWidth = 3.2; c.beginPath(); c.arc(cx, cy, R, 0, Math.PI * 2); c.stroke();
-      c.lineWidth = 0.9; c.beginPath();
-      for (let k = 1; k < 9; k++) { const r = R - 4 - k * (R - 8) / 9; c.moveTo(cx + r + k * 0.8, cy); c.arc(cx + k * 0.8, cy, r, 0, Math.PI * 2); }
-      c.stroke();
-      c.lineWidth = 1.3; c.beginPath(); c.moveTo(w, cy - 7); c.lineTo(cx + R + 12, cy - 7); c.arc(cx + R + 12, cy, 7, -Math.PI / 2, Math.PI / 2, true); c.lineTo(w, cy + 7); c.stroke();
-    },
-    converge(c, w, h) { // WhatsApp dispatch: many groups into one channel, then three agents
-      const N = 15; c.lineWidth = 0.95; c.beginPath();
-      for (let i = 0; i < N; i++) {
-        const ys = h * (0.05 + 0.9 * i / (N - 1)), yc = h * 0.5 + (i - (N - 1) / 2) * 2.1;
-        const g = Math.floor(i / 5), ye = h * (0.2 + 0.3 * g) + ((i % 5) - 2) * 4.2;
-        c.moveTo(0, ys); c.bezierCurveTo(w * 0.24, ys, w * 0.3, yc, w * 0.47, yc); c.lineTo(w * 0.56, yc);
-        c.bezierCurveTo(w * 0.7, yc, w * 0.72, ye, w * 0.93, ye);
+      const st = a.state;
+      const dt = Math.min(0.1, Math.max(0, t - st.last)); st.last = t;
+      let target;
+      const p = a.pointer;
+      if (p && p.inside) {
+        const v = st.px ? Math.hypot(p.x - st.px[0], p.y - st.px[1]) / Math.max(dt, 0.016) : 0;
+        st.px = [p.x, p.y];
+        target = clamp(v / 900, 0, 1);
+      } else {
+        st.px = null;
+        target = idle(t); // speak for 2.6 s, then a short pause
       }
-      c.stroke();
-      c.lineWidth = 0.9; c.beginPath();
-      for (let r = 3; r < 16; r += 3.2) { c.moveTo(w * 0.87 + r, h * 0.9); c.arc(w * 0.87, h * 0.9, r, 0, Math.PI * 2); }
-      c.stroke();
-    },
-    ridgeline(c, w, h, t, ctx) { // VOAG: voice waveforms stacked, each hiding the ones behind it
-      const L = Math.round(clamp(h / 15, 16, 34)), top = h * 0.2, sp = (h * 0.76) / L, amp = h * 0.24;
-      const R = rng(11);
-      const seeds = Array.from({ length: L }, () => [R() * 100, R() * 100, R() * 100]);
-      const px = ctx.pointer;
-      const tt = reduce ? 0 : t;
-      for (let k = 0; k < L; k++) {
-        const base = top + k * sp, s = seeds[k], pts = [];
-        for (let x = 0; x <= w; x += 2) {
-          const u = x / w, env = Math.exp(-(((u - 0.5) / 0.2) ** 2));
-          let v = 0.55 + 0.25 * Math.sin(x * 0.045 + s[0] + tt * 1.6) + 0.2 * Math.sin(x * 0.11 + s[1] - tt * 2.3) + 0.12 * Math.sin(x * 0.27 + s[2] + tt * 3.1);
-          v = Math.max(0, v) ** 2.2;
-          let lift = 0;
-          if (px && px.inside) lift = 0.9 * Math.exp(-(((x - px.x) / 34) ** 2)) * Math.exp(-(((base - px.y) / 60) ** 2));
-          pts.push(x, base - amp * env * v - amp * lift - 1.5 * Math.sin(x * 0.6 + k));
-        }
-        c.beginPath(); c.moveTo(0, h); for (let i = 0; i < pts.length; i += 2) c.lineTo(pts[i], pts[i + 1]); c.lineTo(w, h); c.closePath();
-        c.fillStyle = ctx.ground; c.fill();
-        c.beginPath(); c.moveTo(pts[0], pts[1]); for (let i = 2; i < pts.length; i += 2) c.lineTo(pts[i], pts[i + 1]);
-        c.lineWidth = 1.1; c.stroke();
-      }
-    },
-    face(c, w, h) { // Hireups: a face in contour lines, eyes left empty
-      const s = Math.min(h * 0.46, w * 0.36), cx = w / 2, cy = h * 0.52;
-      c.lineWidth = 0.85;
-      iso(c, w, h, (x, y) => {
-        const u = (x - cx) / s, v = (y - cy) / s;
-        const e = Math.min(((u - 0.27) / 0.105) ** 2 + ((v + 0.2) / 0.05) ** 2, ((u + 0.27) / 0.105) ** 2 + ((v + 0.2) / 0.05) ** 2);
-        if (e < 1) return NaN;
-        const f = faceH(u, v, 0.15);
-        return f < -0.02 ? NaN : f;
-      }, 0.0, 1.4, 0.05, 2.5);
-    },
-    frames(c, w, h, t) { // MAGe: one line carried through every frame, agents along it, a brand rosette
-      const rx = w * 0.1, ry = h * 0.5, R0 = Math.min(h * 0.34, w * 0.09);
-      c.lineWidth = 0.7; c.beginPath();
-      for (let k = 0; k < 16; k++) {
-        for (let a = 0; a <= Math.PI * 2 + 0.01; a += 0.03) {
-          const r = R0 * (0.62 + 0.3 * Math.sin(7 * a + k * 0.39));
-          const x = rx + r * Math.cos(a), y = ry + r * Math.sin(a);
-          if (a === 0) c.moveTo(x, y); else c.lineTo(x, y);
-        }
+      st.amp = lerp(st.amp, target, 0.25);
+      st.acc += dt * speed;
+      while (st.acc >= 1) { st.acc -= 1; st.caller.push(st.amp * (0.55 + 0.45 * Math.random())); if (st.caller.length > cols + 40) st.caller.shift(); }
+      const delayCols = Math.round(0.28 * speed); // 280 ms
+      const mid = h * 0.5, nowX = w * 0.9, amp = h * 0.36;
+      c.lineWidth = 1; c.globalAlpha = 0.5; c.beginPath(); c.moveTo(0, mid); c.lineTo(nowX, mid); c.stroke(); c.globalAlpha = 1;
+      const n = st.caller.length;
+      c.lineWidth = 2.2;
+      c.beginPath();
+      for (let i = 0; i < Math.min(n, cols); i++) {
+        const x = nowX - i * col, v = st.caller[n - 1 - i];
+        if (v > 0.03) { c.moveTo(x, mid - 3); c.lineTo(x, mid - 3 - v * amp); }
       }
       c.stroke();
-      const n = 5, fx0 = w * 0.24, fw = (w * 0.98 - fx0) / n, fh = h * 0.6, fy = (h - fh) / 2;
-      c.lineWidth = 1.3;
-      for (let i = 0; i < n; i++) { c.beginPath(); c.roundRect(fx0 + i * fw + 4, fy, fw - 8, fh, 8); c.stroke(); }
-      c.lineWidth = 0.6;
-      for (let i = 0; i < n; i++) {
-        c.beginPath();
-        const x0 = fx0 + i * fw + 10, x1 = fx0 + (i + 1) * fw - 10;
-        for (let y = fy + 8 + i * 1.5; y < fy + fh - 6; y += 5 + i) { c.moveTo(x0, y); c.lineTo(x1, y); }
-        c.globalAlpha = 0.45; c.stroke(); c.globalAlpha = 1;
+      // the agent: same rhythm, delayed, answered below the line
+      c.lineWidth = 1.2; c.beginPath();
+      for (let i = delayCols; i < Math.min(n, cols); i++) {
+        const x = nowX - i * col, v = st.caller[n - 1 - i + delayCols] || 0;
+        const r = Math.min(1, v * 1.1);
+        if (r > 0.03) { c.moveTo(x, mid + 3); c.lineTo(x, mid + 3 + r * amp * 0.8); }
       }
-      const yl = (x) => h / 2 + Math.sin(x / 26 + (reduce ? 0 : t * 0.8)) * h * 0.13 + Math.sin(x / 9) * 2;
-      c.lineWidth = 2; c.beginPath(); c.moveTo(rx + R0 * 0.9, yl(rx + R0 * 0.9));
-      for (let x = rx + R0 * 0.9; x <= w; x += 2) c.lineTo(x, yl(x));
       c.stroke();
-      for (let i = 0; i <= n; i++) { const x = fx0 + i * fw; c.beginPath(); c.arc(x, yl(x), 4, 0, Math.PI * 2); c.fill(); }
+      // the gap: under 300 ms between hearing and answering
+      const gx = nowX - delayCols * col;
+      c.lineWidth = 1; c.beginPath();
+      c.moveTo(gx, mid + 8); c.lineTo(gx, mid + 20); c.moveTo(nowX, mid + 8); c.lineTo(nowX, mid + 20); c.moveTo(gx, mid + 14); c.lineTo(nowX, mid + 14);
+      c.stroke();
+      c.beginPath(); c.arc(nowX, mid, 3.2 + (reduce ? 0 : Math.sin(t * 6) * 0.8), 0, TAU); c.fill();
     },
-    eye(c, w, h, t, ctx) { // UniBias: an eye that watches the pointer
+    // UniBias: an eye that watches the pointer
+    eye(c, w, h, t, a) {
       const cx = w / 2, cy = h / 2, ew = Math.min(w * 0.44, h * 0.95), eh = ew * 0.42;
-      const st = ctx.state || (ctx.state = { ox: 0, oy: 0 });
+      const st = a.state || (a.state = { ox: 0, oy: 0 });
       let tx = 0, ty = 0;
-      if (ctx.pointer && P.amt > 0.05) { tx = clamp((ctx.pointer.x - cx) / w, -0.5, 0.5) * ew * 0.62; ty = clamp((ctx.pointer.y - cy) / h, -0.5, 0.5) * eh * 0.7; }
+      const r0 = a.cv.getBoundingClientRect(); const px = P.x - r0.left, py = P.y - r0.top;
+      if (P.amt > 0.05) { tx = clamp((px - cx) / w, -0.5, 0.5) * ew * 0.62; ty = clamp((py - cy) / h, -0.5, 0.5) * eh * 0.7; }
       st.ox = lerp(st.ox, tx, 0.12); st.oy = lerp(st.oy, ty, 0.12);
       const blink = reduce ? 1 : Math.max(0.08, Math.min(1, Math.abs(Math.sin(t * 0.52)) * 6));
       c.save();
@@ -199,9 +131,9 @@
       c.lineWidth = 1.6; c.stroke(); c.clip();
       const ir = eh * 1.05, ix = cx + st.ox, iy = cy + st.oy;
       c.lineWidth = 0.8; c.beginPath();
-      for (let r = 4; r < ir; r += 3.2) { c.moveTo(ix + r, iy); c.arc(ix, iy, r, 0, Math.PI * 2); }
+      for (let r = 4; r < ir; r += 3.2) { c.moveTo(ix + r, iy); c.arc(ix, iy, r, 0, TAU); }
       c.stroke();
-      c.beginPath(); c.arc(ix, iy, ir * 0.36, 0, Math.PI * 2); c.fill();
+      c.beginPath(); c.arc(ix, iy, ir * 0.36, 0, TAU); c.fill();
       c.lineWidth = 0.6; c.beginPath();
       for (let x = cx - ew; x < cx + ew; x += 5) { c.moveTo(x, cy - eh * 2); c.lineTo(x + 8, cy + eh * 2); }
       c.globalAlpha = 0.18; c.stroke(); c.globalAlpha = 1;
@@ -210,40 +142,154 @@
       for (let k = 1; k < 5; k++) { c.moveTo(cx - ew - k * 7, cy); c.quadraticCurveTo(cx, cy - eh * 2 * blink - k * 9, cx + ew + k * 7, cy); }
       c.stroke();
     },
-    forecast(c, w, h) { // Blood bank: forecast against actual demand, and 200-unit rows before and after
-      const R = rng(7), N = 60, y0 = h * 0.08, ch = h * 0.46;
-      const act = [], fc = [];
-      for (let i = 0; i < N; i++) { const s = Math.sin(i / 4.2) * 0.35 + Math.sin(i / 11) * 0.25; fc.push(s); act.push(s + (R() - 0.5) * 0.35); }
-      const X = (i) => (i / (N - 1)) * w, Y = (v) => y0 + ch * (0.5 - v * 0.7);
-      c.lineWidth = 0.6; c.beginPath();
-      for (let x = 0; x <= w; x += 3) { const i = (x / w) * (N - 1), i0 = Math.floor(i), f = i - i0, i1 = Math.min(N - 1, i0 + 1); const a = lerp(act[i0], act[i1], f), b = lerp(fc[i0], fc[i1], f); c.moveTo(x, Y(a)); c.lineTo(x, Y(b)); }
-      c.globalAlpha = 0.55; c.stroke(); c.globalAlpha = 1;
-      c.lineWidth = 1.8; c.beginPath(); fc.forEach((v, i) => (i ? c.lineTo(X(i), Y(v)) : c.moveTo(X(i), Y(v)))); c.stroke();
-      c.lineWidth = 0.9; c.beginPath(); act.forEach((v, i) => (i ? c.lineTo(X(i), Y(v)) : c.moveTo(X(i), Y(v)))); c.stroke();
-      const rows = [[22, h * 0.72], [5, h * 0.9]];
-      rows.forEach(([broken, ry], ri) => {
-        const n = 200, sp = w / n, set = new Set(); const r2 = rng(40 + ri);
-        while (set.size < broken) set.add(Math.floor(r2() * n));
-        c.lineWidth = Math.max(0.6, sp * 0.45); c.beginPath();
-        for (let i = 0; i < n; i++) { const x = i * sp + sp / 2; if (set.has(i)) { c.moveTo(x, ry - 9); c.lineTo(x, ry - 4); c.moveTo(x + 1, ry + 1); c.lineTo(x + 1, ry + 7); } else { c.moveTo(x, ry - 9); c.lineTo(x, ry + 7); } }
+    // AnyAssist: every tenant has its own chamber; a query ripples only inside the chamber it belongs to
+    tenants(c, w, h, t, a) {
+      const n = 4, gap = w * 0.04, bw = (w - gap * (n + 1)) / n, bh = h * 0.66, y0 = h * 0.06, gy = h * 0.9;
+      const st = a.state || (a.state = { ripples: [[], [], [], []], lastSpawn: 0, active: 0, pulse: 0 });
+      const p = a.pointer && a.pointer.inside ? a.pointer : null;
+      let active = Math.floor(t / 2.4) % n, qx = null, qy = null;
+      if (p) for (let i = 0; i < n; i++) { const x0 = gap + i * (bw + gap); if (p.x > x0 && p.x < x0 + bw && p.y > y0 && p.y < y0 + bh) { active = i; qx = p.x; qy = p.y; } }
+      if (active !== st.active) { st.active = active; st.pulse = 0; }
+      st.pulse = Math.min(1, st.pulse + 0.035);
+      if (t - st.lastSpawn > 0.42 && st.pulse >= 1) {
+        const x0 = gap + active * (bw + gap);
+        st.ripples[active].push({ x: qx != null ? qx : x0 + bw * (0.3 + 0.4 * Math.random()), y: qy != null ? qy : y0 + bh * (0.3 + 0.4 * Math.random()), t0: t });
+        st.lastSpawn = t;
+      }
+      // the shared gateway line, with the query travelling along it to its tenant
+      c.lineWidth = 1.6; c.beginPath(); c.moveTo(gap * 0.4, gy); c.lineTo(w - gap * 0.4, gy); c.stroke();
+      for (let i = 0; i < n; i++) {
+        const x0 = gap + i * (bw + gap), cx = x0 + bw / 2, cy = y0 + bh / 2, on = i === active;
+        c.lineWidth = on ? 1.8 : 1.1; c.beginPath(); c.roundRect(x0, y0, bw, bh, Math.min(18, bw * 0.2)); c.stroke();
+        c.lineWidth = 0.9; c.beginPath(); c.moveTo(cx, y0 + bh); c.lineTo(cx, gy); c.stroke();
+        c.save(); c.beginPath(); c.roundRect(x0 + 1, y0 + 1, bw - 2, bh - 2, Math.min(17, bw * 0.2)); c.clip();
+        c.globalAlpha = on ? 0.55 : 0.3; c.lineWidth = 0.7; c.beginPath();
+        const sp = 5 + i * 1.6;
+        for (let r = sp; r < Math.max(bw, bh); r += sp) { c.moveTo(cx + r, cy); c.arc(cx, cy, r, 0, TAU); }
+        c.stroke(); c.globalAlpha = 1;
+        const rs = st.ripples[i];
+        for (let k = rs.length - 1; k >= 0; k--) {
+          const rr = (t - rs[k].t0) * 70; if (rr > Math.max(bw, bh) * 1.2) { rs.splice(k, 1); continue; }
+          c.globalAlpha = clamp(1 - rr / (Math.max(bw, bh) * 1.2), 0, 1); c.lineWidth = 1.5; c.beginPath(); c.arc(rs[k].x, rs[k].y, rr, 0, TAU); c.stroke();
+        }
+        c.globalAlpha = 1; c.restore();
+      }
+      const ax = gap + active * (bw + gap) + bw / 2, e = st.pulse;
+      const px = e < 0.7 ? lerp(gap * 0.4, ax, e / 0.7) : ax, py = e < 0.7 ? gy : lerp(gy, y0 + bh, (e - 0.7) / 0.3);
+      c.beginPath(); c.arc(px, py, 3.4, 0, TAU); c.fill();
+    },
+    // Privacy RAG: data stays inside the wall; only the answer leaves, toward whoever asked
+    enclosure(c, w, h, t, a) {
+      const cx = w * 0.42, cy = h * 0.5, R = Math.min(h * 0.3, w * 0.2);
+      const st = a.state || (a.state = { flow: null, fw: 0, fh: 0 });
+      if (!st.flow || st.fw !== w || st.fh !== h) { // potential flow around a cylinder, computed once per size
+        st.fw = w; st.fh = h; st.flow = [];
+        for (let k = -9; k <= 9; k++) {
+          const y0 = cy + k * (h / 19), pts = [];
+          for (let x = -4; x <= w + 4; x += 3) {
+            const dx = x - cx; let y = y0;
+            for (let it = 0; it < 8; it++) { const dy = y - cy, r2 = dx * dx + dy * dy; const f = dy * (1 - (R + 10) * (R + 10) / Math.max(r2, 1)) - (y0 - cy); y -= f * 0.5; }
+            if (Math.hypot(dx, y - cy) < R + 6) { pts.push(NaN, NaN); continue; }
+            pts.push(x, y);
+          }
+          st.flow.push(pts);
+        }
+      }
+      c.lineWidth = 0.8; c.beginPath();
+      for (const pts of st.flow) { let pen = false; for (let i = 0; i < pts.length; i += 2) { const x = pts[i], y = pts[i + 1]; if (x !== x) { pen = false; continue; } if (!pen) { c.moveTo(x, y); pen = true; } else c.lineTo(x, y); } }
+      c.stroke();
+      // the wall
+      c.lineWidth = 3; c.beginPath(); c.arc(cx, cy, R, 0, TAU); c.stroke();
+      // inside: dense-vector rings and keyword rings, turning as it reasons
+      const spin = reduce ? 0 : t * 0.35;
+      for (let k = 1; k < 10; k++) {
+        const r = R - 3 - k * (R - 8) / 10;
+        c.lineWidth = 0.9; c.setLineDash(k % 2 ? [] : [2.5, 3.5]); c.lineDashOffset = k % 2 ? 0 : -spin * 20;
+        c.beginPath(); c.arc(cx, cy, r, 0, TAU); c.stroke();
+      }
+      c.setLineDash([]);
+      // who is asking: the pointer if it is here, otherwise an agent arriving from the right
+      let qx, qy; const p = a.pointer && a.pointer.inside ? a.pointer : null;
+      if (p) { qx = p.x; qy = p.y; } else { const ph = (t % 5) / 5; qx = lerp(w + 10, cx + R + 40, Math.min(1, ph * 2.2)); qy = cy - R * 0.4 + Math.sin(t) * 6; }
+      const dx = qx - cx, dy = qy - cy, d = Math.hypot(dx, dy);
+      if (d > R + 8) {
+        const ux = dx / d, uy = dy / d, bx = cx + ux * R, by = cy + uy * R;
+        c.lineWidth = 1.2; c.beginPath(); c.moveTo(bx, by); c.lineTo(qx, qy); c.stroke();
+        const f = reduce ? 0.5 : (t * 1.4) % 1;
+        c.beginPath(); c.arc(lerp(bx, qx, f), lerp(by, qy, f), 2.6, 0, TAU); c.fill();
+        c.lineWidth = 1; c.beginPath(); c.arc(qx, qy, 6, 0, TAU); c.stroke();
+      }
+    },
+    // WhatsApp dispatch: messages from many groups pour into one channel and leave, routed, in under a minute
+    converge(c, w, h, t, a) {
+      const st = a.state || (a.state = { paths: null, pw: 0, ph: 0, extra: [] });
+      const N = 15;
+      if (!st.paths || st.pw !== w || st.ph !== h) {
+        st.pw = w; st.ph = h; st.paths = [];
+        for (let i = 0; i < N; i++) {
+          const ys = h * (0.05 + 0.9 * i / (N - 1)), yc = h * 0.5 + (i - (N - 1) / 2) * 2.1;
+          const g = Math.floor(i / 5), ye = h * (0.2 + 0.3 * g) + ((i % 5) - 2) * 4.2;
+          const pts = []; bez(0, ys, w * 0.24, ys, w * 0.3, yc, w * 0.47, yc, 30, pts); pts.push(w * 0.56, yc); bez(w * 0.56, yc, w * 0.7, yc, w * 0.72, ye, w * 0.93, ye, 30, pts);
+          st.paths.push(pts);
+        }
+      }
+      const p = a.pointer && a.pointer.inside ? a.pointer : null;
+      let hot = -1;
+      if (p && p.x < w * 0.3) { let best = 1e9; st.paths.forEach((pts, i) => { const d = Math.abs(pts[1] + (pts[pts.length - 1] - pts[1]) * 0 - p.y); if (d < best) { best = d; hot = i; } }); }
+      st.paths.forEach((pts, i) => {
+        c.lineWidth = i === hot ? 1.8 : 0.9; c.beginPath(); c.moveTo(pts[0], pts[1]);
+        for (let k = 2; k < pts.length; k += 2) c.lineTo(pts[k], pts[k + 1]);
         c.stroke();
       });
+      if (hot >= 0 && Math.random() < 0.12) st.extra.push({ i: hot, t0: t });
+      const move = (f) => f * f * (3 - 2 * f);
+      for (let i = 0; i < N; i++) { const f = ((t * 0.32 + i * 0.137) % 1); const [x, y] = pointAt(st.paths[i], move(f)); c.beginPath(); c.arc(x, y, 2.3, 0, TAU); c.fill(); }
+      for (let k = st.extra.length - 1; k >= 0; k--) { const e = st.extra[k], f = (t - e.t0) * 0.6; if (f > 1) { st.extra.splice(k, 1); continue; } const [x, y] = pointAt(st.paths[e.i], move(f)); c.beginPath(); c.arc(x, y, 3.2, 0, TAU); c.fill(); }
+      c.lineWidth = 0.9; c.beginPath();
+      for (let r = 3; r < 16; r += 3.2) { c.moveTo(w * 0.87 + r, h * 0.9); c.arc(w * 0.87, h * 0.9, r, 0, TAU); }
+      c.stroke();
     },
-    anomaly(c, w, h) { // Fraud detection: rare breaks in steady lines; 24 of 25 are caught
-      const L = 26, R = rng(3), sp = h / (L + 1), spikes = [];
-      for (let k = 0; k < 25; k++) spikes.push([Math.floor(R() * L), 0.06 + R() * 0.88]);
-      c.lineWidth = 0.8;
-      for (let k = 0; k < L; k++) {
-        const y = sp * (k + 1); c.beginPath(); c.moveTo(0, y);
-        const mine = spikes.filter((s) => s[0] === k);
-        for (let x = 0; x <= w; x += 2) {
-          let dy = 0; for (const s of mine) dy -= 11 * Math.exp(-(((x - s[1] * w) / 4) ** 2));
-          c.lineTo(x, y + dy);
+    // Experience: a real time axis, from April 2025 to today
+    timeline(c, w, h, t, a) {
+      const tl = a.tl; if (!tl) return;
+      const X = (m) => (m / tl.months) * w;
+      const base = h - 18;
+      // month ticks, a taller line at each new year
+      c.lineWidth = 1; c.beginPath();
+      for (let m = 0; m <= tl.months; m++) { const x = Math.round(X(m)) + 0.5; const yr = (tl.startMonth + m) % 12 === 0; c.moveTo(x, base); c.lineTo(x, base - (yr ? h - 26 : 9)); }
+      c.moveTo(0, base + 0.5); c.lineTo(w, base + 0.5); c.stroke();
+      // the roles: bundles of lines between their dates; the longer one thickens as responsibility grows
+      tl.roles.forEach((r, ri) => {
+        const x0 = X(r.from), x1 = X(r.to), y = r.y * h;
+        let top = y;
+        if (ri === 0) {
+          // the long role: a wedge of lines that widens as the responsibility grew
+          const hMax = h * 0.34, gap = 4, n = Math.floor(hMax / gap);
+          c.lineWidth = 1.5; c.beginPath();
+          for (let k = 0; k < n; k++) {
+            const off = (k - (n - 1) / 2) * gap;
+            const start = lerp(x0, x1, Math.pow(Math.abs(off) / (hMax / 2), 1.3) * 0.85);
+            c.moveTo(start, y + off); c.lineTo(x1, y + off);
+          }
+          c.stroke();
+          top = y - 4;
+        } else {
+          // the short contract: a dense block of upright hatching
+          const hh = h * 0.2;
+          c.lineWidth = 1.3; c.beginPath();
+          for (let x = x0; x <= x1; x += 3.4) { c.moveTo(x, y - hh / 2); c.lineTo(x, y + hh / 2); }
+          c.stroke();
+          top = y + hh / 2;
         }
-        c.stroke();
-      }
-      c.lineWidth = 1.2;
-      spikes.forEach((s, i) => { if (i === 24) return; c.beginPath(); c.arc(s[1] * w, sp * (s[0] + 1) - 6, 8, 0, Math.PI * 2); c.stroke(); });
+        c.lineWidth = 1; c.beginPath(); c.moveTo(x0, top); c.lineTo(x0, base); c.stroke();
+        if (r.card) { c.setLineDash([2, 4]); c.beginPath(); c.moveTo(x0, base); c.lineTo(x0, h); c.stroke(); c.setLineDash([]); }
+        c.beginPath(); c.arc(x0, y, 3, 0, TAU); c.fill();
+      });
+      // today: a line that keeps moving, with a slow pulse
+      const nx = X(tl.now);
+      c.lineWidth = 1.4; c.beginPath(); c.moveTo(nx, 8); c.lineTo(nx, base); c.stroke();
+      const pr = reduce ? 0 : (t % 2.2) / 2.2;
+      c.globalAlpha = 1 - pr; c.lineWidth = 1; c.beginPath(); c.arc(nx, tl.roles[0].y * h, 4 + pr * 16, 0, TAU); c.stroke(); c.globalAlpha = 1;
     },
     wastage(c, w, h) { // 1,000 units twice: 112 broken before, 25 after
       const blocks = [112, 25], gap = 18, bw = (w - gap) / 2, cols = 40, rows = 25;
@@ -266,7 +312,7 @@
       for (let i = 0; i < 1000; i++) { if (set.has(i)) continue; const x = (i % cols) * sx + sx / 2, y = Math.floor(i / cols) * sy + 2; c.moveTo(x, y); c.lineTo(x, y + sy - 4); }
       c.stroke();
       c.lineWidth = 1.2;
-      set.forEach((i) => { const x = (i % cols) * sx + sx / 2, y = Math.floor(i / cols) * sy + sy / 2; c.beginPath(); c.arc(x, y, 4, 0, Math.PI * 2); c.stroke(); });
+      set.forEach((i) => { const x = (i % cols) * sx + sx / 2, y = Math.floor(i / cols) * sy + sy / 2; c.beginPath(); c.arc(x, y, 4, 0, TAU); c.stroke(); });
     },
     mae(c, w, h) { // forecast hugging the actual series; the gap hatched
       const R = rng(21), N = 48, act = [], fc = [];
@@ -286,43 +332,18 @@
         c.stroke();
       }
       c.globalAlpha = 1;
-    },
-    voice(c, w, h) { c.lineWidth = 0.9; c.beginPath(); for (let r = 5; r < w * 1.2; r += 6) { c.moveTo(-6 + r, h / 2); c.arc(-6, h / 2, r, 0, Math.PI * 2); } c.stroke(); },
-    lanes(c, w, h) { c.lineWidth = 1; c.beginPath(); [0.16, 0.5, 0.84].forEach((m) => { for (let i = -1; i <= 1; i++) { const y = h * m + i * 4; c.moveTo(0, y); c.lineTo(w, y); } }); c.stroke(); },
-    spans(c, w, h) {
-      const R = rng(5); c.lineWidth = 3; c.beginPath(); let x = 0; const words = [];
-      while (x < w) { const L = 12 + R() * 36; words.push([x, L]); c.moveTo(x, h * 0.38); c.lineTo(Math.min(w, x + L), h * 0.38); x += L + 8; }
-      c.globalAlpha = 0.5; c.stroke(); c.globalAlpha = 1;
-      const pick = words[Math.min(words.length - 1, 3)];
-      c.lineWidth = 1.3; c.beginPath(); c.moveTo(pick[0] - 2, h * 0.62);
-      for (let i = 0; i <= 20; i++) c.lineTo(pick[0] - 2 + (pick[1] + 4) * i / 20, h * 0.62 + Math.sin(i * 1.7) * 1.8);
-      c.stroke();
-      c.lineWidth = 1; c.beginPath(); c.moveTo(pick[0] - 2, h * 0.5); c.lineTo(pick[0] - 2, h * 0.74); c.moveTo(pick[0] + pick[1] + 2, h * 0.5); c.lineTo(pick[0] + pick[1] + 2, h * 0.74); c.stroke();
-    },
-    framesw(c, w, h) {
-      const n = 4, fw = w / n; c.lineWidth = 1.1;
-      for (let i = 0; i < n; i++) { c.beginPath(); c.roundRect(i * fw + 3, h * 0.14, fw - 6, h * 0.72, 6); c.stroke(); }
-      c.lineWidth = 1.8; c.beginPath(); for (let x = 0; x <= w; x += 2) { const y = h / 2 + Math.sin(x / 18) * h * 0.18; if (x === 0) c.moveTo(x, y); else c.lineTo(x, y); } c.stroke();
-    },
-    rules(c, w, h) { const ws = [0.5, 1, 2.4, 0.5, 1.4, 3.4, 0.6, 1, 0.5, 2]; let y = 4; ws.forEach((lw) => { c.lineWidth = lw; c.beginPath(); c.moveTo(0, y); c.lineTo(w, y); c.stroke(); y += lw + 4.2; }); },
-    contours(c, w, h) { c.lineWidth = 0.8; iso(c, w, h, (x, y) => Math.sin(x / 23) * Math.cos(y / 17) + Math.sin((x + y) / 41) * 0.8 + Math.cos(x / 61 - y / 29) * 0.5, -2, 2, 0.28, 2.5); }
+    }
   };
-  const ALIAS = { frames: 'frames', voice: 'voice', lanes: 'lanes', spans: 'spans', rules: 'rules', contours: 'contours' };
-  const ANIMATED = new Set(['ridgeline', 'eye', 'tenants', 'frames']);
+  const ANIMATED = new Set(['voice', 'eye', 'tenants', 'enclosure', 'converge', 'timeline']);
 
-  const arts = [...document.querySelectorAll('canvas[data-emblem], canvas[data-figure], canvas[data-swatch]')].map((cv) => {
-    let kind = cv.dataset.emblem || cv.dataset.figure || cv.dataset.swatch;
-    if (cv.dataset.swatch === 'frames') kind = 'framesw';
-    else if (ALIAS[kind] && !cv.dataset.emblem) kind = ALIAS[kind];
-    return { cv, kind, ctx: cv.getContext('2d'), dirty: true, visible: false, w: 0, h: 0, pointer: null, state: null, section: cv.closest('[data-polarity]') };
-  });
-  const artIO = 'IntersectionObserver' in window ? new IntersectionObserver((es) => {
-    es.forEach((e) => { const a = arts.find((x) => x.cv === e.target); if (a) { a.visible = e.isIntersecting; if (a.visible) a.dirty = true; } });
-  }, { rootMargin: '120px' }) : null;
+  const arts = [...document.querySelectorAll('canvas[data-emblem], canvas[data-figure], canvas[data-art]')].map((cv) => ({
+    cv, kind: cv.dataset.emblem || cv.dataset.figure || cv.dataset.art, ctx: cv.getContext('2d'), dirty: true, visible: false,
+    w: 0, h: 0, pointer: null, state: null, tl: null
+  }));
   arts.forEach((a) => {
-    if (artIO) artIO.observe(a.cv); else a.visible = true;
-    a.cv.addEventListener('pointermove', (e) => { const r = a.cv.getBoundingClientRect(); a.pointer = { x: e.clientX - r.left, y: e.clientY - r.top, inside: true }; });
-    a.cv.addEventListener('pointerleave', () => { if (a.pointer) a.pointer.inside = false; });
+    const host = a.cv.closest('article') || a.cv;
+    host.addEventListener('pointermove', (e) => { const r = a.cv.getBoundingClientRect(); a.pointer = { x: e.clientX - r.left, y: e.clientY - r.top, inside: e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom }; });
+    host.addEventListener('pointerleave', () => { if (a.pointer) a.pointer.inside = false; });
   });
   function drawArt(a, t) {
     const fn = DRAW[a.kind]; if (!fn) return;
@@ -332,21 +353,80 @@
     const c = a.ctx;
     c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h);
     const fg = getComputedStyle(a.cv).color;
-    const ground = a.section ? getComputedStyle(a.section).getPropertyValue('--g').trim() : '#F3F1EC';
     c.strokeStyle = fg; c.fillStyle = fg; c.lineCap = 'round'; c.lineJoin = 'round';
-    const ctx = { pointer: a.kind === 'eye' ? pointerIn(a) : a.pointer, ground, state: a.state };
-    fn(c, w, h, t, ctx);
-    a.state = ctx.state;
+    fn(c, w, h, t, a);
     a.dirty = false;
   }
-  function pointerIn(a) { const r = a.cv.getBoundingClientRect(); return { x: P.x - r.left, y: P.y - r.top, inside: true }; }
   let lastArtW = innerWidth;
   addEventListener('resize', () => { if (Math.abs(innerWidth - lastArtW) > 2) { lastArtW = innerWidth; arts.forEach((a) => { a.dirty = true; }); } });
   function tickArts(t) {
+    const vh = innerHeight;
     for (const a of arts) {
+      const r = a.cv.getBoundingClientRect();
+      const vis = r.bottom > -120 && r.top < vh + 120 && r.width > 0;
+      if (vis && !a.visible) a.dirty = true;
+      a.visible = vis;
       if (!a.visible) continue;
       if (a.dirty || (!reduce && ANIMATED.has(a.kind))) drawArt(a, t);
     }
+  }
+
+  /* ---------- experience timeline layout (dates -> positions) ---------- */
+  const tlEl = document.querySelector('[data-timeline]');
+  const tlArt = arts.find((a) => a.kind === 'timeline');
+  function layoutTimeline() {
+    if (!tlEl || !tlArt) return;
+    const origin = { y: 2025, m: 3 }; // April 2025, month index from 0
+    const now = new Date();
+    const idx = (y, m) => (y - origin.y) * 12 + (m - origin.m);
+    const nowF = idx(now.getFullYear(), now.getMonth()) + now.getDate() / new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const months = Math.ceil(nowF) + 1;
+    const parse = (s) => { if (s === 'now') return nowF; const [y, m] = s.split('-').map(Number); return idx(y, m - 1); };
+    const roles = [...document.querySelectorAll('.role[data-from]')].map((el, i) => ({
+      el, from: parse(el.dataset.from), to: el.dataset.to === 'now' ? nowF : parse(el.dataset.to) + 1, y: i === 0 ? 0.62 : 0.3, card: true
+    }));
+    tlArt.tl = { months, now: nowF, startMonth: origin.m, roles };
+    const w = tlEl.clientWidth;
+    tlEl.querySelectorAll('[data-year]').forEach((s) => { const m = idx(Number(s.dataset.year), 0); s.style.left = Math.max(0, (m / months) * w) + 'px'; });
+    tlArt.dirty = true;
+  }
+
+  /* ---------- contact: link tiles sit just outside the loop, never on its text ---------- */
+  const contactEl = document.getElementById('contact');
+  const loopEl = document.querySelector('[data-loop]');
+  const LOOP_ANGLES = [-90, -12, 58, 122, 192];
+  function layoutLoop() {
+    if (!contactEl || !loopEl) return;
+    const items = [...loopEl.children];
+    contactEl.classList.remove('ring-on');
+    items.forEach((li) => { li.style.left = ''; li.style.top = ''; });
+    const vw = document.documentElement.clientWidth, vh = innerHeight;
+    const pad = parseFloat(getComputedStyle(contactEl).paddingLeft) || 24;
+    contactEl.classList.add('ring-on');
+    const sizes = items.map((li) => [li.offsetWidth, li.offsetHeight]);
+    const maxW = Math.max(...sizes.map((s) => s[0]));
+    const R = Math.min(vh * 0.3, 300, vw / 2 - pad - maxW - 28);
+    if (R < 150) { contactEl.classList.remove('ring-on'); contactEl.style.removeProperty('--ring'); return; }
+    contactEl.style.setProperty('--ring', (R * 2) + 'px');
+    items.forEach((li, i) => {
+      const ang = LOOP_ANGLES[i % LOOP_ANGLES.length] * Math.PI / 180, cs = Math.cos(ang), sn = Math.sin(ang);
+      const [w, h] = sizes[i];
+      const ext = Math.abs(cs) * w / 2 + Math.abs(sn) * h / 2 + 22;
+      li.style.left = (R + cs * (R + ext) - w / 2) + 'px';
+      li.style.top = (R + sn * (R + ext) - h / 2) + 'px';
+    });
+  }
+
+  /* ---------- 3D models, loaded only when their sections come near ---------- */
+  const modelCanvases = document.querySelectorAll('canvas[data-model]');
+  if (modelCanvases.length && 'IntersectionObserver' in window) {
+    let started = false;
+    const mio = new IntersectionObserver((es) => {
+      if (started || !es.some((e) => e.isIntersecting)) return;
+      started = true; mio.disconnect();
+      import('/assets/js/models.js').catch((err) => console.warn('[lines] 3D models unavailable:', err));
+    }, { rootMargin: '150% 0px' });
+    modelCanvases.forEach((m) => mio.observe(m));
   }
 
   /* ---------- the line field (WebGL2) ---------- */
@@ -364,11 +444,11 @@ uniform int uSecN;uniform vec4 uSec[12];uniform vec4 uSecB[12];
 uniform int uRectN;uniform vec4 uRect[24];uniform vec4 uKind[24];
 uniform vec4 uHero;uniform vec4 uTun;uniform vec4 uCliff;uniform vec4 uFig;
 uniform sampler2D uName;uniform float uNameOn;
-uniform vec4 uFace;uniform float uTurn;
-uniform vec4 uHand;
+uniform vec4 uGrip;
 uniform int uPeakN;uniform vec4 uPeak[8];
 uniform vec4 uLoop;uniform vec4 uFig2;
-uniform vec4 uGuil;
+uniform vec4 uBH;
+uniform vec4 uMoon;uniform vec4 uFoot;uniform sampler2D uCode;uniform float uCodeOn;
 out vec4 o;
 
 vec3 perm(vec3 x){return mod(((x*34.0)+1.0)*x,289.0);}
@@ -391,10 +471,8 @@ float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 mat2 rot(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}
 float smin(float a,float b,float k){float h=clamp(0.5+0.5*(b-a)/k,0.0,1.0);return mix(b,a,h)-k*h*(1.0-h);}
 float sdSeg(vec2 p,vec2 a,vec2 b){vec2 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0);return length(pa-ba*h);}
-float sdRBox(vec2 p,vec2 b,float r){vec2 q=abs(p)-b+r;return length(max(q,0.0))+min(max(q.x,q.y),0.0)-r;}
 float sdR(vec2 p,vec4 r,float rad,float pad){vec2 c=r.xy+r.zw*0.5;vec2 b=r.zw*0.5+pad;float rr=min(rad,min(b.x,b.y));vec2 q=abs(p-c)-b+rr;return length(max(q,0.0))+min(max(q.x,q.y),0.0)-rr;}
 vec2 nR(vec2 p,vec4 r,float rad,float pad){vec2 e=vec2(1.0,0.0);return normalize(vec2(sdR(p+e.xy,r,rad,pad)-sdR(p-e.xy,r,rad,pad),sdR(p+e.yx,r,rad,pad)-sdR(p-e.yx,r,rad,pad))+1e-6);}
-
 float sdFigure(vec2 q){
  float d=length(q-vec2(0.02,-0.9))-0.085;
  d=smin(d,sdSeg(q,vec2(0.0,-0.78),vec2(-0.01,-0.44))-0.07,0.04);
@@ -404,38 +482,12 @@ float sdFigure(vec2 q){
  d=smin(d,sdSeg(q,vec2(-0.02,-0.46),vec2(-0.13,-0.02))-0.042,0.03);
  return d;
 }
-float sdHand(vec2 q){
- float d=sdRBox(q-vec2(0.0,-0.44),vec2(0.16,0.15),0.07);
- d=smin(d,sdSeg(q,vec2(-0.115,-0.55),vec2(-0.145,-0.9))-0.042,0.03);
- d=smin(d,sdSeg(q,vec2(-0.04,-0.57),vec2(-0.047,-0.99))-0.044,0.03);
- d=smin(d,sdSeg(q,vec2(0.04,-0.56),vec2(0.056,-0.93))-0.042,0.03);
- d=smin(d,sdSeg(q,vec2(0.11,-0.52),vec2(0.155,-0.8))-0.036,0.03);
- d=smin(d,sdSeg(q,vec2(0.14,-0.36),vec2(0.3,-0.56))-0.046,0.05);
- d=smin(d,sdSeg(q,vec2(0.0,-0.3),vec2(0.035,0.8))-0.125,0.06);
- return d;
-}
-float g2(vec2 u){return exp(-dot(u,u));}
-float faceH(vec2 q,float turn){
- vec2 f=q-vec2(turn*0.11,0.0);
- float head=1.0-pow(q.x/0.78,2.0)-pow((q.y+0.05)/1.08,2.0);
- float h=head>0.0?sqrt(head):head*0.6;
- if(q.y>0.7)h=max(h,(1.0-pow(q.x/0.36,2.0))*0.55-(q.y-0.7)*0.2);
- h+=0.16*exp(-pow((f.y+0.36)/0.07,2.0))*exp(-pow(f.x/0.45,2.0));
- h-=0.26*g2(vec2((f.x-0.27)/0.14,(f.y+0.2)/0.085))+0.26*g2(vec2((f.x+0.27)/0.14,(f.y+0.2)/0.085));
- float nose=exp(-pow((f.x-turn*0.07)/0.075,2.0))*smoothstep(-0.32,0.15,f.y)*smoothstep(0.34,0.18,f.y);
- h+=0.34*nose+0.12*g2(vec2((f.x-turn*0.07)/0.12,(f.y-0.2)/0.07));
- h+=0.1*g2(vec2((abs(f.x)-0.36)/0.17,(f.y-0.12)/0.2));
- h-=0.07*g2(vec2(f.x/0.24,(f.y-0.46)/0.035));
- h+=0.06*g2(vec2(f.x/0.2,(f.y-0.52)/0.05))+0.1*g2(vec2(f.x/0.2,(f.y-0.78)/0.1));
- return h;
-}
-float faceEye(vec2 q,float turn){vec2 f=q-vec2(turn*0.11,0.0);return min(pow((f.x-0.27)/0.105,2.0)+pow((f.y+0.2)/0.05,2.0),pow((f.x+0.27)/0.105,2.0)+pow((f.y+0.2)/0.05,2.0));}
 float cliffTop(float x,float W,float H){
  float u=x/W;
  float ridge=H*(0.955-0.025*(0.5+0.5*sn(vec2(x/170.0,1.7)))-0.012*sn(vec2(x/41.0,4.1)));
- float rough=smoothstep(uCliff.x+0.02,uCliff.x+0.12,u);
- float top=H*uCliff.y-H*0.05*smoothstep(uCliff.x+0.1,1.0,u)+rough*(H*0.018*sn(vec2(x/60.0,9.3))+H*0.008*sn(vec2(x/17.0,2.2)));
- return mix(ridge,top,smoothstep(uCliff.z,uCliff.w,u));
+ float rough=smoothstep(uCliff.w+0.015,uCliff.w+0.09,u);
+ float top=H*uCliff.z-H*0.035*smoothstep(uCliff.w+0.08,1.0,u)+rough*(H*0.014*sn(vec2(x/60.0,9.3))+H*0.006*sn(vec2(x/17.0,2.2)));
+ return mix(ridge,top,smoothstep(uCliff.x,uCliff.y,u));
 }
 float stars(vec2 q,float t){
  vec2 cell=floor(q/38.0);float h=hash(cell);
@@ -507,15 +559,16 @@ void main(){
  vec2 dmv=pw-uMouse;float bump=uMouseAmt*4.2*exp(-dot(dmv,dmv)/(2.0*90.0*90.0));
  float wvar=mix(0.6,1.8,smoothstep(-0.55,0.75,sn(p/330.0+vec2(0.0,t*0.01))));
 
- float v1=0.0,vd1=0.0,v2=0.0,f1=1.0,f2=0.0,w=wvar,cov=0.0,solid=0.0,clr2=0.0,rim=0.0,extra=0.0;
+ float v1=0.0,vd1=0.0,v2=0.0,vd2=0.0,f1=1.0,f2=0.0,w=wvar,w2=0.9,cov=0.0,solid=0.0,clr2=0.0,rim=0.0,extra=0.0;
 
  if(scene==0){
+  // HERO: the tunnel; the name is the spiral's thickness; a figure stands on the cliff
   vec2 hl=p-uHero.xy;
   vec2 c=uTun.xy;vec2 d=pw-c;float r=length(d);float th=atan(d.y,d.x);
   vec2 dm=pw-uMouse;th+=uMouseAmt*0.9*exp(-dot(dm,dm)/(2.0*140.0*140.0));
   float rough=smoothstep(uTun.z*0.55,uTun.z*1.2,r);
   float rr=r+n*(4.0+90.0*rough);
-  float fr=1.41*pow(rr+2.0,0.641);
+  float fr=1.41*pow(rr+2.0,0.641)*clamp(sqrt(1000.0*uDpr/uRes.x),1.0,1.55); // finer rings on small screens, so the name keeps enough lines
   v1=fr-th*0.15915494-uTun.w*22.0-t*0.12;vd1=fr;
   vec2 uvN=hl/uHero.zw;
   float m=(uNameOn>0.5&&uvN.x>0.0&&uvN.x<1.0&&uvN.y>0.0&&uvN.y<1.0)?texture(uName,uvN).r:0.0;
@@ -526,56 +579,65 @@ void main(){
   vec2 fq=rot(-uFig.z)*(p-uFig.xy)/uFig.w;fq.x=-fq.x;
   solid=max(solid,1.0-smoothstep(-0.7,0.7,sdFigure(fq)*uFig.w));
  }else if(scene==1){
-  vec2 q=(pw-uFace.xy)/uFace.z;
-  float h=faceH(q,uTurn);
-  float e=faceEye(q,uTurn);
-  v1=h*22.0+n*0.35+bump*0.5;vd1=v1;
-  f1=smoothstep(-0.3,0.02,h);
-  v2=n*7.0+(pw.y-secTop)/70.0;f2=(1.0-f1)*0.32*smoothstep(0.0,200.0,pw.y-secTop);
-  clr2=1.0-smoothstep(0.7,1.0,e);
-  w=wvar*0.95;
+  // ABOUT: quiet contours; the 3D head is drawn on its own canvas above
+  float sy=pw.y-secTop;
+  v1=n*8.0+sy/90.0+bump*0.5;vd1=v1;
+  f1=0.4*smoothstep(0.0,220.0,sy);w=0.8;
  }else if(scene==2){
-  vec2 hq=(p-uHand.xy)/uHand.z;
-  float dh=sdHand(hq)*uHand.z;
-  vec2 e2=vec2(1.5,0.0);
-  vec2 gn=normalize(vec2(sdHand((p+e2.xy-uHand.xy)/uHand.z)-sdHand((p-e2.xy-uHand.xy)/uHand.z),sdHand((p+e2.yx-uHand.xy)/uHand.z)-sdHand((p-e2.yx-uHand.xy)/uHand.z))+1e-6);
-  vec2 q=pw-gn*30.0*exp(-max(dh,0.0)/55.0);
-  float sy=q.y-secTop;
-  float dx=(q.x-uHand.x)/max(secH*0.9,300.0);
-  float lift=secH*0.5*exp(-dx*dx*3.2);
-  float wave=9.0*sin(q.x/48.0+sy/64.0+t*0.3)+n*24.0;
-  v1=(sy+lift+wave)/7.0+bump;vd1=v1;
-  float vs=secH*0.3/7.0;
-  f1=smoothstep(vs,vs+9.0,v1);
-  extra=max(extra,stars(vec2(p.x,p.y-secTop),t)*(1.0-f1));
-  clr2=1.0-smoothstep(-0.7,0.7,dh);
-  rim=1.0-smoothstep(0.2,1.3,abs(dh-0.4));
- }else if(scene==3){
+  // FAQ: a hand grips the cloth of lines and pulls it; the lines gather in the fist and the night shows through
+  vec2 G=uGrip.xy;vec2 d=pw-G;float r=length(d);
+  vec2 q=vec2(d.x,d.y-0.0005*d.x*d.x);
+  float ph=atan(q.x,q.y);
+  ph+=(0.05*sin(r/38.0-t*0.45+ph*7.0)+0.035*n)*smoothstep(20.0,280.0,r);
+  float pmax=1.08;
+  float cloth=1.0-smoothstep(pmax-0.07,pmax+0.02,abs(ph));
+  v1=ph*uGrip.z+bump*0.6;vd1=v1;
+  f1=cloth;
+  w=wvar*mix(1.7,0.95,smoothstep(0.0,240.0,r));
+  // the gathered end of the cloth sticking up out of the fist
+  float pu=atan(q.x,-q.y);
+  v2=pu*46.0;vd2=v2;f2=(1.0-smoothstep(0.2,0.28,abs(pu)))*(1.0-smoothstep(uGrip.w*0.55,uGrip.w*0.8,r));w2=1.1;
+  extra=max(extra,stars(vec2(p.x,p.y-secTop),t)*(1.0-cloth)*(1.0-f2));
+ }else if(scene==3||scene==7){
+  // CASE STUDIES / SKILLS: terrain that rises under each item
   float h=n*0.85;
   for(int i=0;i<8;i++){if(i>=uPeakN)break;vec4 pk=uPeak[i];vec2 d=(pw-pk.xy)/(pk.z*1.05+110.0);h+=(1.6+0.9*pk.w)*exp(-dot(d,d)*1.1);}
-  v1=h*12.5+bump;vd1=v1;
+  v1=h*(scene==3?12.5:10.0)+bump;vd1=v1;
  }else if(scene==4){
+  // EXPERIENCE: strata
   float sy=pw.y-secTop;
-  float fold=24.0*sin(pw.x/300.0+sy/540.0)+11.0*sin(pw.x/93.0-sy/230.0)+n*38.0;
+  float fold=18.0*sin(pw.x/340.0+sy/560.0)+8.0*sin(pw.x/113.0-sy/260.0)+n*30.0;
   float u=sy+fold;
-  v1=u/8.0+7.0*sin(u/70.0)+bump;vd1=v1;w=wvar*0.95;
+  v1=u/8.5+6.0*sin(u/75.0)+bump;vd1=v1;w=wvar*0.9;
  }else if(scene==5){
+  // PROJECTS: water passing stones
   float sy=pw.y-secTop;
   v1=(sy+n*44.0+14.0*sin(pw.x/170.0+sy/400.0))/9.5+bump;vd1=v1;w=wvar*0.9;
  }else if(scene==6){
+  // PUBLICATION: engraving, cross-hatched where the terrain is high
   float sy=pw.y-secTop;
-  v1=(sy+5.0*sin(pw.x/220.0+sy/160.0)+n*7.0)/4.6+bump*0.6;vd1=v1;w=0.55;
-  v2=(sy*0.94+pw.x*0.34+n*9.0)/6.5;f2=0.6*smoothstep(0.05,0.45,n);
- }else if(scene==7){
-  v1=n*24.0+bump;vd1=v1;
+  v1=(sy+5.0*sin(pw.x/220.0+sy/160.0)+n*7.0)/4.6+bump*0.6;vd1=v1;w=0.6;
+  v2=(sy*0.94+pw.x*0.34+n*9.0)/6.5;vd2=v2;f2=0.6*smoothstep(0.05,0.45,n);w2=0.7;
  }else if(scene==8){
-  vec2 d=pw-uGuil.xy;float r=length(d);float a=atan(d.y,d.x);
-  v1=(r+15.0*sin(9.0*a+r/36.0+t*0.04))/6.5;vd1=v1;
-  v2=(r+15.0*sin(9.0*a-r/36.0+3.14159-t*0.04))/6.5;
-  float env=(1.0-smoothstep(uGuil.z*0.92,uGuil.z*1.02,r))*smoothstep(uGuil.z*0.14,uGuil.z*0.22,r);
-  f1=env;f2=env;w=0.8;
-  extra=max(extra,(1.0-smoothstep(0.5,1.5,abs(r-uGuil.z*1.06)))*step(0.0,uGuil.z));
+  // RESUME: a black hole bending the lines behind it (point-mass lens), with an inclined accretion disk
+  vec2 C=uBH.xy;float RE=uBH.z;float Rh=RE*0.46;
+  vec2 th=p-C;float r=length(th);
+  vec2 src=C+th-RE*RE*th/max(r*r,1.0);
+  float ns=fbm(src/420.0,t*0.03);
+  v1=(src.y*0.93+src.x*0.37)/6.2+ns*2.4;vd1=v1;
+  float hz=1.0-smoothstep(Rh-0.8,Rh+0.8,r);
+  f1=1.0-hz;w=0.8+0.9*smoothstep(RE*2.2,RE*0.9,r);
+  vec2 dd=vec2(th.x,th.y/0.2);float rho=length(dd);
+  float disk=smoothstep(Rh*1.25,Rh*1.5,rho)*(1.0-smoothstep(Rh*2.8,Rh*3.4,rho));
+  v2=rho/5.0+atan(dd.y,dd.x)*0.31830989-t*0.9*(1.0+uBH.w);vd2=rho/5.0;
+  f2=disk*(th.y>0.0?1.0:(1.0-hz));
+  w2=mix(1.7,0.5,smoothstep(-Rh*2.6,Rh*2.6,th.x));
+  float ar=r/3.0;float ad=abs(fract(ar+0.5)-0.5)*3.0;
+  float band=smoothstep(Rh*1.03,Rh*1.1,r)*(1.0-smoothstep(Rh*1.4,Rh*1.7,r));
+  extra=max(extra,(1.0-smoothstep(0.3,1.2,ad))*band*(th.y<0.0?1.0:0.4)*(1.0-f2));
+  extra=max(extra,(1.0-smoothstep(0.5,1.6,abs(r-Rh*1.02))));
  }else if(scene==9){
+  // CONTACT: lines wrap the loop the way they wrap the figure in reference 4
   vec2 d=pw-uLoop.xy;float band=length(d)-uLoop.z;float T=uLoop.w;
   float tube=1.0-(band*band)/(T*T);float H=tube>0.0?sqrt(tube):0.0;
   float sy=pw.y-secTop;
@@ -584,15 +646,34 @@ void main(){
   vec2 fq=(p-uFig2.xy)/uFig2.w;float fd=sdFigure(fq)*uFig2.w;
   clr2=1.0-smoothstep(-0.7,0.7,fd);rim=1.0-smoothstep(0.2,1.3,abs(fd-0.4));
  }else{
-  float hz=secTop+secH*0.36;float dy=pw.y-hz;
-  v1=1400.0/(max(dy,0.0)+16.0)+n*0.8;vd1=v1;
-  f1=smoothstep(0.0,3.0,dy);
+  // FOOTER: a night ocean; the moon is a barcode that scans as human-in-loop.dev
+  float hz=uMoon.w;float dy=pw.y-hz;
+  vec2 mc=uMoon.xy;float R=uMoon.z;
+  vec2 fuv=(p-uFoot.xy)/uFoot.zw;
+  if(dy>0.0){
+   float Z=620.0/(dy+4.0);float X=(pw.x-mc.x)/(dy+4.0)*0.7;
+   float H=0.35*sin(X*1.3+Z*0.9-t*1.2)+0.22*sin(-X*2.1+Z*1.4-t*0.9)+0.12*sin(X*3.7+Z*2.6-t*1.7);
+   v1=Z*1.5+H*1.3+bump*0.3;vd1=Z*1.5;
+   float path=exp(-pow((pw.x-mc.x)/(R*(0.55+dy/280.0)),2.0));
+   w=wvar*(1.0+1.8*path);
+   vec2 mu=(vec2(pw.x+H*7.0,hz-dy*0.9)-uFoot.xy)/uFoot.zw;
+   float bar=uCodeOn>0.5?texture(uCode,mu).r:0.0;
+   v2=v1*2.7;vd2=vd1*2.7;f2=path*0.85*(1.0-bar*0.9);w2=0.9;
+   f1*=1.0-0.75*bar*path;
+  }else{
+   f1=0.0;
+   float md=length(p-mc);
+   float bar=uCodeOn>0.5?texture(uCode,fuv).r:0.0;
+   solid=(1.0-smoothstep(R-0.8,R+0.8,md))*(1.0-bar);
+   float halo=md/7.0;float hd=abs(fract(halo+0.5)-0.5)*7.0;
+   extra=max(extra,(1.0-smoothstep(0.35,1.1,hd))*smoothstep(R*1.08,R*1.14,md)*(1.0-smoothstep(R*1.2,R*2.1,md))*0.75);
+   extra=max(extra,stars(vec2(p.x,p.y-secTop),t)*step(R*1.3,md));
+  }
   extra=max(extra,1.0-smoothstep(0.6,1.6,abs(p.y-hz)));
-  extra=max(extra,stars(vec2(p.x,p.y-secTop),t)*(1.0-step(0.0,dy)));
  }
 
  float a1=lineAlpha(v1,vd1,w*wmul,cov)*f1;
- float a2=lineAlpha(v2,v2,0.9*wmul,0.0)*f2;
+ float a2=lineAlpha(v2,vd2,w2*wmul,0.0)*f2;
  float keep=step(mod(floor(v1+0.5),3.0),0.5);
  a1*=mix(1.0,keep,sparse);
  float A=max(a1,a2);
@@ -601,7 +682,7 @@ void main(){
  A=max(A,max(extra*(1.0-clear),ruleA));
  A=max(A,rim*(1.0-clear));
  vec3 col=mix(bg,fg,A);
- col=mix(col,fg,solid);
+ col=mix(col,fg,solid*(1.0-clear));
  vec3 tc=inkGround?vec3(0.13,0.13,0.125):vec3(1.0);
  col=mix(col,tc,glass*0.45);
  col=mix(col,vec3(1.0),rimL*0.8);
@@ -609,12 +690,13 @@ void main(){
  o=vec4(col,1.0);
 }`;
 
-  if (!gl) {
+  function startArtsOnly() {
     root.classList.add('no-lines');
-    const loopArts = (now) => { tickArts(now / 1000); requestAnimationFrame(loopArts); };
-    requestAnimationFrame(loopArts);
-    return;
+    const loop = (now) => { tickArts(now / 1000); requestAnimationFrame(loop); };
+    layoutTimeline(); layoutLoop();
+    requestAnimationFrame(loop);
   }
+  if (!gl) { startArtsOnly(); return; }
 
   function compile(type, src) {
     const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
@@ -626,27 +708,29 @@ void main(){
   if (vs && fs) { gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog); }
   if (!vs || !fs || !gl.getProgramParameter(prog, gl.LINK_STATUS)) {
     if (vs && fs) console.error('[lines] link:', gl.getProgramInfoLog(prog));
-    root.classList.add('no-lines');
-    const loopArts = (now) => { tickArts(now / 1000); requestAnimationFrame(loopArts); };
-    requestAnimationFrame(loopArts);
-    return;
+    startArtsOnly(); return;
   }
   gl.useProgram(prog);
   const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const al = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(al); gl.vertexAttribPointer(al, 2, gl.FLOAT, false, 0, 0);
   const U = {};
-  ['uRes', 'uDpr', 'uTime', 'uMouse', 'uMouseAmt', 'uInvert', 'uSecN', 'uSec', 'uSecB', 'uRectN', 'uRect', 'uKind', 'uHero', 'uTun', 'uCliff', 'uFig', 'uName', 'uNameOn', 'uFace', 'uTurn', 'uHand', 'uPeakN', 'uPeak', 'uLoop', 'uFig2', 'uGuil']
+  ['uRes', 'uDpr', 'uTime', 'uMouse', 'uMouseAmt', 'uInvert', 'uSecN', 'uSec', 'uSecB', 'uRectN', 'uRect', 'uKind', 'uHero', 'uTun', 'uCliff', 'uFig',
+    'uName', 'uNameOn', 'uGrip', 'uPeakN', 'uPeak', 'uLoop', 'uFig2', 'uBH', 'uMoon', 'uFoot', 'uCode', 'uCodeOn']
     .forEach((n) => { U[n] = gl.getUniformLocation(prog, n); });
-
-  const nameTex = gl.createTexture();
-  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, nameTex);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.uniform1i(U.uName, 0);
+  function makeTex(unit) {
+    const tex = gl.createTexture();
+    gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    return tex;
+  }
+  const nameTex = makeTex(0), codeTex = makeTex(1);
+  gl.uniform1i(U.uName, 0); gl.uniform1i(U.uCode, 1);
+  function upload(unit, tex, canvas) { gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, tex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas); }
 
   /* ---------- the page model ---------- */
-  const SCENE = { tunnel: 0, face: 1, wings: 2, terrain: 3, strata: 4, stream: 5, engrave: 6, contour: 7, guilloche: 8, wrap: 9, horizon: 10 };
+  const SCENE = { tunnel: 0, head: 1, face: 1, cloth: 2, terrain: 3, strata: 4, stream: 5, engrave: 6, contour: 7, blackhole: 8, wrap: 9, ocean: 10 };
   const SEAM = { cliff: [1, 44], wave: [2, 26], rule: [3, 0] };
   const KIND = { plate: 1, '': 1, glass: 2, clear: 3, sparse: 4 };
   const secs = [...document.querySelectorAll('[data-scene]')].map((el) => ({
@@ -662,12 +746,10 @@ void main(){
   const peaks = plates.filter((p) => p.el.hasAttribute('data-peak'));
   const hero = document.querySelector('.hero');
   const n1 = hero ? hero.querySelector('.n1') : null;
-  const heroLoc = hero ? hero.querySelector('.hero-loc') : null;
-  const faceEl = document.querySelector('[data-face]');
+  const heroId = hero ? hero.querySelector('[data-cliff]') : null;
   const handEl = document.querySelector('[data-hand]');
-  const loopEl = document.querySelector('[data-loop]');
-  const contactEl = document.getElementById('contact');
-  const resumeEl = document.getElementById('resume');
+  const bhEl = document.querySelector('[data-bh]');
+  const footEl = document.querySelector('.foot');
   const nav = document.querySelector('.topbar');
 
   function measureRadii() { plates.forEach((p) => { p.rad = parseFloat(getComputedStyle(p.el).borderTopLeftRadius) || 0; }); }
@@ -675,7 +757,6 @@ void main(){
   /* ---------- the name, drawn only by the spiral's thickness ---------- */
   const nameCanvas = document.createElement('canvas');
   let nameOn = 0;
-  // shrink the name until its widest line fits the hero, so it is never cut off
   function fitName() {
     if (!hero || !n1 || !n1.firstChild) return;
     n1.style.fontSize = '';
@@ -683,13 +764,8 @@ void main(){
     const hs = getComputedStyle(hero);
     const avail = hero.clientWidth - parseFloat(hs.paddingLeft) - parseFloat(hs.paddingRight);
     const node = n1.firstChild, range = document.createRange();
-    let widest = 0;
-    if (getComputedStyle(n1).whiteSpace === 'nowrap') {
-      range.selectNodeContents(n1); widest = range.getBoundingClientRect().width;
-    } else {
-      const re = /\S+/g; let m;
-      while ((m = re.exec(node.textContent))) { range.setStart(node, m.index); range.setEnd(node, m.index + m[0].length); widest = Math.max(widest, range.getBoundingClientRect().width); }
-    }
+    let widest = 0; const re = /\S+/g; let m;
+    while ((m = re.exec(node.textContent))) { range.setStart(node, m.index); range.setEnd(node, m.index + m[0].length); widest = Math.max(widest, range.getBoundingClientRect().width); }
     if (widest > avail) n1.style.fontSize = (size * avail / widest * 0.985).toFixed(2) + 'px';
   }
   function drawName() {
@@ -717,10 +793,42 @@ void main(){
       const base = r.top - hr.top + (r.height - (asc + desc)) / 2 + asc;
       c.strokeText(m[0], r.left - hr.left, base); c.fillText(m[0], r.left - hr.left, base);
     }
-    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, nameTex);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, nameCanvas);
+    upload(0, nameTex, nameCanvas);
     nameOn = 1;
+  }
+
+  /* ---------- the footer moon: a real Code 128 barcode ---------- */
+  const codeCanvas = document.createElement('canvas');
+  const CODE = code128B('human-in-loop.dev');
+  let codeOn = 0, moon = null;
+  function moonGeom() {
+    if (!footEl) return null;
+    const r = footEl.getBoundingClientRect();
+    const hz = r.height * 0.52;
+    // on phones the moon grows so the barcode keeps at least about a pixel per module
+    const R = r.width < 700 ? Math.min(r.width * 0.33, 150) : clamp(Math.min(r.width * 0.12, r.height * 0.17), 76, 220);
+    return { x: r.width * (r.width < 700 ? 0.5 : 0.74), y: hz - R * 1.25, R, hz };
+  }
+  function drawCode() {
+    if (!footEl) return;
+    const r = footEl.getBoundingClientRect(); moon = moonGeom();
+    const md = Math.min(devicePixelRatio || 1, 2);
+    codeCanvas.width = Math.max(1, Math.round(r.width * md)); codeCanvas.height = Math.max(1, Math.round(r.height * md));
+    const c = codeCanvas.getContext('2d');
+    c.setTransform(md, 0, 0, md, 0, 0); c.clearRect(0, 0, r.width, r.height);
+    c.font = '100px "Libre Barcode 128"';
+    const w100 = c.measureText(CODE).width; if (!w100) return;
+    const size = 100 * (moon.R * 1.56) / w100;
+    c.font = `${size}px "Libre Barcode 128"`;
+    const mt = c.measureText(CODE);
+    const barH = (mt.actualBoundingBoxAscent || size * 0.7) + (mt.actualBoundingBoxDescent || 0);
+    const k = (moon.R * 0.82) / Math.max(barH, 1);
+    c.save(); c.translate(moon.x - mt.width / 2, moon.y); c.scale(1, k);
+    c.fillStyle = '#fff'; c.textBaseline = 'alphabetic';
+    c.fillText(CODE, 0, (mt.actualBoundingBoxAscent - (mt.actualBoundingBoxDescent || 0)) / 2);
+    c.restore();
+    upload(1, codeTex, codeCanvas);
+    codeOn = 1;
   }
 
   /* ---------- sizing ---------- */
@@ -737,14 +845,15 @@ void main(){
   ro.observe(document.body); ro.observe(cv);
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(() => { relayoutPending = true; });
-    Promise.all([document.fonts.load('700 100px "Kalnia"'), document.fonts.load('400 20px "Workbench"')]).then(() => { relayoutPending = true; }).catch(() => {});
+    Promise.all([document.fonts.load('700 100px "Kalnia"'), document.fonts.load('400 20px "Workbench"'), document.fonts.load('100px "Libre Barcode 128"'), document.fonts.load('15px "Michroma"')])
+      .then(() => { relayoutPending = true; }).catch(() => {});
   }
 
   /* ---------- per-frame state ---------- */
   const secBuf = new Float32Array(48), secBBuf = new Float32Array(48);
   const rectBuf = new Float32Array(96), kindBuf = new Float32Array(96), peakBuf = new Float32Array(32);
-  let turn = 0, fig = null;
   const smooth = (x) => x * x * (3 - 2 * x);
+  const bh = { x: 0, y: 0, lift: 0, init: false };
 
   function frameParams(vw, vh) {
     let n = 0;
@@ -768,53 +877,64 @@ void main(){
       const hr = hero.getBoundingClientRect();
       const narrow = hr.width < 760;
       const prog = reduce ? 0 : clamp(-hr.top / (hr.height * 0.95), 0, 1);
-      const tu = narrow ? 0.5 : 0.36, tv = narrow ? 0.34 : 0.44;
-      const tip = narrow ? 0.5 : 0.47;
-      let topFrac = narrow ? 0.86 : 0.735;
-      if (narrow && heroLoc) { const lr = heroLoc.getBoundingClientRect(); topFrac = clamp((lr.bottom - hr.top) / hr.height + 0.05, 0.72, 0.9); }
+      const tu = narrow ? 0.5 : 0.36, tv = narrow ? 0.3 : 0.4;
+      // the cliff is cut to hold the identity text: its face sits just left of the text, its top just above it
+      let tip = narrow ? 0.06 : 0.5, topFrac = narrow ? 0.72 : 0.7;
+      if (heroId) {
+        const ir = heroId.getBoundingClientRect();
+        tip = clamp((ir.left - hr.left - (narrow ? 10 : 46)) / hr.width, 0.02, 0.9);
+        topFrac = clamp((ir.top - hr.top - (narrow ? 30 : 44)) / hr.height, 0.3, 0.92);
+      }
       gl.uniform4f(U.uHero, hr.left, hr.top, hr.width, hr.height);
       const tcx = hr.left + hr.width * tu, tcy = hr.top + hr.height * tv;
       gl.uniform4f(U.uTun, tcx, tcy, hr.height, prog);
-      gl.uniform4f(U.uCliff, tip, topFrac, tip - 0.035, tip - 0.004);
-      const size0 = hr.height * (narrow ? 0.055 : 0.075);
-      const fx0 = hr.left + hr.width * (tip + 0.014), fy0 = hr.top + hr.height * topFrac;
+      gl.uniform4f(U.uCliff, tip - 0.035, tip - 0.004, topFrac, tip);
+      const size0 = hr.height * (narrow ? 0.05 : 0.07);
+      const fx0 = hr.left + hr.width * (tip + 0.012) + (narrow ? 8 : 0), fy0 = hr.top + hr.height * topFrac;
       const e = smooth(prog);
       const fx = lerp(fx0, tcx, e) + Math.sin(prog * 3.2) * hr.width * 0.05;
       const fy = lerp(fy0, tcy + size0 * 0.4, e) - Math.sin(prog * Math.PI) * hr.height * 0.12;
-      fig = [fx, fy, prog * 3.6, size0 * (1 - 0.82 * e)];
-      gl.uniform4f(U.uFig, fig[0], fig[1], fig[2], fig[3]);
+      gl.uniform4f(U.uFig, fx, fy, prog * 3.6, size0 * (1 - 0.82 * e));
       gl.uniform1f(U.uNameOn, nameOn);
     }
-    if (faceEl) {
-      const r = faceEl.getBoundingClientRect(); const cx = r.left + r.width / 2, cy = r.top + r.height * 0.5;
-      const target = reduce ? 0.15 : clamp((P.x - cx) / (vw * 0.45), -1, 1) * P.amt;
-      turn += (target - turn) * 0.05;
-      gl.uniform4f(U.uFace, cx, cy, Math.min(r.height * 0.46, r.width * 0.6), 0); gl.uniform1f(U.uTurn, turn);
-    }
     if (handEl) {
-      const r = handEl.getBoundingClientRect(); const size = Math.min(r.height * 0.9, r.width / 0.62);
-      gl.uniform4f(U.uHand, r.left + r.width / 2, r.bottom, size, 0);
+      const r = handEl.getBoundingClientRect();
+      let gx = r.left + r.width / 2, gy = r.top + Math.min(r.height * 0.2, r.width * 0.5);
+      if (HIL.grip && HIL.grip.ok) { gx = HIL.grip.x; gy = HIL.grip.y; }
+      gl.uniform4f(U.uGrip, gx, gy, clamp(vw / 26, 30, 58), Math.max(40, r.width * 0.2));
     }
     let k = 0;
     for (const p of peaks) {
       const r = p.el.getBoundingClientRect();
+      if (r.bottom < -300 || r.top > vh + 300) continue;
       peakBuf.set([r.left + r.width / 2, r.top + r.height / 2, Math.max(r.width, r.height) * 0.5, p.lift], k * 4); if (++k >= 8) break;
     }
     gl.uniform1i(U.uPeakN, k); gl.uniform4fv(U.uPeak, peakBuf);
     if (contactEl) {
       const sr = contactEl.getBoundingClientRect();
       let cx, cy, R;
-      if (innerWidth >= 1100 && loopEl) { const r = loopEl.getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; R = r.width / 2; }
-      else { cx = sr.left + sr.width * 0.7; cy = sr.top + sr.height * 0.3; R = Math.min(sr.width * 0.24, sr.height * 0.22); }
+      if (contactEl.classList.contains('ring-on') && loopEl) { const r = loopEl.getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; R = r.width / 2; }
+      else { R = Math.min(sr.width * 0.3, 140); cx = sr.left + sr.width / 2; cy = sr.top + 96 + R; } // narrow: the loop gets its own space above the heading
       const T = R * 0.15;
       gl.uniform4f(U.uLoop, cx, cy, R, T);
-      const fs = (R - T) * 0.3;
-      gl.uniform4f(U.uFig2, cx - (R - T) * 0.46, cy + (R - T) * 0.72, 0, fs);
+      gl.uniform4f(U.uFig2, cx, cy + (R - T) * 0.97, 0, (R - T) * 0.22); // standing on the inside of the loop, below the text
     }
-    if (resumeEl) {
-      const r = resumeEl.getBoundingClientRect();
-      const wide = r.width >= 900;
-      gl.uniform4f(U.uGuil, r.left + r.width * (wide ? 0.73 : 0.5), r.top + r.height * 0.5, wide ? Math.min(r.width * 0.3, r.height * 0.46) : Math.min(r.width * 0.46, r.height * 0.42), 0);
+    if (bhEl) {
+      const r = bhEl.getBoundingClientRect();
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      const inside = P.x > r.left && P.x < r.right && P.y > r.top && P.y < r.bottom && P.amt > 0.1;
+      const tx = inside ? cx + clamp(P.x - cx, -r.width * 0.3, r.width * 0.3) * 0.4 : cx;
+      const ty = inside ? cy + clamp(P.y - cy, -r.height * 0.3, r.height * 0.3) * 0.4 : cy;
+      if (!bh.init) { bh.x = tx - cx; bh.y = ty - cy; bh.init = true; }
+      bh.x += ((tx - cx) - bh.x) * 0.04; bh.y += ((ty - cy) - bh.y) * 0.04; bh.lift += ((inside ? 1 : 0) - bh.lift) * 0.05;
+      const RE = Math.min(r.width, r.height) * 0.19 * (1 + 0.22 * bh.lift);
+      gl.uniform4f(U.uBH, cx + bh.x, cy + bh.y, RE, bh.lift);
+    }
+    if (footEl && moon) {
+      const r = footEl.getBoundingClientRect();
+      gl.uniform4f(U.uFoot, r.left, r.top, r.width, r.height);
+      gl.uniform4f(U.uMoon, r.left + moon.x, r.top + moon.y, moon.R, r.top + moon.hz);
+      gl.uniform1f(U.uCodeOn, codeOn);
     }
     if (nav) {
       let pol = 0;
@@ -827,24 +947,28 @@ void main(){
 
   /* ---------- loop ---------- */
   let last = performance.now(), time = 0, slow = 0, frames = 0;
+  function relayout() {
+    fitName(); measureRadii(); resize(); drawName(); drawCode(); layoutTimeline(); layoutLoop();
+    arts.forEach((a) => { a.dirty = true; });
+  }
   function frame(now) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
     if (document.hidden) { requestAnimationFrame(frame); return; }
     if (!reduce) time += dt;
-    if (relayoutPending) { relayoutPending = false; fitName(); measureRadii(); resize(); drawName(); arts.forEach((a) => { a.dirty = true; }); }
+    if (relayoutPending) { relayoutPending = false; relayout(); }
     const vw = innerWidth, vh = innerHeight;
     P.x += (P.tx - P.x) * 0.14; P.y += (P.ty - P.y) * 0.14; P.amt += ((reduce ? 0 : P.tamt) - P.amt) * 0.06;
     frameParams(vw, vh);
     gl.uniform2f(U.uRes, cv.width, cv.height); gl.uniform1f(U.uDpr, dpr); gl.uniform1f(U.uTime, time);
     gl.uniform2f(U.uMouse, P.x, P.y); gl.uniform1f(U.uMouseAmt, P.amt); gl.uniform1f(U.uInvert, isDark() ? 1 : 0);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
+    HIL.time = time;
     tickArts(time);
-    // performance guard: drop resolution when frames run long
     frames++; if (dt > 0.034) slow++;
     if (frames >= 90) { if (slow > 45 && quality > 0.55) { quality -= 0.15; relayoutPending = true; } frames = 0; slow = 0; }
     requestAnimationFrame(frame);
   }
-  fitName(); measureRadii(); resize(); drawName();
+  relayout();
   root.classList.add('lines-live');
   requestAnimationFrame(frame);
 })();
