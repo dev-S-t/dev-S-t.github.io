@@ -417,3 +417,7 @@ html:not(.lines-live) .foot::after, html:not(.lines-live) .foot::before { color:
   .foot::after { top: 96px; bottom: auto; font-size: var(--bcs); }
   .foot::before { top: calc(96px + var(--bcs) * .64); bottom: auto; }
 }
+
+/* ---------- section headings: always a row of their own, about half the width on wide screens, so a tile never
+   shares their row (a long heading was running into the first project between 640 and 1100 wide) ---------- */
+.cases-head, .exp-head, .proj-head, .pub-head, .skills-head { grid-column: 1 / -1; max-width: max(50%, min(100%, 560px)); }
