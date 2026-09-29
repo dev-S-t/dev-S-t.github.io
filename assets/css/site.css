@@ -119,6 +119,8 @@ html:not(.nav-js) .topbar ul { flex-wrap: wrap; overflow: visible; }
   background-image: repeating-linear-gradient(to bottom, transparent 0 13px, color-mix(in srgb, currentColor 26%, transparent) 13px 14px);
   clip-path: inset(0 0 100% 0); visibility: hidden; transition: clip-path .5s cubic-bezier(.7,0,.2,1), visibility 0s .5s; }
 .topbar.compact.menu-out { -webkit-backdrop-filter: none; backdrop-filter: none; } /* a filter would trap the fixed sheet inside the island */
+/* the open sheet takes the theme's colours (paper and ink, swapped in dark), not the section under the island */
+.topbar.compact.menu-out { color: var(--ink); --nav-g: var(--paper); }
 .topbar.compact.open ul { clip-path: inset(0 0 0 0); visibility: visible; transition: clip-path .5s cubic-bezier(.7,0,.2,1); }
 .topbar.compact li { counter-increment: nav; border-top: 1px solid currentColor; }
 .topbar.compact li:not(.agents) a { display: flex; align-items: baseline; gap: 18px; padding: 14px 10px; background: var(--nav-g, #F3F1EC); text-decoration: none; font-family: var(--f-display); font-weight: 460; font-stretch: 104%; font-size: clamp(30px, 7vw, 58px); line-height: 1.05; letter-spacing: 0;
