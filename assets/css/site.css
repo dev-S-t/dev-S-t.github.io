@@ -98,7 +98,7 @@ html.is-leaving .loader svg { transform: translate(var(--dx, 0px), var(--dy, 0px
 .topbar[data-on="light"] { color: #0D0D0C; --nav-g: #F3F1EC; }
 html:not(.lines-live) .topbar { background: var(--nav-g, var(--paper)); }
 .lines-live .topbar { background-color: color-mix(in srgb, var(--nav-g, #F3F1EC) 46%, transparent); -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px); }
-.topbar .mark { width: 30px; height: 30px; flex: none; }
+.topbar .mark { width: 34px; height: 34px; flex: none; }
 .topbar ul { display: flex; flex: 1; min-width: 0; flex-wrap: nowrap; align-items: center; gap: 6px 22px; margin: 0; padding: 0; list-style: none; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
 .topbar ul::-webkit-scrollbar { display: none; }
 .topbar .brand { display: none; font-family: var(--f-nav); font-size: 12px; letter-spacing: .08em; text-decoration: none; white-space: nowrap; }
