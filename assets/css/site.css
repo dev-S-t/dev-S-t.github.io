@@ -73,7 +73,7 @@ html:not(.lines-live) main > section:nth-child(even) { background-image: repeati
 .loader { display: none; }
 html.is-loading, html.is-leaving { overflow: hidden; }
 html.is-loading .loader, html.is-leaving .loader { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: #F3F1EC; color: #0D0D0C; }
-.loader svg { width: min(44vmin, 300px); height: auto; overflow: visible; transition: transform .9s cubic-bezier(.7,0,.2,1); }
+.loader svg { width: min(44vmin, 300px); height: auto; overflow: visible; transform: translate(var(--dx, 0px), var(--dy, 0px)); transition: transform .65s cubic-bezier(.65,0,.25,1); }
 .loader .lr { fill: none; stroke: currentColor; stroke-width: .9; stroke-linecap: round; transform-origin: 100px 100px; stroke-dasharray: 0 100;
   animation: lr-draw 1s cubic-bezier(.6,0,.2,1) calc(var(--i) * 70ms) forwards, lr-turn var(--dur) linear infinite; }
 .loader .lr:nth-child(odd) { stroke-width: 1.4; }
@@ -81,10 +81,10 @@ html.is-loading .loader, html.is-leaving .loader { position: fixed; inset: 0; z-
 @keyframes lr-draw { to { stroke-dasharray: var(--arc) calc(100 - var(--arc)); } }
 @keyframes lr-turn { to { transform: rotate(calc(var(--dir) * 360deg)); } }
 html.is-leaving .loader { opacity: 0; transition: opacity .6s .25s; }
-html.is-leaving .loader svg { transform: scale(3.2); }
+html.is-leaving .loader svg { transform: translate(var(--dx, 0px), var(--dy, 0px)) scale(3.2); transition: transform .9s cubic-bezier(.7,0,.2,1); }
 @media (prefers-reduced-motion: reduce) {
   .loader .lr { animation: none; stroke-dasharray: var(--arc) calc(100 - var(--arc)); }
-  html.is-leaving .loader svg { transform: none; }
+  .loader svg, html.is-leaving .loader svg { transform: none; transition: none; }
 }
 
 /* ---------- navigation: the floating glass island ---------- */
@@ -99,9 +99,14 @@ html.is-leaving .loader svg { transform: scale(3.2); }
 html:not(.lines-live) .topbar { background: var(--nav-g, var(--paper)); }
 .lines-live .topbar { background-color: color-mix(in srgb, var(--nav-g, #F3F1EC) 46%, transparent); -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px); }
 .topbar .mark { width: 30px; height: 30px; flex: none; }
-.topbar ul { display: flex; flex: 1; flex-wrap: wrap; align-items: center; gap: 6px 22px; margin: 0; padding: 0; list-style: none; white-space: nowrap; }
-/* without JavaScript the island is not fixed, so a wrapped list never covers the page */
+.topbar ul { display: flex; flex: 1; min-width: 0; flex-wrap: nowrap; align-items: center; gap: 6px 22px; margin: 0; padding: 0; list-style: none; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
+.topbar ul::-webkit-scrollbar { display: none; }
+.topbar .brand { display: none; font-family: var(--f-nav); font-size: 12px; letter-spacing: .08em; text-decoration: none; white-space: nowrap; }
+.topbar.compact .brand { display: inline; }
+.topbar.compact.no-brand .brand { display: none; }
+/* without JavaScript the island is not fixed and its links wrap, so it never covers the page */
 html:not(.nav-js) .topbar { position: absolute; }
+html:not(.nav-js) .topbar ul { flex-wrap: wrap; overflow: visible; }
 .menu-toggle { display: none; }
 /* compact island (set by the engine when the links no longer fit): mark, Menu, theme; the list opens as a sheet */
 .topbar.compact { justify-content: space-between; }
@@ -389,7 +394,7 @@ html:not(.lines-live) .cv-page { background: var(--g); outline: 1px solid curren
 
 /* ---------- footer: a night ocean under a barcode moon (night in both themes) ---------- */
 .foot {
-  min-height: 100svh;
+  min-height: 105svh;
   display: grid; align-content: end; justify-items: start; row-gap: 12px;
   padding: 0 var(--pad) clamp(28px, 5vh, 54px);
 }

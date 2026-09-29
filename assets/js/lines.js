@@ -35,8 +35,17 @@
     const ready = fonts.then(() => frames(4)).then(() => new Promise((res) => setTimeout(res, Math.max(0, 900 - (performance.now() - start)))));
     Promise.race([ready, new Promise((res) => setTimeout(res, 4000))]).then(() => {
       if (!root.classList.contains('is-loading')) return;
-      root.classList.remove('is-loading'); root.classList.add('is-leaving');
-      setTimeout(() => root.classList.remove('is-leaving'), 950);
+      // first the rings travel to the centre of the hero's rings (when the hero is on screen), then they open outward
+      const svgEl = document.querySelector('.loader svg');
+      const tun = window.__HIL && window.__HIL.tunnel;
+      let dx = 0, dy = 0;
+      if (tun && tun.y > 0 && tun.y < innerHeight && tun.x > 0 && tun.x < innerWidth) { dx = tun.x - innerWidth / 2; dy = tun.y - innerHeight / 2; }
+      const travel = !reduce && svgEl && Math.hypot(dx, dy) > 2 ? 650 : 0;
+      if (travel) { svgEl.style.setProperty('--dx', dx.toFixed(1) + 'px'); svgEl.style.setProperty('--dy', dy.toFixed(1) + 'px'); }
+      setTimeout(() => {
+        root.classList.remove('is-loading'); root.classList.add('is-leaving');
+        setTimeout(() => root.classList.remove('is-leaving'), 950);
+      }, travel);
     });
   })();
 
@@ -46,12 +55,20 @@
   function fitNav() {
     if (!navEl || !navList || !menuBtn) return;
     const wasOpen = navEl.classList.contains('open');
-    navEl.classList.remove('compact');
-    // the links fit when the list keeps to a single row inside the island
-    const first = navList.firstElementChild;
-    const rowEnd = first ? first.offsetTop + first.offsetHeight * 0.8 : 0;
-    const oneRow = first && [...navList.children].every((li) => li.offsetTop < rowEnd) && navList.scrollWidth <= navList.clientWidth + 1;
-    if (!oneRow) navEl.classList.add('compact');
+    navEl.classList.remove('compact', 'no-brand');
+    navList.scrollLeft = 0;
+    // 1) full island: the llms links may slide out of view to the right, the section links must all show
+    const links = [...navList.children].filter((li) => !li.classList.contains('agents'));
+    const last = links[links.length - 1];
+    const fits = !last || last.getBoundingClientRect().right <= navList.getBoundingClientRect().right + 0.5;
+    if (!fits) {
+      // 2) compact island: mark, human-in-loop.dev, Menu, theme; 3) once the name no longer fits, mark, Menu, theme
+      navEl.classList.add('compact');
+      const brand = navEl.querySelector('.brand');
+      const tog = navEl.querySelector('.theme-toggle'), nr = navEl.getBoundingClientRect();
+      const crowded = (brand && brand.getBoundingClientRect().right > menuBtn.getBoundingClientRect().left - 12) || (tog && tog.getBoundingClientRect().right > nr.right - 4);
+      if (brand && crowded) navEl.classList.add('no-brand');
+    }
     if (!navEl.classList.contains('compact') && wasOpen) setMenu(false);
   }
   function setMenu(open) {
@@ -1267,6 +1284,7 @@ void main(){
       }
       gl.uniform4f(U.uHero, hr.left, hr.top, hr.width, hr.height);
       const tcx = hr.left + hr.width * tu, tcy = hr.top + hr.height * tv;
+      HIL.tunnel = { x: tcx, y: tcy };
       gl.uniform4f(U.uTun, tcx, tcy, hr.height, prog);
       gl.uniform4f(U.uCliff, tip - 0.035, tip - 0.004, topFrac, tip);
       const size0 = hr.height * (narrow ? 0.05 : 0.07);
