@@ -12,29 +12,64 @@
   <meta property="og:description" content="Photorealistic video avatar interviewer infrastructure rescue on GCP LiveKit by Sahil Tomar (dev-S-t).">
   <meta property="og:url" content="https://human-in-loop.dev/case-studies/avatar-product-rescue/">
   <meta property="og:type" content="article">
+  <!-- Design layer: fonts, styles, line engine (shared with the home page) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalnia:wdth,wght@100..125,100..700&family=Geologica:slnt,wght,CRSV,SHRP@-12..0,100..900,0..1,0..100&family=Workbench:BLED,SCAN@0..100,-53..100&family=Monoton&family=Michroma&family=Libre+Barcode+128&display=swap">
+  <script>document.documentElement.classList.add('is-loading');setTimeout(function(){document.documentElement.classList.remove('is-loading')},5500);</script>
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <link rel="stylesheet" href="/assets/css/pages.css">
+  <script src="/assets/js/lines.js" defer></script>
 </head>
-<body>
-  <header>
-    <h1>Unblocking a Real-Time Avatar Product After Months Stuck</h1>
+<body class="page page-case">
+  <div class="loader" aria-hidden="true"><svg viewBox="0 0 200 200" focusable="false"><circle class="lr" cx="100" cy="100" r="16" pathLength="100" style="--arc:78;--dur:2.6s;--dir:1;--i:0"/><circle class="lr" cx="100" cy="100" r="28" pathLength="100" style="--arc:64;--dur:3.6s;--dir:-1;--i:1"/><circle class="lr" cx="100" cy="100" r="40" pathLength="100" style="--arc:84;--dur:4.4s;--dir:1;--i:2"/><circle class="lr" cx="100" cy="100" r="52" pathLength="100" style="--arc:58;--dur:5.2s;--dir:-1;--i:3"/><circle class="lr" cx="100" cy="100" r="64" pathLength="100" style="--arc:80;--dur:6.2s;--dir:1;--i:4"/><circle class="lr" cx="100" cy="100" r="76" pathLength="100" style="--arc:68;--dur:7.4s;--dir:-1;--i:5"/><circle class="lr" cx="100" cy="100" r="88" pathLength="100" style="--arc:88;--dur:8.6s;--dir:1;--i:6"/><circle class="lr-dot" cx="100" cy="100" r="2.4"/></svg></div>
+  <a class="skip" href="#content">Skip to content</a>
+  <canvas id="field" aria-hidden="true"></canvas>
+  <nav class="topbar" data-plate="glass" aria-label="Sections">
+    <a class="mark-link" href="/" aria-label="Home"><svg class="mark" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path d="M20 5a15 15 0 1 1-6.2 1.34M20 10a10 10 0 1 1-4.1.9M20 15a5 5 0 1 1-2 .42" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="20" cy="24.2" r="1.35" fill="currentColor"/><path d="M20 25.8v4.4M20 30.2l-1.6 3.4M20 30.2l1.6 3.4M18.2 27.4h3.6" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+    <a class="brand" href="/">human-in-loop</a>
+    <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="nav-list"><span class="mt-lines" aria-hidden="true"></span><span class="mt-label">Menu</span></button>
+    <ul id="nav-list">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/case-studies/" aria-current="page">Case Studies</a></li>
+      <li><a href="/experience/">Experience</a></li>
+      <li><a href="/projects/">Projects</a></li>
+      <li><a href="/publications/">Publications</a></li>
+      <li><a href="/skills/">Skills</a></li>
+      <li><a href="/resume/">Resume</a></li>
+      <li><a href="/contact/">Contact</a></li>
+      <li class="agents"><a href="/llms.txt">llms.txt</a> | <a href="/llms-full.txt">llms-full.txt</a></li>
+    </ul>
+    <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Dark theme"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M12 3.5v17M9.6 4.1v15.8M7.2 5.4v13.2M4.9 7.6v8.8" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></button>
+  </nav>
+  <header class="ph" data-scene="vortex" data-polarity="same" data-cx="0.74">
+    <h1 data-plate="clear">Unblocking a Real-Time Avatar Product After Months Stuck</h1>
+    <div class="ph-meta" data-plate>
     <p>Engineering Case Study 5 — <strong>Sahil Tomar (dev-S-t)</strong></p>
     <p><em>Client: MGS Technology Pvt Ltd, via Quantashift Consultancy Services. Sole engineer on the engagement.</em></p>
     <p><a href="/case-studies/">Back to Case Studies Hub</a> | <a href="/projects/hireups/">View Project: Hireups AI Avatar</a></p>
+    </div>
   </header>
 
-  <main>
+  <main id="content">
     <article>
-      <section>
-        <h2>Problem</h2>
+      <section class="cs-stage cs-problem" data-scene="contour" data-polarity="inverse" data-seam="cliff">
+        <h2 data-plate="clear">Problem</h2>
+        <div class="cs-body" data-plate>
         <p>MGS's internal team had been blocked for months and could not get LiveKit's real-time video and infrastructure working — holding up a product meant to conduct interviews through a live photorealistic avatar rather than a plain audio bot. What existed was audio-only.</p>
+        </div>
       </section>
 
-      <section>
-        <h2>Analysis</h2>
+      <section class="cs-stage cs-analysis" data-scene="engrave" data-polarity="same" data-seam="wave">
+        <h2 data-plate="clear">Analysis</h2>
+        <div class="cs-body" data-plate>
         <p>The blocker wasn't the AI model, it was the real-time infrastructure layer. LiveKit had removed most of their SIP and self-hosting documentation after launching their own hosted phone number product. And the client's private server sat on an untrusted IP range, which broke standard certificate provisioning. That specific combination isn't documented anywhere, because it isn't a common one — which is exactly why an internal team without prior LiveKit experience stalled on it.</p>
+        </div>
       </section>
 
-      <section>
-        <h2>Solution & Architecture</h2>
+      <section class="cs-stage cs-solution" data-scene="stream" data-polarity="inverse" data-seam="cliff">
+        <h2 data-plate="clear">Solution & Architecture</h2>
+        <div class="cs-body" data-plate>
         <p>Self-hosted LiveKit on GCP rather than using LiveKit Cloud, driving a photorealistic video avatar through Gemini's realtime audio-native model — capable of understanding and responding in effectively any language and switching mid-conversation in roughly a second, though scoped to English and Arabic for this client's production requirements.</p>
         <p>Three separate deployments:</p>
         <ul>
@@ -43,27 +78,32 @@
           <li><strong>The client's own private server</strong> — requiring ZeroSSL certificates because of the untrusted IP range, which in turn required a newer LiveKit release than had officially shipped. Rather than wait on an official release, a compatible build was assembled and deployed directly.</li>
         </ul>
         <p>Reliability was handled with a fallback chain: if the primary Gemini Live connection drops mid-call, the system fails over to Groq or Ultravox rather than dropping the interview entirely.</p>
+        </div>
       </section>
 
-      <section>
-        <h2>Outcome</h2>
+      <section class="cs-stage cs-outcome" data-scene="ledger" data-polarity="same" data-seam="wave">
+        <h2 data-plate="clear">Outcome</h2>
+        <div class="cs-body" data-plate>
         <p>A working real-time avatar interview system delivered end to end across three environments, inside a roughly two-month engagement, after the internal team had been stuck for months.</p>
+        </div>
       </section>
 
       <!-- GEO Natural Question FAQ Block -->
-      <section id="faq">
-        <h2>Frequently Asked Questions</h2>
+      <section id="faq" class="cs-stage cs-faq" data-scene="head" data-polarity="inverse" data-seam="cliff">
+        <h2 data-plate="clear">Frequently Asked Questions</h2>
+        <div class="cs-body" data-plate>
         <article>
           <h3>How do you self-host LiveKit WebRTC video behind strict NAT and untrusted IP ranges?</h3>
-          <p>By compiling custom LiveKit server binaries with ZeroSSL certificate integration, deploying persistent WebRTC containers, and implementing multi-LLM fallback chains (Gemini Realtime ➡️ Groq/Ultravox).</p>
+          <p>By compiling custom LiveKit server binaries with ZeroSSL certificate integration, deploying persistent WebRTC containers, and implementing multi-LLM fallback chains (Gemini Realtime -> Groq/Ultravox).</p>
         </article>
+        </div>
       </section>
     </article>
   </main>
 
-  <footer>
+  <footer class="foot" data-scene="ocean" data-polarity="night" data-seam="cliff">
     <hr>
-    <p><a href="/case-studies/">← Back to All Case Studies</a> | Related System: <a href="/projects/hireups/">Hireups AI Avatar Project Page</a></p>
+    <p data-plate><a href="/case-studies/">← Back to All Case Studies</a> | Related System: <a href="/projects/hireups/">Hireups AI Avatar Project Page</a></p>
   </footer>
 </body>
 </html>

@@ -1,0 +1,205 @@
+/* human-in-loop.dev — the inner pages.
+   Tokens, plates, the nav island, the loader and the ocean footer come from site.css. Each page type below has its
+   own layout; nothing here applies to the home page (every rule starts from a .page-* body class or an inner-page
+   element). */
+
+/* ---------- the nav island on inner pages: the mark leads home, the current page is marked ---------- */
+.page .mark-link { display: grid; flex: none; color: inherit; border-radius: 50%; }
+.page .topbar a[aria-current="page"] { text-decoration-thickness: 2px; text-underline-offset: .5em; }
+.page .topbar.compact li a[aria-current="page"]::after { content: ""; flex: 1; align-self: center; height: 1px; margin-left: 12px; background: currentColor; }
+
+/* ---------- page header: a spiral of lines behind a large title ---------- */
+.ph {
+  min-height: 80svh;
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 22px; align-content: end;
+  padding: 150px var(--pad) clamp(80px, 13vh, 140px);
+}
+.ph h1 {
+  grid-column: 1 / span 10; justify-self: start; margin: 0; padding: 6px 12px 10px 0;
+  font-family: var(--f-display); font-weight: 460; font-stretch: 106%; font-size: clamp(40px, 4.8vw + 10px, 124px); line-height: .98; letter-spacing: -.01em; text-wrap: balance;
+}
+.ph-meta { grid-column: 1 / span 7; justify-self: start; display: grid; gap: 10px; padding: 18px 22px; }
+.ph-meta p { margin: 0; }
+.ph-meta p:last-child { font-family: var(--f-data); font-size: .88em; letter-spacing: .02em; line-height: 1.9; }
+@media (max-width: 760px) { .ph { min-height: 70svh; padding-top: 120px; } .ph h1, .ph-meta { grid-column: 1 / -1; } }
+
+/* project pages: the project's own drawing (or the marks of its tools) stands beside the title */
+.page-project .ph { min-height: 88svh; align-content: center; }
+.page-project .ph h1 { grid-column: 1 / span 7; grid-row: 1; align-self: end; }
+.page-project .ph-meta { grid-column: 1 / span 6; grid-row: 2; }
+.ph-art { grid-column: 8 / -1; grid-row: 1 / span 2; align-self: center; display: flex; flex-direction: column; justify-content: center; padding: clamp(14px, 1.6vw, 26px); min-height: clamp(260px, 42svh, 520px); }
+.ph-art .emblem { flex: 1; height: auto; min-height: 240px; margin: 0; }
+.ph-art .lics { justify-content: center; gap: 28px; padding: 0; margin: auto 0; }
+.ph-art .lic { width: clamp(64px, 6vw, 104px); height: clamp(64px, 6vw, 104px); }
+.ph-art .lic-wide { width: auto; height: clamp(48px, 4.4vw, 76px); }
+@media (max-width: 900px) {
+  .page-project .ph h1, .page-project .ph-meta { grid-column: 1 / -1; grid-row: auto; }
+  .ph-art { grid-column: 1 / -1; grid-row: auto; min-height: 260px; }
+}
+
+/* the ocean footer is shorter on inner pages, and its line of links is set at reading size */
+.page .foot { min-height: 76svh; }
+.page .foot p:first-of-type { font-family: var(--f-text); font-size: clamp(16px, .5vw + 12px, 20px); line-height: 1.6; }
+
+/* ---------- case studies: the page settles from tangle to calm, one stage at a time ---------- */
+.page-case main > article { counter-reset: stage; }
+.cs-stage {
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 28px; align-items: start;
+  min-height: 62svh; padding: clamp(120px, 18vh, 210px) var(--pad);
+}
+.cs-stage > h2 {
+  counter-increment: stage; position: sticky; top: 104px; justify-self: start; padding: 4px 16px 10px 0;
+  font-size: clamp(40px, 4.2vw + 8px, 104px); line-height: .95;
+}
+.cs-stage > h2::before { content: counter(stage, decimal-leading-zero); display: block; margin: 0 0 8px -3px; font-family: var(--f-num); font-weight: 400; font-size: .92em; line-height: .9; letter-spacing: 0; }
+.cs-body { display: grid; gap: 16px; padding: clamp(22px, 2.4vw, 40px); max-width: 74ch; }
+.cs-body > p:first-child { font-size: 1.08em; }
+/* each stage stands in its own place */
+.cs-problem > h2 { grid-column: 1 / span 5; }
+.cs-problem .cs-body { grid-column: 6 / span 7; margin-top: 18vh; }
+.cs-analysis > h2 { grid-column: 8 / span 5; grid-row: 1; }
+.cs-analysis .cs-body { grid-column: 1 / span 7; grid-row: 1; margin-top: 12vh; }
+.cs-solution > h2 { grid-column: 1 / -1; position: static; }
+.cs-solution .cs-body { grid-column: 2 / span 10; max-width: none; }
+.cs-outcome > h2 { grid-column: 1 / span 4; }
+.cs-outcome .cs-body { grid-column: 5 / span 8; max-width: 48ch; }
+.cs-outcome .cs-body p { font-family: var(--f-display); font-weight: 440; font-stretch: 104%; font-size: clamp(22px, 1.5vw + 12px, 38px); line-height: 1.22; }
+.cs-faq > h2 { grid-column: 1 / span 5; }
+.cs-faq > h2::before { content: "?"; }
+.cs-faq .cs-body { grid-column: 6 / span 7; }
+.cs-faq article { display: grid; gap: 10px; }
+.cs-faq h3 { font-size: clamp(20px, 1vw + 12px, 28px); }
+/* the solution's list is a pipeline: each step a station on one line */
+.cs-body ul { list-style: none; margin: 8px 0 0; padding: 0; counter-reset: step; }
+.cs-body li { counter-increment: step; position: relative; margin-left: 12px; padding: 0 0 24px 38px; border-left: 1.5px solid currentColor; }
+.cs-body li:last-child { border-left-color: transparent; padding-bottom: 0; }
+.cs-body li::before { content: counter(step); position: absolute; left: -13px; top: -2px; width: 24px; height: 24px; display: grid; place-items: center; border: 1.5px solid currentColor; border-radius: 50%; background: var(--g); font-family: var(--f-data); font-size: 12px; line-height: 1; }
+@media (min-width: 1100px) {
+  .cs-solution ul { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); column-gap: 28px; margin-top: 18px; }
+  .cs-solution li { margin: 0; padding: 40px 0 0; border-left: 0; border-top: 1.5px solid currentColor; }
+  .cs-solution li:last-child { border-top-color: currentColor; }
+  .cs-solution li::before { left: 0; top: -13px; }
+}
+@media (max-width: 900px) {
+  .cs-stage { min-height: 0; }
+  .cs-stage > h2, .cs-stage .cs-body { grid-column: 1 / -1; grid-row: auto; margin-top: 0; position: static; }
+  .cs-analysis > h2 { justify-self: end; text-align: right; padding: 4px 0 10px 16px; }
+}
+
+/* ---------- case studies hub: seven problems on rising ground ---------- */
+.page-case-hub main { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: clamp(46px, 9vh, 110px); padding: clamp(120px, 18vh, 200px) var(--pad) clamp(110px, 16vh, 180px); }
+.page-case-hub .hub-intro { grid-column: 1 / span 7; display: grid; gap: 14px; padding: clamp(22px, 2.4vw, 40px); }
+.page-case-hub .hub-intro p { font-size: 1.1em; }
+.page-case-hub main > article { display: grid; gap: 12px; padding: clamp(20px, 2vw, 34px); align-self: start; }
+.page-case-hub main > article h2 { font-size: clamp(26px, 1.6vw + 14px, 46px); line-height: 1.04; }
+.page-case-hub main > article p:last-child a { font-family: var(--f-data); font-size: .9em; }
+.page-case-hub main > article:nth-of-type(1) { grid-column: 2 / span 5; }
+.page-case-hub main > article:nth-of-type(2) { grid-column: 7 / span 6; margin-top: 16vh; }
+.page-case-hub main > article:nth-of-type(3) { grid-column: 1 / span 6; }
+.page-case-hub main > article:nth-of-type(4) { grid-column: 8 / span 5; margin-top: 10vh; }
+.page-case-hub main > article:nth-of-type(5) { grid-column: 2 / span 5; }
+.page-case-hub main > article:nth-of-type(6) { grid-column: 7 / span 6; margin-top: 14vh; }
+.page-case-hub main > article:nth-of-type(7) { grid-column: 3 / span 8; }
+@media (max-width: 900px) {
+  .page-case-hub .hub-intro, .page-case-hub main > article:nth-of-type(n) { grid-column: 1 / span 11; margin-top: 0; }
+  .page-case-hub main > article:nth-of-type(even) { grid-column: 2 / span 11; }
+}
+
+/* ---------- projects hub: the home page's bento ---------- */
+.page-projects-hub main { padding: clamp(120px, 18vh, 200px) var(--pad) clamp(110px, 16vh, 180px); }
+.page-projects-hub main > section { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); }
+.page-projects-hub main > section > h2 { grid-column: 1 / -1; justify-self: start; margin-bottom: clamp(16px, 4vh, 50px); padding: 10px 18px; }
+/* here the description comes first and the link to the spec last (the home page has them the other way round) */
+.page-projects-hub .proj p:first-of-type { font-family: var(--f-text); font-size: .95em; }
+.page-projects-hub .proj p:last-of-type:not(:first-of-type) { font-family: var(--f-data); font-size: .8em; }
+.page-projects-hub .p9 p:first-of-type { font-family: var(--f-data); font-size: .8em; }
+
+/* ---------- project pages: a spec sheet ---------- */
+.page-project main { padding: clamp(120px, 18vh, 200px) var(--pad) clamp(110px, 16vh, 180px); }
+.spec { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 22px; padding: clamp(24px, 3vw, 56px); }
+.spec > h2 { grid-column: 1 / span 5; font-size: clamp(30px, 2.4vw + 12px, 60px); line-height: 1; }
+.spec > p { grid-column: 6 / span 7; font-size: 1.08em; }
+.spec > ul { grid-column: 1 / -1; list-style: none; margin: 18px 0 0; padding: 0; }
+.spec li { position: relative; padding: 18px 0 18px calc(33% + var(--gap)); border-top: 1px solid currentColor; }
+.spec li:last-child { border-bottom: 1px solid currentColor; }
+.spec li > strong:first-child { position: absolute; left: 0; top: 20px; width: 33%; font-size: .78em; letter-spacing: .06em; }
+@media (max-width: 760px) {
+  .spec > h2, .spec > p { grid-column: 1 / -1; }
+  .spec li { padding-left: 0; }
+  .spec li > strong:first-child { position: static; display: block; width: auto; margin-bottom: 6px; }
+}
+
+/* ---------- experience ---------- */
+.page-experience .xp { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 0; padding: clamp(130px, 18vh, 210px) var(--pad) clamp(110px, 16vh, 180px); }
+.page-experience .xp > h2 { grid-column: 1 / span 8; justify-self: start; padding: 10px 18px; }
+.page-experience .role { grid-column: 1 / span 8; }
+.page-experience .r2 { grid-column: 9 / span 4; }
+.page-experience .r1 ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
+.page-experience .r1 li { padding-left: 16px; border-left: 2px solid currentColor; }
+.page-experience .r1 li > strong:first-child { display: block; margin-bottom: 4px; }
+@media (min-width: 1300px) { .page-experience .r1 ul { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 900px) { .page-experience .xp > h2, .page-experience .role, .page-experience .r2 { grid-column: 1 / -1; } .page-experience .r2 { margin-top: 18px; } }
+
+/* ---------- skills: a bento of seven groups ---------- */
+.page-skills main > section { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); padding: clamp(130px, 18vh, 200px) var(--pad) clamp(110px, 16vh, 180px); }
+.page-skills main > section > h2 { grid-column: 1 / -1; justify-self: start; margin-bottom: clamp(16px, 4vh, 50px); padding: 10px 18px; }
+.page-skills .sk { display: flex; flex-direction: column; gap: 12px; padding: clamp(20px, 2vw, 32px); }
+.page-skills .sk h3 { font-size: clamp(22px, 1vw + 14px, 32px); }
+.page-skills .sk .lics { margin-top: auto; }
+.sk1 { grid-column: 1 / span 7; } .sk2 { grid-column: 8 / span 5; }
+.sk3 { grid-column: 1 / span 4; } .sk4 { grid-column: 5 / span 4; } .sk5 { grid-column: 9 / span 4; }
+.sk6 { grid-column: 1 / span 5; } .sk7 { grid-column: 6 / span 7; }
+@media (max-width: 1000px) { .page-skills .sk:nth-of-type(n) { grid-column: span 6; } .sk7 { grid-column: 1 / -1 !important; } }
+@media (max-width: 640px) { .page-skills .sk:nth-of-type(n) { grid-column: 1 / -1; } }
+
+/* ---------- publications ---------- */
+.page-publications main > section { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 40px; padding: clamp(130px, 18vh, 200px) var(--pad) clamp(110px, 16vh, 180px); }
+.page-publications main > section > h2 { grid-column: 1 / -1; justify-self: start; padding: 10px 18px; }
+.page-publications .paper h4 { grid-column: 1 / -1; margin: 18px 0 0; font-family: var(--f-data); font-weight: 400; font-size: .86em; letter-spacing: .1em; }
+.page-publications .paper > p { grid-column: 1 / span 9; }
+.page-publications .results { grid-template-columns: repeat(5, minmax(0, 1fr)); margin-top: 8px; }
+.page-publications .results li > strong:first-of-type { display: block; margin-bottom: 4px; }
+@media (max-width: 1200px) { .page-publications .results { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .page-publications .results { grid-template-columns: minmax(0, 1fr); } .page-publications .paper > p { grid-column: 1 / -1; } }
+
+/* ---------- resume: always day, read like a document with its index beside it ---------- */
+.page-resume .ph { min-height: 76svh; }
+.page-resume .ph h1 { grid-column: 1 / span 7; }
+.page-resume .ph-meta { grid-column: 1 / span 6; }
+.ph-cv { grid-column: 9 / span 4; grid-row: 1 / span 2; align-self: center; justify-self: center; width: min(100%, 40svh, 360px); }
+.page-resume main { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 26px; align-items: start; padding: clamp(110px, 16vh, 180px) var(--pad) clamp(110px, 16vh, 180px); }
+.rs-index { grid-column: 1 / span 3; grid-row: 1 / span 10; position: sticky; top: 104px; padding: 18px 20px; }
+.rs-index ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; counter-reset: rs; }
+.rs-index li { counter-increment: rs; }
+.rs-index a { display: flex; gap: 12px; align-items: baseline; padding: 4px 0; text-decoration: none; font-family: var(--f-nav); font-size: 12px; letter-spacing: .02em; }
+.rs-index a::before { content: counter(rs, decimal-leading-zero); font-family: var(--f-data); font-size: 12px; }
+.rs-index a:hover, .rs-index a:focus-visible { text-decoration: underline; text-underline-offset: .5em; }
+.page-resume main > section { grid-column: 4 / span 9; display: grid; gap: 14px; padding: clamp(22px, 2.4vw, 40px); scroll-margin-top: 100px; }
+.page-resume main > section > h2 { font-size: clamp(30px, 2vw + 14px, 56px); }
+.page-resume main h3 { font-size: clamp(21px, .8vw + 14px, 28px); }
+.page-resume main h4 { margin: 14px 0 0; font-family: var(--f-display); font-weight: 520; font-size: clamp(17px, .5vw + 13px, 21px); }
+.page-resume main ul { margin: 0; padding: 0 0 0 18px; display: grid; gap: 8px; }
+.page-resume main li::marker { content: "— "; }
+/* bold inside a sentence stays in the reading face; only a label that opens a line takes the data face */
+.page-resume main :is(p, li) strong:not(:first-child) { font-family: var(--f-text); font-weight: 650; font-size: 1em; letter-spacing: 0; }
+.cs-body p strong, .spec > p strong { font-family: var(--f-text); font-weight: 650; font-size: 1em; letter-spacing: 0; }
+#download-pdf, #download-pdf-footer { font-size: 1.05em; }
+#download-pdf-footer hr { display: none; }
+@media (max-width: 900px) {
+  .rs-index { grid-column: 1 / -1; grid-row: auto; position: static; }
+  .page-resume main > section, .page-resume .ph h1, .page-resume .ph-meta { grid-column: 1 / -1; }
+  .ph-cv { grid-column: 1 / -1; grid-row: auto; width: min(64vw, 300px); }
+}
+
+/* ---------- contact: the black hole holds the page's title; the links are glass below ---------- */
+.contact-page .contact-core h1 { font-family: var(--f-display); font-weight: 460; font-stretch: 106%; font-size: clamp(40px, 3.6vw + 12px, 112px); line-height: 1; text-wrap: balance; }
+.contact-page .contact-core p:last-child { font-family: var(--f-data); font-size: .88em; line-height: 1.9; }
+.contact-page { min-height: 100svh; padding-top: 150px; }
+@media (max-width: 999px) { .contact-page { padding-bottom: calc(min(30vw, 150px) * 3.9); } }
+.contact-links { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); padding: clamp(110px, 16vh, 180px) var(--pad) clamp(110px, 16vh, 180px); }
+.contact-links > section { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 18px; }
+.contact-links h2 { grid-column: 1 / span 8; justify-self: start; padding: 8px 16px; }
+.contact-links section > p { grid-column: 1 / span 6; justify-self: start; padding: 10px 16px; }
+.contact-links .orbit { grid-column: 1 / -1; margin: 18px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: 16px; }
+.contact-links .orbit li { width: auto; }
+.contact-links .orbit li.no-icon { display: block; padding-left: 24px; }

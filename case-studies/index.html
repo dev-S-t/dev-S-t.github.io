@@ -71,37 +71,67 @@
     }
   }
   </script>
+  <!-- Design layer: fonts, styles, line engine (shared with the home page) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalnia:wdth,wght@100..125,100..700&family=Geologica:slnt,wght,CRSV,SHRP@-12..0,100..900,0..1,0..100&family=Workbench:BLED,SCAN@0..100,-53..100&family=Monoton&family=Michroma&family=Libre+Barcode+128&display=swap">
+  <script>document.documentElement.classList.add('is-loading');setTimeout(function(){document.documentElement.classList.remove('is-loading')},5500);</script>
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <link rel="stylesheet" href="/assets/css/pages.css">
+  <script src="/assets/js/lines.js" defer></script>
 </head>
-<body>
+<body class="page page-case-hub">
+  <div class="loader" aria-hidden="true"><svg viewBox="0 0 200 200" focusable="false"><circle class="lr" cx="100" cy="100" r="16" pathLength="100" style="--arc:78;--dur:2.6s;--dir:1;--i:0"/><circle class="lr" cx="100" cy="100" r="28" pathLength="100" style="--arc:64;--dur:3.6s;--dir:-1;--i:1"/><circle class="lr" cx="100" cy="100" r="40" pathLength="100" style="--arc:84;--dur:4.4s;--dir:1;--i:2"/><circle class="lr" cx="100" cy="100" r="52" pathLength="100" style="--arc:58;--dur:5.2s;--dir:-1;--i:3"/><circle class="lr" cx="100" cy="100" r="64" pathLength="100" style="--arc:80;--dur:6.2s;--dir:1;--i:4"/><circle class="lr" cx="100" cy="100" r="76" pathLength="100" style="--arc:68;--dur:7.4s;--dir:-1;--i:5"/><circle class="lr" cx="100" cy="100" r="88" pathLength="100" style="--arc:88;--dur:8.6s;--dir:1;--i:6"/><circle class="lr-dot" cx="100" cy="100" r="2.4"/></svg></div>
+  <a class="skip" href="#content">Skip to content</a>
+  <canvas id="field" aria-hidden="true"></canvas>
+  <nav class="topbar" data-plate="glass" aria-label="Sections">
+    <a class="mark-link" href="/" aria-label="Home"><svg class="mark" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path d="M20 5a15 15 0 1 1-6.2 1.34M20 10a10 10 0 1 1-4.1.9M20 15a5 5 0 1 1-2 .42" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="20" cy="24.2" r="1.35" fill="currentColor"/><path d="M20 25.8v4.4M20 30.2l-1.6 3.4M20 30.2l1.6 3.4M18.2 27.4h3.6" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+    <a class="brand" href="/">human-in-loop</a>
+    <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="nav-list"><span class="mt-lines" aria-hidden="true"></span><span class="mt-label">Menu</span></button>
+    <ul id="nav-list">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/case-studies/" aria-current="page">Case Studies</a></li>
+      <li><a href="/experience/">Experience</a></li>
+      <li><a href="/projects/">Projects</a></li>
+      <li><a href="/publications/">Publications</a></li>
+      <li><a href="/skills/">Skills</a></li>
+      <li><a href="/resume/">Resume</a></li>
+      <li><a href="/contact/">Contact</a></li>
+      <li class="agents"><a href="/llms.txt">llms.txt</a> | <a href="/llms-full.txt">llms-full.txt</a></li>
+    </ul>
+    <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Dark theme"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M12 3.5v17M9.6 4.1v15.8M7.2 5.4v13.2M4.9 7.6v8.8" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></button>
+  </nav>
 
-  <header>
-    <h1>Sahil Tomar (dev-S-t) — Engineering Case Studies</h1>
+  <header class="ph" data-scene="vortex" data-polarity="inverse" data-cx="0.8">
+    <h1 data-plate="clear">Sahil Tomar (dev-S-t) — Engineering Case Studies</h1>
+    <div class="ph-meta" data-plate>
     <p>Problem-to-Architecture Analysis in Production AI & Infrastructure</p>
     <p><a href="/">Home</a> | <a href="/experience/">Experience</a> | <a href="/projects/">Projects</a> | <a href="/publications/">Publications</a> | <a href="/skills/">Skills</a> | <a href="/contact/">Contact</a></p>
+    </div>
   </header>
 
-  <main>
-    <section>
+  <main id="content" data-scene="terrain" data-polarity="same" data-seam="cliff">
+    <section class="hub-intro" data-plate>
       <h2>Engineering Case Studies Overview</h2>
       <p>Most of my project write-ups describe what got built. This page describes how I got there — the problem as it was first handed to me, what I found once I dug in, why the obvious first approach usually didn't hold, and the architecture that did. Written for anyone evaluating problem-solving process rather than just output.</p>
     </section>
 
     <!-- Case Study 1 Hub Entry -->
-    <article>
+    <article data-plate data-peak>
       <h2>1. Data That Can't Leave the Building</h2>
       <p><strong>Problem:</strong> A client needed AI-powered access to their own internal documents and knowledge base, but would not send that data to any external service — regardless of encryption or access-control guarantees offered. That rules out essentially every standard RAG architecture, all of which assume documents get uploaded somewhere the model can reach.</p>
       <p><a href="/case-studies/on-prem-privacy-rag/">Read full case study →</a></p>
     </article>
 
     <!-- Case Study 2 Hub Entry -->
-    <article>
+    <article data-plate data-peak>
       <h2>2. Multi-Tenant AI Without Cross-Contamination</h2>
       <p><strong>Problem:</strong> Many businesses want the same fundamental thing: a support agent that knows their content and can talk to their customers. Building dedicated infrastructure per business doesn't scale. Naive shared infrastructure risks one tenant's data or conversational context surfacing in another's session.</p>
       <p><a href="/case-studies/multi-tenant-isolation/">Read full case study →</a></p>
     </article>
 
     <!-- Case Study 3 Hub Entry -->
-    <article>
+    <article data-plate data-peak>
       <h2>3. 30 Minutes to Under a Minute — Automating a Manual Dispatch Desk</h2>
       <p><em>Client: a Dubai-based luxury ground transportation company (engagement held by TechieMaya).</em></p>
       <p><strong>Problem:</strong> The company ran their entire B2B partner booking flow through WhatsApp groups. A partner posted a request; a human had to notice it, manually check vehicle and driver availability, calculate a fare, and reply. Typical turnaround was around 30 minutes with staff on hand — and well over two hours for requests arriving outside working hours. WhatsApp's official Business API offers no support for reading or acting on group messages, so there was no vendor-sanctioned automation path at all.</p>
@@ -109,7 +139,7 @@
     </article>
 
     <!-- Case Study 4 Hub Entry -->
-    <article>
+    <article data-plate data-peak>
       <h2>4. Filtering Signal From a Thousand Messages a Day</h2>
       <p><em>Client: an independent musician (engagement held by TechieMaya).</em></p>
       <p><strong>Problem:</strong> Active across dozens of community groups, receiving 1,000+ messages a day. Buried in that volume were the few that actually mattered — a booking request, a performance inquiry, someone asking about sessions — with no way to surface them short of reading everything. Separately, every time he had something to announce (a show, a release, a class), he had to manually repost it across a long list of individual contacts and groups.</p>
@@ -117,7 +147,7 @@
     </article>
 
     <!-- Case Study 5 Hub Entry -->
-    <article>
+    <article data-plate data-peak>
       <h2>5. Unblocking a Real-Time Avatar Product After Months Stuck</h2>
       <p><em>Client: MGS Technology Pvt Ltd, via Quantashift Consultancy Services. Sole engineer on the engagement.</em></p>
       <p><strong>Problem:</strong> MGS's internal team had been blocked for months and could not get LiveKit's real-time video and infrastructure working — holding up a product meant to conduct interviews through a live photorealistic avatar rather than a plain audio bot. What existed was audio-only.</p>
@@ -125,23 +155,23 @@
     </article>
 
     <!-- Case Study 6 Hub Entry -->
-    <article>
+    <article data-plate data-peak>
       <h2>6. One Voice Platform, Two Opposite Conversational Goals</h2>
       <p><strong>Problem:</strong> Different clients on the same voice platform needed fundamentally different conversational behavior. A higher-education consultancy wanted natural, unhurried outreach and follow-up calls — explicitly <em>not</em> salesy — to take pressure off their human counselors. A real estate client needed close to the opposite: a persistent, harder-to-brush-off cold-calling agent, because real estate cold calls are otherwise trivially easy to end in five seconds.</p>
       <p><a href="/case-studies/one-platform-two-goals/">Read full case study →</a></p>
     </article>
 
     <!-- Case Study 7 Hub Entry -->
-    <article>
+    <article data-plate data-peak>
       <h2>7. Consistent Brand Content Without a Social Media Manager</h2>
       <p><strong>Problem:</strong> Maintaining a consistent brand presence on social media effectively requires a dedicated social media manager — daily posting, on-brand creative, and staying current with what's actually working. Most small and mid-size businesses don't have one, and two failure modes follow directly. First: businesses often don't know <em>what</em> to post. Second: even when there's a clear idea, execution is slow. A common real pattern — a CEO sees a post they like and wants the same concept with their own name, their own pricing, their own logo and colors — still requires a designer, a round of revisions, and days of turnaround for what is conceptually a small change.</p>
       <p><a href="/case-studies/brand-content-without-a-manager/">Read full case study →</a></p>
     </article>
   </main>
 
-  <footer>
+  <footer class="foot" data-scene="ocean" data-polarity="night" data-seam="cliff">
     <hr>
-    <p><strong>Sahil Tomar (dev-S-t)</strong> — <a href="https://github.com/dev-S-t">GitHub</a> | <a href="https://www.linkedin.com/in/dev-s-t/">LinkedIn</a></p>
+    <p data-plate><strong>Sahil Tomar (dev-S-t)</strong> — <a href="https://github.com/dev-S-t">GitHub</a> | <a href="https://www.linkedin.com/in/dev-s-t/">LinkedIn</a></p>
   </footer>
 
 </body>

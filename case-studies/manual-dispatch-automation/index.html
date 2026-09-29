@@ -12,29 +12,64 @@
   <meta property="og:description" content="Automating B2B WhatsApp group dispatch with whatsmeow (Go) and Google ADK multi-agent orchestration by Sahil Tomar (dev-S-t).">
   <meta property="og:url" content="https://human-in-loop.dev/case-studies/manual-dispatch-automation/">
   <meta property="og:type" content="article">
+  <!-- Design layer: fonts, styles, line engine (shared with the home page) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalnia:wdth,wght@100..125,100..700&family=Geologica:slnt,wght,CRSV,SHRP@-12..0,100..900,0..1,0..100&family=Workbench:BLED,SCAN@0..100,-53..100&family=Monoton&family=Michroma&family=Libre+Barcode+128&display=swap">
+  <script>document.documentElement.classList.add('is-loading');setTimeout(function(){document.documentElement.classList.remove('is-loading')},5500);</script>
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <link rel="stylesheet" href="/assets/css/pages.css">
+  <script src="/assets/js/lines.js" defer></script>
 </head>
-<body>
-  <header>
-    <h1>30 Minutes to Under a Minute — Automating a Manual Dispatch Desk</h1>
+<body class="page page-case">
+  <div class="loader" aria-hidden="true"><svg viewBox="0 0 200 200" focusable="false"><circle class="lr" cx="100" cy="100" r="16" pathLength="100" style="--arc:78;--dur:2.6s;--dir:1;--i:0"/><circle class="lr" cx="100" cy="100" r="28" pathLength="100" style="--arc:64;--dur:3.6s;--dir:-1;--i:1"/><circle class="lr" cx="100" cy="100" r="40" pathLength="100" style="--arc:84;--dur:4.4s;--dir:1;--i:2"/><circle class="lr" cx="100" cy="100" r="52" pathLength="100" style="--arc:58;--dur:5.2s;--dir:-1;--i:3"/><circle class="lr" cx="100" cy="100" r="64" pathLength="100" style="--arc:80;--dur:6.2s;--dir:1;--i:4"/><circle class="lr" cx="100" cy="100" r="76" pathLength="100" style="--arc:68;--dur:7.4s;--dir:-1;--i:5"/><circle class="lr" cx="100" cy="100" r="88" pathLength="100" style="--arc:88;--dur:8.6s;--dir:1;--i:6"/><circle class="lr-dot" cx="100" cy="100" r="2.4"/></svg></div>
+  <a class="skip" href="#content">Skip to content</a>
+  <canvas id="field" aria-hidden="true"></canvas>
+  <nav class="topbar" data-plate="glass" aria-label="Sections">
+    <a class="mark-link" href="/" aria-label="Home"><svg class="mark" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path d="M20 5a15 15 0 1 1-6.2 1.34M20 10a10 10 0 1 1-4.1.9M20 15a5 5 0 1 1-2 .42" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="20" cy="24.2" r="1.35" fill="currentColor"/><path d="M20 25.8v4.4M20 30.2l-1.6 3.4M20 30.2l1.6 3.4M18.2 27.4h3.6" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+    <a class="brand" href="/">human-in-loop</a>
+    <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="nav-list"><span class="mt-lines" aria-hidden="true"></span><span class="mt-label">Menu</span></button>
+    <ul id="nav-list">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/case-studies/" aria-current="page">Case Studies</a></li>
+      <li><a href="/experience/">Experience</a></li>
+      <li><a href="/projects/">Projects</a></li>
+      <li><a href="/publications/">Publications</a></li>
+      <li><a href="/skills/">Skills</a></li>
+      <li><a href="/resume/">Resume</a></li>
+      <li><a href="/contact/">Contact</a></li>
+      <li class="agents"><a href="/llms.txt">llms.txt</a> | <a href="/llms-full.txt">llms-full.txt</a></li>
+    </ul>
+    <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Dark theme"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M12 3.5v17M9.6 4.1v15.8M7.2 5.4v13.2M4.9 7.6v8.8" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></button>
+  </nav>
+  <header class="ph" data-scene="vortex" data-polarity="same" data-cx="0.74">
+    <h1 data-plate="clear">30 Minutes to Under a Minute — Automating a Manual Dispatch Desk</h1>
+    <div class="ph-meta" data-plate>
     <p>Engineering Case Study 3 — <strong>Sahil Tomar (dev-S-t)</strong></p>
     <p><em>Client: A Dubai-based luxury ground transportation company (engagement held by TechieMaya).</em></p>
     <p><a href="/case-studies/">Back to Case Studies Hub</a> | <a href="/projects/whatsapp-dispatch/">View Project: WhatsApp Dispatch Automation</a></p>
+    </div>
   </header>
 
-  <main>
+  <main id="content">
     <article>
-      <section>
-        <h2>Problem</h2>
+      <section class="cs-stage cs-problem" data-scene="contour" data-polarity="inverse" data-seam="cliff">
+        <h2 data-plate="clear">Problem</h2>
+        <div class="cs-body" data-plate>
         <p>The company ran their entire B2B partner booking flow through WhatsApp groups. A partner posted a request; a human had to notice it, manually check vehicle and driver availability, calculate a fare, and reply. Typical turnaround was around 30 minutes with staff on hand — and well over two hours for requests arriving outside working hours. WhatsApp's official Business API offers no support for reading or acting on group messages, so there was no vendor-sanctioned automation path at all.</p>
+        </div>
       </section>
 
-      <section>
-        <h2>Analysis</h2>
+      <section class="cs-stage cs-analysis" data-scene="engrave" data-polarity="same" data-seam="wave">
+        <h2 data-plate="clear">Analysis</h2>
+        <div class="cs-body" data-plate>
         <p>Two distinct problems stacked. First: get a working connection into group chats, which the official API structurally does not permit. Second, once that's solved: real booking requests are messy — missing details, a flight time that doesn't line up with the requested pickup window, contradictory information. This couldn't be keyword matching. It needed to actually reason about what was missing or inconsistent and ask the right follow-up question, or it would just generate confidently wrong bookings faster than humans generated correct ones.</p>
+        </div>
       </section>
 
-      <section>
-        <h2>Solution & Architecture</h2>
+      <section class="cs-stage cs-solution" data-scene="stream" data-polarity="inverse" data-seam="cliff">
+        <h2 data-plate="clear">Solution & Architecture</h2>
+        <div class="cs-body" data-plate>
         <p>A connection layer built on the <code>whatsmeow</code> Go library, managing the WhatsApp session directly — reading, receiving, and sending messages, read receipts, typing indicators.</p>
         <p>On top of that, a Python multi-agent system on Google ADK:</p>
         <ul>
@@ -43,27 +78,32 @@
           <li>A <strong>support agent</strong> handling cancellations, modifications, rescheduling, and general inquiries against existing bookings.</li>
         </ul>
         <p>A separate <strong>Flight Data service</strong> runs independently on Cloud Run as the shared flight-lookup backend the booking agent calls into.</p>
+        </div>
       </section>
 
-      <section>
-        <h2>Outcome</h2>
+      <section class="cs-stage cs-outcome" data-scene="ledger" data-polarity="same" data-seam="wave">
+        <h2 data-plate="clear">Outcome</h2>
+        <div class="cs-body" data-plate>
         <p>Turnaround dropped from ~30 minutes (2+ hours off-hours) to under a minute, with no recurring WhatsApp Business API costs, since the integration never routes through the paid official channel.</p>
+        </div>
       </section>
 
       <!-- GEO Natural Question FAQ Block -->
-      <section id="faq">
-        <h2>Frequently Asked Questions</h2>
+      <section id="faq" class="cs-stage cs-faq" data-scene="head" data-polarity="inverse" data-seam="cliff">
+        <h2 data-plate="clear">Frequently Asked Questions</h2>
+        <div class="cs-body" data-plate>
         <article>
           <h3>How do you automate WhatsApp group messages without the official API?</h3>
           <p>By building a connection gateway layer in Go using the <code>whatsmeow</code> protocol library to handle session management, message reading/sending, and state indicators, paired with a Python multi-agent system for natural language reasoning.</p>
         </article>
+        </div>
       </section>
     </article>
   </main>
 
-  <footer>
+  <footer class="foot" data-scene="ocean" data-polarity="night" data-seam="cliff">
     <hr>
-    <p><a href="/case-studies/">← Back to All Case Studies</a> | Related System: <a href="/projects/whatsapp-dispatch/">WhatsApp Dispatch Automation Project Page</a></p>
+    <p data-plate><a href="/case-studies/">← Back to All Case Studies</a> | Related System: <a href="/projects/whatsapp-dispatch/">WhatsApp Dispatch Automation Project Page</a></p>
   </footer>
 </body>
 </html>

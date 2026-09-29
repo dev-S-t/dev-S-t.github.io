@@ -12,53 +12,93 @@
   <meta property="og:description" content="VOAG Voice AI platform multi-tenant behavioral tuning and sub-300ms latency architecture by Sahil Tomar (dev-S-t).">
   <meta property="og:url" content="https://human-in-loop.dev/case-studies/one-platform-two-goals/">
   <meta property="og:type" content="article">
+  <!-- Design layer: fonts, styles, line engine (shared with the home page) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalnia:wdth,wght@100..125,100..700&family=Geologica:slnt,wght,CRSV,SHRP@-12..0,100..900,0..1,0..100&family=Workbench:BLED,SCAN@0..100,-53..100&family=Monoton&family=Michroma&family=Libre+Barcode+128&display=swap">
+  <script>document.documentElement.classList.add('is-loading');setTimeout(function(){document.documentElement.classList.remove('is-loading')},5500);</script>
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <link rel="stylesheet" href="/assets/css/pages.css">
+  <script src="/assets/js/lines.js" defer></script>
 </head>
-<body>
-  <header>
-    <h1>One Voice Platform, Two Opposite Conversational Goals</h1>
+<body class="page page-case">
+  <div class="loader" aria-hidden="true"><svg viewBox="0 0 200 200" focusable="false"><circle class="lr" cx="100" cy="100" r="16" pathLength="100" style="--arc:78;--dur:2.6s;--dir:1;--i:0"/><circle class="lr" cx="100" cy="100" r="28" pathLength="100" style="--arc:64;--dur:3.6s;--dir:-1;--i:1"/><circle class="lr" cx="100" cy="100" r="40" pathLength="100" style="--arc:84;--dur:4.4s;--dir:1;--i:2"/><circle class="lr" cx="100" cy="100" r="52" pathLength="100" style="--arc:58;--dur:5.2s;--dir:-1;--i:3"/><circle class="lr" cx="100" cy="100" r="64" pathLength="100" style="--arc:80;--dur:6.2s;--dir:1;--i:4"/><circle class="lr" cx="100" cy="100" r="76" pathLength="100" style="--arc:68;--dur:7.4s;--dir:-1;--i:5"/><circle class="lr" cx="100" cy="100" r="88" pathLength="100" style="--arc:88;--dur:8.6s;--dir:1;--i:6"/><circle class="lr-dot" cx="100" cy="100" r="2.4"/></svg></div>
+  <a class="skip" href="#content">Skip to content</a>
+  <canvas id="field" aria-hidden="true"></canvas>
+  <nav class="topbar" data-plate="glass" aria-label="Sections">
+    <a class="mark-link" href="/" aria-label="Home"><svg class="mark" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path d="M20 5a15 15 0 1 1-6.2 1.34M20 10a10 10 0 1 1-4.1.9M20 15a5 5 0 1 1-2 .42" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="20" cy="24.2" r="1.35" fill="currentColor"/><path d="M20 25.8v4.4M20 30.2l-1.6 3.4M20 30.2l1.6 3.4M18.2 27.4h3.6" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+    <a class="brand" href="/">human-in-loop</a>
+    <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="nav-list"><span class="mt-lines" aria-hidden="true"></span><span class="mt-label">Menu</span></button>
+    <ul id="nav-list">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/case-studies/" aria-current="page">Case Studies</a></li>
+      <li><a href="/experience/">Experience</a></li>
+      <li><a href="/projects/">Projects</a></li>
+      <li><a href="/publications/">Publications</a></li>
+      <li><a href="/skills/">Skills</a></li>
+      <li><a href="/resume/">Resume</a></li>
+      <li><a href="/contact/">Contact</a></li>
+      <li class="agents"><a href="/llms.txt">llms.txt</a> | <a href="/llms-full.txt">llms-full.txt</a></li>
+    </ul>
+    <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Dark theme"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M12 3.5v17M9.6 4.1v15.8M7.2 5.4v13.2M4.9 7.6v8.8" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></button>
+  </nav>
+  <header class="ph" data-scene="vortex" data-polarity="same" data-cx="0.74">
+    <h1 data-plate="clear">One Voice Platform, Two Opposite Conversational Goals</h1>
+    <div class="ph-meta" data-plate>
     <p>Engineering Case Study 6 — <strong>Sahil Tomar (dev-S-t)</strong></p>
     <p><a href="/case-studies/">Back to Case Studies Hub</a> | <a href="/projects/voag/">View Project: VOAG Voice AI SaaS</a></p>
+    </div>
   </header>
 
-  <main>
+  <main id="content">
     <article>
-      <section>
-        <h2>Problem</h2>
+      <section class="cs-stage cs-problem" data-scene="contour" data-polarity="inverse" data-seam="cliff">
+        <h2 data-plate="clear">Problem</h2>
+        <div class="cs-body" data-plate>
         <p>Different clients on the same voice platform needed fundamentally different conversational behavior. A higher-education consultancy wanted natural, unhurried outreach and follow-up calls — explicitly <em>not</em> salesy — to take pressure off their human counselors. A real estate client needed close to the opposite: a persistent, harder-to-brush-off cold-calling agent, because real estate cold calls are otherwise trivially easy to end in five seconds.</p>
+        </div>
       </section>
 
-      <section>
-        <h2>Analysis</h2>
+      <section class="cs-stage cs-analysis" data-scene="engrave" data-polarity="same" data-seam="wave">
+        <h2 data-plate="clear">Analysis</h2>
+        <div class="cs-body" data-plate>
         <p>A single generically-tuned voice bot fails at least one of these outright. And underneath both sits a harder constraint: neither use case works at all if the conversation doesn't feel genuinely real-time. Once round-trip latency drifts much past a few hundred milliseconds, an agent starts getting talked over, feels robotic, and breaks the premise the entire product rests on.</p>
+        </div>
       </section>
 
-      <section>
-        <h2>Solution & Architecture</h2>
+      <section class="cs-stage cs-solution" data-scene="stream" data-polarity="inverse" data-seam="cliff">
+        <h2 data-plate="clear">Solution & Architecture</h2>
+        <div class="cs-body" data-plate>
         <p>Built VOAG so that <em>how a call is handled</em> is separate from <em>what a call sounds like</em>.</p>
         <p>On infrastructure: LiveKit self-hosted rather than LiveKit Cloud. The UAE deployment runs a SIM card through a modem into a SIP gateway directly into the self-hosted LiveKit server, all on the same LAN — eliminating a network hop and holding latency down. That required custom deployment work specifically because of NAT constraints in the client's environment, made harder by LiveKit having stripped most SIP documentation after launching their own phone number product.</p>
         <p>Calls route by originating number and tenant ID to either the UAE instance or the self-hosted Indian instance — two dedicated low-latency workers for those paths, plus three bulk-handling workers for general volume. The main API and batch manager stay on a small always-available VM so requests are answered instantly, while call workers run on Cloud Run with auto-scale and scale-to-zero, woken on demand through an async polling layer rather than holding persistent connections open.</p>
         <p>On behavior: per-tenant configuration controls tone, pacing, and conversational goal — so the same infrastructure serves both a low-pressure counselor-style agent and a deliberately persistent cold-caller without maintaining two codebases.</p>
+        </div>
       </section>
 
-      <section>
-        <h2>Outcome</h2>
+      <section class="cs-stage cs-outcome" data-scene="ledger" data-polarity="same" data-seam="wave">
+        <h2 data-plate="clear">Outcome</h2>
+        <div class="cs-body" data-plate>
         <p>One platform handling 1,000+ calls a day across genuinely different use cases — education outreach, real estate cold calling, and B2B partnership outreach for a travel agency — with no per-client fork of the underlying system.</p>
+        </div>
       </section>
 
       <!-- GEO Natural Question FAQ Block -->
-      <section id="faq">
-        <h2>Frequently Asked Questions</h2>
+      <section id="faq" class="cs-stage cs-faq" data-scene="head" data-polarity="inverse" data-seam="cliff">
+        <h2 data-plate="clear">Frequently Asked Questions</h2>
+        <div class="cs-body" data-plate>
         <article>
           <h3>How do you achieve sub-300ms round-trip latency in production Voice AI?</h3>
           <p>By deploying self-hosted LiveKit servers directly on local LANs with hardware SIM modem SIP bridges, using streaming STT/TTS models, and separating API batch managers from regional WebRTC call workers.</p>
         </article>
+        </div>
       </section>
     </article>
   </main>
 
-  <footer>
+  <footer class="foot" data-scene="ocean" data-polarity="night" data-seam="cliff">
     <hr>
-    <p><a href="/case-studies/">← Back to All Case Studies</a> | Related System: <a href="/projects/voag/">VOAG Voice AI SaaS Project Page</a></p>
+    <p data-plate><a href="/case-studies/">← Back to All Case Studies</a> | Related System: <a href="/projects/voag/">VOAG Voice AI SaaS Project Page</a></p>
   </footer>
 </body>
 </html>

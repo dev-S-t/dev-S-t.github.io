@@ -2,7 +2,7 @@
 
 ## AI Solutions Engineer — TechieMaya
 - **Timeline:** Apr 2025 – Present · Remote (Dubai, UAE)
-- **Arc:** Trial prototype ➡️ Paid Internship core shipping ➡️ Contract scaling & product lead.
+- **Arc:** Trial prototype -> Paid Internship core shipping -> Contract scaling & product lead.
 - **Scope:** Led Voice AI vertical (VOAG), RAG engines, WhatsApp dispatch automation, and generative media infrastructure.
 - **Client-facing:** Joins client meetings as the voice AI lead — scoping use cases, walking stakeholders through architecture and trade-offs, and carrying agreed requirements into production.
 - **Cloud & data ownership:** Administers GCP for VOAG and TechieMaya — least-privilege IAM, VM provisioning and hardening, cost control — and designed VOAG's complete relational SQL schema.

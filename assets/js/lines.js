@@ -444,6 +444,24 @@
         c.lineWidth = 1.4; path(flap); c.stroke();
       }
     },
+    // Shortage events down 85%: supply as two lines, each break a shortage. The JIT-only line has twenty; this
+    // system's has three. A sweep (or the pointer) runs along them and each break it has passed drops a mark.
+    shortage(c, w, h, t, a) {
+      const x0 = 6, x1 = w - 6, gw = Math.max(4, (x1 - x0) * 0.012);
+      const sweep = a.pointer && a.pointer.inside ? clamp(a.pointer.x, x0, x1) : x0 + ((reduce ? 0.6 : t * 0.12) % 1) * (x1 - x0);
+      [[20, h * 0.3, 3, 1.4], [3, h * 0.7, 11, 3.2]].forEach(([g, y, seed, lw]) => {
+        const R = rng(seed), gaps = [];
+        for (let tries = 0; gaps.length < g && tries < 500; tries++) { const gx = x0 + gw + R() * (x1 - x0 - 2 * gw); if (gaps.every((q) => Math.abs(q - gx) > gw * 2.2)) gaps.push(gx); }
+        gaps.sort((p, q) => p - q);
+        c.lineWidth = lw; c.beginPath(); let x = x0;
+        for (const gx of gaps) { c.moveTo(x, y); c.lineTo(gx - gw / 2, y); x = gx + gw / 2; }
+        c.moveTo(x, y); c.lineTo(x1, y); c.stroke();
+        c.lineWidth = 1.2; c.beginPath();
+        for (const gx of gaps) { if (sweep > gx) { const k = clamp((sweep - gx) / 40, 0, 1); c.moveTo(gx, y + 5); c.lineTo(gx, y + 5 + 14 * k); } }
+        c.stroke();
+      });
+      c.lineWidth = 1; c.setLineDash([2, 4]); c.beginPath(); c.moveTo(sweep, 4); c.lineTo(sweep, h - 4); c.stroke(); c.setLineDash([]);
+    },
     // Wastage 11.2% -> 2.5%: a hundred platelet units. Eleven (and a fifth) are wasted, then most are rescued until two
     // and a half remain. The pointer scrubs from before (left) to after (right); otherwise it plays on a loop.
     wastage(c, w, h, t, a) {
@@ -519,7 +537,7 @@
       c.lineWidth = 2; c.setLineDash([5, 4]); c.beginPath(); c.moveTo(x0, Y(pr[0])); c.lineTo(x1, Y(pr[1])); c.stroke(); c.setLineDash([]);
     }
   };
-  const ANIMATED = new Set(['voice', 'eye', 'tenants', 'enclosure', 'converge', 'timeline', 'page', 'wastage', 'fulfilment', 'mae', 'runs']);
+  const ANIMATED = new Set(['voice', 'eye', 'tenants', 'enclosure', 'converge', 'timeline', 'page', 'wastage', 'fulfilment', 'shortage', 'mae', 'runs']);
 
   const arts = [...document.querySelectorAll('canvas[data-emblem], canvas[data-figure], canvas[data-art]')].map((cv) => ({
     cv, kind: cv.dataset.emblem || cv.dataset.figure || cv.dataset.art, ctx: cv.getContext('2d'), dirty: true, visible: false,
@@ -991,6 +1009,19 @@ void main(){
   // RESUME: ruled lines, level and gently bowed, like a ream of paper seen edge-on
   float sy=pw.y-secTop;
   v1=(sy+7.0*sin(pw.x/320.0+sy/520.0)+n*12.0)/10.5+bump;vd1=v1;w=wvar*0.75;
+ }else if(scene==11){
+  // INNER PAGE HEADERS: the home page's tunnel, loosened. A spiral whose rings widen outward, centred right of the
+  // title (data-cx, a share of the width); scrolling the header away winds it, the pointer twists it where it is.
+  vec4 SB=uSecB[si];
+  vec2 c=vec2(uRes.x/uDpr*(SB.z>0.0?SB.z:0.78),secTop+secH*0.5);
+  vec2 d=pw-c;float r=length(d);float th=atan(d.y,d.x);
+  vec2 dm=pw-uMouse;th+=uMouseAmt*0.9*exp(-dot(dm,dm)/(2.0*140.0*140.0));
+  float rough=smoothstep(secH*0.35,secH*1.1,r);
+  float rr=r+n*(4.0+70.0*rough);
+  float prog=clamp(-secTop/secH,0.0,1.0);
+  float fr=1.25*pow(rr+2.0,0.62);
+  v1=fr-th*0.15915494-prog*14.0-t*0.1;vd1=fr;
+  w=mix(0.7,1.2,rough)*wvar*0.8;
  }else{
   // FOOTER: a night ocean. A small moon rises at the left edge, part below the water; the barcode on the
   // horizon (in the page) throws its reflection on the waves.
@@ -1107,11 +1138,11 @@ void main(){
   function upload(unit, tex, canvas) { gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, tex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas); }
 
   /* ---------- the page model ---------- */
-  const SCENE = { tunnel: 0, head: 1, face: 1, cloth: 2, terrain: 3, strata: 4, stream: 5, engrave: 6, contour: 7, blackhole: 8, ledger: 9, ocean: 10, rings: 4 };
+  const SCENE = { tunnel: 0, head: 1, face: 1, cloth: 2, terrain: 3, strata: 4, stream: 5, engrave: 6, contour: 7, blackhole: 8, ledger: 9, ocean: 10, rings: 4, vortex: 11 };
   const SEAM = { cliff: [1, 44], wave: [2, 26], rule: [3, 0] };
   const KIND = { plate: 1, '': 1, glass: 2, clear: 3, sparse: 4 };
   const secs = [...document.querySelectorAll('[data-scene]')].map((el) => ({
-    el, scene: SCENE[el.dataset.scene] || 0, pol: ({ inverse: 1, night: 2, day: 3 })[el.dataset.polarity] || 0, seam: SEAM[el.dataset.seam] || [0, 0]
+    el, scene: SCENE[el.dataset.scene] || 0, pol: ({ inverse: 1, night: 2, day: 3 })[el.dataset.polarity] || 0, seam: SEAM[el.dataset.seam] || [0, 0], cx: parseFloat(el.dataset.cx) || 0
   })).slice(0, 12);
   const plates = [...document.querySelectorAll('[data-plate]')].map((el) => ({ el, kind: KIND[el.dataset.plate] || 1, rad: 0, lift: 0, tlift: 0 }));
   plates.forEach((p) => {
@@ -1330,7 +1361,7 @@ void main(){
     let n = 0;
     for (const s of secs) {
       const r = s.el.getBoundingClientRect();
-      secBuf.set([r.top, r.bottom, s.scene, s.pol], n * 4); secBBuf.set([s.seam[0], s.seam[1], 0, 0], n * 4); n++;
+      secBuf.set([r.top, r.bottom, s.scene, s.pol], n * 4); secBBuf.set([s.seam[0], s.seam[1], s.cx, 0], n * 4); n++;
     }
     gl.uniform1i(U.uSecN, n); gl.uniform4fv(U.uSec, secBuf); gl.uniform4fv(U.uSecB, secBBuf);
 
