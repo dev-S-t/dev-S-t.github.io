@@ -68,86 +68,109 @@
 
   /* ---------- the interactive drawings (Canvas2D) ---------- */
   const DRAW = {
-    // VOAG: two faces in profile, a person and the agent, and the call is the space between them (Rubin's vase).
-    // Your pointer is the caller's voice. When the caller stops, the agent answers after a short pause.
+    // VOAG: a coiled phone cord from a handset (the caller) to the agent (the rings of the site's mark).
+    // Speech runs along the coil as compression waves. When the caller stops, a small arc sweeps round the agent for
+    // 280 ms (inside the 300 ms the tile states) and its reply runs back. The pointer can take the cord and stretch it.
     voice(c, w, h, t, a) {
-      const st = a.state || (a.state = { last: t, px: null, turn: 0, turnT: t - 0.4, quiet: 0, spoke: 0, len: 1.6, hH: new Float32Array(200), hA: new Float32Array(200), acc: 0, ampH: 0, ampA: 0, blinkT: t + 2, gap: 0.24, gapT: -9 });
-      const dt = Math.min(0.1, Math.max(0, t - st.last)); st.last = t;
+      const st = a.state || (a.state = { qx: w / 2, qy: h * 0.78, vx: 0, vy: 0, pulses: [], next: t + 0.6, phase: 'idle', tWait: 0, ring: [], last: t });
+      const dt = Math.min(0.05, Math.max(0, t - st.last)); st.last = t;
+      const hs = Math.min(h * 0.62, w * 0.3); // handset length
+      const hx = w * 0.13, hy = h * 0.42; // handset centre
+      const A = [hx + hs * 0.2, hy + hs * 0.44], B = [w * 0.82, h * 0.5];
+      const mid = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2];
+      // the cord: a curve from A to B through a control point that sags at rest and follows the pointer when taken
       const p = a.pointer && a.pointer.inside ? a.pointer : null;
-      const syll = (x) => 0.3 + 0.7 * Math.abs(Math.sin(x * 7.3)) * Math.abs(Math.sin(x * 2.1 + 1));
-      let tH = 0, tA = 0;
-      if (p) { const v = st.px ? Math.hypot(p.x - st.px[0], p.y - st.px[1]) / Math.max(dt, 0.016) : 0; st.px = [p.x, p.y]; tH = clamp(v / 700, 0, 1); } else st.px = null;
-      const since = t - st.turnT;
-      if (st.turn === 0) { // the caller's turn: scripted when nobody is pointing
-        if (!p) tH = since > 0.3 && since < 2.4 ? syll(since) : 0;
-        if (tH > 0.08) { st.spoke += dt; st.quiet = 0; } else st.quiet += dt;
-        if (st.spoke > 0.4 && st.quiet > 0.24) { st.turn = 1; st.turnT = t; st.len = clamp(st.spoke * 0.8, 1, 2.2); st.gap = st.quiet; st.gapT = t; st.spoke = 0; }
-      } else { // the agent's turn
-        tA = since < st.len ? syll(since + 0.9) : 0;
-        if (since > st.len + 0.7) { st.turn = 0; st.turnT = t; st.quiet = 0; }
+      let tx = mid[0], ty = mid[1] + h * 0.62;
+      if (p) { tx = clamp(2 * p.x - mid[0], w * 0.1, w * 0.9); ty = clamp(2 * p.y - mid[1], -h * 0.3, h * 1.5); }
+      st.vx = (st.vx + (tx - st.qx) * 0.06) * 0.84; st.vy = (st.vy + (ty - st.qy) * 0.06) * 0.84;
+      if (reduce) { st.qx = tx; st.qy = ty; } else { st.qx += st.vx; st.qy += st.vy; }
+      const N = 720, pts = new Float32Array(N * 2), len = new Float32Array(N);
+      for (let i = 0; i < N; i++) {
+        const s = i / (N - 1), u = 1 - s;
+        pts[i * 2] = u * u * A[0] + 2 * u * s * st.qx + s * s * B[0];
+        pts[i * 2 + 1] = u * u * A[1] + 2 * u * s * st.qy + s * s * B[1];
+        if (i) len[i] = len[i - 1] + Math.hypot(pts[i * 2] - pts[i * 2 - 2], pts[i * 2 + 1] - pts[i * 2 - 1]);
       }
-      st.ampH = lerp(st.ampH, tH, 0.35); st.ampA = lerp(st.ampA, tA, 0.35);
-      st.acc += dt * 50; // voice histories, 50 samples a second
-      while (st.acc >= 1) { st.acc -= 1; st.hH.copyWithin(1, 0); st.hA.copyWithin(1, 0); st.hH[0] = st.ampH; st.hA[0] = st.ampA; }
-      // one face profile, facing right (forehead, brow, eye, nose, lips, chin, neck)
-      const PROF = [[0, 0.4], [0.08, 0.5], [0.2, 0.555], [0.3, 0.578], [0.35, 0.556], [0.41, 0.6], [0.5, 0.74], [0.54, 0.66], [0.575, 0.632], [0.6, 0.668], [0.628, 0.622], [0.655, 0.655], [0.71, 0.6], [0.77, 0.646], [0.83, 0.56], [0.9, 0.47], [1, 0.47]];
-      const prof = (yn) => {
-        let i = 1; while (i < PROF.length - 1 && PROF[i][0] < yn) i++;
-        const p0 = PROF[Math.max(0, i - 2)][1], p1 = PROF[i - 1][1], p2 = PROF[i][1], p3 = PROF[Math.min(PROF.length - 1, i + 1)][1];
-        const u = clamp((yn - PROF[i - 1][0]) / (PROF[i][0] - PROF[i - 1][0]), 0, 1);
-        return 0.5 * (2 * p1 + (p2 - p0) * u + (2 * p0 - 5 * p1 + 4 * p2 - p3) * u * u + (3 * p1 - p0 - 3 * p2 + p3) * u * u * u);
+      const L = len[N - 1] || 1;
+      // the conversation: the caller says a few syllables, the agent waits 280 ms after the last one arrives, then answers
+      const speed = L / 1.15, sig = Math.max(10, L * 0.022);
+      if (!reduce) {
+        if (st.phase === 'idle' && t >= st.next) {
+          const k = 3 + Math.floor(Math.random() * 3);
+          for (let i = 0; i < k; i++) st.pulses.push({ t0: t + i * 0.17, dir: 1, amp: 0.45 + Math.random() * 0.3 });
+          st.phase = 'caller'; st.lastOut = t + (k - 1) * 0.17;
+        }
+        if (st.phase === 'caller' && t >= st.lastOut + L / speed) { st.phase = 'wait'; st.tWait = t; st.ring.push({ t0: t, end: 1 }); }
+        if (st.phase === 'wait' && t >= st.tWait + 0.28) {
+          const k = 3 + Math.floor(Math.random() * 3);
+          for (let i = 0; i < k; i++) st.pulses.push({ t0: t + i * 0.16, dir: -1, amp: 0.45 + Math.random() * 0.3 });
+          st.phase = 'agent'; st.lastOut = t + (k - 1) * 0.16;
+        }
+        if (st.phase === 'agent' && t >= st.lastOut + L / speed) { st.phase = 'idle'; st.next = t + 1.1; st.ring.push({ t0: t, end: 0 }); }
+      }
+      st.pulses = st.pulses.filter((q) => t - q.t0 < L / speed + 0.3);
+      st.ring = st.ring.filter((q) => t - q.t0 < 1);
+      // the coil: turns are fixed along the cord's material; a pulse displaces the material, crowding the turns
+      const turns = 30, R = Math.max(7, h * 0.06);
+      const disp = (l) => { let d = 0; for (const q of st.pulses) { const age = t - q.t0; if (age < 0) continue; const lp = q.dir > 0 ? age * speed : L - age * speed; const e = (l - lp) / sig; d += q.amp * sig * Math.exp(-e * e) * q.dir; } return d; };
+      const P = new Float32Array(N * 3);
+      for (let i = 0; i < N; i++) {
+        const i0 = Math.max(0, i - 1), i1 = Math.min(N - 1, i + 1);
+        let tx2 = pts[i1 * 2] - pts[i0 * 2], ty2 = pts[i1 * 2 + 1] - pts[i0 * 2 + 1]; const tl = Math.hypot(tx2, ty2) || 1; tx2 /= tl; ty2 /= tl;
+        const m = len[i] - disp(len[i]);
+        const th = (m / L) * turns * TAU;
+        const sn = Math.sin(th), cs = Math.cos(th);
+        P[i * 3] = pts[i * 2] - ty2 * R * sn + tx2 * R * 0.55 * cs;
+        P[i * 3 + 1] = pts[i * 2 + 1] + tx2 * R * sn + ty2 * R * 0.55 * cs;
+        P[i * 3 + 2] = cs;
+      }
+      // back strands first and fine, front strands over them and heavy
+      for (const front of [false, true]) {
+        for (let i = 1; i < N; i++) {
+          const z = (P[i * 3 + 2] + P[i * 3 - 1]) / 2;
+          if ((z > 0) !== front) continue;
+          c.lineWidth = front ? 0.9 + 1.7 * z : 0.5 + 0.4 * (1 + z);
+          c.beginPath(); c.moveTo(P[i * 3 - 3], P[i * 3 - 2]); c.lineTo(P[i * 3], P[i * 3 + 1]); c.stroke();
+        }
+      }
+      // the handset: an outline filled with fine lines across it, like everything else on the page
+      c.save(); c.translate(hx, hy); c.rotate(-0.42);
+      const L2 = hs / 2, gw = hs * 0.075, cupW = hs * 0.2, cupH = hs * 0.13;
+      const shape = () => {
+        c.beginPath();
+        c.moveTo(-gw, -L2 + cupH * 0.6);
+        c.quadraticCurveTo(-gw * 2.2, 0, -gw, L2 - cupH * 0.6);
+        c.lineTo(-gw - cupW * 0.15, L2 + cupH * 0.35); c.quadraticCurveTo(-gw, L2 + cupH, cupW, L2 + cupH * 0.55);
+        c.lineTo(cupW * 0.95, L2 - cupH * 0.35); c.quadraticCurveTo(gw * 0.5, L2 - cupH * 0.2, gw * 0.9, L2 - cupH * 0.7);
+        c.quadraticCurveTo(-gw * 0.2, 0, gw * 0.9, -L2 + cupH * 0.7);
+        c.quadraticCurveTo(gw * 0.5, -L2 + cupH * 0.2, cupW * 0.95, -L2 + cupH * 0.35);
+        c.lineTo(cupW, -L2 - cupH * 0.55); c.quadraticCurveTo(-gw, -L2 - cupH, -gw - cupW * 0.15, -L2 - cupH * 0.35);
+        c.closePath();
       };
-      const top = h * 0.04, H = h * 0.92, sp = 5;
-      const fh = Math.min(H, w * 0.9) * 0.62;
-      const gapHalf = Math.max(12, w * 0.03);
-      const xb = w / 2 - gapHalf - (0.74 - 0.47) * fh;
-      const mouthY = top + H * 0.628, eyeY = top + H * 0.352;
-      const xL = (y, open) => { const yn = (y - top) / H; const m = (yn - 0.628) / 0.022; return xb + (prof(yn) - 0.47) * fh - open * fh * 0.05 * Math.exp(-m * m); };
-      const q = 6; // the agent is the same face, quantised to a grid
-      const xR = (y) => w - Math.round(xL(y, st.ampA) / q) * q;
-      const mL = xL(mouthY, 0), mR = w - mL;
-      if (t > st.blinkT + 0.15) st.blinkT = t + 2.4 + Math.random() * 3.6;
-      const blink = t > st.blinkT && t < st.blinkT + 0.15;
-      const eyeX = xL(eyeY, 0) - fh * 0.12, eRx = fh * 0.055, eRy = fh * 0.021;
-      const wave = (hist, d, y) => {
-        if (d < 0) return 0;
-        const i = Math.floor(d / 360 * 50); if (i >= hist.length) return 0;
-        const amp = hist[i]; if (amp < 0.02) return 0;
-        const sg = 5 + d * 0.3, e = (y - mouthY) / sg;
-        return amp * Math.exp(-e * e) * Math.sin(d * 0.34 - t * 11) * 9 * Math.sqrt(8 / sg);
-      };
-      c.lineCap = 'butt';
-      for (let y = top; y <= top + H + 0.1; y += sp) {
-        const k = Math.round((y - top) / sp);
-        const l = xL(y, st.ampH), r = xR(y);
-        // the person: uneven, hand-drawn weight
-        c.lineWidth = sp * (0.5 + 0.16 * ((k * 37) % 11) / 10); c.beginPath();
-        if (!blink && Math.abs(y - eyeY) < eRy) { const hw = eRx * Math.sqrt(1 - Math.pow((y - eyeY) / eRy, 2)); c.moveTo(0, y); c.lineTo(eyeX - hw, y); c.moveTo(eyeX + hw, y); c.lineTo(l, y); }
-        else { c.moveTo(0, y); c.lineTo(l, y); }
-        c.stroke();
-        // the agent: even weight, in regular cells
-        c.lineWidth = sp * 0.56; c.setLineDash([9, 3]); c.beginPath(); c.moveTo(w, y); c.lineTo(r, y); c.stroke(); c.setLineDash([]);
-        // the call between them
-        c.lineWidth = 0.9; c.beginPath();
-        for (let x = l + 3; x <= r - 3; x += 4) { const dy = wave(st.hH, x - mL, y) + wave(st.hA, mR - x, y); if (x === l + 3) c.moveTo(x, y + dy); else c.lineTo(x, y + dy); }
-        c.stroke();
+      c.save(); shape(); c.clip();
+      c.lineWidth = 1.1; c.beginPath();
+      for (let y = -L2 - cupH; y <= L2 + cupH; y += 3.4) { c.moveTo(-hs, y); c.lineTo(hs, y); }
+      c.stroke(); c.restore();
+      c.lineWidth = 1.6; shape(); c.stroke();
+      // sound leaving the mouthpiece while the caller speaks
+      const talking = st.pulses.some((q) => q.dir > 0 && t - q.t0 > -0.05 && t - q.t0 < 0.25);
+      if (talking) { c.lineWidth = 1.2; for (let k = 1; k <= 3; k++) { c.globalAlpha = 1 - k * 0.25; c.beginPath(); c.arc(cupW * 1.3, L2, cupH * (0.6 + k * 0.55), -0.9, 0.9); c.stroke(); } c.globalAlpha = 1; }
+      c.restore();
+      // the agent: the rings of the site's mark; a ring flashes out when speech arrives
+      const rr = Math.max(10, h * 0.075);
+      c.lineWidth = 1.3;
+      for (let k = 1; k <= 3; k++) { c.beginPath(); c.arc(B[0] + rr * 1.1, B[1], rr * k / 3, 0, TAU); c.stroke(); }
+      c.beginPath(); c.arc(B[0] + rr * 1.1, B[1], 2.4, 0, TAU); c.fill();
+      for (const q of st.ring) {
+        const f = (t - q.t0), cx = q.end ? B[0] + rr * 1.1 : hx;
+        c.globalAlpha = Math.max(0, 1 - f); c.lineWidth = 1; c.beginPath(); c.arc(cx, q.end ? B[1] : hy, rr * (1 + f * 1.6), 0, TAU); c.stroke(); c.globalAlpha = 1;
       }
-      if (!blink) { c.beginPath(); c.arc(eyeX + eRx * 0.3, eyeY, eRy * 0.75, 0, TAU); c.fill(); }
-      // the agent's eye: a ring that opens while it speaks
-      const ax = w - eyeX, er = eRy * 1.25 + st.ampA * 3;
-      c.save(); c.globalCompositeOperation = 'destination-out'; c.beginPath(); c.arc(ax, eyeY, er + 4, 0, TAU); c.fill(); c.restore();
-      c.lineWidth = 1.3; c.beginPath(); c.arc(ax, eyeY, er, 0, TAU); c.stroke();
-      c.beginPath(); c.arc(ax, eyeY, 1.8, 0, TAU); c.fill();
-      // the pause before the answer, shown for a moment after each turn
-      const shown = t - st.gapT;
-      if (shown < 1.8) {
-        const gy = top + H * 0.955, gw = Math.max(18, st.gap * 220), gx = w / 2 - gw / 2;
-        c.save(); c.globalCompositeOperation = 'destination-out'; c.fillRect(w / 2 - 70, gy - 16, 140, 30); c.restore();
-        c.globalAlpha = Math.min(1, (1.8 - shown) * 2);
-        c.lineWidth = 1; c.beginPath(); c.moveTo(gx, gy - 5); c.lineTo(gx, gy + 5); c.moveTo(gx, gy); c.lineTo(gx + gw, gy); c.moveTo(gx + gw, gy - 5); c.lineTo(gx + gw, gy + 5); c.stroke();
-        c.font = '11px Workbench, ui-monospace, monospace'; c.textAlign = 'center'; c.fillText('p95 < 300 ms', w / 2, gy - 7);
-        c.globalAlpha = 1;
+      // the wait: an arc that sweeps round the agent while it prepares the answer
+      if (st.phase === 'wait') {
+        const f = clamp((t - st.tWait) / 0.28, 0, 1);
+        c.lineWidth = 2.4; c.beginPath(); c.arc(B[0] + rr * 1.1, B[1], rr * 1.45, -Math.PI / 2, -Math.PI / 2 + f * TAU); c.stroke();
       }
+      c.lineCap = 'round';
     },
     // UniBias: an eye that watches the pointer
     eye(c, w, h, t, a) {
@@ -308,6 +331,110 @@
       c.beginPath(); c.arc(nx, ay, 3.4, 0, TAU); c.fill();
       c.globalAlpha = 1 - pr; c.lineWidth = 1; c.beginPath(); c.arc(nx, ay, 4 + pr * 16, 0, TAU); c.stroke(); c.globalAlpha = 1;
     },
+    // Resume: the page itself, drawn as lines of type. Its corner is turned down; the pointer takes the corner and peels
+    // the page back, and the sheet underneath carries the download arrow. The whole page is the download link.
+    page(c, w, h, t, a) {
+      const st = a.state || (a.state = { cx: 0, cy: 0, init: false });
+      const g = getComputedStyle(a.cv).getPropertyValue('--g').trim() || '#F3F1EC';
+      const pw = w * 0.84, ph = Math.min(h * 0.9, pw * 1.414), x0 = w * 0.05, y0 = h * 0.035, x1 = x0 + pw, y1 = y0 + ph;
+      const C = [x1, y1];
+      // where the corner is: turned down a little at rest, following the pointer when it is over the page
+      const breathe = reduce ? 0 : Math.sin(t * 0.9) * 0.18;
+      let tx = x1 - pw * 0.2 * (1 + breathe * 0.6), ty = y1 - ph * 0.13 * (1 + breathe * 0.6);
+      const p = a.pointer && a.pointer.inside ? a.pointer : null;
+      if (p) {
+        tx = clamp(p.x, x0 + pw * 0.12, x1 - 4); ty = clamp(p.y, y0 + ph * 0.12, y1 - 4);
+        const dx = tx - C[0], dy = ty - C[1], d = Math.hypot(dx, dy), dm = Math.hypot(pw, ph) * 0.72;
+        if (d > dm) { tx = C[0] + dx / d * dm; ty = C[1] + dy / d * dm; }
+      }
+      if (!st.init) { st.cx = tx; st.cy = ty; st.init = true; }
+      st.cx += (tx - st.cx) * 0.14; st.cy += (ty - st.cy) * 0.14;
+      const Pc = [st.cx, st.cy];
+      let nx = Pc[0] - C[0], ny = Pc[1] - C[1]; const nd = Math.hypot(nx, ny) || 1; nx /= nd; ny /= nd;
+      const M = [(Pc[0] + C[0]) / 2, (Pc[1] + C[1]) / 2];
+      const side = (x, y) => (x - M[0]) * nx + (y - M[1]) * ny; // < 0: the corner's side of the fold
+      const rect = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+      const clip = (poly, keepFront) => { // one-line Sutherland-Hodgman
+        const outp = [];
+        for (let i = 0; i < poly.length; i++) {
+          const P0 = poly[i], P1 = poly[(i + 1) % poly.length];
+          const s0 = side(P0[0], P0[1]), s1 = side(P1[0], P1[1]);
+          const in0 = keepFront ? s0 >= 0 : s0 < 0, in1 = keepFront ? s1 >= 0 : s1 < 0;
+          if (in0) outp.push(P0);
+          if (in0 !== in1) { const f = s0 / (s0 - s1); outp.push([P0[0] + (P1[0] - P0[0]) * f, P0[1] + (P1[1] - P0[1]) * f]); }
+        }
+        return outp;
+      };
+      const path = (poly) => { c.beginPath(); poly.forEach((q, i) => (i ? c.lineTo(q[0], q[1]) : c.moveTo(q[0], q[1]))); c.closePath(); };
+      const front = clip(rect, true), under = clip(rect, false);
+      const flap = under.map((q) => { const s = side(q[0], q[1]); return [q[0] - 2 * s * nx, q[1] - 2 * s * ny]; });
+      // the pages underneath, offset: their edges and a hatched shadow
+      c.fillStyle = g;
+      for (let k = 2; k >= 1; k--) { const o = k * Math.max(4, w * 0.012); c.fillRect(x0 + o, y0 + o, pw, ph); c.lineWidth = 1; c.strokeRect(x0 + o + 0.5, y0 + o + 0.5, pw, ph); }
+      c.fillRect(x0, y0, pw, ph);
+      const sd = Math.max(10, w * 0.045);
+      c.save(); c.beginPath(); c.rect(x0 + pw, y0 + 14, sd, ph + sd - 14); c.rect(x0 + 14, y0 + ph, pw - 14, sd); c.clip();
+      c.lineWidth = 0.8; c.beginPath(); for (let d = -h; d < w + h; d += 5) { c.moveTo(d, h); c.lineTo(d + h, 0); } c.globalAlpha = 0.5; c.stroke(); c.globalAlpha = 1; c.restore();
+      // the sheet underneath, where the page has come away: the download arrow, sized to the space uncovered
+      if (under.length > 2) {
+        let ax = 0, ay = 0, area = 0;
+        for (let i = 0; i < under.length; i++) { const P0 = under[i], P1 = under[(i + 1) % under.length]; const cr = P0[0] * P1[1] - P1[0] * P0[1]; area += cr; ax += (P0[0] + P1[0]) * cr; ay += (P0[1] + P1[1]) * cr; }
+        area /= 2; if (Math.abs(area) > 1) { ax /= 6 * area; ay /= 6 * area; }
+        const sz = Math.min(Math.sqrt(Math.abs(area)) * 0.42, pw * 0.3);
+        if (sz > 10) {
+          c.save(); path(under); c.clip();
+          c.lineWidth = Math.max(1.4, sz * 0.07); c.lineCap = 'round'; c.lineJoin = 'round';
+          c.beginPath(); c.moveTo(ax, ay - sz * 0.55); c.lineTo(ax, ay + sz * 0.25);
+          c.moveTo(ax - sz * 0.3, ay - sz * 0.05); c.lineTo(ax, ay + sz * 0.25); c.lineTo(ax + sz * 0.3, ay - sz * 0.05);
+          c.moveTo(ax - sz * 0.45, ay + sz * 0.5); c.lineTo(ax + sz * 0.45, ay + sz * 0.5); c.stroke();
+          c.restore();
+        }
+      }
+      // the page: its type as lines of words
+      c.save(); path(front); c.fillStyle = g; c.fill(); c.clip();
+      const R = rng(7), lh = ph * 0.021, mx = x0 + pw * 0.1, mw = pw * 0.8;
+      const bar = (x, y, len, th) => { c.fillRect(x, y - th / 2, len, th); };
+      c.fillStyle = getComputedStyle(a.cv).color;
+      let y = y0 + ph * 0.09;
+      bar(mx, y, mw * 0.5, ph * 0.02); y += ph * 0.034;
+      bar(mx, y, mw * 0.36, ph * 0.007); y += ph * 0.024;
+      for (let x = mx, k = 0; k < 4; k++) { const L2 = mw * (0.12 + R() * 0.1); bar(x, y, L2, ph * 0.004); x += L2 + mw * 0.04; }
+      y += ph * 0.03; c.fillRect(mx, y, mw, 1); y += ph * 0.035;
+      const sections = [5, 4, 6, 3];
+      for (const n of sections) {
+        if (y > y1 - ph * 0.08) break;
+        bar(mx, y, mw * (0.16 + R() * 0.1), ph * 0.009); y += lh * 1.35;
+        for (let i = 0; i < n && y < y1 - ph * 0.06; i++) {
+          const bullet = i > 0 && R() < 0.7, x2 = mx + (bullet ? mw * 0.04 : 0);
+          if (bullet) c.fillRect(mx + mw * 0.008, y - 1.2, 2.4, 2.4);
+          let x = x2; const end = mx + mw * (i === n - 1 ? 0.5 + R() * 0.4 : 0.92 + R() * 0.08);
+          while (x < end - 6) { const L2 = Math.min(end - x, 6 + R() * mw * 0.1); bar(x, y, L2, ph * 0.0045); x += L2 + 4 + R() * 3; }
+          y += lh;
+        }
+        y += lh * 0.8;
+      }
+      c.restore();
+      // the fold's shadow on the page: a few lines along the fold
+      if (under.length > 2) {
+        c.save(); path(front); c.clip();
+        const ex = -ny, ey = nx, far = Math.hypot(pw, ph);
+        for (let k = 1; k <= 4; k++) {
+          const o = k * 3.2; c.lineWidth = 1; c.globalAlpha = 1 - k * 0.2;
+          c.beginPath(); c.moveTo(M[0] + nx * o - ex * far, M[1] + ny * o - ey * far); c.lineTo(M[0] + nx * o + ex * far, M[1] + ny * o + ey * far); c.stroke();
+        }
+        c.globalAlpha = 1; c.restore();
+      }
+      c.lineWidth = 1.2; path(front); c.stroke();
+      // the flap: the back of the paper, hatched across
+      if (flap.length > 2) {
+        path(flap); c.fillStyle = g; c.fill();
+        c.save(); path(flap); c.clip();
+        const ex = -ny, ey = nx; c.lineWidth = 0.7; c.beginPath();
+        for (let d = -900; d < 900; d += 4.5) { const bx = M[0] + nx * d, by = M[1] + ny * d; c.moveTo(bx - ex * 900, by - ey * 900); c.lineTo(bx + ex * 900, by + ey * 900); }
+        c.globalAlpha = 0.55; c.stroke(); c.globalAlpha = 1; c.restore();
+        c.lineWidth = 1.4; path(flap); c.stroke();
+      }
+    },
     wastage(c, w, h) { // 1,000 units twice: 112 broken before, 25 after
       const blocks = [112, 25], gap = 18, bw = (w - gap) / 2, cols = 40, rows = 25;
       blocks.forEach((broken, b) => {
@@ -351,7 +478,7 @@
       c.globalAlpha = 1;
     }
   };
-  const ANIMATED = new Set(['voice', 'eye', 'tenants', 'enclosure', 'converge', 'timeline']);
+  const ANIMATED = new Set(['voice', 'eye', 'tenants', 'enclosure', 'converge', 'timeline', 'page']);
 
   const arts = [...document.querySelectorAll('canvas[data-emblem], canvas[data-figure], canvas[data-art]')].map((cv) => ({
     cv, kind: cv.dataset.emblem || cv.dataset.figure || cv.dataset.art, ctx: cv.getContext('2d'), dirty: true, visible: false,
@@ -445,7 +572,7 @@
   let drawIcons = () => {};
   if (icons.length && window.fetch && window.Promise) {
     root.classList.add('icons-on');
-    const VER = { linkedin: 13 }; // LinkedIn left the set after version 13
+    const VER = { linkedin: 13, playwright: 11 }; // marks that left the set after those versions
     const masks = new Map();
     const loadMask = (slug) => {
       if (masks.has(slug)) return masks.get(slug);
@@ -453,31 +580,47 @@
         .then((r) => (r.ok ? r.text() : Promise.reject(new Error(slug))))
         .then((svg) => new Promise((res, rej) => { const img = new Image(); img.onload = () => res(img); img.onerror = rej; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); }))
         .then((img) => {
-          const S = 96, cv2 = document.createElement('canvas'); cv2.width = cv2.height = S;
-          const c2 = cv2.getContext('2d'); c2.drawImage(img, 4, 4, S - 8, S - 8);
-          const d = c2.getImageData(0, 0, S, S).data, m = new Float32Array(S * S);
-          for (let i = 0; i < S * S; i++) m[i] = d[i * 4 + 3] / 255;
-          return { S, m };
+          // render large, crop to the mark's own box, then keep a mask 96 px tall at the mark's proportions
+          const BIG = 480, cb = document.createElement('canvas'); cb.width = cb.height = BIG;
+          const cbx = cb.getContext('2d'); cbx.drawImage(img, 0, 0, BIG, BIG);
+          const bd = cbx.getImageData(0, 0, BIG, BIG).data;
+          let bx0 = BIG, by0 = BIG, bx1 = -1, by1 = -1;
+          for (let y = 0; y < BIG; y++) for (let x = 0; x < BIG; x++) if (bd[(y * BIG + x) * 4 + 3] > 24) { if (x < bx0) bx0 = x; if (x > bx1) bx1 = x; if (y < by0) by0 = y; if (y > by1) by1 = y; }
+          if (bx1 < 0) { bx0 = 0; by0 = 0; bx1 = BIG - 1; by1 = BIG - 1; }
+          const bw = bx1 - bx0 + 1, bh = by1 - by0 + 1, aspect = bw / bh;
+          const H = 96, W = Math.max(8, Math.round(H * aspect)), cv2 = document.createElement('canvas'); cv2.width = W; cv2.height = H;
+          const c2 = cv2.getContext('2d'); c2.drawImage(cb, bx0, by0, bw, bh, 0, 0, W, H);
+          const d = c2.getImageData(0, 0, W, H).data, m = new Float32Array(W * H);
+          for (let i = 0; i < W * H; i++) m[i] = d[i * 4 + 3] / 255;
+          return { W, H, m, aspect };
         });
       masks.set(slug, pr); return pr;
     };
     // horizontal lines that thicken inside the mark, like the name in the hero
     const drawIcon = (ic, t) => {
-      const cv = ic.cv, size = cv.clientWidth; if (!size || !ic.mask) return;
-      const dpr = Math.min(devicePixelRatio || 1, 2), px = Math.round(size * dpr);
-      if (cv.width !== px) { cv.width = px; cv.height = px; }
-      const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, size, size);
+      const cv = ic.cv; if (!ic.mask) return;
+      const { W: MW, H: MH, m, aspect } = ic.mask;
+      const wide = cv.classList.contains('lic-wide');
+      // a square mark fits the square; a wordmark takes its own width at the tile's height
+      const hh = cv.clientHeight; if (!hh) return;
+      let ww = hh, dw = hh, dh = hh;
+      if (wide) { ww = Math.round(hh * aspect); cv.style.width = ww + 'px'; dw = ww; }
+      else if (aspect >= 1) dh = hh / aspect; else dw = hh * aspect;
+      const ox = (ww - dw) / 2, oy = (hh - dh) / 2;
+      const dpr = Math.min(devicePixelRatio || 1, 2);
+      if (cv.width !== Math.round(ww * dpr) || cv.height !== Math.round(hh * dpr)) { cv.width = Math.round(ww * dpr); cv.height = Math.round(hh * dpr); }
+      const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, ww, hh);
       c.fillStyle = getComputedStyle(cv).color;
-      const { S, m } = ic.mask, sp = Math.max(2, size / 15), k = S / size, cw = 1 / k;
+      const sp = wide ? Math.max(1.6, dh / 17) : Math.max(2, dh / 15), ky = MH / dh, kx = MW / dw, cw = 1 / kx;
       c.beginPath();
-      for (let y = sp / 2; y < size; y += sp) {
-        const r0 = Math.max(0, Math.floor((y - sp / 2) * k)), r1 = Math.min(S - 1, Math.ceil((y + sp / 2) * k));
+      for (let y = sp / 2; y < dh; y += sp) {
+        const r0 = Math.max(0, Math.floor((y - sp / 2) * ky)), r1 = Math.min(MH - 1, Math.ceil((y + sp / 2) * ky));
         const shift = ic.hover * 1.8 * Math.sin(y * 0.8 - t * 8);
-        for (let xs = 0; xs < S; xs++) {
-          let cov = 0; for (let r = r0; r <= r1; r++) cov += m[r * S + xs]; cov /= (r1 - r0 + 1);
+        for (let xs = 0; xs < MW; xs++) {
+          let cov = 0; for (let r = r0; r <= r1; r++) cov += m[r * MW + xs]; cov /= (r1 - r0 + 1);
           if (cov < 0.04) continue;
           const th = sp * 0.86 * Math.min(1, cov * 1.15);
-          c.rect(xs * cw + shift, y - th / 2, cw + 0.05, th);
+          c.rect(ox + xs * cw + shift, oy + y - th / 2, cw + 0.05, th);
         }
       }
       c.fill();
@@ -527,7 +670,7 @@ uniform vec4 uHero;uniform vec4 uTun;uniform vec4 uCliff;uniform vec4 uFig;
 uniform sampler2D uName;uniform float uNameOn;
 uniform vec4 uGrip;
 uniform int uPeakN;uniform vec4 uPeak[8];
-uniform vec4 uTL;uniform vec4 uTLm;uniform vec4 uRA;uniform vec4 uSeal;uniform vec4 uSeal2;uniform vec4 uBH2;
+uniform vec4 uTL;uniform vec4 uTLm;uniform vec4 uRA;uniform vec4 uBH2;
 uniform vec4 uBH;
 uniform vec4 uMoon;uniform vec4 uFoot;uniform sampler2D uCode;uniform float uCodeOn;
 out vec4 o;
@@ -774,29 +917,9 @@ void main(){
   extra=max(extra,(1.0-smoothstep(0.3,1.0,abs(r-Rs*1.03)))*0.4);
   extra=max(extra,stars(vec2(p.x,p.y-secTop),t)*(1.0-shadow)*(1.0-arc)*(1.0-disk));
  }else if(scene==9){
-  // RESUME: a guilloche seal, like the security printing on a certificate. Two rosettes interfere; the second
-  // one's centre follows the pointer, so moire fringes sweep through the seal. As the pointer comes close, a
-  // download arrow printed as a half-line shift appears in the rings. The seal's centre is the download link.
-  vec2 C=uSeal.xy;float R=uSeal.z;
-  vec2 d=pw-C;float r=length(d);float a=atan(d.y,d.x);
-  if(r<R*1.05){
-   vec2 d2=pw-C-uSeal2.xy;float r2=length(d2);float a2=atan(d2.y,d2.x);
-   float env=(1.0-smoothstep(R*0.95,R*0.985,r))*smoothstep(R*0.25,R*0.28,r);
-   vec2 u=d/R;
-   float ad=min(sdSeg(u,vec2(0.0,-0.66),vec2(0.0,0.24)),min(sdSeg(u,vec2(-0.3,-0.05),vec2(0.0,0.26)),sdSeg(u,vec2(0.3,-0.05),vec2(0.0,0.26))));
-   ad=min(ad,sdSeg(u,vec2(-0.46,0.6),vec2(0.46,0.6)));
-   float lat=(1.0-smoothstep(0.08,0.1,ad))*uSeal.w;
-   v1=(r+R*0.05*sin(9.0*a+r/(R*0.09)+uSeal2.z))/5.4;vd1=r/5.4;
-   v2=(r2+R*0.05*sin(9.0*a2-r2/(R*0.09)+3.14159-uSeal2.z))/5.4+0.5*lat;vd2=r2/5.4;
-   f1=env;f2=env;w=0.7;w2=0.7;
-  }else{
-   float sy=pw.y-secTop;
-   v1=(sy+n*34.0+9.0*sin(pw.x/180.0))/10.0+bump;vd1=v1;
-   f1=smoothstep(R*1.05,R*1.35,r);w=wvar*0.8;
-  }
-  extra=max(extra,1.0-smoothstep(0.4,1.2,abs(r-R)));
-  extra=max(extra,1.0-smoothstep(0.3,1.0,abs(r-R*1.028)));
-  extra=max(extra,(1.0-smoothstep(0.3,1.0,abs(r-R*0.245)))*0.85);
+  // RESUME: ruled lines, level and gently bowed, like a ream of paper seen edge-on
+  float sy=pw.y-secTop;
+  v1=(sy+7.0*sin(pw.x/320.0+sy/520.0)+n*12.0)/10.5+bump;vd1=v1;w=wvar*0.75;
  }else{
   // FOOTER: a night ocean. A small moon rises at the left edge, part below the water; the barcode on the
   // horizon (in the page) throws its reflection on the waves.
@@ -867,7 +990,7 @@ void main(){
   const al = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(al); gl.vertexAttribPointer(al, 2, gl.FLOAT, false, 0, 0);
   const U = {};
   ['uRes', 'uDpr', 'uTime', 'uOff', 'uMouse', 'uMouseAmt', 'uInvert', 'uSecN', 'uSec', 'uSecB', 'uRectN', 'uRect', 'uKind', 'uHero', 'uTun', 'uCliff', 'uFig',
-    'uName', 'uNameOn', 'uGrip', 'uPeakN', 'uPeak', 'uTL', 'uTLm', 'uRA', 'uSeal', 'uSeal2', 'uBH', 'uBH2', 'uMoon', 'uFoot', 'uCode', 'uCodeOn']
+    'uName', 'uNameOn', 'uGrip', 'uPeakN', 'uPeak', 'uTL', 'uTLm', 'uRA', 'uBH', 'uBH2', 'uMoon', 'uFoot', 'uCode', 'uCodeOn']
     .forEach((n) => { U[n] = gl.getUniformLocation(prog, n); });
   function makeTex(unit) {
     const tex = gl.createTexture();
@@ -881,7 +1004,7 @@ void main(){
   function upload(unit, tex, canvas) { gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, tex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas); }
 
   /* ---------- the page model ---------- */
-  const SCENE = { tunnel: 0, head: 1, face: 1, cloth: 2, terrain: 3, strata: 4, stream: 5, engrave: 6, contour: 7, blackhole: 8, seal: 9, ocean: 10, rings: 4 };
+  const SCENE = { tunnel: 0, head: 1, face: 1, cloth: 2, terrain: 3, strata: 4, stream: 5, engrave: 6, contour: 7, blackhole: 8, ledger: 9, ocean: 10, rings: 4 };
   const SEAM = { cliff: [1, 44], wave: [2, 26], rule: [3, 0] };
   const KIND = { plate: 1, '': 1, glass: 2, clear: 3, sparse: 4 };
   const secs = [...document.querySelectorAll('[data-scene]')].map((el) => ({
@@ -899,7 +1022,6 @@ void main(){
   const n1 = hero ? hero.querySelector('.n1') : null;
   const heroId = hero ? hero.querySelector('[data-cliff]') : null;
   const handEl = document.querySelector('[data-hand]');
-  const sealEl = document.querySelector('[data-seal]');
   const n2 = hero ? hero.querySelector('.n2') : null;
   const footEl = document.querySelector('.foot');
   const nav = document.querySelector('.topbar');
@@ -1078,7 +1200,7 @@ void main(){
   const rectBuf = new Float32Array(96), kindBuf = new Float32Array(96), peakBuf = new Float32Array(32);
   const smooth = (x) => x * x * (3 - 2 * x);
   const bh = { lift: 0, spin: 0 };
-  const seal = { x: 0, y: 0, show: 0 };
+
 
   function frameParams(vw, vh) {
     let n = 0;
@@ -1154,20 +1276,6 @@ void main(){
       const px = P.amt > 0.1 ? clamp((P.x - cx) / vw, -0.5, 0.5) * 24 : 0, py = P.amt > 0.1 ? clamp((P.y - cy) / vh, -0.5, 0.5) * 16 : 0;
       gl.uniform4f(U.uBH, cx + px * 0.5, cy + py * 0.5, Rs, bh.spin);
       gl.uniform4f(U.uBH2, lerp(0.11, 0.2, prog), lerp(-0.075, -0.025, prog), bh.lift, 0);
-    }
-    if (sealEl) {
-      const r = sealEl.getBoundingClientRect();
-      const cx = r.left + r.width / 2, cy = r.top + r.height / 2, R = r.width * 0.48;
-      const dx = P.x - cx, dy = P.y - cy, dist = Math.hypot(dx, dy);
-      const on = P.amt > 0.1 && dist < R * 1.6;
-      // near the centre the rosettes line up and the arrow shows; further out they slide apart into moire
-      const pull = on ? clamp((dist - R * 0.25) / (R * 1.2), 0, 1) : 0;
-      const tx = on ? (dx / Math.max(dist, 1)) * R * 0.07 * pull : Math.cos(time * 0.21) * R * 0.025;
-      const ty = on ? (dy / Math.max(dist, 1)) * R * 0.07 * pull : Math.sin(time * 0.17) * R * 0.025;
-      seal.x += (tx - seal.x) * 0.06; seal.y += (ty - seal.y) * 0.06;
-      seal.show += ((on && dist < R * 0.7 ? 1 : 0) - seal.show) * 0.05;
-      gl.uniform4f(U.uSeal, cx, cy, R, seal.show);
-      gl.uniform4f(U.uSeal2, seal.x, seal.y, time * 0.05, 0);
     }
     if (footEl && moon) {
       const r = footEl.getBoundingClientRect();
