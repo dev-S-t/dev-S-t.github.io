@@ -398,13 +398,14 @@ html:not(.lines-live) .cv-page { background: var(--g); outline: 1px solid curren
 .foot {
   min-height: 105svh;
   display: grid; align-content: end; justify-items: start; row-gap: 12px;
-  padding: 0 var(--pad) clamp(28px, 5vh, 54px);
+  padding: 280px var(--pad) clamp(28px, 5vh, 54px);
 }
 .foot hr { position: absolute; left: 0; right: 0; top: 52%; margin: 0; border: 0; height: 0; }
 /* the barcode is the domain in Code 128 (start B, data, check "d", stop): it scans as human-in-loop.dev */
 .foot::after, .foot::before { position: absolute; right: var(--pad); pointer-events: none; color: var(--f); white-space: nowrap; }
-.foot::after { content: "\CC human-in-loop.devd\CE"; bottom: calc(48% + 34px - .39 * clamp(46px, 5.6vw, 88px)); font-family: "Libre Barcode 128", monospace; font-size: clamp(46px, 5.6vw, 88px); line-height: 1; }
-.foot::before { content: "human-in-loop.dev"; bottom: calc(48% + 12px); width: var(--code-w, auto); text-align: center; font-family: var(--f-data); font-size: clamp(12px, .5vw + 8px, 16px); letter-spacing: .3em; line-height: 1; }
+/* both stand on the water line (--hz, set by the engine; 52% without it) */
+.foot::after { content: "\CC human-in-loop.devd\CE"; top: calc(var(--hz, 52%) - 34px - .61em); font-family: "Libre Barcode 128", monospace; font-size: clamp(46px, 5.6vw, 88px); line-height: 1; }
+.foot::before { content: "human-in-loop.dev"; top: calc(var(--hz, 52%) - 12px - 1em); width: var(--code-w, auto); text-align: center; font-family: var(--f-data); font-size: clamp(12px, .5vw + 8px, 16px); letter-spacing: .3em; line-height: 1; }
 html:not(.lines-live) .foot::after, html:not(.lines-live) .foot::before { color: var(--f); }
 .foot p { padding: 8px 16px; }
 .foot p:first-of-type { font-family: var(--f-display); font-size: clamp(22px, 2vw + 6px, 38px); line-height: 1.15; }
@@ -421,3 +422,5 @@ html:not(.lines-live) .foot::after, html:not(.lines-live) .foot::before { color:
 /* ---------- section headings: always a row of their own, about half the width on wide screens, so a tile never
    shares their row (a long heading was running into the first project between 640 and 1100 wide) ---------- */
 .cases-head, .exp-head, .proj-head, .pub-head, .skills-head { grid-column: 1 / -1; max-width: max(50%, min(100%, 560px)); }
+/* never narrower than the heading's longest word ("Comprehensive" was running out of its tile) */
+@media (min-width: 700px) { .cases-head, .exp-head, .proj-head, .pub-head, .skills-head { min-width: min-content; } }

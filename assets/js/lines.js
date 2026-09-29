@@ -91,13 +91,22 @@
   }
 
   /* ---------- pointer ---------- */
-  const P = { x: -9999, y: -9999, tx: -9999, ty: -9999, amt: 0, tamt: 0 };
-  addEventListener('pointermove', (e) => {
+  // On a mouse the pointer is the cursor. On a touch screen it is the last touch, and it stays there (the eye keeps
+  // looking at it, the head turns to it, the resume peels toward it as the page scrolls past); before the first touch
+  // it rests at the centre of the screen. The line field only dents under a touch for a moment after it.
+  const P = { x: -9999, y: -9999, tx: -9999, ty: -9999, amt: 0, tamt: 0, touch: false, fresh: 0 };
+  const coarse = matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches;
+  if (coarse) { P.touch = true; P.tx = P.x = innerWidth / 2; P.ty = P.y = innerHeight * 0.5; P.tamt = 1; }
+  const onPointer = (e) => {
     P.tx = e.clientX; P.ty = e.clientY;
     if (P.x < -9000) { P.x = P.tx; P.y = P.ty; }
     P.tamt = 1;
-  }, { passive: true });
-  document.addEventListener('pointerout', (e) => { if (!e.relatedTarget) P.tamt = 0; });
+    P.touch = e.pointerType === 'touch' || e.pointerType === 'pen';
+    if (P.touch) P.fresh = 1;
+  };
+  addEventListener('pointermove', onPointer, { passive: true });
+  addEventListener('pointerdown', onPointer, { passive: true });
+  document.addEventListener('pointerout', (e) => { if (!e.relatedTarget && !P.touch) P.tamt = 0; });
 
   // shared with models.js
   const HIL = window.__HIL = { P, isDark, reduced: () => reduce, grip: null };
@@ -341,7 +350,8 @@
       const p = a.pointer && a.pointer.inside ? a.pointer : null;
       if (p) {
         tx = clamp(p.x, x0 + pw * 0.12, x1 - 4); ty = clamp(p.y, y0 + ph * 0.12, y1 - 4);
-        const dx = tx - C[0], dy = ty - C[1], d = Math.hypot(dx, dy), dm = Math.hypot(pw, ph) * 0.72;
+        // on touch the pointer rests where it was left, so the page peels as it scrolls past it; a gentler peel there
+        const dx = tx - C[0], dy = ty - C[1], d = Math.hypot(dx, dy), dm = Math.hypot(pw, ph) * (P.touch ? 0.45 : 0.72);
         if (d > dm) { tx = C[0] + dx / d * dm; ty = C[1] + dy / d * dm; }
       }
       if (!st.init) { st.cx = tx; st.cy = ty; st.init = true; }
@@ -485,7 +495,7 @@
   function drawArt(a, t) {
     const fn = DRAW[a.kind]; if (!fn) return;
     // while the page scrolls the drawings paint at 1x (the browser scales them up); sharp again at rest
-    const dpr = artsScrolling ? 1 : Math.min(devicePixelRatio || 1, 1.5);
+    const dpr = artsScrolling && !HIL.capable ? 1 : Math.min(devicePixelRatio || 1, 1.5);
     const w = a.cv.clientWidth, h = a.cv.clientHeight; if (!w || !h) return;
     if (a.w !== w || a.h !== h || a.dpr !== dpr) { a.cv.width = Math.round(w * dpr); a.cv.height = Math.round(h * dpr); a.w = w; a.h = h; a.dpr = dpr; }
     const c = a.ctx;
@@ -524,7 +534,7 @@
       if (!reduce && ANIMATED.has(a.kind) && r.bottom > lo && r.top < hi) live.push(a);
     }
     if (!live.length) return;
-    const per = scrollingNow ? 1 : 2;
+    const per = HIL.capable ? live.length : scrollingNow ? 1 : 2;
     for (let k = 0; k < Math.min(per, live.length); k++) drawArt(live[(artTurn + k) % live.length], t);
     artTurn = (artTurn + per) % Math.max(1, live.length);
   }
@@ -1206,11 +1216,11 @@ void main(){
   function moonGeom() {
     if (!footEl) return null;
     const r = footEl.getBoundingClientRect();
+    // the water line: 52% down, but always at least 40 px above the first tile, so the tiles stay in the water
     let hz = r.height * 0.52;
-    if (footNarrow()) {
-      const first = footEl.querySelector('p');
-      if (first) hz = first.getBoundingClientRect().top - r.top - 40;
-    }
+    const first = footEl.querySelector('p');
+    if (first) hz = Math.min(hz, first.getBoundingClientRect().top - r.top - 40);
+    footEl.style.setProperty('--hz', hz.toFixed(1) + 'px');
     // a tenth of the moon is past the left edge and a fiftieth is under the water
     const R = clamp(Math.min(r.width * 0.075, r.height * 0.11), 40, 120);
     return { x: R * 0.8, y: hz - R + R * 0.04, R, hz };
@@ -1233,7 +1243,7 @@ void main(){
     // same box as .foot::after: right: var(--pad); bottom: 48% + 34px - .39em
     const pad = parseFloat(getComputedStyle(footEl).paddingRight) || 24;
     c.fillStyle = '#fff'; c.textBaseline = 'bottom';
-    c.fillText(CODE, r.width - pad - cw, r.height * 0.52 - 34 + fsz * 0.39);
+    c.fillText(CODE, r.width - pad - cw, moon.hz - 34 + fsz * 0.39);
     upload(1, codeTex, codeCanvas);
     codeOn = 1;
   }
@@ -1254,7 +1264,7 @@ void main(){
   function sizeCanvas() {
     const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
     const base = Math.min(devicePixelRatio || 1, 1.5) * quality;
-    dpr = scrolling ? Math.min(base, scrollScale) : base;
+    dpr = scrolling && !capable ? Math.min(base, scrollScale) : base;
     const maxPx = 3.2e6; if (w * h * dpr * dpr > maxPx) dpr = Math.sqrt(maxPx / (w * h));
     const cw = Math.round(w * dpr), ch = Math.round(h * dpr);
     if (cv.width !== cw || cv.height !== ch) { cv.width = cw; cv.height = ch; gl.viewport(0, 0, cw, ch); }
@@ -1382,6 +1392,23 @@ void main(){
   }
 
   /* ---------- loop ---------- */
+  // Capability: while the loader shows, ten full-sharpness frames are timed to completion (a 1-pixel read waits for
+  // the GPU). If the line field takes under 6 ms, the device keeps full sharpness while scrolling and every drawing
+  // animates together; otherwise the scroll trims apply.
+  let capable = false;
+  const bench = { n: 0, t: [] }, px1 = new Uint8Array(4);
+  function benchFrame(nowT, t0) {
+    gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px1);
+    const t1 = performance.now();
+    gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px1); // a bare round trip, to subtract
+    const ms = Math.max(0, (t1 - t0) - (performance.now() - t1));
+    if (++bench.n > 3) bench.t.push(ms); // the first frames include shader compilation
+    if (bench.n === 10) {
+      const s = bench.t.slice().sort((a, b) => a - b), med = s[Math.floor(s.length / 2)];
+      capable = med < 6; HIL.capable = capable; HIL.fieldMs = +med.toFixed(2);
+      sizeCanvas();
+    }
+  }
   let last = performance.now(), time = 0, slow = 0, frames = 0, lastSY = -1, idleSkip = false, lastScrollT = -1e9, scrollFrames = 0, scrollSlow = 0;
   function relayout() {
     fitName(); measureRadii(); resize(); drawName(); drawCode(); layoutTimeline(); layoutOrbit(); cutAtSeam();
@@ -1399,7 +1426,14 @@ void main(){
     const nowScrolling = now - lastScrollT < 220;
     if (nowScrolling !== scrolling) { scrolling = nowScrolling; sizeCanvas(); }
     // while scrolling, step the density down if frames are still slow (kept for the rest of the visit)
-    if (scrolling && scrolled) { scrollFrames++; if (dt > 0.024) scrollSlow++; if (scrollFrames >= 24) { if (scrollSlow > 10 && scrollScale > 0.62) { scrollScale = Math.max(0.6, scrollScale - 0.15); sizeCanvas(); } scrollFrames = 0; scrollSlow = 0; } }
+    if (scrolling && scrolled) {
+      scrollFrames++; if (dt > 0.024) scrollSlow++;
+      if (scrollFrames >= 24) {
+        // a device judged capable that still drops frames while scrolling falls back to the trims
+        if (scrollSlow > 10) { if (capable) { capable = false; HIL.capable = false; } else if (scrollScale > 0.62) scrollScale = Math.max(0.6, scrollScale - 0.15); sizeCanvas(); }
+        scrollFrames = 0; scrollSlow = 0;
+      }
+    }
     if (!moving && (idleSkip = !idleSkip)) { requestAnimationFrame(frame); return; }
     const vw = innerWidth, vh = innerHeight;
     P.x += (P.tx - P.x) * 0.14; P.y += (P.ty - P.y) * 0.14; P.amt += ((reduce ? 0 : P.tamt) - P.amt) * 0.06;
@@ -1410,8 +1444,13 @@ void main(){
     gl.uniform1f(U.uOff, fy - sy);
     frameParams(vw, vh);
     gl.uniform2f(U.uRes, cv.width, cv.height); gl.uniform1f(U.uDpr, dpr); gl.uniform1f(U.uTime, time);
-    gl.uniform2f(U.uMouse, P.x, P.y); gl.uniform1f(U.uMouseAmt, P.amt); gl.uniform1f(U.uInvert, isDark() ? 1 : 0);
+    P.fresh = Math.max(0, P.fresh - dt / 1.4);
+    gl.uniform2f(U.uMouse, P.x, P.y); gl.uniform1f(U.uMouseAmt, P.touch ? P.amt * P.fresh : P.amt); gl.uniform1f(U.uInvert, isDark() ? 1 : 0);
+    const timed = bench.n < 10 && !scrolling;
+    if (timed) gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px1); // let earlier work finish first
+    const tb = timed ? performance.now() : 0;
     gl.drawArrays(gl.TRIANGLES, 0, 3);
+    if (timed) benchFrame(performance.now(), tb);
     HIL.time = time;
     tickArts(time, scrolling);
     if (!scrolling) { frames++; if (dt > 0.034) slow++; }

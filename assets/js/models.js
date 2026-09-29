@@ -1,6 +1,7 @@
 /* human-in-loop.dev — 3D models drawn as engraved contour lines.
    Loaded lazily by lines.js when the About or FAQ section comes near.
-   Head: "Infinite, 3D Head Scan" by Lee Perry-Smith, CC BY 3.0 (via the three.js examples).
+   Head: "Infinite, 3D Head Scan" by Lee Perry-Smith, licensed CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/),
+   loaded from the three.js examples (examples/models/gltf/LeePerrySmith); drawn here in engraved lines, not otherwise modified.
    Hand: WebXR generic hand, webxr-input-profiles, MIT License, Copyright (c) 2019 Amazon. */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
