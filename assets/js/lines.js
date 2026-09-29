@@ -101,6 +101,7 @@
 
   // shared with models.js
   const HIL = window.__HIL = { P, isDark, reduced: () => reduce, grip: null };
+  Object.defineProperty(HIL, 'artCosts', { get: () => arts.filter((a) => a.visible).map((a) => a.kind + ' ' + (a.cost || 0).toFixed(2) + 'ms') });
 
   /* ---------- helpers ---------- */
   function rng(seed) {
@@ -139,10 +140,11 @@
       const seeds = Array.from({ length: L }, () => [R() * 100, R() * 100, R() * 100]);
       const px = a.pointer;
       const tt = reduce ? 0 : t;
-      const ground = getComputedStyle(a.cv).getPropertyValue('--g').trim() || '#F3F1EC';
+      const ground = a.ground || '#F3F1EC';
+      c.lineJoin = 'bevel';
       for (let k = 0; k < L; k++) {
         const base = top + k * sp, sd = seeds[k], pts = [];
-        for (let x = 0; x <= w; x += 2) {
+        for (let x = 0; x <= w + 4; x += 4) {
           const u = x / w, env = Math.exp(-(((u - 0.5) / 0.2) ** 2));
           let v = 0.55 + 0.25 * Math.sin(x * 0.045 + sd[0] + tt * 1.6) + 0.2 * Math.sin(x * 0.11 + sd[1] - tt * 2.3) + 0.12 * Math.sin(x * 0.27 + sd[2] + tt * 3.1);
           v = Math.max(0, v) ** 2.2;
@@ -150,7 +152,8 @@
           if (px && px.inside) lift = 0.9 * Math.exp(-(((x - px.x) / 34) ** 2)) * Math.exp(-(((base - px.y) / 60) ** 2));
           pts.push(x, base - amp * env * v - amp * lift - 1.5 * Math.sin(x * 0.6 + k));
         }
-        c.beginPath(); c.moveTo(0, h); for (let n = 0; n < pts.length; n += 2) c.lineTo(pts[n], pts[n + 1]); c.lineTo(w, h); c.closePath();
+        const floor = Math.min(h, base + sp * 1.5 + 3);
+        c.beginPath(); c.moveTo(0, floor); for (let n = 0; n < pts.length; n += 2) c.lineTo(pts[n], pts[n + 1]); c.lineTo(w, floor); c.closePath();
         c.fillStyle = ground; c.fill();
         c.beginPath(); c.moveTo(pts[0], pts[1]); for (let n = 2; n < pts.length; n += 2) c.lineTo(pts[n], pts[n + 1]);
         c.lineWidth = 1.1; c.stroke();
@@ -169,13 +172,23 @@
       c.beginPath(); c.moveTo(cx - ew, cy); c.quadraticCurveTo(cx, cy - eh * 2 * blink, cx + ew, cy); c.quadraticCurveTo(cx, cy + eh * 2 * blink, cx - ew, cy); c.closePath();
       c.lineWidth = 1.6; c.stroke(); c.clip();
       const ir = eh * 1.05, ix = cx + st.ox, iy = cy + st.oy;
-      c.lineWidth = 0.8; c.beginPath();
-      for (let r = 4; r < ir; r += 3.2) { c.moveTo(ix + r, iy); c.arc(ix, iy, r, 0, TAU); }
-      c.stroke();
-      c.beginPath(); c.arc(ix, iy, ir * 0.36, 0, TAU); c.fill();
-      c.lineWidth = 0.6; c.beginPath();
-      for (let x = cx - ew; x < cx + ew; x += 5) { c.moveTo(x, cy - eh * 2); c.lineTo(x + 8, cy + eh * 2); }
-      c.globalAlpha = 0.18; c.stroke(); c.globalAlpha = 1;
+      // the iris and the hatching never change shape: they are drawn once (per size, density and colour) and placed
+      const dprE = a.dpr || 1, key = [w, h, dprE, a.fg].join('|');
+      if (!st.cache || st.key !== key) {
+        st.key = key;
+        const R = Math.ceil(ir + 2), iris = document.createElement('canvas'); iris.width = iris.height = Math.ceil(R * 2 * dprE);
+        const ic = iris.getContext('2d'); ic.scale(dprE, dprE); ic.strokeStyle = a.fg; ic.fillStyle = a.fg;
+        ic.lineWidth = 0.8; ic.beginPath();
+        for (let r = 4; r < ir; r += 3.2) { ic.moveTo(R + r, R); ic.arc(R, R, r, 0, TAU); }
+        ic.stroke(); ic.beginPath(); ic.arc(R, R, ir * 0.36, 0, TAU); ic.fill();
+        const hatch = document.createElement('canvas'); hatch.width = Math.ceil(w * dprE); hatch.height = Math.ceil(h * dprE);
+        const hc = hatch.getContext('2d'); hc.scale(dprE, dprE); hc.strokeStyle = a.fg; hc.lineWidth = 0.6; hc.globalAlpha = 0.18; hc.beginPath();
+        for (let x = cx - ew; x < cx + ew; x += 5) { hc.moveTo(x, cy - eh * 2); hc.lineTo(x + 8, cy + eh * 2); }
+        hc.stroke();
+        st.cache = { iris, R, hatch };
+      }
+      c.drawImage(st.cache.iris, ix - st.cache.R, iy - st.cache.R, st.cache.R * 2, st.cache.R * 2);
+      c.drawImage(st.cache.hatch, 0, 0, w, h);
       c.restore();
       c.lineWidth = 0.7; c.beginPath();
       for (let k = 1; k < 5; k++) { c.moveTo(cx - ew - k * 7, cy); c.quadraticCurveTo(cx, cy - eh * 2 * blink - k * 9, cx + ew + k * 7, cy); }
@@ -319,7 +332,7 @@
     // the page back, and the sheet underneath carries the download arrow. The whole page is the download link.
     page(c, w, h, t, a) {
       const st = a.state || (a.state = { cx: 0, cy: 0, init: false });
-      const g = getComputedStyle(a.cv).getPropertyValue('--g').trim() || '#F3F1EC';
+      const g = a.ground || '#F3F1EC';
       const pw = w * 0.84, ph = Math.min(h * 0.9, pw * 1.414), x0 = w * 0.05, y0 = h * 0.035, x1 = x0 + pw, y1 = y0 + ph;
       const C = [x1, y1];
       // where the corner is: turned down a little at rest, following the pointer when it is over the page
@@ -468,39 +481,52 @@
     cv, kind: cv.dataset.emblem || cv.dataset.figure || cv.dataset.art, ctx: cv.getContext('2d'), dirty: true, visible: false,
     w: 0, h: 0, pointer: null, state: null, tl: null
   }));
-  arts.forEach((a) => {
-    const host = a.cv.closest('article') || a.cv;
-    host.addEventListener('pointermove', (e) => { const r = a.cv.getBoundingClientRect(); a.pointer = { x: e.clientX - r.left, y: e.clientY - r.top, inside: e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom }; });
-    host.addEventListener('pointerleave', () => { if (a.pointer) a.pointer.inside = false; });
-  });
+  let artsScrolling = false;
   function drawArt(a, t) {
     const fn = DRAW[a.kind]; if (!fn) return;
-    const dpr = Math.min(devicePixelRatio || 1, 2);
+    // while the page scrolls the drawings paint at 1x (the browser scales them up); sharp again at rest
+    const dpr = artsScrolling ? 1 : Math.min(devicePixelRatio || 1, 1.5);
     const w = a.cv.clientWidth, h = a.cv.clientHeight; if (!w || !h) return;
-    if (a.w !== w || a.h !== h) { a.cv.width = Math.round(w * dpr); a.cv.height = Math.round(h * dpr); a.w = w; a.h = h; }
+    if (a.w !== w || a.h !== h || a.dpr !== dpr) { a.cv.width = Math.round(w * dpr); a.cv.height = Math.round(h * dpr); a.w = w; a.h = h; a.dpr = dpr; }
     const c = a.ctx;
     c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h);
-    const fg = getComputedStyle(a.cv).color;
+    if (a.dirty || !a.fg) { const cs = getComputedStyle(a.cv); a.fg = cs.color; a.ground = cs.getPropertyValue('--g').trim() || '#F3F1EC'; }
+    const fg = a.fg;
     c.strokeStyle = fg; c.fillStyle = fg; c.lineCap = 'round'; c.lineJoin = 'round';
+    const t0 = performance.now();
     fn(c, w, h, t, a);
+    a.cost = (a.cost || 0) * 0.8 + (performance.now() - t0) * 0.2; // ms per draw, smoothed
     a.dirty = false;
   }
   let lastArtW = innerWidth;
   addEventListener('resize', () => { if (Math.abs(innerWidth - lastArtW) > 2) { lastArtW = innerWidth; arts.forEach((a) => { a.dirty = true; }); } });
   // Animated drawings run at 30 fps and hold still while the page scrolls (they scroll with it), so scrolling
   // never waits on them; new or resized ones are still drawn at once.
-  let artTick = 0;
-  function tickArts(t, still) {
+  let artDir = 1, artLastY = scrollY, artTurn = 0;
+  function tickArts(t, scrollingNow) {
     const vh = innerHeight;
-    const animate = !reduce && !still && (artTick = (artTick + 1) % 2) === 0;
+    artsScrolling = !!scrollingNow;
+    const dy = scrollY - artLastY; artLastY = scrollY; if (dy) artDir = dy > 0 ? 1 : -1;
+    // While scrolling, the drawings in view plus 10% ahead in the scroll direction and 5% behind stay live. They take
+    // turns, one per frame (two at rest), so no single frame carries them all and the scroll never hitches.
+    const lo = scrollingNow ? (artDir > 0 ? -0.05 : -0.10) * vh : -120, hi = scrollingNow ? vh * (artDir > 0 ? 1.10 : 1.05) : vh + 120;
+    const hasPointer = P.tamt > 0 && P.tx > -9000;
+    const live = [];
     for (const a of arts) {
       const r = a.cv.getBoundingClientRect();
       const vis = r.bottom > -120 && r.top < vh + 120 && r.width > 0;
       if (vis && !a.visible) a.dirty = true;
       a.visible = vis;
       if (!a.visible) continue;
-      if (a.dirty || (animate && ANIMATED.has(a.kind))) drawArt(a, t);
+      // the drawing moves under a still pointer while the page scrolls, so the pointer is measured against it every frame
+      a.pointer = hasPointer ? { x: P.tx - r.left, y: P.ty - r.top, inside: P.tx >= r.left && P.tx <= r.right && P.ty >= r.top && P.ty <= r.bottom } : null;
+      if (a.dirty) { drawArt(a, t); continue; }
+      if (!reduce && ANIMATED.has(a.kind) && r.bottom > lo && r.top < hi) live.push(a);
     }
+    if (!live.length) return;
+    const per = scrollingNow ? 1 : 2;
+    for (let k = 0; k < Math.min(per, live.length); k++) drawArt(live[(artTurn + k) % live.length], t);
+    artTurn = (artTurn + per) % Math.max(1, live.length);
   }
 
   /* ---------- experience timeline layout (dates -> positions) ---------- */
@@ -734,7 +760,11 @@ void main(){
  vec2 pw=p;float clear=0.0,wmul=1.0,glass=0.0,rimL=0.0,rimD=0.0,edge=0.0,sparse=0.0;
  for(int i=0;i<24;i++){
   if(i>=uRectN)break;
-  vec4 r=uRect[i];vec4 k=uKind[i];int kind=int(k.x+0.5);
+  vec4 r=uRect[i];
+  // the rects come sorted by their top edge: past this row every later one starts lower still
+  if(r.y>p.y+150.0)break;
+  if(r.y+r.w<p.y-150.0)continue;
+  vec4 k=uKind[i];int kind=int(k.x+0.5);
   float d=sdR(p,r,k.y,k.z);
   if(d>150.0)continue;
   if(kind==1){clear=max(clear,1.0-smoothstep(-0.7,0.7,d));wmul=max(wmul,1.0+(0.7+0.9*k.w)*exp(-max(d,0.0)/10.0));}
@@ -1261,10 +1291,15 @@ void main(){
     gl.uniform1i(U.uSecN, n); gl.uniform4fv(U.uSec, secBuf); gl.uniform4fv(U.uSecB, secBBuf);
 
     let m = 0;
+    const near = [];
     for (const p of plates) {
       p.lift += (p.tlift - p.lift) * 0.12;
       const r = p.el.getBoundingClientRect();
       if (!r.width || r.bottom < -160 || r.top > vh + 160) continue;
+      near.push([r, p]);
+    }
+    near.sort((x, y) => x[0].top - y[0].top); // the shader stops at the first rect that starts below the pixel
+    for (const [r, p] of near) {
       rectBuf.set([r.left, r.top, r.width, r.height], m * 4); kindBuf.set([p.kind, p.rad, p.kind === 3 ? 8 : 0, p.lift], m * 4);
       if (++m >= 24) break;
     }
