@@ -883,6 +883,22 @@ void main(){
   const footEl = document.querySelector('.foot');
   const nav = document.querySelector('.topbar');
 
+  // cut an element that hangs past its section along the seam into the next one (same curve as the shader)
+  const faceCut = document.querySelector('.face-space .model');
+  function cutAtSeam() {
+    if (!faceCut) return;
+    faceCut.style.clipPath = '';
+    const sec = faceCut.closest('[data-scene]'), i = secs.findIndex((x) => x.el === sec), next = secs[i + 1];
+    if (i < 0 || !next || innerWidth <= 820) return; // stacked (phones): the head sits above the text and fades out instead
+    const r = faceCut.getBoundingClientRect(), nt = next.el.getBoundingClientRect().top;
+    if (r.bottom <= nt) return;
+    const [type, amp] = next.seam, k = i + 1;
+    const off = (x) => (type === 2 ? amp * Math.sin(x / 210 + k * 1.7) : 0);
+    const pts = ['0px 0px', r.width.toFixed(1) + 'px 0px'];
+    for (let x = r.width; x >= -6; x -= 6) { const lx = Math.max(0, x); pts.push(lx.toFixed(1) + 'px ' + (nt - r.top + off(r.left + lx)).toFixed(1) + 'px'); }
+    faceCut.style.clipPath = 'polygon(' + pts.join(',') + ')';
+  }
+
   function measureRadii() { plates.forEach((p) => { p.rad = parseFloat(getComputedStyle(p.el).borderTopLeftRadius) || 0; }); }
 
   /* ---------- the name, drawn only by the spiral's thickness ---------- */
@@ -901,17 +917,28 @@ void main(){
     if (!n2 || !root.classList.contains('lines-live')) return;
     n2.style.left = ''; n2.style.top = '';
     const fsz = parseFloat(getComputedStyle(n1).fontSize);
-    n2.style.fontSize = (fsz * 0.34).toFixed(2) + 'px';
     const hr2 = n1.parentElement.getBoundingClientRect();
     const words = []; re.lastIndex = 0;
     while ((m = re.exec(node.textContent))) { range.setStart(node, m.index); range.setEnd(node, m.index + m[0].length); words.push(range.getBoundingClientRect()); }
     if (!words.length) return;
-    const w2 = n2.offsetWidth, gap = fsz * 0.14, first = words[0], last = words[words.length - 1];
-    if (first.right - hr2.left + gap + w2 <= hr2.width) {
-      n2.style.left = (first.right - hr2.left + gap) + 'px';
-      n2.style.top = (first.top - hr2.top + fsz * 0.05) + 'px';
+    const first = words[0], last = words[words.length - 1];
+    const rightEdge = Math.max(...words.map((w) => w.right)) - hr2.left;
+    // measure the handle at a reference size, then size it to the space it gets
+    n2.style.fontSize = '100px';
+    const w100 = n2.offsetWidth || 1;
+    const room = rightEdge - (first.right - hr2.left) - fsz * 0.16;
+    const fitSize = Math.min(fsz * 0.34, room / w100 * 100);
+    if (words.length > 1 && fitSize >= Math.max(26, fsz * 0.2)) {
+      // right of the first word: same baseline, the handle's right edge on the name's right edge
+      n2.style.fontSize = fitSize.toFixed(2) + 'px';
+      const w2 = n2.offsetWidth, h2 = n2.offsetHeight;
+      const base = first.bottom - hr2.top - fsz * 0.2; // Kalnia's descender sits about a fifth of the size below the baseline
+      n2.style.left = (rightEdge - w2) + 'px';
+      n2.style.top = (base - h2 * 0.8) + 'px';
     } else {
-      n2.style.left = (hr2.width - w2) + 'px';
+      // no room beside it (phones): under the last word, flush right
+      n2.style.fontSize = (fsz * 0.34).toFixed(2) + 'px';
+      n2.style.left = (rightEdge - n2.offsetWidth) + 'px';
       n2.style.top = (last.bottom - hr2.top + fsz * 0.04) + 'px';
     }
   }
@@ -1123,7 +1150,7 @@ void main(){
   /* ---------- loop ---------- */
   let last = performance.now(), time = 0, slow = 0, frames = 0;
   function relayout() {
-    fitName(); measureRadii(); resize(); drawName(); drawCode(); layoutTimeline(); layoutOrbit();
+    fitName(); measureRadii(); resize(); drawName(); drawCode(); layoutTimeline(); layoutOrbit(); cutAtSeam();
     arts.forEach((a) => { a.dirty = true; });
   }
   function frame(now) {

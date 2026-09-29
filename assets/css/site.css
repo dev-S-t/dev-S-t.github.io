@@ -135,17 +135,14 @@ html:not(.lines-live) .hero-id { background: var(--f); border-radius: 26px 26px 
 .about-copy h2 { margin-bottom: 8px; }
 .about-copy p:first-of-type { font-size: 1.18em; line-height: 1.5; }
 /* the head runs from the section's top to its end and off the right edge */
+/* side by side, the canvas hangs 18vh past the section; the engine cuts it along the seam, so the torso runs to the section's edge */
 .face-space {
   grid-column: 7 / -1; grid-row: 1; align-self: stretch; position: relative; min-height: 100svh;
-  margin: calc(-1 * clamp(96px, 16vh, 180px)) calc(-1 * var(--pad)) calc(-1 * clamp(80px, 12vh, 140px)) 0;
+  margin: calc(-1 * clamp(96px, 16vh, 180px)) calc(-1 * var(--pad)) calc(-1 * clamp(80px, 12vh, 140px) - 18vh) 0;
 }
 .about-copy { grid-row: 1; }
-.face-space .model {
-  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 80px), transparent), linear-gradient(to right, transparent, #000 14%);
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to bottom, #000 calc(100% - 80px), transparent), linear-gradient(to right, transparent, #000 14%);
-  mask-composite: intersect;
-}
+.face-space .model { -webkit-mask-image: linear-gradient(to right, transparent, #000 14%); mask-image: linear-gradient(to right, transparent, #000 14%); }
+html:not(.lines-live) .face-space .model { -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent); mask-image: linear-gradient(to bottom, #000 80%, transparent); }
 @media (max-width: 820px) {
   .about-copy { grid-column: 1 / -1; grid-row: 2; }
   .face-space { grid-column: 1 / -1; grid-row: 1; min-height: 0; height: min(112vw, 76svh); margin: calc(-1 * clamp(96px, 16vh, 180px)) calc(-1 * var(--pad)) 0; }

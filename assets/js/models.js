@@ -126,13 +126,13 @@ if (headCanvas) {
   }, undefined, (err) => console.warn('[models] head:', err));
   v.fit = () => {
     if (!box) return;
-    // the crown sits 8% below the top edge and the cut of the scan runs just past the bottom edge,
-    // so the bust carries on to the end of the section instead of stopping at the shoulders
+    // the crown sits just below the top edge; the cut of the scan lands below the bottom edge, which on
+    // side-by-side layouts is hidden past the section's seam, so the torso runs to the section's end
     const fov = v.camera.fov * Math.PI / 180;
     const aspect = Math.max(v.camera.aspect, 0.2);
-    let visH = (box.max.y - box.min.y) / 0.95;
+    let visH = (box.max.y - box.min.y) / 0.97;
     visH = Math.max(visH, (box.max.x - box.min.x) / (1.6 * aspect));
-    const cy = box.min.y - 0.03 * visH + visH / 2;
+    const cy = box.min.y - 0.02 * visH + visH / 2;
     const dist = visH / (2 * Math.tan(fov / 2));
     v.camera.position.set(0, cy, dist);
     v.camera.lookAt(0, cy, 0);
