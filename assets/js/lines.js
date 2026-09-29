@@ -26,6 +26,39 @@
   });
   syncToggle();
 
+  /* ---------- navigation: full island while the links fit, a compact island with a Menu sheet once they don't ---------- */
+  root.classList.add('nav-js');
+  const navEl = document.querySelector('.topbar'), navList = document.getElementById('nav-list'), menuBtn = document.querySelector('.menu-toggle');
+  function fitNav() {
+    if (!navEl || !navList || !menuBtn) return;
+    const wasOpen = navEl.classList.contains('open');
+    navEl.classList.remove('compact');
+    // the links fit when the list keeps to a single row inside the island
+    const first = navList.firstElementChild;
+    const rowEnd = first ? first.offsetTop + first.offsetHeight * 0.8 : 0;
+    const oneRow = first && [...navList.children].every((li) => li.offsetTop < rowEnd) && navList.scrollWidth <= navList.clientWidth + 1;
+    if (!oneRow) navEl.classList.add('compact');
+    if (!navEl.classList.contains('compact') && wasOpen) setMenu(false);
+  }
+  function setMenu(open) {
+    if (!navEl || !menuBtn) return;
+    navEl.classList.toggle('open', open);
+    // the island drops its blur while the sheet is out (a filter would trap the fixed sheet inside it), also while it closes
+    navEl.classList.add('menu-out'); clearTimeout(setMenu.t);
+    if (!open) setMenu.t = setTimeout(() => navEl.classList.remove('menu-out'), 520);
+    root.classList.toggle('menu-open', open);
+    menuBtn.setAttribute('aria-expanded', String(open));
+    if (open) { const a = navList.querySelector('a'); if (a) setTimeout(() => a.focus({ preventScroll: true }), 60); }
+  }
+  if (menuBtn) {
+    menuBtn.addEventListener('click', () => { const open = !navEl.classList.contains('open'); setMenu(open); if (!open) menuBtn.focus(); });
+    navList.addEventListener('click', (e) => { if (e.target.closest('a') && navEl.classList.contains('open')) setMenu(false); });
+    addEventListener('keydown', (e) => { if (e.key === 'Escape' && navEl.classList.contains('open')) { setMenu(false); menuBtn.focus(); } });
+    addEventListener('resize', fitNav);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNav);
+    fitNav();
+  }
+
   /* ---------- pointer ---------- */
   const P = { x: -9999, y: -9999, tx: -9999, ty: -9999, amt: 0, tamt: 0 };
   addEventListener('pointermove', (e) => {

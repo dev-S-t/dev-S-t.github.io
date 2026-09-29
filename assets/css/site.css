@@ -81,8 +81,36 @@ html:not(.lines-live) main > section:nth-child(even) { background-image: repeati
 html:not(.lines-live) .topbar { background: var(--nav-g, var(--paper)); }
 .lines-live .topbar { background-color: color-mix(in srgb, var(--nav-g, #F3F1EC) 46%, transparent); -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px); }
 .topbar .mark { width: 30px; height: 30px; flex: none; }
-.topbar ul { display: flex; flex: 1; align-items: center; gap: 2px 22px; margin: 0; padding: 0; list-style: none; overflow-x: auto; scrollbar-width: none; white-space: nowrap; }
-.topbar ul::-webkit-scrollbar { display: none; }
+.topbar ul { display: flex; flex: 1; flex-wrap: wrap; align-items: center; gap: 6px 22px; margin: 0; padding: 0; list-style: none; white-space: nowrap; }
+/* without JavaScript the island is not fixed, so a wrapped list never covers the page */
+html:not(.nav-js) .topbar { position: absolute; }
+.menu-toggle { display: none; }
+/* compact island (set by the engine when the links no longer fit): mark, Menu, theme; the list opens as a sheet */
+.topbar.compact { justify-content: space-between; }
+.topbar.compact .menu-toggle { display: inline-flex; align-items: center; gap: 12px; margin-left: auto; padding: 8px 14px; border: 0; border-radius: 999px; background: transparent; color: inherit; font-family: var(--f-nav); font-size: 12px; letter-spacing: .06em; cursor: pointer; }
+.mt-lines { position: relative; width: 22px; height: 12px; background: linear-gradient(currentColor, currentColor) 0 0 / 100% 1.4px no-repeat, linear-gradient(currentColor, currentColor) 0 50% / 70% 1.4px no-repeat, linear-gradient(currentColor, currentColor) 0 100% / 100% 1.4px no-repeat; transition: background-size .3s; }
+.topbar.open .mt-lines { background-size: 100% 1.4px, 0 1.4px, 100% 1.4px; }
+.topbar.compact ul { position: fixed; inset: 0; z-index: -1; display: flex; flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 0; overflow-y: auto;
+  padding: 104px var(--pad) 40px; counter-reset: nav;
+  background-color: var(--nav-g, #F3F1EC);
+  background-image: repeating-linear-gradient(to bottom, transparent 0 13px, color-mix(in srgb, currentColor 26%, transparent) 13px 14px);
+  clip-path: inset(0 0 100% 0); visibility: hidden; transition: clip-path .5s cubic-bezier(.7,0,.2,1), visibility 0s .5s; }
+.topbar.compact.menu-out { -webkit-backdrop-filter: none; backdrop-filter: none; } /* a filter would trap the fixed sheet inside the island */
+.topbar.compact.open ul { clip-path: inset(0 0 0 0); visibility: visible; transition: clip-path .5s cubic-bezier(.7,0,.2,1); }
+.topbar.compact li { counter-increment: nav; border-top: 1px solid currentColor; }
+.topbar.compact li:not(.agents) a { display: flex; align-items: baseline; gap: 18px; padding: 14px 10px; background: var(--nav-g, #F3F1EC); text-decoration: none; font-family: var(--f-display); font-weight: 460; font-stretch: 104%; font-size: clamp(30px, 7vw, 58px); line-height: 1.05; letter-spacing: 0;
+  opacity: 0; transform: translateY(14px); transition: opacity .3s, transform .4s cubic-bezier(.2,.8,.2,1); }
+.topbar.compact li:not(.agents) a::before { content: counter(nav, decimal-leading-zero); font-family: var(--f-data); font-size: 13px; letter-spacing: .1em; }
+.topbar.compact.open li a { opacity: 1; transform: none; }
+.topbar.compact.open li:nth-child(2) a { transition-delay: .04s; } .topbar.compact.open li:nth-child(3) a { transition-delay: .08s; }
+.topbar.compact.open li:nth-child(4) a { transition-delay: .12s; } .topbar.compact.open li:nth-child(5) a { transition-delay: .16s; }
+.topbar.compact.open li:nth-child(6) a { transition-delay: .2s; } .topbar.compact.open li:nth-child(7) a { transition-delay: .24s; }
+.topbar.compact.open li:nth-child(8) a { transition-delay: .28s; }
+.topbar.compact li:not(.agents) a:hover, .topbar.compact li:not(.agents) a:focus-visible { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .18em; }
+.topbar.compact .agents { margin: auto 0 0; padding: 18px 10px 0; border-left: 0; background: transparent; }
+.topbar.compact .agents a { opacity: 1; transform: none; background: var(--nav-g, #F3F1EC); padding: 4px 6px; }
+html.menu-open { overflow: hidden; }
+@media (prefers-reduced-motion: reduce) { .topbar.compact ul, .topbar.compact li a { transition: none !important; } }
 .topbar a { font-family: var(--f-nav); font-size: 12px; letter-spacing: .02em; text-decoration-thickness: 1px; text-underline-offset: .5em; }
 .topbar a:hover, .topbar a:focus-visible { text-decoration-thickness: 2px; }
 .topbar .agents { margin-left: auto; padding-left: 18px; border-left: 1px solid currentColor; font-family: var(--f-data); font-size: 13px; }
