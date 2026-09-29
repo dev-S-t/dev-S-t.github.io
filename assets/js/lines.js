@@ -68,109 +68,30 @@
 
   /* ---------- the interactive drawings (Canvas2D) ---------- */
   const DRAW = {
-    // VOAG: a coiled phone cord from a handset (the caller) to the agent (the rings of the site's mark).
-    // Speech runs along the coil as compression waves. When the caller stops, a small arc sweeps round the agent for
-    // 280 ms (inside the 300 ms the tile states) and its reply runs back. The pointer can take the cord and stretch it.
+    // VOAG: voice waveforms stacked like a ridgeline, each hiding the ones behind it (the first draft's drawing).
+    // The pointer lifts the lines under it.
     voice(c, w, h, t, a) {
-      const st = a.state || (a.state = { qx: w / 2, qy: h * 0.78, vx: 0, vy: 0, pulses: [], next: t + 0.6, phase: 'idle', tWait: 0, ring: [], last: t });
-      const dt = Math.min(0.05, Math.max(0, t - st.last)); st.last = t;
-      const hs = Math.min(h * 0.62, w * 0.3); // handset length
-      const hx = w * 0.13, hy = h * 0.42; // handset centre
-      const A = [hx + hs * 0.2, hy + hs * 0.44], B = [w * 0.82, h * 0.5];
-      const mid = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2];
-      // the cord: a curve from A to B through a control point that sags at rest and follows the pointer when taken
-      const p = a.pointer && a.pointer.inside ? a.pointer : null;
-      let tx = mid[0], ty = mid[1] + h * 0.62;
-      if (p) { tx = clamp(2 * p.x - mid[0], w * 0.1, w * 0.9); ty = clamp(2 * p.y - mid[1], -h * 0.3, h * 1.5); }
-      st.vx = (st.vx + (tx - st.qx) * 0.06) * 0.84; st.vy = (st.vy + (ty - st.qy) * 0.06) * 0.84;
-      if (reduce) { st.qx = tx; st.qy = ty; } else { st.qx += st.vx; st.qy += st.vy; }
-      const N = 720, pts = new Float32Array(N * 2), len = new Float32Array(N);
-      for (let i = 0; i < N; i++) {
-        const s = i / (N - 1), u = 1 - s;
-        pts[i * 2] = u * u * A[0] + 2 * u * s * st.qx + s * s * B[0];
-        pts[i * 2 + 1] = u * u * A[1] + 2 * u * s * st.qy + s * s * B[1];
-        if (i) len[i] = len[i - 1] + Math.hypot(pts[i * 2] - pts[i * 2 - 2], pts[i * 2 + 1] - pts[i * 2 - 1]);
-      }
-      const L = len[N - 1] || 1;
-      // the conversation: the caller says a few syllables, the agent waits 280 ms after the last one arrives, then answers
-      const speed = L / 1.15, sig = Math.max(10, L * 0.022);
-      if (!reduce) {
-        if (st.phase === 'idle' && t >= st.next) {
-          const k = 3 + Math.floor(Math.random() * 3);
-          for (let i = 0; i < k; i++) st.pulses.push({ t0: t + i * 0.17, dir: 1, amp: 0.45 + Math.random() * 0.3 });
-          st.phase = 'caller'; st.lastOut = t + (k - 1) * 0.17;
+      const L = Math.round(clamp(h / 15, 16, 34)), top = h * 0.2, sp = (h * 0.76) / L, amp = h * 0.24;
+      const R = rng(11);
+      const seeds = Array.from({ length: L }, () => [R() * 100, R() * 100, R() * 100]);
+      const px = a.pointer;
+      const tt = reduce ? 0 : t;
+      const ground = getComputedStyle(a.cv).getPropertyValue('--g').trim() || '#F3F1EC';
+      for (let k = 0; k < L; k++) {
+        const base = top + k * sp, sd = seeds[k], pts = [];
+        for (let x = 0; x <= w; x += 2) {
+          const u = x / w, env = Math.exp(-(((u - 0.5) / 0.2) ** 2));
+          let v = 0.55 + 0.25 * Math.sin(x * 0.045 + sd[0] + tt * 1.6) + 0.2 * Math.sin(x * 0.11 + sd[1] - tt * 2.3) + 0.12 * Math.sin(x * 0.27 + sd[2] + tt * 3.1);
+          v = Math.max(0, v) ** 2.2;
+          let lift = 0;
+          if (px && px.inside) lift = 0.9 * Math.exp(-(((x - px.x) / 34) ** 2)) * Math.exp(-(((base - px.y) / 60) ** 2));
+          pts.push(x, base - amp * env * v - amp * lift - 1.5 * Math.sin(x * 0.6 + k));
         }
-        if (st.phase === 'caller' && t >= st.lastOut + L / speed) { st.phase = 'wait'; st.tWait = t; st.ring.push({ t0: t, end: 1 }); }
-        if (st.phase === 'wait' && t >= st.tWait + 0.28) {
-          const k = 3 + Math.floor(Math.random() * 3);
-          for (let i = 0; i < k; i++) st.pulses.push({ t0: t + i * 0.16, dir: -1, amp: 0.45 + Math.random() * 0.3 });
-          st.phase = 'agent'; st.lastOut = t + (k - 1) * 0.16;
-        }
-        if (st.phase === 'agent' && t >= st.lastOut + L / speed) { st.phase = 'idle'; st.next = t + 1.1; st.ring.push({ t0: t, end: 0 }); }
+        c.beginPath(); c.moveTo(0, h); for (let n = 0; n < pts.length; n += 2) c.lineTo(pts[n], pts[n + 1]); c.lineTo(w, h); c.closePath();
+        c.fillStyle = ground; c.fill();
+        c.beginPath(); c.moveTo(pts[0], pts[1]); for (let n = 2; n < pts.length; n += 2) c.lineTo(pts[n], pts[n + 1]);
+        c.lineWidth = 1.1; c.stroke();
       }
-      st.pulses = st.pulses.filter((q) => t - q.t0 < L / speed + 0.3);
-      st.ring = st.ring.filter((q) => t - q.t0 < 1);
-      // the coil: turns are fixed along the cord's material; a pulse displaces the material, crowding the turns
-      const turns = 30, R = Math.max(7, h * 0.06);
-      const disp = (l) => { let d = 0; for (const q of st.pulses) { const age = t - q.t0; if (age < 0) continue; const lp = q.dir > 0 ? age * speed : L - age * speed; const e = (l - lp) / sig; d += q.amp * sig * Math.exp(-e * e) * q.dir; } return d; };
-      const P = new Float32Array(N * 3);
-      for (let i = 0; i < N; i++) {
-        const i0 = Math.max(0, i - 1), i1 = Math.min(N - 1, i + 1);
-        let tx2 = pts[i1 * 2] - pts[i0 * 2], ty2 = pts[i1 * 2 + 1] - pts[i0 * 2 + 1]; const tl = Math.hypot(tx2, ty2) || 1; tx2 /= tl; ty2 /= tl;
-        const m = len[i] - disp(len[i]);
-        const th = (m / L) * turns * TAU;
-        const sn = Math.sin(th), cs = Math.cos(th);
-        P[i * 3] = pts[i * 2] - ty2 * R * sn + tx2 * R * 0.55 * cs;
-        P[i * 3 + 1] = pts[i * 2 + 1] + tx2 * R * sn + ty2 * R * 0.55 * cs;
-        P[i * 3 + 2] = cs;
-      }
-      // back strands first and fine, front strands over them and heavy
-      for (const front of [false, true]) {
-        for (let i = 1; i < N; i++) {
-          const z = (P[i * 3 + 2] + P[i * 3 - 1]) / 2;
-          if ((z > 0) !== front) continue;
-          c.lineWidth = front ? 0.9 + 1.7 * z : 0.5 + 0.4 * (1 + z);
-          c.beginPath(); c.moveTo(P[i * 3 - 3], P[i * 3 - 2]); c.lineTo(P[i * 3], P[i * 3 + 1]); c.stroke();
-        }
-      }
-      // the handset: an outline filled with fine lines across it, like everything else on the page
-      c.save(); c.translate(hx, hy); c.rotate(-0.42);
-      const L2 = hs / 2, gw = hs * 0.075, cupW = hs * 0.2, cupH = hs * 0.13;
-      const shape = () => {
-        c.beginPath();
-        c.moveTo(-gw, -L2 + cupH * 0.6);
-        c.quadraticCurveTo(-gw * 2.2, 0, -gw, L2 - cupH * 0.6);
-        c.lineTo(-gw - cupW * 0.15, L2 + cupH * 0.35); c.quadraticCurveTo(-gw, L2 + cupH, cupW, L2 + cupH * 0.55);
-        c.lineTo(cupW * 0.95, L2 - cupH * 0.35); c.quadraticCurveTo(gw * 0.5, L2 - cupH * 0.2, gw * 0.9, L2 - cupH * 0.7);
-        c.quadraticCurveTo(-gw * 0.2, 0, gw * 0.9, -L2 + cupH * 0.7);
-        c.quadraticCurveTo(gw * 0.5, -L2 + cupH * 0.2, cupW * 0.95, -L2 + cupH * 0.35);
-        c.lineTo(cupW, -L2 - cupH * 0.55); c.quadraticCurveTo(-gw, -L2 - cupH, -gw - cupW * 0.15, -L2 - cupH * 0.35);
-        c.closePath();
-      };
-      c.save(); shape(); c.clip();
-      c.lineWidth = 1.1; c.beginPath();
-      for (let y = -L2 - cupH; y <= L2 + cupH; y += 3.4) { c.moveTo(-hs, y); c.lineTo(hs, y); }
-      c.stroke(); c.restore();
-      c.lineWidth = 1.6; shape(); c.stroke();
-      // sound leaving the mouthpiece while the caller speaks
-      const talking = st.pulses.some((q) => q.dir > 0 && t - q.t0 > -0.05 && t - q.t0 < 0.25);
-      if (talking) { c.lineWidth = 1.2; for (let k = 1; k <= 3; k++) { c.globalAlpha = 1 - k * 0.25; c.beginPath(); c.arc(cupW * 1.3, L2, cupH * (0.6 + k * 0.55), -0.9, 0.9); c.stroke(); } c.globalAlpha = 1; }
-      c.restore();
-      // the agent: the rings of the site's mark; a ring flashes out when speech arrives
-      const rr = Math.max(10, h * 0.075);
-      c.lineWidth = 1.3;
-      for (let k = 1; k <= 3; k++) { c.beginPath(); c.arc(B[0] + rr * 1.1, B[1], rr * k / 3, 0, TAU); c.stroke(); }
-      c.beginPath(); c.arc(B[0] + rr * 1.1, B[1], 2.4, 0, TAU); c.fill();
-      for (const q of st.ring) {
-        const f = (t - q.t0), cx = q.end ? B[0] + rr * 1.1 : hx;
-        c.globalAlpha = Math.max(0, 1 - f); c.lineWidth = 1; c.beginPath(); c.arc(cx, q.end ? B[1] : hy, rr * (1 + f * 1.6), 0, TAU); c.stroke(); c.globalAlpha = 1;
-      }
-      // the wait: an arc that sweeps round the agent while it prepares the answer
-      if (st.phase === 'wait') {
-        const f = clamp((t - st.tWait) / 0.28, 0, 1);
-        c.lineWidth = 2.4; c.beginPath(); c.arc(B[0] + rr * 1.1, B[1], rr * 1.45, -Math.PI / 2, -Math.PI / 2 + f * TAU); c.stroke();
-      }
-      c.lineCap = 'round';
     },
     // UniBias: an eye that watches the pointer
     eye(c, w, h, t, a) {
