@@ -423,15 +423,19 @@
   }
   let lastArtW = innerWidth;
   addEventListener('resize', () => { if (Math.abs(innerWidth - lastArtW) > 2) { lastArtW = innerWidth; arts.forEach((a) => { a.dirty = true; }); } });
-  function tickArts(t) {
+  // Animated drawings run at 30 fps and hold still while the page scrolls (they scroll with it), so scrolling
+  // never waits on them; new or resized ones are still drawn at once.
+  let artTick = 0;
+  function tickArts(t, still) {
     const vh = innerHeight;
+    const animate = !reduce && !still && (artTick = (artTick + 1) % 2) === 0;
     for (const a of arts) {
       const r = a.cv.getBoundingClientRect();
       const vis = r.bottom > -120 && r.top < vh + 120 && r.width > 0;
       if (vis && !a.visible) a.dirty = true;
       a.visible = vis;
       if (!a.visible) continue;
-      if (a.dirty || (!reduce && ANIMATED.has(a.kind))) drawArt(a, t);
+      if (a.dirty || (animate && ANIMATED.has(a.kind))) drawArt(a, t);
     }
   }
 
@@ -1145,16 +1149,28 @@ void main(){
   // The canvas is taller than the viewport by an overscan above and below, and sits in the page (not fixed).
   // Each frame it is moved to the viewport and redrawn; between frames it scrolls with the content, so the lines
   // never drift behind the text, the plates or the 3D hand when a frame runs late.
-  let OS = 160, docH = 0;
-  function resize() {
-    OS = Math.round(Math.min(140, innerHeight * 0.14));
-    cv.style.height = (innerHeight + 2 * OS) + 'px';
-    docH = document.body.offsetHeight;
+  // The canvas height follows the large viewport (100lvh), which stays put when a phone's address bar hides or shows.
+  const lvhProbe = document.createElement('div');
+  lvhProbe.style.cssText = 'position:absolute;left:-9px;top:0;width:1px;height:100lvh;visibility:hidden;pointer-events:none';
+  document.body.appendChild(lvhProbe);
+  let OS = 160, docH = 0, viewH = 0;
+  // Pixel density: sharp at rest; while scrolling the lines are drawn at 1x (or less if frames still run slow)
+  // and the browser scales them up, which motion hides. scrollScale adapts to the device.
+  let scrollScale = 1, scrolling = false;
+  function sizeCanvas() {
     const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
-    dpr = Math.min(devicePixelRatio || 1, innerWidth < 760 ? 1.5 : 1.75) * quality;
-    const maxPx = 3.4e6; if (w * h * dpr * dpr > maxPx) dpr = Math.sqrt(maxPx / (w * h));
-    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
-    gl.viewport(0, 0, cv.width, cv.height);
+    const base = Math.min(devicePixelRatio || 1, 1.5) * quality;
+    dpr = scrolling ? Math.min(base, scrollScale) : base;
+    const maxPx = 3.2e6; if (w * h * dpr * dpr > maxPx) dpr = Math.sqrt(maxPx / (w * h));
+    const cw = Math.round(w * dpr), ch = Math.round(h * dpr);
+    if (cv.width !== cw || cv.height !== ch) { cv.width = cw; cv.height = ch; gl.viewport(0, 0, cw, ch); }
+  }
+  function resize() {
+    viewH = lvhProbe.offsetHeight || innerHeight;
+    OS = Math.round(Math.min(120, viewH * 0.12));
+    cv.style.height = (viewH + 2 * OS) + 'px';
+    docH = document.body.offsetHeight;
+    sizeCanvas();
   }
   let relayoutPending = true;
   const ro = new ResizeObserver(() => { relayoutPending = true; });
@@ -1266,7 +1282,7 @@ void main(){
   }
 
   /* ---------- loop ---------- */
-  let last = performance.now(), time = 0, slow = 0, frames = 0, lastSY = -1, idleSkip = false;
+  let last = performance.now(), time = 0, slow = 0, frames = 0, lastSY = -1, idleSkip = false, lastScrollT = -1e9, scrollFrames = 0, scrollSlow = 0;
   function relayout() {
     fitName(); measureRadii(); resize(); drawName(); drawCode(); layoutTimeline(); layoutOrbit(); cutAtSeam();
     arts.forEach((a) => { a.dirty = true; });
@@ -1276,14 +1292,20 @@ void main(){
     if (document.hidden) { requestAnimationFrame(frame); return; }
     if (!reduce) time += dt;
     if (relayoutPending) { relayoutPending = false; relayout(); }
-    const moving = scrollY !== lastSY || Math.abs(P.tx - P.x) + Math.abs(P.ty - P.y) > 0.5 || Math.abs(P.tamt - P.amt) > 0.01;
+    const scrolled = scrollY !== lastSY;
+    const moving = scrolled || Math.abs(P.tx - P.x) + Math.abs(P.ty - P.y) > 0.5 || Math.abs(P.tamt - P.amt) > 0.01;
     lastSY = scrollY;
+    if (scrolled) lastScrollT = now;
+    const nowScrolling = now - lastScrollT < 220;
+    if (nowScrolling !== scrolling) { scrolling = nowScrolling; sizeCanvas(); }
+    // while scrolling, step the density down if frames are still slow (kept for the rest of the visit)
+    if (scrolling && scrolled) { scrollFrames++; if (dt > 0.024) scrollSlow++; if (scrollFrames >= 24) { if (scrollSlow > 10 && scrollScale > 0.62) { scrollScale = Math.max(0.6, scrollScale - 0.15); sizeCanvas(); } scrollFrames = 0; scrollSlow = 0; } }
     if (!moving && (idleSkip = !idleSkip)) { requestAnimationFrame(frame); return; }
     const vw = innerWidth, vh = innerHeight;
     P.x += (P.tx - P.x) * 0.14; P.y += (P.ty - P.y) * 0.14; P.amt += ((reduce ? 0 : P.tamt) - P.amt) * 0.06;
     HIL.grip = null; // set again this frame if the hand is drawn; otherwise the grip comes from the layout
     if (HIL.renderModels) HIL.renderModels(time); // the 3D models first, so the fist's grip is this frame's
-    const sy = scrollY, fy = Math.max(0, Math.min(sy - OS, docH - cv.clientHeight));
+    const sy = scrollY, fy = Math.max(0, Math.min(sy - OS, docH - viewH - 2 * OS));
     cv.style.transform = 'translate3d(0,' + fy + 'px,0)';
     gl.uniform1f(U.uOff, fy - sy);
     frameParams(vw, vh);
@@ -1291,9 +1313,10 @@ void main(){
     gl.uniform2f(U.uMouse, P.x, P.y); gl.uniform1f(U.uMouseAmt, P.amt); gl.uniform1f(U.uInvert, isDark() ? 1 : 0);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     HIL.time = time;
-    tickArts(time);
-    frames++; if (dt > 0.034) slow++;
-    if (frames >= 90) { if (slow > 45 && quality > 0.55) { quality -= 0.15; relayoutPending = true; } frames = 0; slow = 0; }
+    tickArts(time, scrolling);
+    if (!scrolling) { frames++; if (dt > 0.034) slow++; }
+    // at rest, if frames are still slow, lower the resting density too (only the canvas is resized)
+    if (frames >= 90) { if (slow > 45 && quality > 0.6) { quality -= 0.15; sizeCanvas(); } frames = 0; slow = 0; }
     requestAnimationFrame(frame);
   }
   root.classList.add('lines-live');
