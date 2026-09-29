@@ -468,25 +468,7 @@
   const contactEl = document.getElementById('contact');
   const orbitEl = document.querySelector('[data-orbit]');
   const coreEl = contactEl ? contactEl.querySelector('.contact-core') : null;
-  const ORBIT = [150, 125, 90, 55, 30]; // degrees below the hole's centre line
-  function layoutOrbit() {
-    if (!contactEl || !orbitEl || !coreEl) return;
-    const items = [...orbitEl.children];
-    contactEl.classList.remove('orbit-on');
-    items.forEach((li) => { li.style.left = ''; li.style.top = ''; });
-    const W = contactEl.clientWidth;
-    if (W < 1000) return;
-    contactEl.classList.add('orbit-on');
-    const rs = coreEl.offsetWidth / 1.6;
-    const cx = coreEl.offsetLeft + coreEl.offsetWidth / 2, cy = coreEl.offsetTop + coreEl.offsetHeight / 2;
-    const pad = parseFloat(getComputedStyle(contactEl).paddingLeft) || 24;
-    const ea = Math.min(W / 2 - pad - 40, rs * 2.9), eb = rs * 1.62;
-    items.forEach((li, i) => {
-      const ang = ORBIT[i % ORBIT.length] * Math.PI / 180, lw = li.offsetWidth;
-      li.style.left = clamp(cx + Math.cos(ang) * ea, pad + lw / 2, W - pad - lw / 2) + 'px';
-      li.style.top = (cy + Math.sin(ang) * eb * (i === 2 ? 1.12 : 1)) + 'px';
-    });
-  }
+  function layoutOrbit() {}
 
   /* ---------- marks of tools, drawn as lines from the open Simple Icons set ---------- */
   const icons = [...document.querySelectorAll('canvas.lic[data-icon]')].map((cv) => ({ cv, slug: cv.dataset.icon, mask: null, hover: 0, thover: 0 }));
@@ -673,7 +655,7 @@ void main(){
  vec4 S=uSec[si];
  int scene=int(S.z+0.5);
  float secTop=S.x;float secH=max(S.y-S.x,1.0);
- bool inkGround=(S.w>0.5)!=(uInvert>0.5);
+ bool inkGround=S.w>1.5||((S.w>0.5)!=(uInvert>0.5));
  vec3 PAPER=vec3(0.953,0.945,0.925);vec3 INK=vec3(0.051,0.051,0.047);
  vec3 bg=inkGround?INK:PAPER;vec3 fg=inkGround?PAPER:INK;
 
@@ -818,7 +800,7 @@ void main(){
   vec2 dp=rot(uBH2.y)*(p-C);
   vec2 s=vec2(dp.x,-dp.y)/sc;
   float b=length(s);vec2 sh=s/max(b,1e-4);
-  const float RO=11.5;
+  const float RO=15.0;
   float hit=0.0,rh=0.0,phd=0.0,ord=0.0,fell=0.0,orbiting=0.0,esc=0.0;
   if(ready>0.5&&b<24.0){
    float A=cos(inc),Bv=sh.y*sin(inc);
@@ -857,7 +839,7 @@ void main(){
    float dash=smoothstep(0.0,0.015,s1)*(1.0-smoothstep(0.55+0.4*h2,0.57+0.4*h2,s1));
    float dop=-cos(phd)*sin(inc);
    v2=lane;vd2=lane;
-   f2=dash*(1.0-smoothstep(RO*0.75,RO,rh));
+   f2=dash*(1.0-smoothstep(RO*0.5,RO,rh));
    w2=mix(3.2,0.8,smoothstep(6.0,RO,rh))*(1.0+0.7*dop)*(ord>0.5?0.8:1.0)*(1.0+0.25*lift);
   }
   // the photon ring: light that orbits before reaching you, a hairline at the shadow's edge
@@ -988,7 +970,7 @@ void main(){
   const SEAM = { cliff: [1, 44], wave: [2, 26], rule: [3, 0] };
   const KIND = { plate: 1, '': 1, glass: 2, clear: 3, sparse: 4 };
   const secs = [...document.querySelectorAll('[data-scene]')].map((el) => ({
-    el, scene: SCENE[el.dataset.scene] || 0, pol: el.dataset.polarity === 'inverse' ? 1 : 0, seam: SEAM[el.dataset.seam] || [0, 0]
+    el, scene: SCENE[el.dataset.scene] || 0, pol: el.dataset.polarity === 'night' ? 2 : el.dataset.polarity === 'inverse' ? 1 : 0, seam: SEAM[el.dataset.seam] || [0, 0]
   })).slice(0, 12);
   const plates = [...document.querySelectorAll('[data-plate]')].map((el) => ({ el, kind: KIND[el.dataset.plate] || 1, rad: 0, lift: 0, tlift: 0 }));
   plates.forEach((p) => {
@@ -1123,10 +1105,15 @@ void main(){
   const codeCanvas = document.createElement('canvas');
   const CODE = code128B('human-in-loop.dev');
   let codeOn = 0, moon = null;
+  const footNarrow = () => footEl && footEl.clientWidth <= 700;
   function moonGeom() {
     if (!footEl) return null;
     const r = footEl.getBoundingClientRect();
-    const hz = r.height * 0.52;
+    let hz = r.height * 0.52;
+    if (footNarrow()) {
+      const first = footEl.querySelector('p');
+      if (first) hz = first.getBoundingClientRect().top - r.top - 40;
+    }
     // a tenth of the moon is past the left edge and a fiftieth is under the water
     const R = clamp(Math.min(r.width * 0.075, r.height * 0.11), 40, 120);
     return { x: R * 0.8, y: hz - R + R * 0.04, R, hz };
@@ -1135,14 +1122,18 @@ void main(){
     if (!footEl) return;
     const r = footEl.getBoundingClientRect(); moon = moonGeom();
     const md = Math.min(devicePixelRatio || 1, 2);
+    const cs = getComputedStyle(footEl, '::after');
+    const fsz = parseFloat(cs.fontSize) || clamp(innerWidth * 0.056, 46, 88);
+    const c0 = codeCanvas.getContext('2d');
+    c0.font = fsz + 'px "Libre Barcode 128"';
+    const cw = c0.measureText(CODE).width; if (!cw) return;
+    footEl.style.setProperty('--code-w', cw.toFixed(1) + 'px');
+    if (footNarrow()) { codeOn = 0; return; }
     codeCanvas.width = Math.max(1, Math.round(r.width * md)); codeCanvas.height = Math.max(1, Math.round(r.height * md));
     const c = codeCanvas.getContext('2d');
     c.setTransform(md, 0, 0, md, 0, 0); c.clearRect(0, 0, r.width, r.height);
-    // same box as .foot::after: right: var(--pad); bottom: 48% + 34px; font-size clamp(46px, 5.6vw, 88px)
-    const fsz = clamp(innerWidth * 0.056, 46, 88);
     c.font = fsz + 'px "Libre Barcode 128"';
-    const cw = c.measureText(CODE).width; if (!cw) return;
-    footEl.style.setProperty('--code-w', cw.toFixed(1) + 'px');
+    // same box as .foot::after: right: var(--pad); bottom: 48% + 34px - .39em
     const pad = parseFloat(getComputedStyle(footEl).paddingRight) || 24;
     c.fillStyle = '#fff'; c.textBaseline = 'bottom';
     c.fillText(CODE, r.width - pad - cw, r.height * 0.52 - 34 + fsz * 0.39);
@@ -1245,9 +1236,11 @@ void main(){
     }
     if (coreEl) {
       const cr = coreEl.getBoundingClientRect(), sr = contactEl.getBoundingClientRect();
-      // phones: the heading sits above the hole rather than inside its shadow
-      const narrowC = sr.width < 700;
-      const Rs = narrowC ? sr.width * 0.3 : cr.width / 1.6, cx = cr.left + cr.width / 2, cy = narrowC ? cr.bottom + Rs * 2.05 : cr.top + cr.height / 2;
+      // wide: right of centre, the disk reaching left between the heading and the links; narrow: below the heading
+      const wideC = sr.width >= 1000;
+      const Rs = wideC ? Math.min(sr.width * 0.12, sr.height * 0.17, 300) : Math.min(sr.width * 0.3, 150);
+      const cx = wideC ? sr.left + sr.width * 0.68 : sr.left + sr.width / 2;
+      const cy = wideC ? sr.top + sr.height * 0.5 : cr.bottom + Rs * 2.05;
       const near = Math.hypot(P.x - cx, P.y - cy) < Rs * 2.2 && P.amt > 0.1 ? 1 : 0;
       bh.lift += (near - bh.lift) * 0.04;
       bh.spin += (reduce ? 0 : 1 / 60) * (0.5 + 0.9 * bh.lift);
@@ -1256,7 +1249,7 @@ void main(){
       const px = P.amt > 0.1 ? clamp((P.x - cx) / vw, -0.5, 0.5) * 24 : 0, py = P.amt > 0.1 ? clamp((P.y - cy) / vh, -0.5, 0.5) * 16 : 0;
       gl.uniform4f(U.uBH, cx + px * 0.5, cy + py * 0.5, Rs, bh.spin);
       // seen almost edge-on (83 degrees); scrolling through the section raises the view a little
-      gl.uniform4f(U.uBH2, lerp(1.45, 1.33, prog), lerp(-0.07, -0.03, prog), bh.lift, lutReady);
+      gl.uniform4f(U.uBH2, lerp(1.45, 1.33, prog), wideC ? lerp(-0.16, -0.12, prog) : lerp(-0.07, -0.03, prog), bh.lift, lutReady);
     }
     if (footEl && moon) {
       const r = footEl.getBoundingClientRect();
@@ -1267,7 +1260,7 @@ void main(){
     if (nav) {
       let pol = 0;
       for (const s of secs) { const r = s.el.getBoundingClientRect(); if (r.top <= 40 && r.bottom > 40) { pol = s.pol; break; } }
-      const darkGround = (pol === 1) !== isDark();
+      const darkGround = pol === 2 || ((pol === 1) !== isDark());
       const want = darkGround ? 'dark' : 'light';
       if (nav.dataset.on !== want) nav.dataset.on = want;
     }
