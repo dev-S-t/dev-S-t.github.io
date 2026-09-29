@@ -21,7 +21,6 @@
   if (toggle) toggle.addEventListener('click', () => {
     const next = isDark() ? 'light' : 'dark';
     root.setAttribute('data-theme', next);
-    try { localStorage.setItem('hil-theme', next); } catch (e) { /* storage blocked */ }
     syncToggle();
     requestAnimationFrame(() => { arts.forEach((a) => { a.dirty = true; }); drawIcons(); });
   });
@@ -655,7 +654,7 @@ void main(){
  vec4 S=uSec[si];
  int scene=int(S.z+0.5);
  float secTop=S.x;float secH=max(S.y-S.x,1.0);
- bool inkGround=S.w>1.5||((S.w>0.5)!=(uInvert>0.5));
+ bool inkGround=S.w>2.5?false:(S.w>1.5?true:((S.w>0.5)!=(uInvert>0.5)));
  vec3 PAPER=vec3(0.953,0.945,0.925);vec3 INK=vec3(0.051,0.051,0.047);
  vec3 bg=inkGround?INK:PAPER;vec3 fg=inkGround?PAPER:INK;
 
@@ -970,7 +969,7 @@ void main(){
   const SEAM = { cliff: [1, 44], wave: [2, 26], rule: [3, 0] };
   const KIND = { plate: 1, '': 1, glass: 2, clear: 3, sparse: 4 };
   const secs = [...document.querySelectorAll('[data-scene]')].map((el) => ({
-    el, scene: SCENE[el.dataset.scene] || 0, pol: el.dataset.polarity === 'night' ? 2 : el.dataset.polarity === 'inverse' ? 1 : 0, seam: SEAM[el.dataset.seam] || [0, 0]
+    el, scene: SCENE[el.dataset.scene] || 0, pol: ({ inverse: 1, night: 2, day: 3 })[el.dataset.polarity] || 0, seam: SEAM[el.dataset.seam] || [0, 0]
   })).slice(0, 12);
   const plates = [...document.querySelectorAll('[data-plate]')].map((el) => ({ el, kind: KIND[el.dataset.plate] || 1, rad: 0, lift: 0, tlift: 0 }));
   plates.forEach((p) => {
@@ -1260,7 +1259,7 @@ void main(){
     if (nav) {
       let pol = 0;
       for (const s of secs) { const r = s.el.getBoundingClientRect(); if (r.top <= 40 && r.bottom > 40) { pol = s.pol; break; } }
-      const darkGround = pol === 2 || ((pol === 1) !== isDark());
+      const darkGround = pol === 2 ? true : pol === 3 ? false : ((pol === 1) !== isDark());
       const want = darkGround ? 'dark' : 'light';
       if (nav.dataset.on !== want) nav.dataset.on = want;
     }
