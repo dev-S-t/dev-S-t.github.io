@@ -338,7 +338,7 @@ html:not(.lines-live) .cv-page { background: var(--g); outline: 1px solid curren
   .contact { --rsh: min(40vw, 170px); }
   .contact-core { width: 100%; height: auto; padding-top: 0; margin-top: calc(var(--rsh) * .3); }
   .contact-core h2 { font-size: clamp(30px, 8vw, 40px); }
-  .orbit { margin-top: calc(var(--rsh) * 2.35); justify-content: stretch; }
+  .orbit { margin-top: calc(var(--rsh) * 2.8); justify-content: stretch; }
   .orbit li { width: 100%; }
 }
 

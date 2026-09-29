@@ -592,7 +592,7 @@ uniform sampler2D uName;uniform float uNameOn;
 uniform vec4 uGrip;
 uniform int uPeakN;uniform vec4 uPeak[8];
 uniform vec4 uTL;uniform vec4 uTLm;uniform vec4 uRA;uniform vec4 uBH2;
-uniform vec4 uBH;
+uniform vec4 uBH;uniform sampler2D uLut;
 uniform vec4 uMoon;uniform vec4 uFoot;uniform sampler2D uCode;uniform float uCodeOn;
 out vec4 o;
 
@@ -650,6 +650,9 @@ float lineAlpha(float v,float vd,float wpx,float cov){
  float a1=lineCov(v/s1,fw/s1,max(0.5*wpx*uDpr*fw/s1,0.5*cov));
  return mix(a0,a1,smoothstep(0.0,1.0,f));
 }
+// light paths around a black hole (units of M): R = 1/r after sweeping angle th, for impact parameter b
+// (1 = fell in, -1 = escaped); G = the angle swept by the time the path escaped
+vec2 lutAt(float b,float th){return texture(uLut,vec2(th/9.42477796*(767.0/768.0)+0.5/768.0,b/24.0*(511.0/512.0)+0.5/512.0)).rg;}
 float rl(float dy,float c,float w){return 1.0-smoothstep(w*0.5-0.5,w*0.5+0.5,abs(dy-c));}
 
 void main(){
@@ -804,39 +807,63 @@ void main(){
   v1=(sy+5.0*sin(pw.x/220.0+sy/160.0)+n*7.0)/4.6+bump*0.6;vd1=v1;w=0.6;
   v2=(sy*0.94+pw.x*0.34+n*9.0)/6.5;vd2=v2;f2=0.6*smoothstep(0.05,0.45,n);w2=0.7;
  }else if(scene==8){
-  // CONTACT: a black hole seen almost edge-on (after Gargantua in Interstellar), made only of lines.
-  // The disk is streaks on circular orbits turning at Kepler speed; its far side is bent over the top of the
-  // shadow by gravity (with a thin copy underneath); the photon ring edges the shadow. The heading sits in the shadow.
-  vec2 C=uBH.xy;float Rs=uBH.z;float k=uBH2.x;float spin=uBH.w;
-  vec2 dp=p-C;float r=length(dp);
-  vec2 d=rot(uBH2.y)*dp;
-  float shadow=1.0-smoothstep(Rs-0.8,Rs+0.8,r);
-  float rin=Rs*1.45,rout=Rs*4.4;
-  vec2 q=vec2(d.x,d.y/k);float rho=length(q);float ph=atan(q.y,q.x);
-  float disk=smoothstep(rin,rin*1.05,rho)*(1.0-smoothstep(rout*0.7,rout,rho));
-  float near=step(0.0,d.y);
-  float lane=log(max(rho,1.0)/rin)*rin/2.6;float li=floor(lane);
-  float h1=hash(vec2(li,1.3)),h2=hash(vec2(li,8.1));
-  float s1=fract(ph*(2.0+floor(h1*7.0))*0.15915494-spin*pow(rin/max(rho,1.0),1.5)*(0.7+0.6*h1)+h1*9.0);
-  float dash=smoothstep(0.0,0.02,s1)*(1.0-smoothstep(0.3+0.55*h2,0.34+0.55*h2,s1));
-  v2=lane;vd2=lane;
-  f2=disk*mix(1.0,dash,mix(0.45,0.85,smoothstep(rin,rin*2.2,rho)))*mix(1.0-shadow,1.0,near);
-  w2=mix(2.3,0.55,smoothstep(rin,rout,rho))*(1.0+0.45*clamp(-d.x/(Rs*3.0),-1.0,1.0));
-  float al=atan(-d.y,d.x);float sa=sin(al);
-  float T=Rs*(sa>0.0?(0.12+0.62*pow(sa,1.3)):(0.04+0.06*sa*sa));
-  float e=r-Rs*1.035;
-  float arc=step(0.0,e)*(1.0-smoothstep(T*0.85,T,e));
-  float rl=rin+(e/max(T,1.0))*(rout-rin)*0.42;
-  float lane2=log(max(rl,1.0)/rin)*rin/2.4;float lj=floor(lane2);
-  float g1=hash(vec2(lj,4.4)),g2=hash(vec2(lj,2.2));
-  float s2=fract(al*(2.0+floor(g1*7.0))*0.15915494+spin*pow(rin/rl,1.5)*(0.7+0.6*g1)+g1*5.0);
-  float dash2=smoothstep(0.0,0.02,s2)*(1.0-smoothstep(0.35+0.5*g2,0.39+0.5*g2,s2));
-  v1=lane2;vd1=lane2;
-  f1=arc*mix(1.0,dash2,0.75)*(1.0-f2*near);
-  w=mix(1.6,0.7,clamp(e/max(T,1.0),0.0,1.0));
-  extra=max(extra,1.0-smoothstep(0.5,1.6,abs(r-Rs*1.012)));
-  extra=max(extra,(1.0-smoothstep(0.3,1.0,abs(r-Rs*1.03)))*0.4);
-  extra=max(extra,stars(vec2(p.x,p.y-secTop),t)*(1.0-shadow)*(1.0-arc)*(1.0-disk));
+  // CONTACT: a black hole, ray-traced. Each pixel follows its light path back from the eye, using a table of
+  // paths around a Schwarzschild mass worked out once on the CPU, and takes the first place the path crosses the
+  // accretion disk: the disk in front, then its far side bent over the top and under the bottom of the shadow,
+  // then the thin images hugging the shadow. Paths that fall in are the shadow; paths that escape show the lines
+  // and stars behind, bent into an Einstein ring. The disk is streaks on circular orbits turning at Kepler speed,
+  // heavier on the side that comes toward you. The heading sits in the shadow.
+  vec2 C=uBH.xy;float sc=uBH.z/5.196;float spin=uBH.w;
+  float inc=uBH2.x;float lift=uBH2.z;float ready=uBH2.w;
+  vec2 dp=rot(uBH2.y)*(p-C);
+  vec2 s=vec2(dp.x,-dp.y)/sc;
+  float b=length(s);vec2 sh=s/max(b,1e-4);
+  const float RO=11.5;
+  float hit=0.0,rh=0.0,phd=0.0,ord=0.0,fell=0.0,orbiting=0.0,esc=0.0;
+  if(ready>0.5&&b<24.0){
+   float A=cos(inc),Bv=sh.y*sin(inc);
+   float th0=atan(A,-Bv);
+   for(int k=0;k<3;k++){
+    float th=th0+float(k)*3.14159265;
+    float u=lutAt(b,th).r;
+    if(u>0.49){fell=1.0;break;}
+    if(u<=0.0){break;}
+    float r=1.0/u;
+    if(r>6.0&&r<RO){
+     hit=1.0;rh=r;ord=float(k);
+     vec3 P=r*vec3(sh*sin(th),cos(th));
+     phd=atan(dot(P,vec3(0.0,cos(inc),-sin(inc))),P.x);
+     break;
+    }
+   }
+   vec2 e=lutAt(b,9.40);
+   if(hit<0.5){ if(e.r>0.49)fell=1.0; else if(e.r>0.0)orbiting=1.0; }
+   esc=e.g;
+  }
+  // the sky behind, bent: a thin lens at distance 10 M (an Einstein ring just outside the shadow)
+  float defl=(ready>0.5&&b<24.0)?max(esc-3.14159265,0.0):(4.0/max(b,0.5)+11.78/max(b*b,0.25));
+  float bs=b-defl*10.0;
+  vec2 src=C+rot(-uBH2.y)*(vec2(sh.x,-sh.y)*bs*sc);
+  float sky=(1.0-fell)*(1.0-hit)*(1.0-orbiting);
+  float sy=src.y-secTop;
+  v1=(sy+9.0*sin(src.x/260.0+sy/400.0)+n*14.0)/17.0+bump*0.5;vd1=v1;
+  f1=sky*smoothstep(1.2,2.0,b/5.196);w=0.55;
+  extra=max(extra,stars(vec2(src.x,src.y-secTop),t)*sky);
+  if(hit>0.5){
+   float lane=log(rh/6.0)*11.0;float li=floor(lane);
+   float h1=hash(vec2(li,1.3)),h2=hash(vec2(li,8.1));
+   float om=pow(6.0/rh,1.5);
+   float s1=fract(phd*(2.0+floor(h1*6.0))*0.15915494-spin*om*(0.7+0.6*h1)+h1*9.0);
+   float dash=smoothstep(0.0,0.015,s1)*(1.0-smoothstep(0.55+0.4*h2,0.57+0.4*h2,s1));
+   float dop=-cos(phd)*sin(inc);
+   v2=lane;vd2=lane;
+   f2=dash*(1.0-smoothstep(RO*0.75,RO,rh));
+   w2=mix(3.2,0.8,smoothstep(6.0,RO,rh))*(1.0+0.7*dop)*(ord>0.5?0.8:1.0)*(1.0+0.25*lift);
+  }
+  // the photon ring: light that orbits before reaching you, a hairline at the shadow's edge
+  extra=max(extra,orbiting);
+  extra=max(extra,(1.0-smoothstep(0.5,1.5,abs(b-5.196)*sc))*(1.0-hit)*ready);
+  if(ready<0.5){extra=max(extra,1.0-smoothstep(0.5,1.5,abs(b*sc-uBH.z)));}
  }else if(scene==9){
   // RESUME: ruled lines, level and gently bowed, like a ream of paper seen edge-on
   float sy=pw.y-secTop;
@@ -911,7 +938,7 @@ void main(){
   const al = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(al); gl.vertexAttribPointer(al, 2, gl.FLOAT, false, 0, 0);
   const U = {};
   ['uRes', 'uDpr', 'uTime', 'uOff', 'uMouse', 'uMouseAmt', 'uInvert', 'uSecN', 'uSec', 'uSecB', 'uRectN', 'uRect', 'uKind', 'uHero', 'uTun', 'uCliff', 'uFig',
-    'uName', 'uNameOn', 'uGrip', 'uPeakN', 'uPeak', 'uTL', 'uTLm', 'uRA', 'uBH', 'uBH2', 'uMoon', 'uFoot', 'uCode', 'uCodeOn']
+    'uName', 'uNameOn', 'uGrip', 'uPeakN', 'uPeak', 'uTL', 'uTLm', 'uRA', 'uBH', 'uBH2', 'uLut', 'uMoon', 'uFoot', 'uCode', 'uCodeOn']
     .forEach((n) => { U[n] = gl.getUniformLocation(prog, n); });
   function makeTex(unit) {
     const tex = gl.createTexture();
@@ -920,8 +947,40 @@ void main(){
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     return tex;
   }
-  const nameTex = makeTex(0), codeTex = makeTex(1);
-  gl.uniform1i(U.uName, 0); gl.uniform1i(U.uCode, 1);
+  const nameTex = makeTex(0), codeTex = makeTex(1), lutTex = makeTex(2);
+  gl.uniform1i(U.uName, 0); gl.uniform1i(U.uCode, 1); gl.uniform1i(U.uLut, 2);
+  // Light paths around a black hole, in units of M (horizon r = 2, shadow b = 3v3). For each impact parameter b the
+  // path u(th) = 1/r is integrated from the eye (u = 0) with u'' = -u + 3u^2 (RK4). R stores u at each swept angle
+  // (1 once it has fallen in, -1 once it has escaped); G stores the angle swept when it escaped.
+  let lutReady = 0;
+  function buildLut() {
+    const W = 768, H = 512, BMAX = 24, THMAX = 3 * Math.PI, sub = 6, dth = THMAX / (W - 1), hh = dth / sub;
+    const data = new Float32Array(W * H * 2);
+    const f = (u) => -u + 3 * u * u;
+    for (let j = 0; j < H; j++) {
+      const b = Math.max(0.02, BMAX * j / (H - 1));
+      let u = 0, v = 1 / b, th = 0, state = 0, thEsc = THMAX;
+      for (let i = 0; i < W; i++) {
+        const o = (j * W + i) * 2;
+        data[o] = state === 0 ? u : state;
+        if (state !== 0) continue;
+        for (let k = 0; k < sub; k++) {
+          const k1u = v, k1v = f(u);
+          const k2u = v + 0.5 * hh * k1v, k2v = f(u + 0.5 * hh * k1u);
+          const k3u = v + 0.5 * hh * k2v, k3v = f(u + 0.5 * hh * k2u);
+          const k4u = v + hh * k3v, k4v = f(u + hh * k3u);
+          const un = u + hh / 6 * (k1u + 2 * k2u + 2 * k3u + k4u), vn = v + hh / 6 * (k1v + 2 * k2v + 2 * k3v + k4v);
+          if (!(un < 0.5)) { state = 1; break; }
+          if (un < 0 && th > 0.05) { thEsc = th + hh * u / (u - un); state = -1; break; }
+          u = un; v = vn; th += hh;
+        }
+      }
+      for (let i = 0; i < W; i++) data[(j * W + i) * 2 + 1] = state === 1 ? 0 : thEsc;
+    }
+    gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, lutTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RG16F, W, H, 0, gl.RG, gl.FLOAT, data);
+    lutReady = 1;
+  }
   function upload(unit, tex, canvas) { gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, tex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas); }
 
   /* ---------- the page model ---------- */
@@ -1188,7 +1247,7 @@ void main(){
       const cr = coreEl.getBoundingClientRect(), sr = contactEl.getBoundingClientRect();
       // phones: the heading sits above the hole rather than inside its shadow
       const narrowC = sr.width < 700;
-      const Rs = narrowC ? sr.width * 0.3 : cr.width / 1.6, cx = cr.left + cr.width / 2, cy = narrowC ? cr.bottom + Rs * 1.45 : cr.top + cr.height / 2;
+      const Rs = narrowC ? sr.width * 0.3 : cr.width / 1.6, cx = cr.left + cr.width / 2, cy = narrowC ? cr.bottom + Rs * 2.05 : cr.top + cr.height / 2;
       const near = Math.hypot(P.x - cx, P.y - cy) < Rs * 2.2 && P.amt > 0.1 ? 1 : 0;
       bh.lift += (near - bh.lift) * 0.04;
       bh.spin += (reduce ? 0 : 1 / 60) * (0.5 + 0.9 * bh.lift);
@@ -1196,7 +1255,8 @@ void main(){
       const prog = clamp((vh - sr.top) / (vh + sr.height), 0, 1);
       const px = P.amt > 0.1 ? clamp((P.x - cx) / vw, -0.5, 0.5) * 24 : 0, py = P.amt > 0.1 ? clamp((P.y - cy) / vh, -0.5, 0.5) * 16 : 0;
       gl.uniform4f(U.uBH, cx + px * 0.5, cy + py * 0.5, Rs, bh.spin);
-      gl.uniform4f(U.uBH2, lerp(0.11, 0.2, prog), lerp(-0.075, -0.025, prog), bh.lift, 0);
+      // seen almost edge-on (83 degrees); scrolling through the section raises the view a little
+      gl.uniform4f(U.uBH2, lerp(1.45, 1.33, prog), lerp(-0.07, -0.03, prog), bh.lift, lutReady);
     }
     if (footEl && moon) {
       const r = footEl.getBoundingClientRect();
@@ -1247,4 +1307,5 @@ void main(){
   root.classList.add('lines-live');
   relayout();
   requestAnimationFrame(frame);
+  setTimeout(() => { try { buildLut(); } catch (e) { console.warn('[lines] black hole table:', e); } }, 250);
 })();
