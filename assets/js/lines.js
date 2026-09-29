@@ -1361,7 +1361,10 @@ void main(){
     let n = 0;
     for (const s of secs) {
       const r = s.el.getBoundingClientRect();
-      secBuf.set([r.top, r.bottom, s.scene, s.pol], n * 4); secBBuf.set([s.seam[0], s.seam[1], s.cx, 0], n * 4); n++;
+      secBuf.set([r.top, r.bottom, s.scene, s.pol], n * 4); secBBuf.set([s.seam[0], s.seam[1], s.cx, 0], n * 4);
+      // an inner page's header spiral: its centre is where the loader's rings travel to (same maths as the shader)
+      if (n === 0 && s.scene === 11) HIL.tunnel = { x: cv.clientWidth * (s.cx || 0.78), y: r.top + r.height * 0.5 };
+      n++;
     }
     gl.uniform1i(U.uSecN, n); gl.uniform4fv(U.uSec, secBuf); gl.uniform4fv(U.uSecB, secBBuf);
 
@@ -1431,6 +1434,7 @@ void main(){
       const Rs = wideC ? Math.min(sr.width * 0.12, sr.height * 0.17, 300) : Math.min(sr.width * 0.3, 150);
       const cx = wideC ? sr.left + sr.width * 0.68 : sr.left + sr.width / 2;
       const cy = wideC ? sr.top + sr.height * 0.5 : cr.bottom + Rs * 2.05;
+      if (secs[0] && secs[0].el === contactEl) HIL.tunnel = { x: cx, y: cy }; // the contact page opens on the hole
       const near = Math.hypot(P.x - cx, P.y - cy) < Rs * 2.2 && P.amt > 0.1 ? 1 : 0;
       bh.lift += (near - bh.lift) * 0.04;
       bh.spin += (reduce ? 0 : 1 / 60) * (0.5 + 0.9 * bh.lift);
@@ -1475,8 +1479,26 @@ void main(){
     }
   }
   let last = performance.now(), time = 0, slow = 0, frames = 0, lastSY = -1, idleSkip = false, lastScrollT = -1e9, scrollFrames = 0, scrollSlow = 0;
+  // Inner page titles: at most two lines (three on phones). The size steps down from the stylesheet's until it fits.
+  const pageTitles = [...document.querySelectorAll('.ph h1, .contact-page h1')];
+  // the number of lines the text actually occupies (a grid can stretch the box, so its height is not a measure)
+  function textLines(el) {
+    const rg = document.createRange(); rg.selectNodeContents(el);
+    const tops = [...rg.getClientRects()].filter((r) => r.width > 1).map((r) => r.top).sort((a, b) => a - b);
+    const lh = parseFloat(getComputedStyle(el).fontSize) * 0.5;
+    let n = 0, last = -1e9; for (const t of tops) { if (t - last > lh) { n++; last = t; } }
+    return n;
+  }
+  function fitTitles() {
+    for (const h of pageTitles) {
+      h.style.fontSize = '';
+      const maxLines = innerWidth < 700 ? 3 : 2, min = innerWidth < 700 ? 22 : 30;
+      let size = parseFloat(getComputedStyle(h).fontSize);
+      while (textLines(h) > maxLines && size > min) { size = Math.max(min, size * 0.95); h.style.fontSize = size.toFixed(1) + 'px'; }
+    }
+  }
   function relayout() {
-    fitName(); measureRadii(); resize(); drawName(); drawCode(); layoutTimeline(); layoutOrbit(); cutAtSeam();
+    fitTitles(); fitName(); measureRadii(); resize(); drawName(); drawCode(); layoutTimeline(); layoutOrbit(); cutAtSeam();
     arts.forEach((a) => { a.dirty = true; });
   }
   function frame(now) {

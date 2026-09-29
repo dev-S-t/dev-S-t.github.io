@@ -407,7 +407,7 @@ html:not(.lines-live) .cv-page { background: var(--g); outline: 1px solid curren
 .foot::after { content: "\CC human-in-loop.devd\CE"; top: calc(var(--hz, 52%) - 34px - .61em); font-family: "Libre Barcode 128", monospace; font-size: clamp(46px, 5.6vw, 88px); line-height: 1; }
 .foot::before { content: "human-in-loop.dev"; top: calc(var(--hz, 52%) - 12px - 1em); width: var(--code-w, auto); text-align: center; font-family: var(--f-data); font-size: clamp(12px, .5vw + 8px, 16px); letter-spacing: .3em; line-height: 1; }
 html:not(.lines-live) .foot::after, html:not(.lines-live) .foot::before { color: var(--f); }
-.foot p { padding: 8px 16px; }
+.foot p { padding: 14px 22px; }
 .foot p:first-of-type { font-family: var(--f-display); font-size: clamp(22px, 2vw + 6px, 38px); line-height: 1.15; }
 .foot p:first-of-type strong { font-family: inherit; font-size: inherit; letter-spacing: 0; font-weight: 520; }
 /* narrow screens: the barcode and its domain stack at the top right, clear of the moon; the tiles sit in the water
@@ -421,6 +421,6 @@ html:not(.lines-live) .foot::after, html:not(.lines-live) .foot::before { color:
 
 /* ---------- section headings: always a row of their own, about half the width on wide screens, so a tile never
    shares their row (a long heading was running into the first project between 640 and 1100 wide) ---------- */
-.cases-head, .exp-head, .proj-head, .pub-head, .skills-head { grid-column: 1 / -1; max-width: max(50%, min(100%, 560px)); }
+.cases-head, .exp-head, .proj-head, .pub-head, .skills-head { grid-column: 1 / -1; max-width: max(50%, min(100%, 560px)); padding: clamp(24px, 2.2vw, 34px) clamp(22px, 2.2vw, 34px); }
 /* never narrower than the heading's longest word ("Comprehensive" was running out of its tile) */
 @media (min-width: 700px) { .cases-head, .exp-head, .proj-head, .pub-head, .skills-head { min-width: min-content; } }
