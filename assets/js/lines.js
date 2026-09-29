@@ -290,41 +290,23 @@
       c.lineWidth = 1;
       for (let g = 0; g < 3; g++) { const gy = h * (0.2 + 0.3 * g); c.beginPath(); c.arc(w * 0.955, gy, 5.5, 0, TAU); c.stroke(); c.beginPath(); c.arc(w * 0.955, gy, 2, 0, TAU); c.fill(); }
     },
-    // Experience: the core sample. The engine draws the growth rings around it; this strip reads them as a timeline:
-    // a tick per month at both edges, the two roles as bars, leaders down to their entries, and today.
+    // Experience: the timeline in the clearing across the rings. One axis from April 2025 to today, a tick at each
+    // year, and one line per role under it. The rings around it carry the months.
     timeline(c, w, h, t, a) {
       const tl = a.tl; if (!tl) return;
-      const H = tl.bandH, X = (m) => tl.x0 + m * tl.pxm;
-      c.lineWidth = 1; c.beginPath();
-      for (let m = 0; m <= Math.floor(tl.now); m++) {
-        const x = Math.round(X(m)) + 0.5, big = m === 0 || (tl.startMonth + m) % 12 === 0, L = big ? 18 : 8;
-        c.moveTo(x, 0); c.lineTo(x, L); c.moveTo(x, H); c.lineTo(x, H - L);
-      }
+      const X = (m) => tl.x0 + m * tl.pxm, ay = tl.axisY, nx = X(tl.now);
+      c.lineWidth = 1.2; c.beginPath(); c.moveTo(X(0), ay); c.lineTo(nx, ay);
+      c.moveTo(X(tl.yearM), ay - 6); c.lineTo(X(tl.yearM), ay + 6);
       c.stroke();
-      const A = tl.roles[0], B = tl.roles[1];
-      if (A) { // the long role: a wedge of lines that widens as the role grew
-        const x0 = X(A.from), x1 = X(Math.min(A.to, tl.now)), yc = H * 0.4, hMax = H * 0.34, gap = 3.2, n = Math.max(3, Math.floor(hMax / gap));
-        c.lineWidth = 1.3; c.beginPath();
-        for (let k = 0; k < n; k++) { const off = (k - (n - 1) / 2) * gap; const sx = lerp(x0, x1, Math.pow(Math.abs(off) / (hMax / 2), 1.25) * 0.9); c.moveTo(sx, yc + off); c.lineTo(x1, yc + off); }
-        c.stroke();
-        A.bar = { x: x0, y: yc + hMax / 2 };
-      }
-      if (B) { // the contract: a block of upright hatching
-        const x0 = X(B.from), x1 = X(B.to), yc = H * 0.76, hh = H * 0.2;
-        c.lineWidth = 1.2; c.beginPath();
-        for (let x = x0; x <= x1 + 0.1; x += 3.4) { c.moveTo(x, yc - hh / 2); c.lineTo(x, yc + hh / 2); }
-        c.stroke();
-        B.bar = { x: x0, y: yc + hh / 2 };
-      }
-      if (tl.leaders) [A, B].forEach((r) => { // from each bar down to its entry
-        if (!r || !r.bar || !r.tile) return;
-        const tx = r.tile.x + 34, ey = H + (h - H) * 0.5;
-        c.lineWidth = 1.4; c.beginPath(); c.moveTo(r.bar.x, r.bar.y); c.lineTo(r.bar.x, ey); c.lineTo(tx, ey); c.lineTo(tx, h); c.stroke();
-        c.beginPath(); c.arc(r.bar.x, r.bar.y, 3.2, 0, TAU); c.fill();
+      c.beginPath(); c.arc(X(0), ay, 3.4, 0, TAU); c.fill();
+      tl.roles.forEach((r) => {
+        const x0 = X(r.from), x1 = X(Math.min(r.to, tl.now));
+        c.lineWidth = 2.4; c.beginPath(); c.moveTo(x0, r.y); c.lineTo(x1, r.y); c.stroke();
+        c.lineWidth = 1.2; c.beginPath(); c.moveTo(x0, r.y - 5); c.lineTo(x0, r.y + 5); c.moveTo(x1, r.y - 5); c.lineTo(x1, r.y + 5); c.stroke();
       });
-      const nx = X(tl.now), pr = reduce ? 0 : (t % 2.4) / 2.4;
-      c.lineWidth = 1.5; c.beginPath(); c.moveTo(nx, 0); c.lineTo(nx, H); c.stroke();
-      c.globalAlpha = 1 - pr; c.lineWidth = 1; c.beginPath(); c.arc(nx, H * 0.4, 5 + pr * 22, 0, TAU); c.stroke(); c.globalAlpha = 1;
+      const pr = reduce ? 0 : (t % 2.6) / 2.6;
+      c.beginPath(); c.arc(nx, ay, 3.4, 0, TAU); c.fill();
+      c.globalAlpha = 1 - pr; c.lineWidth = 1; c.beginPath(); c.arc(nx, ay, 4 + pr * 16, 0, TAU); c.stroke(); c.globalAlpha = 1;
     },
     wastage(c, w, h) { // 1,000 units twice: 112 broken before, 25 after
       const blocks = [112, 25], gap = 18, bw = (w - gap) / 2, cols = 40, rows = 25;
@@ -416,17 +398,21 @@
     const idx = (y, m) => (y - origin.y) * 12 + (m - origin.m);
     const nowF = idx(now.getFullYear(), now.getMonth()) + now.getDate() / new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
     const parse = (v) => { const [y, m] = v.split('-').map(Number); return idx(y, m - 1); };
-    const W = tlEl.clientWidth, H = tlEl.clientHeight;
-    // the pith (first month) near the strip's left end, today near its right end, room for the bark after it
-    const x0 = Math.min(34, W * 0.07), pxm = (W - x0 - Math.min(64, W * 0.12)) / nowF, X = (m) => x0 + m * pxm;
-    const tr = tlEl.getBoundingClientRect();
-    const roles = [...document.querySelectorAll('.role[data-from]')].map((el) => {
-      const er = el.getBoundingClientRect();
-      return { el, from: parse(el.dataset.from), to: el.dataset.to === 'now' ? nowF : parse(el.dataset.to) + 1, tile: { x: er.left - tr.left, y: er.top - tr.top } };
-    });
-    tlArt.tl = { x0, pxm, now: nowF, startMonth: origin.m, roles, bandH: H, leaders: W >= 900, yearM: idx(origin.y + 1, 0) };
+    const W = tlEl.clientWidth;
+    const x0 = Math.min(40, W * 0.08), pxm = (W - x0 - Math.min(48, W * 0.1)) / nowF, X = (m) => x0 + m * pxm;
+    const axisY = 40, lanes = [74, 100];
+    const roles = [...document.querySelectorAll('.role[data-from]')].map((el, i) => ({
+      from: parse(el.dataset.from), to: el.dataset.to === 'now' ? nowF : parse(el.dataset.to) + 1, y: lanes[i % 2]
+    }));
+    tlArt.tl = { x0, pxm, now: nowF, roles, axisY, yearM: idx(origin.y + 1, 0) };
     tlEl.querySelectorAll('[data-year]').forEach((el) => { el.style.left = X(Math.max(0, idx(Number(el.dataset.year), 0))) + 'px'; });
-    const nowEl = tlEl.querySelector('.tl-now'); if (nowEl) nowEl.style.left = X(nowF) + 'px';
+    const nowEl = tlEl.querySelector('.tl-now'); if (nowEl) nowEl.style.left = (X(nowF) + 8) + 'px';
+    // each role's name sits just above the start of its line
+    tlEl.querySelectorAll('.tl-role').forEach((el, i) => {
+      const r = roles[i]; if (!r) return;
+      el.style.left = X(r.from) + 'px';
+      el.style.top = (r.y - 17) + 'px';
+    });
     tlArt.dirty = true;
   }
 
@@ -533,7 +519,7 @@ in vec2 a;void main(){gl_Position=vec4(a,0.0,1.0);}`;
 
   const FS = `#version 300 es
 precision highp float;
-uniform vec2 uRes;uniform float uDpr;uniform float uTime;
+uniform vec2 uRes;uniform float uDpr;uniform float uTime;uniform float uOff;
 uniform vec2 uMouse;uniform float uMouseAmt;uniform float uInvert;
 uniform int uSecN;uniform vec4 uSec[12];uniform vec4 uSecB[12];
 uniform int uRectN;uniform vec4 uRect[24];uniform vec4 uKind[24];
@@ -603,15 +589,18 @@ float lineAlpha(float v,float vd,float wpx,float cov){
 float rl(float dy,float c,float w){return 1.0-smoothstep(w*0.5-0.5,w*0.5+0.5,abs(dy-c));}
 
 void main(){
- vec2 p=vec2(gl_FragCoord.x,uRes.y-gl_FragCoord.y)/uDpr;
+ vec2 p=vec2(gl_FragCoord.x,uRes.y-gl_FragCoord.y)/uDpr+vec2(0.0,uOff);
  float t=uTime;
 
  int si=0;
  for(int i=0;i<12;i++){
   if(i>=uSecN)break;
   vec4 s=uSec[i];vec4 b=uSecB[i];float off=0.0;
-  if(b.x>0.5&&b.x<1.5)off=b.y*(0.8*sn(vec2(p.x/230.0,float(i)*7.3))+0.25*sn(vec2(p.x/37.0,float(i)*3.1)));
-  else if(b.x>1.5&&b.x<2.5)off=b.y*sin(p.x/210.0+float(i)*1.7);
+  // a seam's edge is only worked out near that seam (it moves the boundary by at most b.y)
+  if(abs(p.y-s.x)<b.y*1.1+2.0){
+   if(b.x>0.5&&b.x<1.5)off=b.y*(0.8*sn(vec2(p.x/230.0,float(i)*7.3))+0.25*sn(vec2(p.x/37.0,float(i)*3.1)));
+   else if(b.x>1.5&&b.x<2.5)off=b.y*sin(p.x/210.0+float(i)*1.7);
+  }
   if(p.y>=s.x+off)si=i;
  }
  vec4 S=uSec[si];
@@ -682,20 +671,22 @@ void main(){
  }else if(scene==2){
   // FAQ: a sheet of parallel wavy lines. The fist has taken hold of its top edge and dragged it down: the lines crowd
   // into the grip and fan back up to the sides, and the night shows through where the sheet was.
-  // Each line is a fixed depth u below the sheet's original top edge; find u for this pixel by bisection.
+  // Each line is a fixed depth u below the sheet's original top edge. Without the waves the depth is solved
+  // directly (piecewise: above the sheet, the dragged part, the part that relaxes back); the waves are then
+  // folded in with a few fixed-point steps, since they bend the lines only slightly.
   vec2 G=uGrip.xy;float sp=uGrip.z;float L=uGrip.w;
   float top0=secTop+24.0;float D=max(G.y-top0,40.0);
   float k=exp(-pow(abs(pw.x-G.x)/L,1.3));
   float Ug=0.8*D,cg=1.0-0.95*0.8,T=cg*D/0.95;
-  float lo=-1.3*D,hi=secH*1.6+D;
-  for(int i=0;i<18;i++){
-   float u=0.5*(lo+hi);
+  float A=D*k*cg;float wamp=0.0;float u=pw.y-top0;
+  for(int it=0;it<3;it++){
+   float Y=pw.y-top0-wamp;
+   if(Y<D*k)u=Y-D*k;
+   else if(Y<Ug+A)u=(Y-D*k)/(1.0-0.95*k);
+   else{u=Y;for(int n=0;n<4;n++){float e=A*exp(-(u-Ug)/T);u-=(u+e-Y)/(1.0-e/T);}}
    float c=u<0.0?1.0:(u<Ug?1.0-0.95*u/D:cg*exp(-(u-Ug)/T));
-   float kc=k*c;
-   float wv=(11.0*sin(pw.x/170.0+u/210.0-t*0.3)+7.0*sin(pw.x/83.0-u/330.0+t*0.2+1.3)+5.0*sin(pw.x/47.0+u/120.0+2.1))*pow(1.0-kc,1.5);
-   if(top0+u+D*kc+wv<pw.y)lo=u;else hi=u;
+   wamp=(11.0*sin(pw.x/170.0+u/210.0-t*0.3)+7.0*sin(pw.x/83.0-u/330.0+t*0.2+1.3)+5.0*sin(pw.x/47.0+u/120.0+2.1))*pow(1.0-k*c,1.5);
   }
-  float u=0.5*(lo+hi);
   float fu=max(fwidth(u),1e-3);
   v1=u/sp+bump*0.4;vd1=u/sp;
   f1=clamp(u/fu+0.5,0.0,1.0);
@@ -712,12 +703,12 @@ void main(){
   // is a band of rings, denser toward its end like latewood and closed by a bold ring. The new year is a double ring,
   // the contract months are hatched across the grain, the rings grow bolder as the role grew, a few dry cracks run
   // outward, and the bark is today; past it nothing has grown yet. The rings straighten where the strip crosses them.
-  vec2 C=vec2(uTLm.x,uTL.y+uTL.w*0.5);float pxm=max(uTLm.y,4.0);float nowM=uTLm.z;
+  vec2 C=vec2(uTLm.x,uTL.y+uTL.w);float pxm=max(uTLm.y,4.0);float nowM=uTLm.z;
   vec2 d=pw-C;float r=length(d);vec2 dir=d/max(r,1.0);
   float off=smoothstep(0.0,160.0,abs(pw.y-C.y))*smoothstep(0.0,90.0,r);
   float re=r+(0.03*r+6.0)*(sn(dir*1.3+vec2(r/700.0,t*0.01))+0.35*sn(dir*4.0+vec2(r/180.0,3.1)))*off+bump*2.2;
   float u=re/pxm;
-  float Lm=max(2.0,floor(pxm/13.0+0.5));
+  float Lm=max(2.0,floor(pxm/16.0+0.5));
   float mi=floor(u);float fr=u-mi;
   float grown=1.0-smoothstep(nowM-0.01,nowM+0.01,u);
   float gw=clamp(u/max(nowM,1.0),0.0,1.0);
@@ -852,7 +843,7 @@ void main(){
 
   function startArtsOnly() {
     root.classList.add('no-lines');
-    const loop = (now) => { tickArts(now / 1000); requestAnimationFrame(loop); };
+    const loop = (now) => { if (HIL.renderModels) HIL.renderModels(now / 1000); tickArts(now / 1000); requestAnimationFrame(loop); };
     layoutTimeline(); layoutOrbit();
     requestAnimationFrame(loop);
   }
@@ -875,7 +866,7 @@ void main(){
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const al = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(al); gl.vertexAttribPointer(al, 2, gl.FLOAT, false, 0, 0);
   const U = {};
-  ['uRes', 'uDpr', 'uTime', 'uMouse', 'uMouseAmt', 'uInvert', 'uSecN', 'uSec', 'uSecB', 'uRectN', 'uRect', 'uKind', 'uHero', 'uTun', 'uCliff', 'uFig',
+  ['uRes', 'uDpr', 'uTime', 'uOff', 'uMouse', 'uMouseAmt', 'uInvert', 'uSecN', 'uSec', 'uSecB', 'uRectN', 'uRect', 'uKind', 'uHero', 'uTun', 'uCliff', 'uFig',
     'uName', 'uNameOn', 'uGrip', 'uPeakN', 'uPeak', 'uTL', 'uTLm', 'uRA', 'uSeal', 'uSeal2', 'uBH', 'uBH2', 'uMoon', 'uFoot', 'uCode', 'uCodeOn']
     .forEach((n) => { U[n] = gl.getUniformLocation(prog, n); });
   function makeTex(unit) {
@@ -931,7 +922,15 @@ void main(){
 
   let handGripY = 0.3;
   function measureRadii() {
-    if (handEl) handGripY = parseFloat(getComputedStyle(handEl).getPropertyValue('--grip-y')) || 0.3; plates.forEach((p) => { p.rad = parseFloat(getComputedStyle(p.el).borderTopLeftRadius) || 0; }); }
+    if (handEl) {
+      handEl.style.removeProperty('--grip-y');
+      if (innerWidth > 900) {
+        const sr = handEl.closest('[data-scene]').getBoundingClientRect(), hr = handEl.getBoundingClientRect();
+        if (hr.height > 0) handEl.style.setProperty('--grip-y', clamp((sr.top + sr.height * 0.5 - hr.top) / hr.height, 0.1, 0.7).toFixed(4));
+      }
+      handGripY = parseFloat(getComputedStyle(handEl).getPropertyValue('--grip-y')) || 0.3;
+      if (HIL.refitModels) HIL.refitModels();
+    } plates.forEach((p) => { p.rad = parseFloat(getComputedStyle(p.el).borderTopLeftRadius) || 0; }); }
 
   /* ---------- the name, drawn only by the spiral's thickness ---------- */
   const nameCanvas = document.createElement('canvas');
@@ -1051,7 +1050,14 @@ void main(){
 
   /* ---------- sizing ---------- */
   let dpr = 1, quality = 1;
+  // The canvas is taller than the viewport by an overscan above and below, and sits in the page (not fixed).
+  // Each frame it is moved to the viewport and redrawn; between frames it scrolls with the content, so the lines
+  // never drift behind the text, the plates or the 3D hand when a frame runs late.
+  let OS = 160, docH = 0;
   function resize() {
+    OS = Math.round(Math.min(140, innerHeight * 0.14));
+    cv.style.height = (innerHeight + 2 * OS) + 'px';
+    docH = document.body.offsetHeight;
     const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
     dpr = Math.min(devicePixelRatio || 1, innerWidth < 760 ? 1.5 : 1.75) * quality;
     const maxPx = 3.4e6; if (w * h * dpr * dpr > maxPx) dpr = Math.sqrt(maxPx / (w * h));
@@ -1120,7 +1126,7 @@ void main(){
       const r = handEl.getBoundingClientRect();
       let gx = r.left + r.width / 2, gy = r.top + r.height * handGripY;
       if (HIL.grip && HIL.grip.ok) { gx = HIL.grip.x; gy = HIL.grip.y; }
-      gl.uniform4f(U.uGrip, gx, gy, clamp(vw / 150, 7, 12), clamp(vw * 0.32, 150, 820));
+      gl.uniform4f(U.uGrip, gx, gy, clamp(vw / 85, 12, 20), clamp(vw * 0.32, 150, 820));
     }
     let k = 0;
     for (const p of peaks) {
@@ -1131,7 +1137,7 @@ void main(){
     gl.uniform1i(U.uPeakN, k); gl.uniform4fv(U.uPeak, peakBuf);
     if (tlEl && tlArt && tlArt.tl) {
       const r = tlEl.getBoundingClientRect(), tl = tlArt.tl, A = tl.roles[0], B = tl.roles[1];
-      gl.uniform4f(U.uTL, r.left, r.top, r.width, r.height);
+      gl.uniform4f(U.uTL, r.left, r.top, r.width, tl.axisY);
       gl.uniform4f(U.uTLm, r.left + tl.x0, tl.pxm, tl.now, tl.yearM);
       gl.uniform4f(U.uRA, A ? A.from : 0, A ? A.to : 0, B ? B.from : -9, B ? B.to : -9);
     }
@@ -1179,18 +1185,26 @@ void main(){
   }
 
   /* ---------- loop ---------- */
-  let last = performance.now(), time = 0, slow = 0, frames = 0;
+  let last = performance.now(), time = 0, slow = 0, frames = 0, lastSY = -1, idleSkip = false;
   function relayout() {
     fitName(); measureRadii(); resize(); drawName(); drawCode(); layoutTimeline(); layoutOrbit(); cutAtSeam();
     arts.forEach((a) => { a.dirty = true; });
   }
   function frame(now) {
-    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now; // the first frame can be stamped before the script ran
     if (document.hidden) { requestAnimationFrame(frame); return; }
     if (!reduce) time += dt;
     if (relayoutPending) { relayoutPending = false; relayout(); }
+    const moving = scrollY !== lastSY || Math.abs(P.tx - P.x) + Math.abs(P.ty - P.y) > 0.5 || Math.abs(P.tamt - P.amt) > 0.01;
+    lastSY = scrollY;
+    if (!moving && (idleSkip = !idleSkip)) { requestAnimationFrame(frame); return; }
     const vw = innerWidth, vh = innerHeight;
     P.x += (P.tx - P.x) * 0.14; P.y += (P.ty - P.y) * 0.14; P.amt += ((reduce ? 0 : P.tamt) - P.amt) * 0.06;
+    HIL.grip = null; // set again this frame if the hand is drawn; otherwise the grip comes from the layout
+    if (HIL.renderModels) HIL.renderModels(time); // the 3D models first, so the fist's grip is this frame's
+    const sy = scrollY, fy = Math.max(0, Math.min(sy - OS, docH - cv.clientHeight));
+    cv.style.transform = 'translate3d(0,' + fy + 'px,0)';
+    gl.uniform1f(U.uOff, fy - sy);
     frameParams(vw, vh);
     gl.uniform2f(U.uRes, cv.width, cv.height); gl.uniform1f(U.uDpr, dpr); gl.uniform1f(U.uTime, time);
     gl.uniform2f(U.uMouse, P.x, P.y); gl.uniform1f(U.uMouseAmt, P.amt); gl.uniform1f(U.uInvert, isDark() ? 1 : 0);

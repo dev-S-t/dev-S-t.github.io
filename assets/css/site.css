@@ -38,7 +38,7 @@ body {
 [data-polarity="inverse"] { --g: var(--ink); --f: var(--paper); }
 [data-polarity] { color: var(--f); position: relative; z-index: 1; }
 
-#field { position: fixed; inset: 0; width: 100vw; height: 100lvh; display: block; z-index: 0; pointer-events: none; }
+#field { position: absolute; left: 0; top: 0; width: 100%; height: 100lvh; display: block; z-index: 0; pointer-events: none; will-change: transform; }
 html:not(.lines-live) #field { display: none; }
 
 a { color: inherit; text-decoration-line: underline; text-decoration-thickness: 1px; text-underline-offset: .22em; transition: text-decoration-thickness .2s, text-underline-offset .2s; }
@@ -204,13 +204,15 @@ html:not(.lines-live) .face-space .model { -webkit-mask-image: linear-gradient(t
   padding: clamp(130px, 18vh, 210px) var(--pad) clamp(110px, 16vh, 180px);
 }
 .exp-head { grid-column: 1 / span 6; display: grid; gap: 14px; padding: 18px 22px; justify-self: start; }
-.timeline { grid-column: 1 / -1; position: relative; height: clamp(120px, 15vh, 170px); margin: clamp(64px, 9vh, 100px) 0 clamp(56px, 8vh, 86px); border-radius: 20px; }
-.tl-canvas { position: absolute; left: 0; top: 0; width: 100%; height: calc(100% + clamp(56px, 8vh, 86px)); }
-.tl-year, .tl-now { position: absolute; top: -12px; transform: translate(-50%, -100%); padding: 4px 10px; border-radius: 12px; font-family: var(--f-data); font-size: 20px; line-height: 1; letter-spacing: .12em; white-space: nowrap; }
-.tl-year:first-of-type { transform: translate(-10px, -100%); }
-.tl-now { transform: translate(-88%, -100%); }
+.timeline { grid-column: 1 / -1; position: relative; height: 118px; margin: clamp(60px, 9vh, 96px) 0 clamp(44px, 7vh, 72px); border-radius: 28px; }
+.tl-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.tl-year, .tl-now, .tl-role { position: absolute; font-family: var(--f-data); line-height: 1; white-space: nowrap; }
+.tl-year, .tl-now { top: 12px; font-size: 15px; letter-spacing: .14em; transform: translateX(-50%); }
+.tl-year:first-of-type { transform: translateX(-4px); }
+.tl-now { transform: translateX(-100%); }
+.tl-role { font-size: 12px; letter-spacing: .1em; }
 .tl-year::before { content: attr(data-year); }
-.tl-now::before { content: attr(data-label); }
+.tl-now::before, .tl-role::before { content: attr(data-label); }
 html:not(.lines-live) .timeline { display: none; }
 /* the two entries are the same size side by side */
 .role { display: grid; align-content: start; gap: 16px; padding: clamp(20px, 2.2vw, 36px); align-self: stretch; }
@@ -219,8 +221,7 @@ html:not(.lines-live) .timeline { display: none; }
 .r2 { grid-column: 7 / span 6; }
 @media (max-width: 900px) {
   .exp-head, .r1, .r2 { grid-column: 1 / -1; } .r2 { margin-top: 18px; }
-  .timeline { height: 130px; margin: 60px 0 30px; }
-  .tl-canvas { height: 100%; }
+  .timeline { margin: 56px 0 30px; }
 }
 
 /* ---------- projects: a bento, with drawings only where they say something ---------- */
