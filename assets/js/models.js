@@ -30,15 +30,15 @@ void main(){
 // contour lines of distance from the eye (like reference image 5), thicker where the light falls (like an engraving)
 // constant pixel-width lines weighted by light, so flat areas get sparse thin lines rather than blobs
 const FRAG = `
-uniform vec3 uGround; uniform vec3 uLine; uniform float uDensity; uniform vec3 uLight; uniform float uRim; uniform float uMaxW; uniform float uDpr; uniform float uFlow;
+uniform vec3 uGround; uniform vec3 uLine; uniform float uDensity; uniform vec3 uLight; uniform float uRim; uniform float uMaxW; uniform float uDpr; uniform float uFlow; uniform vec2 uDir;
 varying vec3 vN; varying vec3 vV; varying float vDepth; varying vec3 vMV;
 float lineAt(float v, float fw, float wpx){ float d = abs(fract(v + 0.5) - 0.5) / fw; return 1.0 - smoothstep(wpx * 0.5 - 0.7, wpx * 0.5 + 0.7, d); }
 void main(){
   vec3 n = normalize(vN); if (!gl_FrontFacing) n = -n;
   vec3 vv = normalize(vV);
   float lam = clamp(dot(n, normalize(uLight)), 0.0, 1.0);
-  // uFlow 0: contours of distance from the eye; 1: upright lines that bend over the form (the cloth running on through the hand)
-  float v = mix(vDepth, vMV.x + 0.9 * vDepth, uFlow) * uDensity;
+  // uFlow 0: contours of distance from the eye; 1: parallel lines across the screen (along uDir's normal) that bend over the form
+  float v = mix(vDepth, dot(vMV.xy, uDir) + 0.9 * vDepth, uFlow) * uDensity;
   float fw = max(fwidth(v), 1e-4);
   float l = max(0.0, log2(fw / 0.28)); float l0 = floor(l); float f = l - l0; float s0 = exp2(l0);
   float wpx = mix(0.45, uMaxW, pow(lam, 1.1)) * uDpr;
@@ -48,11 +48,11 @@ void main(){
   gl_FragColor = vec4(mix(uGround, uLine, a), 1.0);
 }`;
 
-function engraving(density, rim = 0.9, maxW = 2.2, flow = 0) {
+function engraving(density, rim = 0.9, maxW = 2.2, flow = 0, dir = [1, 0]) {
   return new THREE.ShaderMaterial({
     uniforms: {
       uGround: { value: new THREE.Color(0x0d0d0c) }, uLine: { value: new THREE.Color(0xf3f1ec) },
-      uDensity: { value: density }, uLight: { value: new THREE.Vector3(-0.45, 0.55, 0.75) }, uRim: { value: rim }, uMaxW: { value: maxW }, uFlow: { value: flow }, uDpr: { value: Math.min(devicePixelRatio || 1, 2) }
+      uDensity: { value: density }, uLight: { value: new THREE.Vector3(-0.45, 0.55, 0.75) }, uRim: { value: rim }, uMaxW: { value: maxW }, uFlow: { value: flow }, uDir: { value: new THREE.Vector2(dir[0], dir[1]) }, uDpr: { value: Math.min(devicePixelRatio || 1, 2) }
     },
     vertexShader: VERT, fragmentShader: FRAG
   });
@@ -152,7 +152,7 @@ if (headCanvas) {
 const handCanvas = document.querySelector('canvas[data-model="hand"]');
 if (handCanvas) {
   const v = makeView(handCanvas);
-  const mat = engraving(70, 0.9, 1.8, 1); const armMat = engraving(70, 0.9, 1.8, 1); v.mats.push(mat, armMat);
+  const mat = engraving(40, 1.0, 1.25, 1, [0, 1]); const armMat = engraving(40, 1.0, 1.25, 1, [0, 1]); v.mats.push(mat, armMat);
   const rig = new THREE.Group(); v.scene.add(rig);
   let grip = null, fist = null;
   const tmp = new THREE.Vector3();
@@ -197,10 +197,13 @@ if (handCanvas) {
     holder.scale.setScalar(1 / span); holder.updateMatrixWorld(true);
     const knuck = W('middle-finger-phalanx-proximal');
     holder.position.sub(knuck); holder.updateMatrixWorld(true);
-    // the forearm, reaching up from below the frame
+    // the forearm: narrow at the wrist, fuller toward the elbow, a little flattened; it fades into the sheet below
     const wp = W('wrist');
-    const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.42, 12, 64, 1, false), armMat);
-    arm.position.set(wp.x, wp.y - 6 + 0.5, wp.z - 0.04);
+    const prof = [[0.001, 0.22], [0.2, 0.2], [0.26, 0.04], [0.285, -0.3], [0.33, -0.9], [0.385, -1.6], [0.415, -2.4], [0.42, -3.2], [0.4, -4.2], [0.38, -5.4]].map(([r, y]) => new THREE.Vector2(r, y));
+    const arm = new THREE.Mesh(new THREE.LatheGeometry(prof, 64), armMat);
+    arm.scale.set(1.15, 1, 0.92);
+    arm.position.set(wp.x, wp.y + 0.02, wp.z - 0.03);
+    arm.rotation.z = -0.05;
     v.wristW = wp.clone();
     v.gripW = W('thumb-tip').add(W('index-finger-phalanx-intermediate')).multiplyScalar(0.5);
     rig.add(holder, arm);
@@ -208,14 +211,23 @@ if (handCanvas) {
     v.fit();
   }, undefined, (err) => console.warn('[models] hand:', err));
   v.fit = () => {
-    // the pinch sits about a quarter of the way down the tall canvas; the hand fills about half its width
+    // the fist sits where the CSS says (--grip-y, a share of the canvas height); the hand fills about a third of the width
+    const gyF = parseFloat(getComputedStyle(handCanvas).getPropertyValue('--grip-y')) || 0.3;
     const fov = v.camera.fov * Math.PI / 180;
     const visW = 2.9, visH = visW / Math.max(v.camera.aspect, 0.2);
     const dist = visH / (2 * Math.tan(fov / 2));
     const cx = v.gripW ? (v.gripW.x + v.wristW.x) / 2 : 0;
-    const y = (v.gripW ? v.gripW.y : 0) - (0.5 - 0.26) * visH;
+    const y = (v.gripW ? v.gripW.y : 0) - (0.5 - gyF) * visH;
     v.camera.position.set(cx, y, dist);
     v.camera.lookAt(cx, y, 0);
+    if (!v.w || !v.h) return;
+    // lines about 3.2 px apart at any size, three times finer than the sheet behind the hand
+    v.mats.forEach((mt) => { mt.uniforms.uDensity.value = (v.w / visW) / 3.2; });
+    // the forearm fades out a little below the wrist, into the sheet
+    const unit = v.w / visW, gy = gyF * v.h;
+    const end = Math.min(gy + unit * 2.7, v.h - 8), start = Math.min(gy + unit * 1.2, end - unit * 0.6);
+    const mask = 'linear-gradient(to bottom, #000 ' + Math.round(start) + 'px, transparent ' + Math.round(end) + 'px)';
+    handCanvas.style.webkitMaskImage = mask; handCanvas.style.maskImage = mask;
   };
   v.update = (t) => {
     const r = handCanvas.getBoundingClientRect();
