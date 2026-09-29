@@ -26,6 +26,20 @@
   });
   syncToggle();
 
+  /* ---------- loader: leaves once the fonts are in and a few frames have drawn (at least 0.9 s, at most 4 s) ---------- */
+  (() => {
+    if (!root.classList.contains('is-loading')) return;
+    const start = performance.now();
+    const frames = (n) => new Promise((res) => { const f = () => (--n <= 0 ? res() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+    const fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    const ready = fonts.then(() => frames(4)).then(() => new Promise((res) => setTimeout(res, Math.max(0, 900 - (performance.now() - start)))));
+    Promise.race([ready, new Promise((res) => setTimeout(res, 4000))]).then(() => {
+      if (!root.classList.contains('is-loading')) return;
+      root.classList.remove('is-loading'); root.classList.add('is-leaving');
+      setTimeout(() => root.classList.remove('is-leaving'), 950);
+    });
+  })();
+
   /* ---------- navigation: full island while the links fit, a compact island with a Menu sheet once they don't ---------- */
   root.classList.add('nav-js');
   const navEl = document.querySelector('.topbar'), navList = document.getElementById('nav-list'), menuBtn = document.querySelector('.menu-toggle');

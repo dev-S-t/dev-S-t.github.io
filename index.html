@@ -61,12 +61,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalnia:wdth,wght@100..125,100..700&family=Geologica:slnt,wght,CRSV,SHRP@-12..0,100..900,0..1,0..100&family=Workbench:BLED,SCAN@0..100,-53..100&family=Monoton&family=Michroma&family=Libre+Barcode+128&display=swap">
+  <script>document.documentElement.classList.add('is-loading');setTimeout(function(){document.documentElement.classList.remove('is-loading')},4500);</script>
   <link rel="stylesheet" href="/assets/css/site.css">
   <!-- 3D models (head, hand) load lazily through three.js when their sections come near -->
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
   <script src="/assets/js/lines.js" defer></script>
 </head>
 <body>
+  <div class="loader" aria-hidden="true"><svg viewBox="0 0 200 200" focusable="false"><circle class="lr" cx="100" cy="100" r="16" pathLength="100" style="--arc:78;--dur:2.6s;--dir:1;--i:0"/><circle class="lr" cx="100" cy="100" r="28" pathLength="100" style="--arc:64;--dur:3.6s;--dir:-1;--i:1"/><circle class="lr" cx="100" cy="100" r="40" pathLength="100" style="--arc:84;--dur:4.4s;--dir:1;--i:2"/><circle class="lr" cx="100" cy="100" r="52" pathLength="100" style="--arc:58;--dur:5.2s;--dir:-1;--i:3"/><circle class="lr" cx="100" cy="100" r="64" pathLength="100" style="--arc:80;--dur:6.2s;--dir:1;--i:4"/><circle class="lr" cx="100" cy="100" r="76" pathLength="100" style="--arc:68;--dur:7.4s;--dir:-1;--i:5"/><circle class="lr" cx="100" cy="100" r="88" pathLength="100" style="--arc:88;--dur:8.6s;--dir:1;--i:6"/><circle class="lr-dot" cx="100" cy="100" r="2.4"/></svg></div>
 
   <a class="skip" href="#about">Skip to content</a>
   <canvas id="field" aria-hidden="true"></canvas>

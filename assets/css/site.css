@@ -69,6 +69,24 @@ html:not(.lines-live) main > section:nth-child(even) { background-image: repeati
 /* model canvases never size their box: their pixels must not feed back into the layout */
 .model { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
 
+/* ---------- loader: only when JavaScript runs; rings draw in and turn, then open outward into the page ---------- */
+.loader { display: none; }
+html.is-loading, html.is-leaving { overflow: hidden; }
+html.is-loading .loader, html.is-leaving .loader { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: #F3F1EC; color: #0D0D0C; }
+.loader svg { width: min(44vmin, 300px); height: auto; overflow: visible; transition: transform .9s cubic-bezier(.7,0,.2,1); }
+.loader .lr { fill: none; stroke: currentColor; stroke-width: .9; stroke-linecap: round; transform-origin: 100px 100px; stroke-dasharray: 0 100;
+  animation: lr-draw 1s cubic-bezier(.6,0,.2,1) calc(var(--i) * 70ms) forwards, lr-turn var(--dur) linear infinite; }
+.loader .lr:nth-child(odd) { stroke-width: 1.4; }
+.loader .lr-dot { fill: currentColor; }
+@keyframes lr-draw { to { stroke-dasharray: var(--arc) calc(100 - var(--arc)); } }
+@keyframes lr-turn { to { transform: rotate(calc(var(--dir) * 360deg)); } }
+html.is-leaving .loader { opacity: 0; transition: opacity .6s .25s; }
+html.is-leaving .loader svg { transform: scale(3.2); }
+@media (prefers-reduced-motion: reduce) {
+  .loader .lr { animation: none; stroke-dasharray: var(--arc) calc(100 - var(--arc)); }
+  html.is-leaving .loader svg { transform: none; }
+}
+
 /* ---------- navigation: the floating glass island ---------- */
 .topbar {
   position: fixed; z-index: 40; top: 14px; left: var(--pad); right: var(--pad);
