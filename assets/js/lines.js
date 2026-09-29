@@ -176,7 +176,9 @@
       const r0 = a.cv.getBoundingClientRect(); const px = P.x - r0.left, py = P.y - r0.top;
       if (P.amt > 0.05) { tx = clamp((px - cx) / w, -0.5, 0.5) * ew * 0.62; ty = clamp((py - cy) / h, -0.5, 0.5) * eh * 0.7; }
       st.ox = lerp(st.ox, tx, 0.12); st.oy = lerp(st.oy, ty, 0.12);
-      const blink = reduce ? 1 : Math.max(0.08, Math.min(1, Math.abs(Math.sin(t * 0.52)) * 6));
+      if (st.born == null) st.born = t;
+      const bt = t - st.born - 3.2; // the first blink waits 3.2 s after the eye first appears, then one every 6 s
+      const blink = reduce || bt < 0 ? 1 : Math.max(0.08, Math.min(1, Math.abs(Math.sin(bt * 0.52)) * 6));
       c.save();
       c.beginPath(); c.moveTo(cx - ew, cy); c.quadraticCurveTo(cx, cy - eh * 2 * blink, cx + ew, cy); c.quadraticCurveTo(cx, cy + eh * 2 * blink, cx - ew, cy); c.closePath();
       c.lineWidth = 1.6; c.stroke(); c.clip();
@@ -442,50 +444,82 @@
         c.lineWidth = 1.4; path(flap); c.stroke();
       }
     },
-    wastage(c, w, h) { // 1,000 units twice: 112 broken before, 25 after
-      const blocks = [112, 25], gap = 18, bw = (w - gap) / 2, cols = 40, rows = 25;
-      blocks.forEach((broken, b) => {
-        const R = rng(100 + b), set = new Set(); while (set.size < broken) set.add(Math.floor(R() * 1000));
-        const x0 = b * (bw + gap), sx = bw / cols, sy = h / rows;
-        c.lineWidth = Math.max(0.6, sx * 0.34); c.beginPath();
-        for (let i = 0; i < 1000; i++) {
-          const x = x0 + (i % cols) * sx + sx / 2, y = Math.floor(i / cols) * sy + 1, hh = sy - 2;
-          if (set.has(i)) { c.moveTo(x - 1, y); c.lineTo(x - 1, y + hh * 0.35); c.moveTo(x + 1, y + hh * 0.6); c.lineTo(x + 1, y + hh); }
-          else { c.moveTo(x, y); c.lineTo(x, y + hh); }
-        }
-        c.stroke();
-      });
-    },
-    fulfilment(c, w, h) { // 1,000 demands, 9 unmet
-      const R = rng(9), set = new Set(); while (set.size < 9) set.add(Math.floor(R() * 1000));
-      const cols = 100, rows = 10, sx = w / cols, sy = h / rows;
-      c.lineWidth = Math.max(0.5, sx * 0.4); c.beginPath();
-      for (let i = 0; i < 1000; i++) { if (set.has(i)) continue; const x = (i % cols) * sx + sx / 2, y = Math.floor(i / cols) * sy + 2; c.moveTo(x, y); c.lineTo(x, y + sy - 4); }
-      c.stroke();
-      c.lineWidth = 1.2;
-      set.forEach((i) => { const x = (i % cols) * sx + sx / 2, y = Math.floor(i / cols) * sy + sy / 2; c.beginPath(); c.arc(x, y, 4, 0, TAU); c.stroke(); });
-    },
-    mae(c, w, h) { // forecast hugging the actual series; the gap hatched
-      const R = rng(21), N = 48, act = [], fc = [];
-      for (let i = 0; i < N; i++) { const s = Math.sin(i / 3.3) * 0.32 + Math.sin(i / 9) * 0.22; fc.push(s); act.push(s + (R() - 0.5) * 0.28); }
-      const X = (i) => (i / (N - 1)) * w, Y = (v) => h * (0.5 - v * 0.75);
-      c.lineWidth = 0.6; c.beginPath();
-      for (let x = 0; x <= w; x += 2.5) { const i = (x / w) * (N - 1), i0 = Math.floor(i), f = i - i0, i1 = Math.min(N - 1, i0 + 1); c.moveTo(x, Y(lerp(act[i0], act[i1], f))); c.lineTo(x, Y(lerp(fc[i0], fc[i1], f))); }
-      c.globalAlpha = 0.6; c.stroke(); c.globalAlpha = 1;
-      c.lineWidth = 2; c.beginPath(); fc.forEach((v, i) => (i ? c.lineTo(X(i), Y(v)) : c.moveTo(X(i), Y(v)))); c.stroke();
-      c.lineWidth = 0.9; c.beginPath(); act.forEach((v, i) => (i ? c.lineTo(X(i), Y(v)) : c.moveTo(X(i), Y(v)))); c.stroke();
-    },
-    runs(c, w, h) { // 30 simulation runs, overlapping into one bundle
-      c.lineWidth = 0.7; c.globalAlpha = 0.42;
-      for (let k = 0; k < 30; k++) {
-        const R = rng(300 + k); c.beginPath();
-        for (let x = 0; x <= w; x += 3) { const u = x / w; const y = h * (0.18 + 0.64 * (1 - Math.exp(-u * 3.2))) + (R() - 0.5) * 5 + Math.sin(u * 9 + k) * 2; if (x === 0) c.moveTo(x, y); else c.lineTo(x, y); }
-        c.stroke();
+    // Wastage 11.2% -> 2.5%: a hundred platelet units. Eleven (and a fifth) are wasted, then most are rescued until two
+    // and a half remain. The pointer scrubs from before (left) to after (right); otherwise it plays on a loop.
+    wastage(c, w, h, t, a) {
+      const st = a.state || (a.state = { k: 0 });
+      const n = 10, cell = Math.min((w - 8) / n, (h - 8) / n), gx = (w - cell * n) / 2, gy = (h - cell * n) / 2;
+      let k; // 0 = before, 1 = after
+      if (a.pointer && a.pointer.inside) k = clamp((a.pointer.x - gx) / (cell * n), 0, 1);
+      else { const cyc = reduce ? 5 : t % 6.5; k = cyc < 1.4 ? 0 : cyc < 3.2 ? (cyc - 1.4) / 1.8 : cyc < 5.6 ? 1 : 1 - (cyc - 5.6) / 0.9; k = k * k * (3 - 2 * k); }
+      st.k = lerp(st.k, k, 0.25);
+      const wasted = lerp(11.2, 2.5, st.k);
+      // the wasted units, scattered but fixed; the ones rescued first are the last in this order
+      const order = st.order || (st.order = (() => { const R = rng(41), o = [...Array(100).keys()]; for (let q = 99; q > 0; q--) { const r = Math.floor(R() * (q + 1)); [o[q], o[r]] = [o[r], o[q]]; } return o.slice(0, 12); })());
+      const fillOf = new Map(); order.forEach((u, idx) => fillOf.set(u, clamp(wasted - idx, 0, 1)));
+      for (let u = 0; u < 100; u++) {
+        const x = gx + (u % n) * cell + cell / 2, y = gy + Math.floor(u / n) * cell + cell / 2;
+        const f = fillOf.get(u) || 0;
+        if (f > 0.02) { // a wasted unit: a bold cross, as wide as its share
+          const r = cell * 0.36 * Math.sqrt(f);
+          c.lineWidth = 2.2; c.beginPath(); c.moveTo(x - r, y - r); c.lineTo(x + r, y + r); c.moveTo(x + r, y - r); c.lineTo(x - r, y + r); c.stroke();
+        } else { c.beginPath(); c.arc(x, y, 1.7, 0, TAU); c.fill(); }
       }
-      c.globalAlpha = 1;
+    },
+    // 99.1% of demand met: a heavy ring closed all but 0.9%. A dot keeps going round; at the gap it flashes.
+    fulfilment(c, w, h, t) {
+      const cx = w / 2, cy = h / 2, R = Math.min(w, h) * 0.4;
+      const gap = TAU * 0.009, start = -Math.PI / 2 + gap / 2;
+      c.lineWidth = 3.2; c.lineCap = 'butt'; c.beginPath(); c.arc(cx, cy, R, start, start + TAU - gap); c.stroke(); c.lineCap = 'round';
+      c.lineWidth = 1; c.beginPath(); c.arc(cx, cy, R * 0.72, 0, TAU); c.stroke();
+      // the gap's two edges, drawn out past the ring
+      c.lineWidth = 1.4; c.beginPath();
+      for (const ang of [-Math.PI / 2 - gap / 2, -Math.PI / 2 + gap / 2]) { c.moveTo(cx + Math.cos(ang) * (R - 7), cy + Math.sin(ang) * (R - 7)); c.lineTo(cx + Math.cos(ang) * (R + 9), cy + Math.sin(ang) * (R + 9)); }
+      c.stroke();
+      const ang = -Math.PI / 2 + ((reduce ? 0.3 : t * 0.22) % 1) * TAU;
+      const inGap = Math.abs(((ang + Math.PI / 2 + TAU) % TAU)) < gap * 1.6 || Math.abs(((ang + Math.PI / 2 + TAU) % TAU) - TAU) < gap * 1.6;
+      c.beginPath(); c.arc(cx + Math.cos(ang) * R, cy + Math.sin(ang) * R, inGap ? 6 : 3.6, 0, TAU);
+      if (inGap) { c.lineWidth = 1.4; c.stroke(); } else c.fill();
+    },
+    // MAE 5.85: demand as points, the forecast as one bold curve through them, each error a short tick.
+    // A guide follows the pointer (or sweeps slowly) and enlarges the point it meets.
+    mae(c, w, h, t, a) {
+      const N = 22, R = rng(21), pts = [];
+      const f = (u) => Math.sin(u * 5.2 + 0.4) * 0.28 + Math.sin(u * 1.9) * 0.18;
+      for (let q = 0; q < N; q++) { const u = q / (N - 1); pts.push([u, f(u), f(u) + (R() - 0.5) * 0.22]); }
+      const X = (u) => 8 + u * (w - 16), Y = (v) => h * (0.5 - v * 0.95);
+      c.lineWidth = 2.6; c.beginPath();
+      for (let x = 0; x <= w - 16; x += 3) { const u = x / (w - 16); const px = X(u), py = Y(f(u)); if (x === 0) c.moveTo(px, py); else c.lineTo(px, py); }
+      c.stroke();
+      const gxp = a.pointer && a.pointer.inside ? a.pointer.x : X(((reduce ? 0.62 : t * 0.08) % 1));
+      c.lineWidth = 1.1; c.beginPath();
+      for (const [u, fc, ac] of pts) { c.moveTo(X(u), Y(fc)); c.lineTo(X(u), Y(ac)); }
+      c.stroke();
+      let best = 0; pts.forEach((p, q) => { if (Math.abs(X(p[0]) - gxp) < Math.abs(X(pts[best][0]) - gxp)) best = q; });
+      for (let q = 0; q < N; q++) { const [u, , ac] = pts[q]; c.beginPath(); c.arc(X(u), Y(ac), q === best ? 5 : 2.6, 0, TAU); if (q === best) { c.lineWidth = 1.6; c.stroke(); } else c.fill(); }
+      c.lineWidth = 1; c.setLineDash([2, 4]); c.beginPath(); c.moveTo(gxp, 4); c.lineTo(gxp, h - 4); c.stroke(); c.setLineDash([]);
+    },
+    // 30 runs, paired: each run is one line from its wastage before (left) to after (right). Every one falls.
+    // The mean is bold; the pointer (or a slow sweep) picks out one run.
+    runs(c, w, h, t, a) {
+      const R = rng(300), runs = [];
+      for (let k = 0; k < 30; k++) runs.push([11.2 + (R() - 0.5) * 4.4, 2.5 + (R() - 0.5) * 2.2]);
+      const x0 = w * 0.16, x1 = w * 0.84, Y = (v) => h - 10 - (v / 14.5) * (h - 20);
+      c.lineWidth = 1.2; c.beginPath(); c.moveTo(x0, 6); c.lineTo(x0, h - 6); c.moveTo(x1, 6); c.lineTo(x1, h - 6); c.stroke();
+      let pick = Math.floor(((reduce ? 0.4 : t * 0.35) % 30));
+      if (a.pointer && a.pointer.inside) { let bd = 1e9; runs.forEach((r, k) => { const u = clamp((a.pointer.x - x0) / (x1 - x0), 0, 1); const d = Math.abs(lerp(Y(r[0]), Y(r[1]), u) - a.pointer.y); if (d < bd) { bd = d; pick = k; } }); }
+      c.lineWidth = 0.7; c.beginPath();
+      runs.forEach((r, k) => { if (k === pick) return; c.moveTo(x0, Y(r[0])); c.lineTo(x1, Y(r[1])); });
+      c.stroke();
+      c.beginPath(); runs.forEach((r) => { c.moveTo(x0 + 2, Y(r[0])); c.arc(x0, Y(r[0]), 2, 0, TAU); c.moveTo(x1 + 2, Y(r[1])); c.arc(x1, Y(r[1]), 2, 0, TAU); }); c.fill();
+      const m0 = runs.reduce((q, r) => q + r[0], 0) / 30, m1 = runs.reduce((q, r) => q + r[1], 0) / 30;
+      c.lineWidth = 3.4; c.beginPath(); c.moveTo(x0, Y(m0)); c.lineTo(x1, Y(m1)); c.stroke();
+      c.beginPath(); c.arc(x0, Y(m0), 4.5, 0, TAU); c.arc(x1, Y(m1), 4.5, 0, TAU); c.fill();
+      const pr = runs[pick];
+      c.lineWidth = 2; c.setLineDash([5, 4]); c.beginPath(); c.moveTo(x0, Y(pr[0])); c.lineTo(x1, Y(pr[1])); c.stroke(); c.setLineDash([]);
     }
   };
-  const ANIMATED = new Set(['voice', 'eye', 'tenants', 'enclosure', 'converge', 'timeline', 'page']);
+  const ANIMATED = new Set(['voice', 'eye', 'tenants', 'enclosure', 'converge', 'timeline', 'page', 'wastage', 'fulfilment', 'mae', 'runs']);
 
   const arts = [...document.querySelectorAll('canvas[data-emblem], canvas[data-figure], canvas[data-art]')].map((cv) => ({
     cv, kind: cv.dataset.emblem || cv.dataset.figure || cv.dataset.art, ctx: cv.getContext('2d'), dirty: true, visible: false,

@@ -322,7 +322,7 @@ html:not(.lines-live) .timeline { display: none; }
 .paper > p { grid-column: 1 / span 8; }
 .results { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(18px, 2vw, 34px); list-style: none; margin: 28px 0 0; padding: 0; }
 .results li { font-size: .92em; line-height: 1.5; }
-.figure { display: block; width: 100%; height: 132px; margin-bottom: 14px; }
+.figure { display: block; width: 100%; height: 168px; margin-bottom: 18px; }
 @media (max-width: 1000px) { .results { grid-template-columns: repeat(2, minmax(0, 1fr)); } .paper h3, .paper > p { grid-column: 1 / -1; } }
 @media (max-width: 560px) { .results { grid-template-columns: minmax(0, 1fr); } .pub-head { grid-column: 1 / -1; } }
 
