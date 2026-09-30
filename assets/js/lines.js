@@ -52,6 +52,22 @@
   /* ---------- navigation: full island while the links fit, a compact island with a Menu sheet once they don't ---------- */
   root.classList.add('nav-js');
   const navEl = document.querySelector('.topbar'), navList = document.getElementById('nav-list'), menuBtn = document.querySelector('.menu-toggle');
+  // the two o's of loop in the nav lettering are eyes: on devices with a pointer, the pupils follow it
+  const pupils = [...document.querySelectorAll('.brand-word .pupil')];
+  if (pupils.length && matchMedia('(hover: hover)').matches) {
+    let px = 0, py = 0, pend = 0;
+    const look = () => {
+      pend = 0;
+      for (const el of pupils) {
+        const m = el.getScreenCTM(); if (!m) continue;
+        const ex = +el.dataset.ex, ey = +el.dataset.ey, max = +el.dataset.m;
+        const dx = px - (m.a * ex + m.c * ey + m.e), dy = py - (m.b * ex + m.d * ey + m.f), d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 40);
+        el.setAttribute('cx', (ex + dx / d * max * k).toFixed(2));
+        el.setAttribute('cy', (ey + dy / d * max * k).toFixed(2));
+      }
+    };
+    addEventListener('pointermove', (ev) => { px = ev.clientX; py = ev.clientY; if (!pend) pend = requestAnimationFrame(look); }, { passive: true });
+  }
   function fitNav() {
     if (!navEl || !navList || !menuBtn) return;
     const wasOpen = navEl.classList.contains('open');
@@ -869,8 +885,10 @@ void main(){
   w=mix(0.7,1.25,rough)*wvar*0.8;
   float ct=cliffTop(hl.x,uHero.z,uHero.w);
   solid=max(solid,smoothstep(ct-0.8,ct+0.8,hl.y));
-  vec2 fq=rot(-uFig.z)*(p-uFig.xy)/uFig.w;fq.x=-fq.x;
-  solid=max(solid,1.0-smoothstep(-0.7,0.7,sdFigure(fq)*uFig.w));
+  if(uFig.w>0.5){ // the old silhouette; off while the brush figure from the mark stands there instead
+   vec2 fq=rot(-uFig.z)*(p-uFig.xy)/uFig.w;fq.x=-fq.x;
+   solid=max(solid,1.0-smoothstep(-0.7,0.7,sdFigure(fq)*uFig.w));
+  }
  }else if(scene==1){
   // ABOUT: quiet contours; the 3D head is drawn on its own canvas above
   float sy=pw.y-secTop;
@@ -1155,6 +1173,10 @@ void main(){
   const hero = document.querySelector('.hero');
   const n1 = hero ? hero.querySelector('.n1') : null;
   const heroId = hero ? hero.querySelector('[data-cliff]') : null;
+  // the figure from the mark, standing on the cliff. Its box in its own units: width, height, the middle of the feet
+  // (where it stands and turns), and its height from the top of the raised arms to the feet
+  const edgeMan = hero ? hero.querySelector('.edge-man') : null;
+  const EDGE = { w: 66, h: 82, px: 39.8, py: 80.2, tall: 77.8 };
   const handEl = document.querySelector('[data-hand]');
   const n2 = hero ? hero.querySelector('.n2') : null;
   const footEl = document.querySelector('.foot');
@@ -1405,7 +1427,16 @@ void main(){
       const e = smooth(prog);
       const fx = lerp(fx0, tcx, e) + Math.sin(prog * 3.2) * hr.width * 0.05;
       const fy = lerp(fy0, tcy + size0 * 0.4, e) - Math.sin(prog * Math.PI) * hr.height * 0.12;
-      gl.uniform4f(U.uFig, fx, fy, prog * 3.6, size0 * (1 - 0.82 * e));
+      const figSize = size0 * (1 - 0.82 * e);
+      if (edgeMan) {
+        // the brush figure: its feet on the cliff at (fx, fy), as tall as the old silhouette, turning as it falls
+        const k = figSize / EDGE.tall, ox = EDGE.px * k, oy = EDGE.py * k;
+        edgeMan.style.width = EDGE.w * k + 'px'; edgeMan.style.height = EDGE.h * k + 'px';
+        edgeMan.style.transformOrigin = ox + 'px ' + oy + 'px';
+        edgeMan.style.transform = 'translate(' + (fx - hr.left - ox) + 'px,' + (fy - hr.top - oy) + 'px) rotate(' + (prog * 3.6) + 'rad)';
+        if (!edgeMan.classList.contains('placed')) edgeMan.classList.add('placed');
+      }
+      gl.uniform4f(U.uFig, fx, fy, prog * 3.6, edgeMan ? 0 : figSize);
       gl.uniform1f(U.uNameOn, nameOn);
     }
     if (handEl) {
