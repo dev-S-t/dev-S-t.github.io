@@ -803,25 +803,41 @@ float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 mat2 rot(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}
 float smin(float a,float b,float k){float h=clamp(0.5+0.5*(b-a)/k,0.0,1.0);return mix(b,a,h)-k*h*(1.0-h);}
 float sdSeg(vec2 p,vec2 a,vec2 b){vec2 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0);return length(pa-ba*h);}
-// the head from the mark: an open ring, its opening at 11 o'clock on screen (-60 degrees here, as the figure is
-// mirrored), pressed on at one end of the stroke and lighter at the other, like the brush
+// ---------- the figure on the hero cliff: the stick man from the mark, standing plainly ----------
+// It has the mark's proportions (a big open-ring head, a slim spine, short legs) but ordinary arms and legs, not the
+// mark's raised arms and arched legs. Every number is a fraction of the figure's height: the feet are at y = 0 and the
+// top of the head at y = -1 (up is negative); x is sideways. The engine sets the figure's height in pixels (uFig.w).
+// To tune it, change these:
+//   FIG_HEAD_R   radius of the head ring, to the middle of its stroke. Bigger = bigger head (the mark: about 0.25)
+//   FIG_HEAD_T   half the head ring's stroke width (the mark: about 0.034)
+//   FIG_BODY_W   half the torso's width, i.e. how thick the body is (the mark's spine: about 0.027)
+//   FIG_LIMB_W   half the width of the arms and legs
+//   FIG_HIP      how high the hip sits above the feet, i.e. the legs' length (the mark: about 0.13)
+//   FIG_ARM      length of each arm; FIG_STANCE how far apart the feet are
+// The torso runs from the bottom of the head down to the hip, so a bigger head or a higher hip makes it shorter.
+const float FIG_HEAD_R=0.25, FIG_HEAD_T=0.034, FIG_BODY_W=0.036, FIG_LIMB_W=0.026, FIG_HIP=0.2, FIG_ARM=0.24, FIG_STANCE=0.1;
+// the head ring: open at 11 o'clock on screen (-60 degrees here, as the figure is drawn mirrored), pressed on at one
+// end of the stroke (x1.2) and lighter at the other (x0.7), like the brush
 float sdHead(vec2 p){
- const float R=0.145,T=0.033,GA=-1.0472,GH=0.2618,TAU=6.2831853; // a big head on a small body, on purpose
+ const float GA=-1.0472,GH=0.2618,TAU=6.2831853; // GA: where the opening points; GH: half its width (15 degrees)
  float da=mod(atan(p.y,p.x)-GA+TAU,TAU);
- if(da>GH&&da<TAU-GH){float u=(da-GH)/(TAU-2.0*GH);return abs(length(p)-R)-T*mix(1.2,0.7,u);}
- vec2 e1=R*vec2(cos(GA+GH),sin(GA+GH)),e2=R*vec2(cos(GA-GH),sin(GA-GH));
- return min(length(p-e1)-T*1.2,length(p-e2)-T*0.7);
+ if(da>GH&&da<TAU-GH){float u=(da-GH)/(TAU-2.0*GH);return abs(length(p)-FIG_HEAD_R)-FIG_HEAD_T*mix(1.2,0.7,u);}
+ vec2 e1=FIG_HEAD_R*vec2(cos(GA+GH),sin(GA+GH)),e2=FIG_HEAD_R*vec2(cos(GA-GH),sin(GA-GH));
+ return min(length(p-e1)-FIG_HEAD_T*1.2,length(p-e2)-FIG_HEAD_T*0.7);
 }
+
 float sdR(vec2 p,vec4 r,float rad,float pad){vec2 c=r.xy+r.zw*0.5;vec2 b=r.zw*0.5+pad;float rr=min(rad,min(b.x,b.y));vec2 q=abs(p-c)-b+rr;return length(max(q,0.0))+min(max(q.x,q.y),0.0)-rr;}
 vec2 nR(vec2 p,vec4 r,float rad,float pad){vec2 e=vec2(1.0,0.0);return normalize(vec2(sdR(p+e.xy,r,rad,pad)-sdR(p-e.xy,r,rad,pad),sdR(p+e.yx,r,rad,pad)-sdR(p-e.yx,r,rad,pad))+1e-6);}
 float sdFigure(vec2 q){
- // the mark's head on the plain stick figure; torso and legs a little shorter than the original, same thickness
- float d=sdHead(q-vec2(0.02,-0.915));
- d=smin(d,sdSeg(q,vec2(0.0,-0.70),vec2(-0.01,-0.40))-0.07,0.04);
- d=smin(d,sdSeg(q,vec2(0.0,-0.64),vec2(0.13,-0.42))-0.032,0.03);
- d=smin(d,sdSeg(q,vec2(-0.01,-0.64),vec2(-0.1,-0.44))-0.032,0.03);
- d=smin(d,sdSeg(q,vec2(0.0,-0.42),vec2(0.11,0.0))-0.042,0.03);
- d=smin(d,sdSeg(q,vec2(-0.02,-0.42),vec2(-0.13,-0.02))-0.042,0.03);
+ float hy=-1.0+FIG_HEAD_R+FIG_HEAD_T*1.2;       // head centre, so the top of the ring touches y = -1
+ float neck=hy+FIG_HEAD_R;                        // bottom of the head ring: where the torso starts
+ float sh=mix(neck,-FIG_HIP,0.22);                // shoulders: a little below the neck
+ float d=sdHead(q-vec2(0.0,hy));
+ d=smin(d,sdSeg(q,vec2(0.0,neck),vec2(-0.01,-FIG_HIP))-FIG_BODY_W,0.03);                        // torso
+ d=smin(d,sdSeg(q,vec2(0.0,sh),vec2(0.55*FIG_ARM,sh+0.84*FIG_ARM))-FIG_LIMB_W,0.025);           // arm
+ d=smin(d,sdSeg(q,vec2(0.0,sh),vec2(-0.42*FIG_ARM,sh+0.9*FIG_ARM))-FIG_LIMB_W,0.025);           // other arm
+ d=smin(d,sdSeg(q,vec2(0.0,-FIG_HIP),vec2(FIG_STANCE,0.0))-FIG_LIMB_W*1.15,0.025);              // leg
+ d=smin(d,sdSeg(q,vec2(-0.01,-FIG_HIP),vec2(-1.15*FIG_STANCE,-0.02))-FIG_LIMB_W*1.15,0.025);    // other leg
  return d;
 }
 float cliffTop(float x,float W,float H){
