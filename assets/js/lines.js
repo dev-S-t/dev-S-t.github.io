@@ -815,12 +815,13 @@ float sdHead(vec2 p){
 float sdR(vec2 p,vec4 r,float rad,float pad){vec2 c=r.xy+r.zw*0.5;vec2 b=r.zw*0.5+pad;float rr=min(rad,min(b.x,b.y));vec2 q=abs(p-c)-b+rr;return length(max(q,0.0))+min(max(q.x,q.y),0.0)-rr;}
 vec2 nR(vec2 p,vec4 r,float rad,float pad){vec2 e=vec2(1.0,0.0);return normalize(vec2(sdR(p+e.xy,r,rad,pad)-sdR(p-e.xy,r,rad,pad),sdR(p+e.yx,r,rad,pad)-sdR(p-e.yx,r,rad,pad))+1e-6);}
 float sdFigure(vec2 q){
- float d=sdHead(q-vec2(0.02,-0.985)); // the mark's head, sitting on the neck; the rest is the plain stick figure
- d=smin(d,sdSeg(q,vec2(0.0,-0.78),vec2(-0.01,-0.47))-0.058,0.04);
- d=smin(d,sdSeg(q,vec2(0.0,-0.72),vec2(0.13,-0.5))-0.032,0.03);
- d=smin(d,sdSeg(q,vec2(-0.01,-0.72),vec2(-0.1,-0.52))-0.032,0.03);
- d=smin(d,sdSeg(q,vec2(0.0,-0.48),vec2(0.1,0.0))-0.035,0.03);
- d=smin(d,sdSeg(q,vec2(-0.02,-0.48),vec2(-0.12,-0.02))-0.035,0.03);
+ // the mark's head on the plain stick figure; torso and legs a little shorter than the original, same thickness
+ float d=sdHead(q-vec2(0.02,-0.915));
+ d=smin(d,sdSeg(q,vec2(0.0,-0.70),vec2(-0.01,-0.40))-0.07,0.04);
+ d=smin(d,sdSeg(q,vec2(0.0,-0.64),vec2(0.13,-0.42))-0.032,0.03);
+ d=smin(d,sdSeg(q,vec2(-0.01,-0.64),vec2(-0.1,-0.44))-0.032,0.03);
+ d=smin(d,sdSeg(q,vec2(0.0,-0.42),vec2(0.11,0.0))-0.042,0.03);
+ d=smin(d,sdSeg(q,vec2(-0.02,-0.42),vec2(-0.13,-0.02))-0.042,0.03);
  return d;
 }
 float cliffTop(float x,float W,float H){
