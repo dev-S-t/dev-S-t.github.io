@@ -1476,7 +1476,10 @@ void main(){
       HIL.tunnel = { x: tcx, y: tcy };
       gl.uniform4f(U.uTun, tcx, tcy, hr.height, prog);
       gl.uniform4f(U.uCliff, tip - 0.035, tip - 0.004, topFrac, tip);
-      const size0 = hr.height * (narrow ? 0.05 : 0.07);
+      // the cliff figure's height in pixels: a share of the hero's height (narrow screens / wider ones), times
+      // FIG_SCALE to grow or shrink the whole figure at once (its parts are shaped by the FIG_* values in the shader)
+      const FIG_SCALE = 1.07;
+      const size0 = hr.height * (narrow ? 0.05 : 0.07) * FIG_SCALE;
       const fx0 = hr.left + hr.width * (tip + 0.012) + (narrow ? 8 : 0), fy0 = hr.top + hr.height * topFrac;
       const e = smooth(prog);
       const fx = lerp(fx0, tcx, e) + Math.sin(prog * 3.2) * hr.width * 0.05;
