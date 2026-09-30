@@ -88,7 +88,7 @@ function streaks(center, prof, count = 3, from = 0.8) {
 }
 
 const GAP = -120; // the openings: 30 degrees left of the top, 11 o'clock
-const OPEN = 20;  // width of every opening, in degrees
+const OPEN = 30;  // width of every opening, in degrees: one hour on a clock face, so at 11 o'clock it is the eleventh hour
 const RINGS = { loop: [50, 50, 44], arms: [50, 47.4, 28.8], head: [50, 49.4, 15.8] };
 function figure(weight = 1) {
   const headBottom = [RINGS.head[0], RINGS.head[1] + RINGS.head[2]], hip = [51.2, 85.6];
