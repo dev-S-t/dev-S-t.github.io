@@ -769,10 +769,19 @@ float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 mat2 rot(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}
 float smin(float a,float b,float k){float h=clamp(0.5+0.5*(b-a)/k,0.0,1.0);return mix(b,a,h)-k*h*(1.0-h);}
 float sdSeg(vec2 p,vec2 a,vec2 b){vec2 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0);return length(pa-ba*h);}
+// the head from the mark: an open ring, its opening at 11 o'clock on screen (-60 degrees here, as the figure is
+// mirrored), pressed on at one end of the stroke and lighter at the other, like the brush
+float sdHead(vec2 p){
+ const float R=0.078,T=0.022,GA=-1.0472,GH=0.2618,TAU=6.2831853;
+ float da=mod(atan(p.y,p.x)-GA+TAU,TAU);
+ if(da>GH&&da<TAU-GH){float u=(da-GH)/(TAU-2.0*GH);return abs(length(p)-R)-T*mix(1.2,0.7,u);}
+ vec2 e1=R*vec2(cos(GA+GH),sin(GA+GH)),e2=R*vec2(cos(GA-GH),sin(GA-GH));
+ return min(length(p-e1)-T*1.2,length(p-e2)-T*0.7);
+}
 float sdR(vec2 p,vec4 r,float rad,float pad){vec2 c=r.xy+r.zw*0.5;vec2 b=r.zw*0.5+pad;float rr=min(rad,min(b.x,b.y));vec2 q=abs(p-c)-b+rr;return length(max(q,0.0))+min(max(q.x,q.y),0.0)-rr;}
 vec2 nR(vec2 p,vec4 r,float rad,float pad){vec2 e=vec2(1.0,0.0);return normalize(vec2(sdR(p+e.xy,r,rad,pad)-sdR(p-e.xy,r,rad,pad),sdR(p+e.yx,r,rad,pad)-sdR(p-e.yx,r,rad,pad))+1e-6);}
 float sdFigure(vec2 q){
- float d=length(q-vec2(0.02,-0.9))-0.085;
+ float d=sdHead(q-vec2(0.02,-0.91)); // the mark's head; the rest of the figure is the plain stick figure
  d=smin(d,sdSeg(q,vec2(0.0,-0.78),vec2(-0.01,-0.44))-0.07,0.04);
  d=smin(d,sdSeg(q,vec2(0.0,-0.72),vec2(0.13,-0.5))-0.032,0.03);
  d=smin(d,sdSeg(q,vec2(-0.01,-0.72),vec2(-0.1,-0.52))-0.032,0.03);
@@ -885,10 +894,8 @@ void main(){
   w=mix(0.7,1.25,rough)*wvar*0.8;
   float ct=cliffTop(hl.x,uHero.z,uHero.w);
   solid=max(solid,smoothstep(ct-0.8,ct+0.8,hl.y));
-  if(uFig.w>0.5){ // the old silhouette; off while the brush figure from the mark stands there instead
-   vec2 fq=rot(-uFig.z)*(p-uFig.xy)/uFig.w;fq.x=-fq.x;
-   solid=max(solid,1.0-smoothstep(-0.7,0.7,sdFigure(fq)*uFig.w));
-  }
+  vec2 fq=rot(-uFig.z)*(p-uFig.xy)/uFig.w;fq.x=-fq.x;
+  solid=max(solid,1.0-smoothstep(-0.7,0.7,sdFigure(fq)*uFig.w));
  }else if(scene==1){
   // ABOUT: quiet contours; the 3D head is drawn on its own canvas above
   float sy=pw.y-secTop;
@@ -1173,10 +1180,6 @@ void main(){
   const hero = document.querySelector('.hero');
   const n1 = hero ? hero.querySelector('.n1') : null;
   const heroId = hero ? hero.querySelector('[data-cliff]') : null;
-  // the figure from the mark, standing on the cliff. Its box in its own units: width, height, the middle of the feet
-  // (where it stands and turns), and its height from the top of the raised arms to the feet
-  const edgeMan = hero ? hero.querySelector('.edge-man') : null;
-  const EDGE = { w: 66, h: 82, px: 39.8, py: 80.2, tall: 77.8 };
   const handEl = document.querySelector('[data-hand]');
   const n2 = hero ? hero.querySelector('.n2') : null;
   const footEl = document.querySelector('.foot');
@@ -1427,16 +1430,7 @@ void main(){
       const e = smooth(prog);
       const fx = lerp(fx0, tcx, e) + Math.sin(prog * 3.2) * hr.width * 0.05;
       const fy = lerp(fy0, tcy + size0 * 0.4, e) - Math.sin(prog * Math.PI) * hr.height * 0.12;
-      const figSize = size0 * (1 - 0.82 * e);
-      if (edgeMan) {
-        // the brush figure: its feet on the cliff at (fx, fy), as tall as the old silhouette, turning as it falls
-        const k = figSize / EDGE.tall, ox = EDGE.px * k, oy = EDGE.py * k;
-        edgeMan.style.width = EDGE.w * k + 'px'; edgeMan.style.height = EDGE.h * k + 'px';
-        edgeMan.style.transformOrigin = ox + 'px ' + oy + 'px';
-        edgeMan.style.transform = 'translate(' + (fx - hr.left - ox) + 'px,' + (fy - hr.top - oy) + 'px) rotate(' + (prog * 3.6) + 'rad)';
-        if (!edgeMan.classList.contains('placed')) edgeMan.classList.add('placed');
-      }
-      gl.uniform4f(U.uFig, fx, fy, prog * 3.6, edgeMan ? 0 : figSize);
+      gl.uniform4f(U.uFig, fx, fy, prog * 3.6, size0 * (1 - 0.82 * e));
       gl.uniform1f(U.uNameOn, nameOn);
     }
     if (handEl) {

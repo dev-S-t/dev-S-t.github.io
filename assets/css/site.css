@@ -103,8 +103,11 @@ html:not(.lines-live) .topbar { background: var(--nav-g, var(--paper)); }
 .topbar ul::-webkit-scrollbar { display: none; }
 .topbar .brand { display: inline-flex; align-items: center; flex: none; color: inherit; font-family: var(--f-nav); font-size: 12px; letter-spacing: .08em; text-decoration: none; white-space: nowrap; }
 .topbar.compact .brand { display: inline-flex; }
-/* the name in the mark's own brush lettering; its two o's watch the pointer */
-.brand-word { display: block; height: 21px; width: auto; overflow: visible; }
+/* the name and the menu button in the site's own lettering; the two o's of loop watch the pointer.
+   Both words share one vertical box, so at the same height their letters sit on the same lines */
+.brand-word, .mt-word { display: block; height: 21px; width: auto; overflow: visible; }
+.mt-word .mt-mid { transition: opacity .25s; }
+.topbar.open .mt-word .mt-mid { opacity: 0; }
 .topbar.compact.no-brand .brand { display: none; }
 /* without JavaScript the island is not fixed and its links wrap, so it never covers the page */
 html:not(.nav-js) .topbar { position: absolute; }
@@ -113,8 +116,6 @@ html:not(.nav-js) .topbar ul { flex-wrap: wrap; overflow: visible; }
 /* compact island (set by the engine when the links no longer fit): mark, Menu, theme; the list opens as a sheet */
 .topbar.compact { justify-content: space-between; }
 .topbar.compact .menu-toggle { display: inline-flex; align-items: center; gap: 12px; margin-left: auto; padding: 8px 14px; border: 0; border-radius: 999px; background: transparent; color: inherit; font-family: var(--f-nav); font-size: 12px; letter-spacing: .06em; cursor: pointer; }
-.mt-lines { position: relative; width: 22px; height: 12px; background: linear-gradient(currentColor, currentColor) 0 0 / 100% 1.4px no-repeat, linear-gradient(currentColor, currentColor) 0 50% / 70% 1.4px no-repeat, linear-gradient(currentColor, currentColor) 0 100% / 100% 1.4px no-repeat; transition: background-size .3s; }
-.topbar.open .mt-lines { background-size: 100% 1.4px, 0 1.4px, 100% 1.4px; }
 .topbar.compact ul { position: fixed; inset: 0; z-index: -1; display: flex; flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 0; overflow-y: auto;
   padding: 104px var(--pad) 40px; counter-reset: nav;
   background-color: var(--nav-g, #F3F1EC);
@@ -167,11 +168,6 @@ html.menu-open { overflow: hidden; }
 .n2 { display: inline-block; margin: .25em 0 0 .06em; font-family: var(--f-display); font-weight: 700; font-stretch: expanded; font-size: min(102px, calc((100vw - 2 * var(--pad)) * .047)); line-height: 1; letter-spacing: .01em; }
 .lines-live .n2 { position: absolute; margin: 0; color: transparent; white-space: nowrap; }
 /* the identity text lives on the rock; the engine cuts the cliff to fit it */
-/* the figure from the mark stands on the cliff (the engine places it, turns it and lets it fall into the tunnel);
-   a halo in the ground colour keeps its brush strokes clear of the rings behind */
-.edge-man { position: absolute; left: 0; top: 0; width: 60px; height: 75px; display: none; overflow: visible; pointer-events: none; z-index: 2; color: var(--f); }
-.lines-live .edge-man.placed { display: block; }
-.edge-man .halo { fill: none; stroke: var(--g); stroke-width: 3.2; stroke-linejoin: round; }
 .hero-id { grid-column: 7 / -1; grid-row: 2; align-self: end; display: grid; gap: 10px; color: var(--g); padding: 6px 0 0; max-width: 46ch; }
 html:not(.lines-live) .hero-id { background: var(--f); border-radius: 26px 26px 0 0; padding: 26px 28px; }
 .hero-title { font-family: var(--f-display); font-weight: 460; font-stretch: 104%; font-size: clamp(17px, .7vw + 10px, 23px); line-height: 1.1; }
@@ -417,9 +413,11 @@ html:not(.lines-live) .foot::after, html:not(.lines-live) .foot::before { color:
 .foot p { padding: 14px 22px; }
 .foot p:first-of-type { font-family: var(--f-display); font-size: clamp(22px, 2vw + 6px, 38px); line-height: 1.15; }
 .foot p:first-of-type strong { font-family: inherit; font-size: inherit; letter-spacing: 0; font-weight: 520; }
-/* credits for the models the About and FAQ drawings are made from: small, last thing on the page */
-.foot p.credit { padding: 6px 12px; margin-top: -4px; max-width: 72ch; font-size: 11px; line-height: 1.45; opacity: .82; }
+/* credits for the models the About and FAQ drawings are made from: one small line, straight on the water, on the
+   page's bottom edge; on narrow screens the model names drop out so it stays one line */
+.foot p.credit { position: absolute; left: var(--pad); right: var(--pad); bottom: 0; margin: 0; padding: 0; font-size: 10px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: .8; }
 .foot p.credit small { font-size: inherit; }
+@media (max-width: 760px) { .foot p.credit { font-size: 9.5px; } .foot p.credit .opt { display: none; } }
 /* narrow screens: the barcode and its domain stack at the top right, clear of the moon; the tiles sit in the water
    (the engine puts the horizon just above them) and there is sky above for the moon */
 @media (max-width: 700px) {
