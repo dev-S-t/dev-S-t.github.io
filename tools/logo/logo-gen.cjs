@@ -1,8 +1,9 @@
 // The human-in-loop mark, drawn as brush strokes. Each stroke is a filled outline built from a centreline and a
 // width profile: pressed at the start, thinning and lifting off at the end, a little uneven along the way.
-// Geometry follows Sahil's sketch (viewBox 0..100): loop r 44, arms r 28.7 (centred a little higher, meeting the
-// spine at the shoulders), head r 15.9, an S-shaped spine, legs as an arch standing on the loop; every opening at
-// about 30 degrees left of the top.
+// Geometry follows Sahil's sketch (viewBox 0..100): loop r 44, arms r 28.8 (centred a little higher, meeting the
+// spine at the shoulders), head r 15.8, an S-shaped spine, legs as an arch standing on the loop. Refined after Allan
+// Peters' teardown: all three rings on one vertical axis, and one wedge of OPEN degrees cuts every opening on the same
+// ray, 30 degrees left of the top (11 o'clock).
 const fs = require('fs');
 
 const TAU = Math.PI * 2, rad = (d) => d * Math.PI / 180;
@@ -86,10 +87,11 @@ function streaks(center, prof, count = 3, from = 0.8) {
   return out;
 }
 
-const GAP = -120; // the openings: 30 degrees left of the top
-const RINGS = { loop: [50, 50, 44], arms: [49.6, 46.6, 28.6], head: [50.3, 49.6, 15.8] };
+const GAP = -120; // the openings: 30 degrees left of the top, 11 o'clock
+const OPEN = 20;  // width of every opening, in degrees
+const RINGS = { loop: [50, 50, 44], arms: [50, 47.4, 28.8], head: [50, 49.4, 15.8] };
 function figure(weight = 1) {
-  const headBottom = [50.3 + 0.2, 49.6 + 15.8], hip = [51.2, 85.6];
+  const headBottom = [RINGS.head[0], RINGS.head[1] + RINGS.head[2]], hip = [51.2, 85.6];
   return {
     spine: [cubic(headBottom, [54.4, 70.2], [47.4, 79.8], hip), { base: 3.4 * weight, seed: 4, start: 'press', end: 'press', swell: 0.2 }],
     legs: [arch([45.2, 93.6], [68.4, 90.2], 82.2, 4), { base: 3.4 * weight, seed: 5, start: 'taper', end: 'lift', swell: 0.2, lift: 0.18 }]
@@ -98,9 +100,9 @@ function figure(weight = 1) {
 function setPrecision(samples, decimals) { SAMPLES = samples; DEC = 10 ** decimals; }
 function build({ weight = 1, texture = true, samples = 180, decimals = 2 } = {}) {
   setPrecision(samples, decimals);
-  const loop = arc(50, 50, 44, GAP, 15, 1, 0.025);
-  const arms = arc(49.6, 46.6, 28.6, GAP - 4, 30, 2, 0.03);
-  const head = arc(50.3, 49.6, 15.8, GAP, 22, 3, 0.03);
+  const loop = arc(...RINGS.loop, GAP, OPEN, 1, 0.025);
+  const arms = arc(...RINGS.arms, GAP, OPEN, 2, 0.03);
+  const head = arc(...RINGS.head, GAP, OPEN, 3, 0.03);
   const { spine, legs } = figure(weight);
   const strokes = [
     [loop, { base: 5.4 * weight, seed: 1, swell: 0.22 }],
@@ -125,7 +127,7 @@ function favicon() {
   // ink on a paper disc, so it reads on light and dark tab strips alike
   return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#F3F1EC"/><path fill="#0D0D0C" d="' + paths.join('') + '"/></svg>';
 }
-module.exports = { svg, build, favicon, arc, cubic, arch, profile, outline, streaks, figure, setPrecision, GAP, RINGS, wob, smooth, rad, f2: (v) => f2(v) };
+module.exports = { svg, build, favicon, arc, cubic, arch, profile, outline, streaks, figure, setPrecision, GAP, OPEN, RINGS, wob, smooth, rad, f2: (v) => f2(v) };
 if (require.main === module) {
   const out = __dirname + '/';
   fs.writeFileSync(out + 'logo.svg', svg({ attrs: ' xmlns="http://www.w3.org/2000/svg" width="400" height="400"' }));
