@@ -20,6 +20,15 @@
 *, *::before, *::after { box-sizing: border-box; }
 html { background: var(--paper); scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+/* the native scrollbar's track drew a pale strip down the right of every dark section. Once the engine runs it is
+   hidden and a thin thumb takes its place: no track, shown while you scroll or point at the right edge, draggable,
+   and inverted against whatever is under it so it reads on paper and on ink */
+html.nav-js { scrollbar-width: none; }
+html.nav-js::-webkit-scrollbar { display: none; width: 0; height: 0; }
+.scroll-thumb { position: fixed; top: 0; right: 3px; z-index: 60; width: 5px; height: 40px; border-radius: 4px; background: #F3F1EC; mix-blend-mode: difference; opacity: 0; pointer-events: none; touch-action: none; cursor: grab; transition: opacity .35s, width .18s, right .18s; }
+.scroll-thumb.on { opacity: .5; pointer-events: auto; }
+.scroll-thumb.on:hover, .scroll-thumb.drag { opacity: .78; width: 8px; right: 2px; }
+.scroll-thumb.drag { cursor: grabbing; }
 body {
   margin: 0;
   background: var(--paper);

@@ -17,6 +17,8 @@
     :root { --paper: #F3F1EC; --ink: #0D0D0C; --pad: clamp(16px, 4vw, 56px); --plate-w: min(34rem, calc(100vw - 2 * var(--pad))); }
     * { box-sizing: border-box; }
     html, body { height: 100%; }
+    html { scrollbar-width: none; } /* no pale scrollbar strip, as on the rest of the site */
+    html::-webkit-scrollbar { display: none; width: 0; }
     body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.55 "Geologica", system-ui, "Segoe UI", sans-serif; overflow-x: hidden; }
     a { color: inherit; text-underline-offset: 3px; }
     a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 4px; }

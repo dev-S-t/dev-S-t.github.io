@@ -68,6 +68,40 @@
     };
     addEventListener('pointermove', (ev) => { px = ev.clientX; py = ev.clientY; if (!pend) pend = requestAnimationFrame(look); }, { passive: true });
   }
+
+  /* ---------- scrollbar: the native one is hidden (see site.css); a thin thumb shows where you are ---------- */
+  {
+    const thumb = document.createElement('div');
+    thumb.className = 'scroll-thumb'; thumb.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(thumb);
+    let fade = 0, drag = null;
+    const de = document.documentElement;
+    const place = () => {
+      const H = de.scrollHeight, h = innerHeight;
+      if (H <= h + 2) { thumb.style.display = 'none'; return; }
+      thumb.style.display = '';
+      const th = Math.max(36, h * h / H);
+      thumb.style.height = th + 'px';
+      thumb.style.transform = 'translateY(' + (scrollY / (H - h)) * (h - th) + 'px)';
+    };
+    const show = () => { thumb.classList.add('on'); clearTimeout(fade); fade = setTimeout(() => { if (!drag && !thumb.matches(':hover')) thumb.classList.remove('on'); }, 1100); };
+    addEventListener('scroll', () => { place(); show(); }, { passive: true });
+    addEventListener('resize', place);
+    new ResizeObserver(place).observe(document.body);
+    addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse' && innerWidth - e.clientX < 16) show(); }, { passive: true });
+    thumb.addEventListener('pointerleave', show);
+    thumb.addEventListener('pointerdown', (e) => {
+      drag = { y: e.clientY, s: scrollY }; thumb.setPointerCapture(e.pointerId); thumb.classList.add('on', 'drag'); e.preventDefault();
+    });
+    thumb.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      const H = de.scrollHeight, h = innerHeight, th = thumb.offsetHeight;
+      scrollTo({ top: drag.s + (e.clientY - drag.y) * (H - h) / Math.max(1, h - th), behavior: 'instant' });
+    });
+    const end = () => { if (!drag) return; drag = null; thumb.classList.remove('drag'); show(); };
+    thumb.addEventListener('pointerup', end); thumb.addEventListener('pointercancel', end);
+    place();
+  }
   function fitNav() {
     if (!navEl || !navList || !menuBtn) return;
     const wasOpen = navEl.classList.contains('open');
@@ -772,7 +806,7 @@ float sdSeg(vec2 p,vec2 a,vec2 b){vec2 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/do
 // the head from the mark: an open ring, its opening at 11 o'clock on screen (-60 degrees here, as the figure is
 // mirrored), pressed on at one end of the stroke and lighter at the other, like the brush
 float sdHead(vec2 p){
- const float R=0.13,T=0.03,GA=-1.0472,GH=0.2618,TAU=6.2831853; // a big head on a small body, on purpose
+ const float R=0.145,T=0.033,GA=-1.0472,GH=0.2618,TAU=6.2831853; // a big head on a small body, on purpose
  float da=mod(atan(p.y,p.x)-GA+TAU,TAU);
  if(da>GH&&da<TAU-GH){float u=(da-GH)/(TAU-2.0*GH);return abs(length(p)-R)-T*mix(1.2,0.7,u);}
  vec2 e1=R*vec2(cos(GA+GH),sin(GA+GH)),e2=R*vec2(cos(GA-GH),sin(GA-GH));
@@ -781,12 +815,12 @@ float sdHead(vec2 p){
 float sdR(vec2 p,vec4 r,float rad,float pad){vec2 c=r.xy+r.zw*0.5;vec2 b=r.zw*0.5+pad;float rr=min(rad,min(b.x,b.y));vec2 q=abs(p-c)-b+rr;return length(max(q,0.0))+min(max(q.x,q.y),0.0)-rr;}
 vec2 nR(vec2 p,vec4 r,float rad,float pad){vec2 e=vec2(1.0,0.0);return normalize(vec2(sdR(p+e.xy,r,rad,pad)-sdR(p-e.xy,r,rad,pad),sdR(p+e.yx,r,rad,pad)-sdR(p-e.yx,r,rad,pad))+1e-6);}
 float sdFigure(vec2 q){
- float d=sdHead(q-vec2(0.02,-0.97)); // the mark's head, sitting on the neck; the rest is the plain stick figure
- d=smin(d,sdSeg(q,vec2(0.0,-0.78),vec2(-0.01,-0.44))-0.07,0.04);
+ float d=sdHead(q-vec2(0.02,-0.985)); // the mark's head, sitting on the neck; the rest is the plain stick figure
+ d=smin(d,sdSeg(q,vec2(0.0,-0.78),vec2(-0.01,-0.47))-0.058,0.04);
  d=smin(d,sdSeg(q,vec2(0.0,-0.72),vec2(0.13,-0.5))-0.032,0.03);
  d=smin(d,sdSeg(q,vec2(-0.01,-0.72),vec2(-0.1,-0.52))-0.032,0.03);
- d=smin(d,sdSeg(q,vec2(0.0,-0.46),vec2(0.11,0.0))-0.042,0.03);
- d=smin(d,sdSeg(q,vec2(-0.02,-0.46),vec2(-0.13,-0.02))-0.042,0.03);
+ d=smin(d,sdSeg(q,vec2(0.0,-0.48),vec2(0.1,0.0))-0.035,0.03);
+ d=smin(d,sdSeg(q,vec2(-0.02,-0.48),vec2(-0.12,-0.02))-0.035,0.03);
  return d;
 }
 float cliffTop(float x,float W,float H){
