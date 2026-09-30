@@ -1,0 +1,140 @@
+/* human-in-loop.dev landing page. Its own look, taken from the mark's animations: the page is one long fall along the
+   30 degree line of the mark's openings, from pale high air through warm dust to the dark of the ground. Each section's
+   ground is the next step down, so scrolling reads as coming down. Heat colours only the air lining up round the mark.
+   Nothing here is shared with the AI loop's pages (site.css / lines.js). */
+
+:root {
+  --ice: #DCE5E8;  --air: #E6E8E2;  --sand: #EBE1D0;  --dust: #E2CCAE;  --low: #D3B48E;
+  --deep: #1A1714; --abyss: #0F0E0C;
+  --ink: #15171A;  --bone: #EEE7DB; --heat: #C2451E;
+  --pad: clamp(16px, 4.4vw, 76px);
+  --gap: clamp(14px, 1.8vw, 28px);
+  --f-text: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --f-label: "Martian Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--ice); scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--ice); color: var(--ink); font-family: var(--f-text); font-optical-sizing: auto; font-size: clamp(17px, .5vw + 14px, 20px); line-height: 1.55; overflow-x: clip; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, p { margin: 0; }
+h2 { font-weight: 420; font-size: clamp(36px, 4.2vw + 8px, 88px); line-height: 1; letter-spacing: -.018em; text-wrap: balance; }
+h3 { font-weight: 480; font-size: clamp(22px, 1.1vw + 14px, 32px); line-height: 1.12; letter-spacing: -.008em; text-wrap: balance; }
+a { color: inherit; text-decoration-line: underline; text-decoration-thickness: 1px; text-underline-offset: .2em; transition: text-decoration-thickness .2s; }
+a:hover { text-decoration-thickness: 2.5px; }
+:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; border-radius: 3px; }
+.vh { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
+.skip { position: absolute; left: var(--pad); top: -60px; z-index: 20; background: var(--ink); color: var(--ice); padding: 8px 14px; font-family: var(--f-label); font-size: 13px; }
+.skip:focus { top: 12px; }
+.label, .who, .wk-name, .bar { font-family: var(--f-label); font-size: 13px; letter-spacing: .01em; line-height: 1.4; }
+
+/* ---------- top: high, pale air; the name, what this is, and the mark falling past ---------- */
+.top { position: relative; min-height: 100svh; padding: 0 var(--pad) clamp(60px, 10vh, 120px); background: linear-gradient(180deg, var(--ice), var(--air)); overflow: hidden; display: grid; grid-template-rows: auto 1fr; }
+.bar { position: relative; z-index: 3; display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 26px; padding: 24px 0; }
+.bar ul { display: flex; flex-wrap: wrap; gap: 8px 22px; list-style: none; margin: 0 0 0 auto; padding: 0; }
+.bar-home { font-weight: 600; text-decoration: none; }
+.bar-loop { font-weight: 600; }
+.hero { position: relative; z-index: 2; align-self: center; display: grid; gap: clamp(18px, 2.4vh, 30px); max-width: min(100%, 60vw); padding-top: clamp(30px, 8vh, 110px); }
+.hero-name { line-height: 0; }
+.name-art { display: block; width: min(100%, 780px); height: auto; overflow: visible; color: var(--ink); }
+.lede { font-weight: 360; font-size: clamp(28px, 2.4vw + 12px, 58px); line-height: 1.06; letter-spacing: -.015em; max-width: 18ch; text-wrap: balance; }
+.sub { max-width: 44ch; }
+.hero-fall { position: absolute; z-index: 1; inset: 0 0 0 44%; color: var(--ink); -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 34%); mask-image: linear-gradient(90deg, transparent 0, #000 34%); }
+.fall-art { display: block; width: 100%; height: 100%; }
+.fall-art .streaks { opacity: .34; }
+.fall-art .heat path { stroke: var(--heat); }
+@media (max-width: 860px) {
+  .bar ul { margin-left: 0; order: 3; width: 100%; }
+  .hero { max-width: 100%; align-self: start; padding-top: 28px; }
+  .hero-fall { inset: 48% 0 0 0; -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 30%); mask-image: linear-gradient(180deg, transparent 0, #000 30%); }
+  .top { min-height: 108svh; }
+}
+
+/* ---------- about: the mark painting itself beside why this exists ---------- */
+.about { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); align-items: center; min-height: 88svh; padding: clamp(80px, 12vh, 150px) var(--pad); background: linear-gradient(180deg, var(--air), var(--sand)); }
+.about-draw { grid-column: 2 / span 3; }
+.draw-art { display: block; width: 100%; height: auto; }
+.about-copy { grid-column: 6 / span 6; display: grid; gap: 20px; }
+.about-copy p { max-width: 56ch; }
+@media (max-width: 860px) { .about-draw { grid-column: 1 / span 6; max-width: 220px; margin-bottom: 36px; } .about-copy { grid-column: 1 / -1; } }
+
+/* ---------- loops: three loops coming down the same line, each a little lower than the last ---------- */
+.loops { min-height: 100svh; padding: clamp(80px, 12vh, 150px) var(--pad) clamp(90px, 14vh, 170px); background: linear-gradient(180deg, var(--sand), #E8D8C0); }
+.loop-list { list-style: none; margin: clamp(36px, 6vh, 80px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 3.4vw, 64px); align-items: start; }
+.lp { display: grid; gap: 14px; justify-items: start; }
+.loop-art { display: block; width: min(100%, 300px); height: auto; overflow: visible; }
+.lp-text { display: grid; gap: 6px; }
+.lp-text p { max-width: 34ch; }
+.lp-design { margin-top: clamp(50px, 12vh, 150px); }
+.lp-next { margin-top: clamp(100px, 24vh, 300px); }
+@media (max-width: 860px) {
+  .loop-list { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .lp { grid-template-columns: minmax(0, 132px) minmax(0, 1fr); column-gap: 20px; align-items: center; }
+  .lp-design { margin-top: 0; margin-left: clamp(0px, 8vw, 60px); }
+  .lp-next { margin-top: 0; margin-left: clamp(0px, 16vw, 120px); }
+}
+
+/* ---------- featured work: the entries hang off one dashed trail ---------- */
+.work { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); padding: clamp(80px, 12vh, 150px) var(--pad); background: linear-gradient(180deg, #E8D8C0, var(--dust)); }
+.work-head { grid-column: 1 / span 4; display: grid; gap: 10px; align-content: start; }
+.work-list { grid-column: 5 / -1; list-style: none; margin: 0; padding: 0; display: grid; }
+.work-list li { display: grid; gap: 8px; padding: 26px 0 30px; border-top: 1.5px dashed currentColor; }
+.work-list li:last-child { border-bottom: 1.5px dashed currentColor; }
+.work-list p { max-width: 60ch; }
+.work-all { grid-column: 5 / -1; margin-top: 22px; font-family: var(--f-label); font-size: 14px; }
+@media (max-width: 860px) { .work-head, .work-list, .work-all { grid-column: 1 / -1; } .work-list { margin-top: 30px; } }
+
+/* ---------- people: each keeper peeking over the edge of their loop; Abyss is only eyes ---------- */
+.people { padding: clamp(80px, 12vh, 150px) var(--pad); background: linear-gradient(180deg, var(--dust), var(--low)); }
+.people-list { list-style: none; margin: clamp(36px, 6vh, 70px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(22px, 3.4vw, 60px); }
+.pp { display: grid; gap: 10px; align-content: start; justify-items: start; }
+.peek-art { display: block; width: clamp(110px, 12vw, 170px); height: auto; margin-bottom: 8px; color: var(--ink); }
+.pp p { max-width: 34ch; }
+.pp-go { font-family: var(--f-label); font-size: 13px; }
+.abyss-art { color: var(--deep); }
+.abyss-art .eye-white { fill: var(--bone); }
+@media (max-width: 860px) { .people-list { grid-template-columns: minmax(0, 1fr); } .pp { grid-template-columns: auto minmax(0, 1fr); column-gap: 20px; } .pp .peek-art { grid-row: 1 / span 3; width: 104px; } }
+
+/* ---------- join: the ground; an empty loop draws itself ---------- */
+.join { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); align-items: center; min-height: 80svh; padding: clamp(120px, 18vh, 200px) var(--pad) clamp(90px, 12vh, 140px); background: linear-gradient(180deg, var(--low) 0, var(--deep) 30%, var(--deep)); color: var(--bone); }
+.join-draw { grid-column: 2 / span 3; }
+.join-art { display: block; width: 100%; height: auto; color: var(--bone); }
+.join-copy { grid-column: 6 / span 6; display: grid; gap: 18px; }
+.join-copy p { max-width: 48ch; }
+.join-go a { font-size: clamp(24px, 1.6vw + 12px, 40px); font-weight: 480; }
+@media (max-width: 860px) { .join-draw { grid-column: 1 / span 6; max-width: 200px; margin-bottom: 30px; } .join-copy { grid-column: 1 / -1; } }
+
+/* ---------- footer ---------- */
+.foot { display: grid; gap: 10px; padding: clamp(50px, 8vh, 90px) var(--pad) 40px; background: var(--abyss); color: var(--bone); font-family: var(--f-label); font-size: 13px; }
+.foot-name { font-family: var(--f-text); font-size: clamp(26px, 2vw + 12px, 40px); font-weight: 420; letter-spacing: -.01em; margin-bottom: 8px; }
+
+/* ---------- motion: the mark's own animations ---------- */
+.fall-art .streaks { animation: fstream .9s linear infinite; }
+@keyframes fstream { to { transform: translateX(-240px); } }
+.fall-art .shell { animation: shake .22s steps(2, end) infinite; }
+@keyframes shake { 0% { transform: translate(.45px, -.35px); } 50% { transform: translate(-.45px, .35px); } }
+.fall-art .heat path, .loop-art .tail path { stroke-dasharray: .07 .025; animation: sflow 1.5s linear infinite; animation-delay: calc(var(--i) * -.11s); }
+.loop-art .tail path { animation-duration: 2.4s; }
+@keyframes sflow { to { stroke-dashoffset: -.095; } }
+.fall-art .meteor { animation: bob 2.6s ease-in-out infinite alternate; }
+@keyframes bob { from { transform: translateX(-5px); } to { transform: translateX(6px); } }
+.draw-art .dash { stroke-dasharray: 1 1; animation: draw 9s var(--d) infinite; }
+@keyframes draw { 0%, 20% { stroke-dashoffset: 0; } 32% { stroke-dashoffset: -1; } 32.01% { stroke-dashoffset: 1; } 64%, 100% { stroke-dashoffset: 0; } }
+.peek-art .peek-head { animation: peek 7s infinite; animation-timing-function: steps(1, end); }
+.pp:nth-child(2) .peek-head { animation-delay: -2.4s; }
+@keyframes peek { 0%, 46% { transform: translateY(0); } 48% { transform: translateY(5px); } 50% { transform: translateY(11px); } 52%, 60% { transform: translateY(24px); } 62% { transform: translateY(15px); } 64% { transform: translateY(8px); } 66% { transform: translateY(2px); } 68%, 100% { transform: translateY(0); } }
+.peek-art .eyehole, .peek-art .pupil { transform-box: fill-box; transform-origin: center; animation: blink 7s infinite; }
+.abyss-art .pupil, .abyss-art .eye-white { transform-box: fill-box; transform-origin: center; animation: blink 9s -3s infinite; }
+@keyframes blink { 0%, 22%, 25%, 84%, 87%, 100% { transform: scaleY(1); } 23.5%, 85.5% { transform: scaleY(.12); } }
+.join-art .dash { stroke-dasharray: 1 1; stroke-dashoffset: 0; }
+.js .join:not(.in) .join-art .dash { stroke-dashoffset: 1; }
+.js .join:not(.in) .join-sketch { opacity: 0; }
+.join.in .join-art .dash { animation: drawin 2.6s cubic-bezier(.5, 0, .2, 1) both; }
+.join-sketch { transition: opacity 1.2s 2.2s; }
+@keyframes drawin { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .fall-art .streaks, .fall-art .shell, .fall-art .heat path, .loop-art .tail path, .fall-art .meteor, .draw-art .dash, .peek-art .peek-head, .peek-art .eyehole, .peek-art .pupil, .abyss-art .pupil, .abyss-art .eye-white, .join.in .join-art .dash { animation: none; }
+  .fall-art .heat path, .loop-art .tail path { stroke-dasharray: none; }
+  .js .join:not(.in) .join-art .dash { stroke-dashoffset: 0; }
+  .js .join:not(.in) .join-sketch { opacity: 1; }
+}

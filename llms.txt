@@ -1,4 +1,13 @@
-# Sahil Tomar (dev-S-t) — Portfolio & Technical Profile
+# human-in-loop.dev
+
+> People who work in a field, writing about what changes in it. Each loop is one field and one person: their updates, their views and the work they have done.
+
+## Loops
+- [AI loop](https://human-in-loop.dev/ai/): kept by Sahil Tomar (dev-S-t), AI Solutions Engineer. Markdown: https://human-in-loop.dev/ai.md. Everything below this section belongs to the AI loop.
+- Design loop: kept by Abhishek (UI and UX). Opening soon; no page yet.
+- [Landing page in Markdown](https://human-in-loop.dev/index.md)
+
+## The AI loop: Sahil Tomar (dev-S-t) — Portfolio & Technical Profile
 
 > AI Solutions Engineer specializing in production Voice AI infrastructure (VOAG), real-time photorealistic video avatars (Hireups), agentic orchestration (Google ADK, LangGraph), multi-tenant RAG platforms (AnyAssist), B2B WhatsApp dispatch automation, and multi-agent generative media engines (MAGe).
 
