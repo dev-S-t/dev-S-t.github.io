@@ -101,7 +101,7 @@ html:not(.lines-live) .topbar { background: var(--nav-g, var(--paper)); }
 .topbar .mark { width: 34px; height: 34px; flex: none; }
 .topbar ul { display: flex; flex: 1; min-width: 0; flex-wrap: nowrap; align-items: center; gap: 6px 22px; margin: 0; padding: 0; list-style: none; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
 .topbar ul::-webkit-scrollbar { display: none; }
-.topbar .brand { display: inline-flex; align-items: center; flex: none; color: inherit; font-family: var(--f-nav); font-size: 12px; letter-spacing: .08em; text-decoration: none; white-space: nowrap; }
+.topbar .brand { display: none; align-items: center; flex: none; color: inherit; font-family: var(--f-nav); font-size: 12px; letter-spacing: .08em; text-decoration: none; white-space: nowrap; }
 .topbar.compact .brand { display: inline-flex; }
 /* the name and the menu button in the site's own lettering; the two o's of loop watch the pointer.
    Both words share one vertical box, so at the same height their letters sit on the same lines */
