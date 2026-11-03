@@ -103,6 +103,8 @@ Constant one. A hand-drawn stick figure in a loop.
 
 ### What it means
 
+This is background for understanding the mark. It is not material for page copy: Sahil rejected landing copy built from these stories.
+
 Sahil's sketch was the start of it. The brush strokes keep the marks of a hand.
 
 - **Outer loop:** the field. It is the heaviest stroke.
