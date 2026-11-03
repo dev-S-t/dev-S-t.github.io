@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Experimental assets</title>
+<style>
+  :root { --paper: #F3F1EC; --ink: #0D0D0C; --rule: rgba(13, 13, 12, .32); }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.5 ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif; }
+  main { padding: clamp(24px, 5vw, 72px) clamp(16px, 5vw, 72px); }
+  header { display: flex; flex-wrap: wrap; gap: 20px 32px; align-items: center; margin-bottom: clamp(28px, 5vw, 56px); }
+  header img { display: block; width: clamp(84px, 11vw, 132px); height: auto; }
+  h1 { margin: 0 0 8px; font-size: clamp(30px, 4.4vw, 60px); line-height: 1.05; font-weight: 500; letter-spacing: -.015em; }
+  header p { margin: 0; max-width: 60ch; }
+  h2 { margin: clamp(32px, 4vw, 48px) 0 10px; font-size: 15px; font-weight: 600; }
+  ul { list-style: none; margin: 0; padding: 0; border-top: 1.5px solid var(--ink); }
+  li { border-bottom: 1px solid var(--rule); }
+  li a { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px 32px; padding: 14px 0; color: inherit; text-decoration: none; }
+  li a b { font-size: clamp(19px, 1.7vw, 24px); font-weight: 500; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+  li a span { color: rgba(13, 13, 12, .74); }
+  li a:hover b { text-decoration-thickness: 3px; }
+  a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+  code { font: 14px/1.4 ui-monospace, "Cascadia Mono", Consolas, monospace; }
+  @media (min-width: 760px) { li a { grid-template-columns: minmax(220px, 1fr) 2fr; align-items: baseline; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="../assets/img/logo.svg" alt="The human-in-loop.dev logo: a hand-drawn stick figure in a loop" width="132" height="132">
+    <div>
+      <h1>Experimental assets</h1>
+      <p>Everything extra made so far, kept apart from the functional files in <code>assets/</code>. To use one on a page, copy it into <code>assets/</code>. Do not link pages to this folder.</p>
+    </div>
+  </header>
+
+  <h2>Read first</h2>
+  <ul>
+    <li><a href="DESIGN.md"><b>DESIGN.md</b><span>The brief: the two constants, the rules, and how to make video, animation, 2D and 3D from lines.</span></a></li>
+  </ul>
+
+  <h2>The collection</h2>
+  <ul>
+    <li><a href="kit/index.html"><b>Assets and films</b><span>Backgrounds, animations, figures, objects, dividers, stories and short films, with previews.</span></a></li>
+  </ul>
+
+  <h2>Saved pages</h2>
+  <ul>
+    <li><a href="pages/marks.html"><b>Marks</b><span>The logo's explorations, and the stories behind it.</span></a></li>
+    <li><a href="pages/line-design-system.html"><b>Line Design System</b><span>The AI loop's working doc and decision log. History, not rules.</span></a></li>
+    <li><a href="pages/line-type-lab.html"><b>Line Type Lab</b><span>An interactive tool for trying font pairings over a line field.</span></a></li>
+  </ul>
+</main>
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!doctype html><html><head><meta name="robots" content="noindex"><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Line Type Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalnia:wdth,wght@100..125,100..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tourney:wdth,wght@75..125,100..900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Science+Gothic:slnt,wdth,wght,CTRS@-10..0,50..200,100..900,0..85&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tilt+Prism:XROT,YROT@-45..45,-45..45&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tilt+Warp:XROT,YROT@-45..45,-45..45&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,100..900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Boldonse&family=Special+Gothic+Expanded+One&family=Sekuya&family=Rozha+One&family=Six+Caps&family=Bungee+Hairline&family=Dela+Gothic+One&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Savate:wght@200..900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Workbench:BLED,SCAN@0..100,-53..100&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders:opsz,wght@10..72,100..900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Stack+Sans+Notch:wght@200..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@200..800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geologica:slnt,wght,CRSV,SHRP@-12..0,100..900,0..1,0..100&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,200..900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,200..800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ancizar+Serif:wght@300..900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Epunda+Slab:wght@300..900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Epunda+Sans:wght@300..900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Special+Gothic:wdth,wght@75..125,400..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Stack+Sans+Text:wght@200..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@300..800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@200..800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,100..800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Xanh+Mono&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:wght@300..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@100..900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sometype+Mono:wght@400..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reddit+Mono:wght@200..900&display=swap">
+<style>
+:root{--paper:#F3F1EC;--ink:#0D0D0C;--ground:var(--paper);--fg:var(--ink);--muted:#55534D;color-scheme:light}
+:root.dark{--ground:var(--ink);--fg:var(--paper);--muted:#ACA89F;color-scheme:dark}
+html,body{background:var(--ground);color:var(--fg)}
+body{font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.app{display:flex;flex-direction:column;gap:12px;padding-inline:16px;padding-block:14px 28px}
+.top{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 18px}
+.top h1{font-size:15px;font-weight:650;margin:0}
+.top p{margin:0;color:var(--muted)}
+.lab{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}
+.stagecol{display:flex;flex-direction:column;gap:8px;min-width:0}
+.stage{position:relative;container-type:inline-size;min-height:clamp(600px,calc(100vh - 110px),980px);overflow:hidden;border:1px solid var(--fg);border-radius:4px;background:var(--ground);font-synthesis:none;touch-action:pan-y}
+#field{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hint{margin:0;color:var(--muted);font-size:13px}
+.comp{position:relative;min-height:inherit;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:16px;row-gap:22px;padding:clamp(18px,3.4cqw,52px);align-content:space-between}
+.blk{position:relative;border-radius:var(--rad,18px);color:var(--fg)}
+.no-gl .blk{background:var(--ground)}
+.nav{grid-column:1/-1;justify-self:start;display:flex;flex-wrap:wrap;gap:6px 22px;padding:10px 18px;font-family:var(--text);font-variation-settings:var(--tfvs);font-size:15px}
+.hl{grid-column:1/-1;justify-self:start;margin:0;position:relative;white-space:nowrap;line-height:.94;padding:.04em .06em;color:var(--fg);font-family:var(--disp);font-weight:var(--dw);font-stretch:var(--dwd);font-variation-settings:var(--dfvs);font-size:12cqw;letter-spacing:-.01em}
+.hl-inner{position:relative;display:inline-block}
+.hl-text{position:relative;display:inline-block}
+.ring{position:absolute;left:0;top:0;white-space:nowrap;color:transparent;-webkit-text-fill-color:transparent;pointer-events:none;user-select:none}
+.h-sil .hl-text{-webkit-text-stroke:.14em var(--ground);paint-order:stroke fill}
+.h-hatch .hl-text{-webkit-text-fill-color:transparent;background-image:repeating-linear-gradient(180deg,var(--fg) 0 .026em,var(--ground) .026em .07em);-webkit-background-clip:text;background-clip:text;-webkit-text-stroke:.08em var(--ground);paint-order:stroke fill}
+.h-rings .hl-text{-webkit-text-stroke:.1em var(--ground);paint-order:stroke fill}
+.sub{grid-column:1/span 5;align-self:start;margin:0;padding:16px 20px;font-family:var(--text);font-variation-settings:var(--tfvs);font-size:clamp(16px,1.5cqw,19px);line-height:1.55;max-width:46ch}
+.card{grid-column:7/span 6;grid-row:3/span 2;align-self:start;padding:22px 26px}
+.card h2{margin:0 0 12px;font-family:var(--disp);font-weight:var(--dw);font-stretch:var(--dwd);font-variation-settings:var(--dfvs);font-size:clamp(26px,3.2cqw,46px);line-height:1.02;text-wrap:balance}
+.card p{margin:0;font-family:var(--text);font-variation-settings:var(--tfvs);font-size:clamp(15px,1.25cqw,17px);line-height:1.62;max-width:62ch}
+.nums{grid-column:1/span 5;align-self:end;padding:14px 20px;font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums}
+.nums table{border-collapse:collapse}
+.nums td{padding:3px 16px 3px 0;vertical-align:baseline}
+.nums td:first-child{font-size:21px;white-space:nowrap}
+.cta{grid-column:1/span 5;justify-self:start;padding:14px 24px;font-family:var(--text);font-variation-settings:var(--tfvs);font-weight:600;font-size:16px}
+@container (max-width:760px){.sub,.card,.nums,.cta{grid-column:1/-1;grid-row:auto}}
+.panel{display:flex;flex-direction:column;gap:18px;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;padding:2px 6px 8px 2px}
+.grp{display:flex;flex-direction:column;gap:8px}
+.grp h2{font-size:12px;font-weight:650;letter-spacing:.06em;text-transform:uppercase;margin:0;padding-bottom:4px;border-bottom:1px solid var(--fg)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button,.btn{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--fg);background:var(--ground);color:var(--fg);border-radius:6px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--ground)}
+label.row,.row{display:flex;flex-direction:column;gap:4px;font-size:13px}
+.row .lh{display:flex;justify-content:space-between;gap:8px}
+.row output{font-variant-numeric:tabular-nums;color:var(--muted)}
+select,input[type=text]{font:inherit;font-size:14px;padding:6px 8px;border:1px solid var(--fg);border-radius:6px;background:var(--ground);color:var(--fg);width:100%}
+input[type=range]{width:100%;accent-color:var(--fg)}
+.info{margin:0;font-size:12px;color:var(--muted)}
+#copyOut{width:100%;min-height:84px;font:12px/1.4 ui-monospace,Consolas,monospace;border:1px solid var(--fg);border-radius:6px;background:var(--ground);color:var(--fg);padding:6px}
+@media (max-width:1000px){.lab{grid-template-columns:minmax(0,1fr)}.panel{position:static;max-height:none;overflow:visible}}
+</style>
+
+<div class="app">
+  <header class="top">
+    <h1>Line Type Lab</h1>
+    <p>Candidate fonts for human-in-loop.dev on the live line field. Start from a pairing, then change anything.</p>
+  </header>
+  <main class="lab">
+    <div class="stagecol">
+      <section class="stage" id="stage" aria-label="Preview of the chosen fonts on the line field">
+        <canvas id="field" aria-hidden="true"></canvas>
+        <div class="comp" id="comp">
+          <nav class="blk nav" aria-label="Sample navigation"><span>About</span><span>Case studies</span><span>Experience</span><span>Projects</span><span>Skills</span><span>Contact</span><span>llms.txt</span></nav>
+          <p class="hl" id="hl"><span class="hl-inner" id="hlInner"><span class="hl-text" id="hlText">Sahil Tomar</span></span></p>
+          <p class="blk sub">Sahil Tomar (dev-S-t) is an AI Solutions Engineer specializing in production Voice AI infrastructure, real-time LiveKit/WebRTC telephony bridges, multi-tenant RAG platforms, agentic orchestration engines, and multi-agent generative media pipelines.</p>
+          <article class="blk card">
+            <h2>Data That Can't Leave the Building</h2>
+            <p>A client needed AI-powered access to their own internal documents and knowledge base, but would not send that data to any external service, regardless of encryption or access-control guarantees offered. That rules out essentially every standard RAG architecture, all of which assume documents get uploaded somewhere the model can reach.</p>
+          </article>
+          <div class="blk nums">
+            <table>
+              <tr><td>sub-300ms</td><td>p95 latency, VOAG</td></tr>
+              <tr><td>1,000+</td><td>daily calls in the Mr. LADs app</td></tr>
+              <tr><td>11.2% &#8594; 2.5%</td><td>simulated platelet wastage</td></tr>
+            </table>
+          </div>
+          <span class="blk cta">Download resume (PDF)</span>
+        </div>
+      </section>
+      <p class="hint">Move the pointer over the field. All preview text is real copy from the site.</p>
+    </div>
+
+    <aside class="panel" aria-label="Controls">
+      <div class="grp">
+        <h2>Pairing</h2>
+        <div class="seg" id="presets"></div>
+      </div>
+
+      <div class="grp">
+        <h2>Fonts</h2>
+        <label class="row"><span class="lh"><span>Display</span></span><select id="dispSel"></select></label>
+        <p class="info" id="dispInfo"></p>
+        <label class="row" id="rowDW"><span class="lh"><span>Weight</span><output id="oDW"></output></span><input type="range" id="dW" step="1"></label>
+        <label class="row" id="rowDWd"><span class="lh"><span>Width</span><output id="oDWd"></output></span><input type="range" id="dWd" step="1"></label>
+        <label class="row" id="rowDX"><span class="lh"><span id="dXLabel">Axis</span><output id="oDX"></output></span><input type="range" id="dX" step="1"></label>
+        <label class="row"><span class="lh"><span>Headline size</span><output id="oHS"></output></span><input type="range" id="hS" min="6" max="18" step="0.5"></label>
+        <label class="row"><span class="lh"><span>Text</span></span><select id="textSel"></select></label>
+        <p class="info" id="textInfo"></p>
+        <label class="row" id="rowTX"><span class="lh"><span id="tXLabel">Axis</span><output id="oTX"></output></span><input type="range" id="tX" step="1"></label>
+        <label class="row"><span class="lh"><span>Mono</span></span><select id="monoSel"></select></label>
+        <p class="info" id="monoInfo"></p>
+      </div>
+
+      <div class="grp">
+        <h2>Headline</h2>
+        <label class="row"><span class="lh"><span>Words</span></span><input type="text" id="hlIn" maxlength="40" value="Sahil Tomar"></label>
+        <div class="seg" data-group="head">
+          <button type="button" data-v="raw">Raw</button>
+          <button type="button" data-v="sparse">Sparse ground</button>
+          <button type="button" data-v="sil">Silhouette</button>
+          <button type="button" data-v="hatch">Hatched</button>
+          <button type="button" data-v="rings">Contour rings</button>
+          <button type="button" data-v="plate">Plate</button>
+          <button type="button" data-v="glass">Glass</button>
+        </div>
+      </div>
+
+      <div class="grp">
+        <h2>Blocks</h2>
+        <div class="seg" data-group="blocks">
+          <button type="button" data-v="plate">Plate</button>
+          <button type="button" data-v="glass">Glass</button>
+          <button type="button" data-v="clear">Clearing</button>
+          <button type="button" data-v="raw">Raw</button>
+        </div>
+        <label class="row"><span class="lh"><span>Corner radius</span><output id="oRad"></output></span><input type="range" id="rad" min="0" max="40" step="1"></label>
+        <label class="row"><span class="lh"><span>Glass: clear to tinted</span><output id="oTint"></output></span><input type="range" id="tint" min="0" max="100" step="1"></label>
+      </div>
+
+      <div class="grp">
+        <h2>Lines</h2>
+        <div class="seg" data-group="field">
+          <button type="button" data-v="0">Topographic</button>
+          <button type="button" data-v="1">Concentric</button>
+          <button type="button" data-v="2">Parallel flow</button>
+          <button type="button" data-v="3">Vortex</button>
+          <button type="button" data-v="4">Interference</button>
+          <button type="button" data-v="5">Ridgeline</button>
+        </div>
+        <label class="row"><span class="lh"><span>Density</span><output id="oDen"></output></span><input type="range" id="den" min="0.5" max="1.8" step="0.1"></label>
+        <label class="row"><span class="lh"><span>Line weight</span><output id="oWgt"></output></span><input type="range" id="wgt" min="0.5" max="2.5" step="0.1"></label>
+        <div class="seg" data-group="ink">
+          <button type="button" data-v="0">Black lines on paper</button>
+          <button type="button" data-v="1">Light lines on ink</button>
+        </div>
+        <div class="seg"><button type="button" class="btn" id="motion">Pause motion</button></div>
+      </div>
+
+      <div class="grp">
+        <h2>Share</h2>
+        <div class="seg"><button type="button" class="btn" id="copy">Copy this combo</button></div>
+        <p class="info" id="copyStatus" aria-live="polite">Paste it into the chat or a doc comment.</p>
+        <textarea id="copyOut" readonly hidden aria-label="Combo summary"></textarea>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script>
+(function(){
+const FONTS={
+ display:[
+  {n:'Kalnia',c:'serif',d:'Frida Medrano. Wide, high-contrast serif; weight runs from hairline to heavy.',ax:{wght:[100,700,700],wdth:[100,125,100]}},
+  {n:'Tourney',c:'sans',d:'Tyler Finck. Thin weights are hollow outlines; heavy weights are solid.',ax:{wght:[100,900,300],wdth:[75,125,100]}},
+  {n:'Science Gothic',c:'sans',d:'Thomas Phinney and others, 2025. Width 50 to 200 percent, plus a stroke-contrast axis.',ax:{wght:[100,900,800],wdth:[50,200,130]},x:{tag:'CTRS',label:'Contrast',min:0,max:85,def:40}},
+  {n:'Tilt Prism',c:'sans',d:'Andy Clymer. Letters built from parallel lines; tilts toward the pointer.',ax:{},tilt:true},
+  {n:'Tilt Warp',c:'sans',d:'Andy Clymer. Solid sibling of Tilt Prism; tilts toward the pointer.',ax:{},tilt:true},
+  {n:'Anybody',c:'sans',d:'Tyler Finck. Width runs from 50 to 150 percent.',ax:{wght:[100,900,900],wdth:[50,150,150]}},
+  {n:'Boldonse',c:'sans',d:'Universitype, 2025. Tall, very heavy masses.',ax:{}},
+  {n:'Special Gothic Expanded One',c:'sans',d:'Alistair McCready, 2025. Wide heavy grotesque.',ax:{}},
+  {n:'Sekuya',c:'sans',d:'Sekuya, 2025. Wide capitals with cut details.',ax:{}},
+  {n:'Savate',c:'sans',d:'Plomb Type, 2025. Heavy grotesque with ink-trap cuts.',ax:{wght:[200,900,900]}},
+  {n:'Rozha One',c:'serif',d:'Indian Type Foundry. Heavy high-contrast serif.',ax:{}},
+  {n:'Bodoni Moda',c:'serif',d:'Owen Earl. Bodoni with optical sizes; hairlines at display size.',ax:{wght:[400,900,900]},x:{tag:'opsz',label:'Optical size',min:6,max:96,def:96}},
+  {n:'Workbench',c:'mono',d:'Jens Kutílek. Letters made of scanlines; the axis sets their thickness.',ax:{},x:{tag:'SCAN',label:'Scanlines',min:-53,max:100,def:0}},
+  {n:'Big Shoulders',c:'sans',d:'Patric King. Condensed, with optical sizes.',ax:{wght:[100,900,900]},x:{tag:'opsz',label:'Optical size',min:10,max:72,def:72}},
+  {n:'Six Caps',c:'sans',d:'Vernon Adams. Very condensed capitals, like vertical rules.',ax:{}},
+  {n:'Bungee Hairline',c:'sans',d:'David Jonathan Ross. Capitals drawn with a single hairline.',ax:{}},
+  {n:'Stack Sans Notch',c:'sans',d:'Koto, 2025. Grotesque with notches cut into strokes.',ax:{wght:[200,700,700]}},
+  {n:'Dela Gothic One',c:'sans',d:'artakana. Dense heavy gothic.',ax:{}}
+ ],
+ text:[
+  {n:'Atkinson Hyperlegible Next',c:'sans',d:'Braille Institute, 2025. Built for legibility; has a matching mono.',ax:{}},
+  {n:'Geologica',c:'sans',d:'Monokrom. A sharpness axis turns soft joins into sharp ones.',ax:{},x:{tag:'SHRP',label:'Sharpness',min:0,max:100,def:0}},
+  {n:'Literata',c:'serif',d:'TypeTogether. Reading serif with optical sizes.',ax:{}},
+  {n:'Spectral',c:'serif',d:'Production Type. Light, sharp screen serif.',ax:{}},
+  {n:'Newsreader',c:'serif',d:'Production Type. Editorial serif with optical sizes.',ax:{}},
+  {n:'Ancizar Serif',c:'serif',d:'Universidad Nacional de Colombia, 2025. Sturdy reading serif.',ax:{}},
+  {n:'Epunda Slab',c:'serif',d:'Typofactur, 2025. Slab serif.',ax:{}},
+  {n:'Epunda Sans',c:'sans',d:'Typofactur, 2025. Sans sibling of Epunda Slab.',ax:{}},
+  {n:'Special Gothic',c:'sans',d:'Alistair McCready, 2025. Grotesque with a width axis.',ax:{}},
+  {n:'Stack Sans Text',c:'sans',d:'Koto, 2025. Text cut of Stack Sans.',ax:{}},
+  {n:'Host Grotesk',c:'sans',d:'Element Type, 2024. Neutral grotesque.',ax:{}}
+ ],
+ mono:[
+  {n:'Atkinson Hyperlegible Mono',c:'mono',d:'Braille Institute. Mono sibling of Atkinson Hyperlegible Next.'},
+  {n:'Martian Mono',c:'mono',d:'Evil Martians. Wide, square mono with a width axis.'},
+  {n:'Fragment Mono',c:'mono',d:'Wei Huang. Helvetica-like mono.'},
+  {n:'Xanh Mono',c:'mono',d:'Yellow Type. Mono with serifs and contrast.'},
+  {n:'Intel One Mono',c:'mono',d:'Intel with Frere-Jones Type. Designed with low-vision developers.'},
+  {n:'Azeret Mono',c:'mono',d:'Displaay. Geometric mono.'},
+  {n:'Sometype Mono',c:'mono',d:'Ryoichi Tsunekawa. Plain mono.'},
+  {n:'Reddit Mono',c:'mono',d:'OrangeRed. Rounded mono.'},
+  {n:'Workbench',c:'mono',d:'Jens Kutílek. Scanline letters.'}
+ ]
+};
+const FB={serif:'Georgia, "Times New Roman", serif',sans:'system-ui, "Segoe UI", Arial, sans-serif',mono:'ui-monospace, Consolas, "Courier New", monospace'};
+const PRESETS=[
+ {label:'Engraving',display:'Kalnia',dw:700,dwd:100,text:'Literata',mono:'Xanh Mono',head:'sil',blocks:'plate',field:0},
+ {label:'Instrument',display:'Science Gothic',dw:800,dwd:130,dx:40,text:'Atkinson Hyperlegible Next',mono:'Atkinson Hyperlegible Mono',head:'sparse',blocks:'glass',field:2},
+ {label:'Contour',display:'Tourney',dw:300,dwd:100,text:'Geologica',tx:40,mono:'Martian Mono',head:'rings',blocks:'clear',field:1},
+ {label:'Line-built',display:'Tilt Prism',text:'Epunda Sans',mono:'Workbench',head:'sparse',blocks:'plate',field:4},
+ {label:'Mass',display:'Boldonse',text:'Ancizar Serif',mono:'Fragment Mono',head:'hatch',blocks:'plate',field:3},
+ {label:'Signal',display:'Anybody',dw:900,dwd:150,text:'Special Gothic',mono:'Intel One Mono',head:'sil',blocks:'glass',field:5}
+];
+const HEADN={raw:'Raw',sparse:'Sparse ground',sil:'Silhouette',hatch:'Hatched',rings:'Contour rings',plate:'Plate',glass:'Glass'};
+const BLKN={plate:'Plate',glass:'Glass',clear:'Clearing',raw:'Raw'};
+const FIELDN=['Topographic','Concentric','Parallel flow','Vortex','Interference','Ridgeline'];
+const RINGS=[0.442,0.43,0.325,0.31,0.228,0.21,0.14,0.12,0.07];
+
+const $=id=>document.getElementById(id);
+const root=document.documentElement, stage=$('stage'), cv=$('field'), comp=$('comp'), hl=$('hl'), hlInner=$('hlInner'), hlText=$('hlText');
+const blocks=[...stage.querySelectorAll('.blk')];
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const find=(role,n)=>FONTS[role].find(f=>f.n===n)||FONTS[role][0];
+
+let S={display:'Kalnia',dw:700,dwd:100,dx:null,hs:12,text:'Literata',tx:null,mono:'Xanh Mono',head:'sil',blocks:'plate',rad:18,tint:60,field:0,density:1,weight:1,ink:0,paused:reduce,words:'Sahil Tomar'};
+try{const saved=JSON.parse(localStorage.getItem('line-type-lab')||'null');if(saved&&typeof saved==='object')S=Object.assign(S,saved,{paused:reduce});}catch(e){}
+
+function fill(sel,list){sel.innerHTML='';list.forEach(f=>{const o=document.createElement('option');o.value=f.n;o.textContent=f.n;sel.appendChild(o);});}
+fill($('dispSel'),FONTS.display);fill($('textSel'),FONTS.text);fill($('monoSel'),FONTS.mono);
+PRESETS.forEach((p,i)=>{const b=document.createElement('button');b.type='button';b.textContent=p.label;b.dataset.preset=i;$('presets').appendChild(b);});
+
+function setRange(el,lo,hi,val){el.min=lo;el.max=hi;el.value=val;}
+function dispDefaults(f){S.dw=f.ax.wght?f.ax.wght[2]:400;S.dwd=f.ax.wdth?f.ax.wdth[2]:100;S.dx=f.x?f.x.def:null;}
+function textDefaults(f){S.tx=f.x?f.x.def:null;}
+
+let tiltX=0,tiltY=0;
+function dfvs(f){
+  if(f.tilt)return `'XROT' ${tiltX.toFixed(1)}, 'YROT' ${tiltY.toFixed(1)}`;
+  if(f.x)return `'${f.x.tag}' ${S.dx}`;
+  return 'normal';
+}
+function apply(refit){
+  const d=find('display',S.display),t=find('text',S.text),m=find('mono',S.mono);
+  root.classList.toggle('dark',!!S.ink);
+  const st=stage.style;
+  st.setProperty('--disp',`"${d.n}", ${FB[d.c]}`);
+  st.setProperty('--text',`"${t.n}", ${FB[t.c]}`);
+  st.setProperty('--mono',`"${m.n}", ${FB.mono}`);
+  st.setProperty('--dw',d.ax.wght?S.dw:400);
+  st.setProperty('--dwd',(d.ax.wdth?S.dwd:100)+'%');
+  st.setProperty('--dfvs',dfvs(d));
+  st.setProperty('--tfvs',t.x?`'${t.x.tag}' ${S.tx}`:'normal');
+  st.setProperty('--rad',S.rad+'px');
+  hl.className='hl h-'+S.head;
+  if(hlText.textContent!==S.words)hlText.textContent=S.words;
+  $('dispSel').value=d.n;$('textSel').value=t.n;$('monoSel').value=m.n;
+  $('dispInfo').textContent=d.d;$('textInfo').textContent=t.d;$('monoInfo').textContent=m.d;
+  $('rowDW').hidden=!d.ax.wght;$('rowDWd').hidden=!d.ax.wdth;$('rowDX').hidden=!d.x;$('rowTX').hidden=!t.x;
+  if(d.ax.wght){setRange($('dW'),d.ax.wght[0],d.ax.wght[1],S.dw);$('oDW').textContent=S.dw;}
+  if(d.ax.wdth){setRange($('dWd'),d.ax.wdth[0],d.ax.wdth[1],S.dwd);$('oDWd').textContent=S.dwd+'%';}
+  if(d.x){$('dXLabel').textContent=d.x.label;setRange($('dX'),d.x.min,d.x.max,S.dx);$('oDX').textContent=S.dx;}
+  if(t.x){$('tXLabel').textContent=t.x.label;setRange($('tX'),t.x.min,t.x.max,S.tx);$('oTX').textContent=S.tx;}
+  $('hS').value=S.hs;$('oHS').textContent=S.hs.toFixed(1);
+  $('rad').value=S.rad;$('oRad').textContent=S.rad+' px';
+  $('tint').value=S.tint;$('oTint').textContent=S.tint+'%';
+  $('den').value=S.density;$('oDen').textContent=S.density.toFixed(1)+'x';
+  $('wgt').value=S.weight;$('oWgt').textContent=S.weight.toFixed(1)+'x';
+  if($('hlIn').value!==S.words)$('hlIn').value=S.words;
+  document.querySelectorAll('[data-group]').forEach(g=>{const key=g.dataset.group;g.querySelectorAll('button').forEach(b=>{b.setAttribute('aria-pressed',String(String(S[key])===b.dataset.v));});});
+  $('motion').textContent=S.paused?'Resume motion':'Pause motion';
+  try{localStorage.setItem('line-type-lab',JSON.stringify(S));}catch(e){}
+  if(refit){buildRings();fit();Promise.all([document.fonts.load(`${S.dw} 100px "${d.n}"`),document.fonts.load(`400 16px "${t.n}"`),document.fonts.load(`400 16px "${m.n}"`)]).then(()=>{buildRings();fit();}).catch(()=>{});}
+}
+function buildRings(){
+  hlInner.querySelectorAll('.ring').forEach(e=>e.remove());
+  if(S.head!=='rings')return;
+  RINGS.forEach((r,i)=>{const s=document.createElement('span');s.className='ring';s.setAttribute('aria-hidden','true');s.textContent=S.words;s.style.webkitTextStroke=`${(2*r).toFixed(3)}em ${i%2===0?'var(--fg)':'var(--ground)'}`;hlInner.insertBefore(s,hlText);});
+}
+function fit(){
+  hl.style.fontSize=S.hs+'cqw';
+  const cs=getComputedStyle(comp);const avail=comp.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+  const w=hl.getBoundingClientRect().width;
+  if(w>avail&&w>0)hl.style.fontSize=(S.hs*avail/w*0.98).toFixed(3)+'cqw';
+}
+
+$('presets').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const p=PRESETS[+b.dataset.preset];
+  S.display=p.display;dispDefaults(find('display',p.display));if(p.dw!=null)S.dw=p.dw;if(p.dwd!=null)S.dwd=p.dwd;if(p.dx!=null)S.dx=p.dx;
+  S.text=p.text;textDefaults(find('text',p.text));if(p.tx!=null)S.tx=p.tx;S.mono=p.mono;S.head=p.head;S.blocks=p.blocks;S.field=p.field;apply(true);});
+$('dispSel').addEventListener('change',e=>{S.display=e.target.value;dispDefaults(find('display',S.display));apply(true);});
+$('textSel').addEventListener('change',e=>{S.text=e.target.value;textDefaults(find('text',S.text));apply(true);});
+$('monoSel').addEventListener('change',e=>{S.mono=e.target.value;apply(true);});
+$('dW').addEventListener('input',e=>{S.dw=+e.target.value;apply(true);});
+$('dWd').addEventListener('input',e=>{S.dwd=+e.target.value;apply(true);});
+$('dX').addEventListener('input',e=>{S.dx=+e.target.value;apply(true);});
+$('tX').addEventListener('input',e=>{S.tx=+e.target.value;apply(false);});
+$('hS').addEventListener('input',e=>{S.hs=+e.target.value;apply(true);});
+$('hlIn').addEventListener('input',e=>{S.words=e.target.value||' ';apply(true);});
+$('rad').addEventListener('input',e=>{S.rad=+e.target.value;apply(false);});
+$('tint').addEventListener('input',e=>{S.tint=+e.target.value;apply(false);});
+$('den').addEventListener('input',e=>{S.density=+e.target.value;apply(false);});
+$('wgt').addEventListener('input',e=>{S.weight=+e.target.value;apply(false);});
+document.querySelectorAll('[data-group]').forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const key=g.dataset.group;const v=b.dataset.v;S[key]=(key==='field'||key==='ink')?+v:v;apply(key==='head');}));
+$('motion').addEventListener('click',()=>{S.paused=!S.paused;apply(false);});
+$('copy').addEventListener('click',()=>{
+  const d=find('display',S.display),t=find('text',S.text);
+  let dd=S.display;if(d.ax.wght)dd+=` wght ${S.dw}`;if(d.ax.wdth)dd+=` wdth ${S.dwd}`;if(d.x)dd+=` ${d.x.tag} ${S.dx}`;
+  let tt=S.text;if(t.x)tt+=` ${t.x.tag} ${S.tx}`;
+  const txt=[`Display: ${dd}`,`Text: ${tt}`,`Mono: ${S.mono}`,`Headline: ${HEADN[S.head]}`,`Blocks: ${BLKN[S.blocks]}, radius ${S.rad}px${S.blocks==='glass'||S.head==='glass'?`, glass tint ${S.tint}%`:''}`,`Lines: ${FIELDN[S.field]}, density ${S.density.toFixed(1)}x, weight ${S.weight.toFixed(1)}x`,`Theme: ${S.ink?'dark':'light'}`].join(' · ');
+  const out=$('copyOut');out.value=txt;
+  const fallback=()=>{out.hidden=false;out.focus();out.select();$('copyStatus').textContent='Copy the selected text below.';};
+  try{navigator.clipboard.writeText(txt).then(()=>{$('copyStatus').textContent='Copied. Paste it into the chat or a doc comment.';},fallback);}catch(e){fallback();}
+});
+
+// line field
+const gl=cv.getContext('webgl2',{antialias:false,premultipliedAlpha:false});
+if(!gl){root.classList.add('no-gl');stage.style.backgroundImage='repeating-radial-gradient(circle at 76% 42%, var(--fg) 0 1px, var(--ground) 1px 9px)';apply(true);return;}
+const VS=`#version 300 es
+in vec2 a;void main(){gl_Position=vec4(a,0.0,1.0);}`;
+const FS=`#version 300 es
+precision highp float;
+uniform vec2 uRes;uniform float uDpr;uniform float uTime;uniform vec2 uMouse;uniform float uMouseAmt;
+uniform int uField;uniform float uDensity;uniform float uWeight;uniform float uInk;
+uniform int uCount;uniform vec4 uRect[8];uniform vec4 uKind[8];
+out vec4 o;
+vec3 perm(vec3 x){return mod(((x*34.0)+1.0)*x,289.0);}
+float sn(vec2 v){
+ const vec4 C=vec4(0.211324865405187,0.366025403784439,-0.577350269189626,0.024390243902439);
+ vec2 i=floor(v+dot(v,C.yy));vec2 x0=v-i+dot(i,C.xx);
+ vec2 i1=(x0.x>x0.y)?vec2(1.0,0.0):vec2(0.0,1.0);
+ vec4 x12=x0.xyxy+C.xxzz;x12.xy-=i1;i=mod(i,289.0);
+ vec3 p=perm(perm(i.y+vec3(0.0,i1.y,1.0))+i.x+vec3(0.0,i1.x,1.0));
+ vec3 m=max(0.5-vec3(dot(x0,x0),dot(x12.xy,x12.xy),dot(x12.zw,x12.zw)),0.0);m=m*m;m=m*m;
+ vec3 x=2.0*fract(p*C.www)-1.0;vec3 h=abs(x)-0.5;vec3 ox=floor(x+0.5);vec3 a0=x-ox;
+ m*=1.79284291400159-0.85373472095314*(a0*a0+h*h);
+ vec3 g;g.x=a0.x*x0.x+h.x*x0.y;g.yz=a0.yz*x12.xz+h.yz*x12.yw;return 130.0*dot(m,g);
+}
+float fbm(vec2 q,float t){
+ vec2 w=vec2(sn(q*0.7+vec2(t,-0.7*t)),sn(q*0.7+vec2(5.2-0.6*t,1.3+t)));
+ return 0.62*sn(q+0.55*w+vec2(0.0,t))+0.26*sn(q*2.03-0.4*w-vec2(t*0.5))+0.12*sn(q*4.1+vec2(t));
+}
+float sdR(vec2 p,vec4 r,float rad,float pad){
+ vec2 c=r.xy+r.zw*0.5;vec2 b=r.zw*0.5+pad;float rr=min(rad,min(b.x,b.y));
+ vec2 q=abs(p-c)-b+rr;return length(max(q,0.0))+min(max(q.x,q.y),0.0)-rr;
+}
+vec2 nR(vec2 p,vec4 r,float rad,float pad){vec2 e=vec2(1.0,0.0);
+ return normalize(vec2(sdR(p+e.xy,r,rad,pad)-sdR(p-e.xy,r,rad,pad),sdR(p+e.yx,r,rad,pad)-sdR(p-e.yx,r,rad,pad))+1e-6);}
+float la(float v,float fw,float hw){float d=abs(fract(v+0.5)-0.5)/fw;return 1.0-smoothstep(hw-0.6,hw+0.6,d);}
+float lineA(float v,float wcss){
+ float fw=max(fwidth(v),1e-4);float hw=0.5*wcss*uDpr;
+ float l=max(0.0,log2(fw/0.2));float l0=floor(l);float f=l-l0;
+ float s0=exp2(l0);float s1=s0*2.0;
+ return mix(la(v/s0,fw/s0,hw),la(v/s1,fw/s1,hw),smoothstep(0.0,1.0,f));
+}
+float famV(vec2 q,vec2 css,float t,float n){
+ if(uField==0)return n*26.0*uDensity;
+ if(uField==1){float r=length(q-css*vec2(0.76,0.42));return sqrt(r+8.0)*3.2*uDensity+n*3.5-t*0.18;}
+ if(uField==2)return q.y/9.0*uDensity+n*7.0;
+ vec2 d=q-css*vec2(0.72,0.46);float r=length(d);float an=atan(d.y,d.x);
+ return pow(r+10.0,0.62)*2.4*uDensity+an*0.95492966+n*1.8-t*0.3;
+}
+float ridgeA(vec2 p,vec2 css,float t){
+ float sp=11.0/uDensity;float maxA=min(130.0,css.y*0.2);float y0=css.y*0.1;float y1=css.y*0.96;
+ float hw=0.5*uWeight*1.15;float aa=0.75/uDpr;
+ float kf=floor((p.y+maxA-y0)/sp);
+ for(int i=0;i<24;i++){
+  float k=kf-float(i);float base=y0+k*sp;
+  if(base<y0-0.5)break;
+  if(base>y1)continue;
+  float env=exp(-pow((p.x-css.x*0.62)/(css.x*0.17),2.0));
+  float nz=sn(vec2(p.x/64.0,k*1.37+t*0.12));
+  float h=maxA*env*pow(max(0.0,0.5+0.5*nz),2.2)+2.2*sn(vec2(p.x/21.0,k*2.9+t*0.05));
+  h+=uMouseAmt*44.0*exp(-pow((p.x-uMouse.x)/55.0,2.0))*exp(-pow((base-uMouse.y)/70.0,2.0));
+  float yk=base-h;float d=abs(p.y-yk);
+  if(d<hw+aa)return 1.0-smoothstep(hw-aa,hw+aa,d);
+  if(p.y>yk)return 0.0;
+ }
+ return 0.0;
+}
+void main(){
+ vec2 css=uRes/uDpr;vec2 p=vec2(gl_FragCoord.x,uRes.y-gl_FragCoord.y)/uDpr;float t=uTime;
+ vec2 pw=p;float clear=0.0;float wmul=1.0;float glass=0.0;float tint=0.0;float rimL=0.0;float rimD=0.0;float edge=0.0;float sparse=0.0;
+ for(int i=0;i<8;i++){
+  if(i>=uCount)break;
+  vec4 r=uRect[i];vec4 k=uKind[i];int kind=int(k.x+0.5);
+  float d=sdR(p,r,k.y,k.z);
+  if(kind==1){
+   clear=max(clear,1.0-smoothstep(-0.7,0.7,d));
+   wmul=max(wmul,1.0+0.8*exp(-max(d,0.0)/9.0));
+  }else if(kind==3){
+   vec2 n=nR(p,r,k.y,k.z);float dd=max(d,0.0);
+   pw-=n*22.0*exp(-dd/46.0);
+   clear=max(clear,1.0-smoothstep(-2.0,14.0,d));
+   wmul=max(wmul,1.0+1.3*exp(-dd/16.0));
+  }else if(kind==4){
+   sparse=max(sparse,1.0-smoothstep(0.0,80.0,d));
+  }else if(kind==2){
+   float ins=1.0-smoothstep(-0.7,0.7,d);
+   if(ins>0.0){
+    vec2 n=nR(p,r,k.y,k.z);float e=max(-d,0.0);
+    float s=clamp(1.0-e/18.0,0.0,1.0);float slope=s*s*s;
+    vec2 c=r.xy+r.zw*0.5;
+    vec2 q=c+(p-c)/1.75+n*30.0*slope;
+    pw=mix(pw,q,ins);glass=max(glass,ins);tint=max(tint,ins*k.w);
+    float ed=ins*(1.0-smoothstep(0.0,1.8,e));
+    float ld=dot(n,normalize(vec2(-0.55,-0.83)));
+    rimL=max(rimL,ed*max(ld,0.0)+ins*exp(-e/6.0)*0.22*max(ld,0.0));
+    rimD=max(rimD,ed*max(-ld,0.0));edge=max(edge,ed);
+   }
+  }
+ }
+ float n=fbm(pw/460.0,t*0.035);
+ float dm=length(pw-uMouse);float bump=uMouseAmt*4.5*exp(-dm*dm/(2.0*85.0*85.0));
+ float wv=mix(0.55,1.9,smoothstep(-0.55,0.75,sn(p/340.0+vec2(0.0,t*0.01))))*uWeight*mix(1.0,0.7,sparse);
+ float a;
+ if(uField<=3){
+  float v=famV(pw,css,t,n)+bump;
+  a=lineA(v,wv*wmul);
+  float li=floor(v+0.5);float keep=step(mod(li,3.0),0.5);
+  a*=mix(1.0,keep,sparse);
+ }else if(uField==4){
+  vec2 c1=css*vec2(0.3,0.74)+vec2(sin(t*0.05),cos(t*0.04))*30.0;
+  vec2 c2=css*vec2(0.78,0.3)+vec2(cos(t*0.045),sin(t*0.055))*30.0;
+  float s=8.5/uDensity;
+  float v1=length(pw-c1)/s+n*1.2+bump;float v2=length(pw-c2)/s+n*1.2+bump;
+  a=max(lineA(v1,wv*wmul),lineA(v2,wv*wmul))*(1.0-0.65*sparse);
+ }else{
+  a=ridgeA(pw,css,t)*(1.0-0.65*sparse);
+ }
+ vec3 bg=uInk>0.5?vec3(0.051,0.051,0.047):vec3(0.953,0.945,0.925);
+ vec3 fg=uInk>0.5?vec3(0.953,0.945,0.925):vec3(0.051,0.051,0.047);
+ vec3 tc=uInk>0.5?vec3(0.12,0.12,0.115):vec3(1.0);
+ float A=a*(1.0-clear)*mix(1.0,0.28,tint*glass);
+ vec3 col=mix(bg,fg,A);
+ col=mix(col,tc,glass*tint*0.5);
+ col=mix(col,vec3(1.0),rimL*0.85);
+ col=mix(col,fg,rimD*0.35+edge*0.18);
+ o=vec4(col,1.0);
+}`;
+function sh(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))console.error(gl.getShaderInfoLog(s));return s;}
+const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,VS));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,FS));gl.linkProgram(pr);
+if(!gl.getProgramParameter(pr,gl.LINK_STATUS))console.error(gl.getProgramInfoLog(pr));
+gl.useProgram(pr);
+const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+const al=gl.getAttribLocation(pr,'a');gl.enableVertexAttribArray(al);gl.vertexAttribPointer(al,2,gl.FLOAT,false,0,0);
+const U={};['uRes','uDpr','uTime','uMouse','uMouseAmt','uField','uDensity','uWeight','uInk','uCount','uRect','uKind'].forEach(n=>U[n]=gl.getUniformLocation(pr,n));
+const rectBuf=new Float32Array(32),kindBuf=new Float32Array(32);
+let dpr=1;
+function resize(){dpr=Math.min(window.devicePixelRatio||1,2);const w=cv.clientWidth,h=cv.clientHeight;if(!w||!h)return;cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);gl.viewport(0,0,cv.width,cv.height);fit();}
+new ResizeObserver(resize).observe(stage);
+const P={x:-9999,y:-9999,tx:-9999,ty:-9999,amt:0,tamt:0};
+stage.addEventListener('pointermove',e=>{const r=cv.getBoundingClientRect();P.tx=e.clientX-r.left;P.ty=e.clientY-r.top;if(P.x<-9000){P.x=P.tx;P.y=P.ty;}P.tamt=1;});
+stage.addEventListener('pointerleave',()=>{P.tamt=0;});
+function rects(){
+  const o=cv.getBoundingClientRect();let n=0;
+  const push=(el,kind,pad)=>{if(n>=8)return;const r=el.getBoundingClientRect();rectBuf.set([r.left-o.left,r.top-o.top,r.width,r.height],n*4);kindBuf.set([kind,S.rad,pad,S.tint/100],n*4);n++;};
+  const hk={sparse:4,plate:1,glass:2}[S.head];if(hk)push(hlInner,hk,hk===4?0:14);
+  const bk={plate:1,glass:2,clear:3,raw:0}[S.blocks];if(bk)blocks.forEach(b=>push(b,bk,0));
+  return n;
+}
+let last=performance.now(),time=0;
+function frame(now){
+  const dt=Math.min(0.05,(now-last)/1000);last=now;if(!S.paused)time+=dt;
+  P.x+=(P.tx-P.x)*0.12;P.y+=(P.ty-P.y)*0.12;P.amt+=(P.tamt-P.amt)*0.06;
+  const d=find('display',S.display);
+  if(d.tilt&&P.tamt>0){const w=cv.clientWidth,h=cv.clientHeight;const nx=Math.max(-1,Math.min(1,(P.x/w-0.5)*2)),ny=Math.max(-1,Math.min(1,(P.y/h-0.5)*2));const tx=-ny*28,ty=nx*28;if(Math.abs(tx-tiltX)>0.3||Math.abs(ty-tiltY)>0.3){tiltX=tx;tiltY=ty;stage.style.setProperty('--dfvs',dfvs(d));}}
+  const n=rects();
+  gl.uniform2f(U.uRes,cv.width,cv.height);gl.uniform1f(U.uDpr,dpr);gl.uniform1f(U.uTime,time);
+  gl.uniform2f(U.uMouse,P.x,P.y);gl.uniform1f(U.uMouseAmt,P.amt);gl.uniform1i(U.uField,S.field);
+  gl.uniform1f(U.uDensity,S.density);gl.uniform1f(U.uWeight,S.weight);gl.uniform1f(U.uInk,S.ink);
+  gl.uniform1i(U.uCount,n);gl.uniform4fv(U.uRect,rectBuf);gl.uniform4fv(U.uKind,kindBuf);
+  gl.drawArrays(gl.TRIANGLES,0,3);requestAnimationFrame(frame);
+}
+apply(true);resize();requestAnimationFrame(frame);
+})();
+</script>
+
+</body></html>
