@@ -2,7 +2,7 @@
 
 The text of `marks.html`, taken from the page unchanged, for reading without a browser. The drawings, animations, lockups and patterns are only on the page itself, so look at that too: serve the repo and open `experimental-assets/pages/marks.html`.
 
-Where the page says "your", it means Sahil. Mark A, Three Loops, is the main logo. See `../DESIGN.md`, section 2, for what is fixed and what on this page was only a proposal.
+Where the page says "your", it means Sahil. Mark A, Three Loops, is the main logo. See `../DESIGN.md`, section 2, for what is fixed and what on this page was only a proposal. The loop colours on this page are mock-ups, not decisions: each loop's keeper can colour the logo however they want, in any colour or a mix. Its shape stays the same.
 
 ---
 
@@ -29,7 +29,7 @@ Motion: the strokes draw themselves in the order a hand would paint them, loop f
 
 ### Second animation: the fall
 
-The whole mark comes down along the 30° line of its openings, like a meteor. The outer loop is the heat shield and shakes; the human inside rides the legs like a surfboard and stays calm.
+The whole mark comes down along the 30° line of its openings, like a meteor. The outer loop is the heat shield and shakes; the human inside rides the loop like a surfboard and stays calm.
 
 ### The fall, streamlined
 
@@ -253,7 +253,7 @@ The head: attention, the part that watches.
 **S-shaped spine**
 A little movement and a little joy. A person, not a pictogram.
 **Legs on the loop**
-The human stands on their field. In the fall they turn into a surfboard.
+The human stands on their field. In the fall the human rides the loop like a surfboard.
 **One wedge through all three**
 Field, hands and head open on the same ray at 11 o'clock. One way in, and every loop stays open to readers.
 **Dry-brush streaks**

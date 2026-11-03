@@ -9,4 +9,4 @@
 
 - Read `experimental-assets/DESIGN.md` before designing anything. Two things are constant: the logo, and the idea that everything is made from lines.
 - Refer to the logo page, `experimental-assets/pages/marks.html`, before any work that touches the logo. It shows the three marks, what every part means and how each was made. The file is large, so read its text in `experimental-assets/pages/marks.md`, and look at the page itself through a local server for the drawings.
-- Mark A, Three Loops, is the main logo. Use the files in `assets/img/` and never redraw it.
+- Mark A, Three Loops, is the main logo. Use the files in `assets/img/` and never redraw it. Its shape is fixed. Its colour is up to each loop's keeper: any colour or a mix. The loop colours on the logo page are mock-ups.

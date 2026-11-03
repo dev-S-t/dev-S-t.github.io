@@ -16,7 +16,7 @@ Copy the subsections below, down to the next horizontal rule, into the repo's `C
 
 ### The two constants
 
-1. **The logo.** A hand-drawn stick figure in a loop. Use the files in `assets/img/` (`logo.svg`, `favicon.svg`, `wordmark.svg`) or generate from `tools/logo/logo-gen.cjs`. Never redraw it, restyle its shape, or replace it. Before any work that touches the logo, refer to the logo page, `experimental-assets/pages/marks.html` (its text is in `experimental-assets/pages/marks.md`). Full notes are in `experimental-assets/DESIGN.md`, section 2.
+1. **The logo.** A hand-drawn stick figure in a loop. Use the files in `assets/img/` (`logo.svg`, `favicon.svg`, `wordmark.svg`) or generate from `tools/logo/logo-gen.cjs`. Never redraw it, restyle its shape, or replace it. Its colour is free: each loop's keeper can colour it however they want for their loop, in any colour or a mix. It belongs to Sahil Tomar, and keepers use it by Sahil's permission. Before any work that touches the logo, refer to the logo page, `experimental-assets/pages/marks.html` (its text is in `experimental-assets/pages/marks.md`). Full notes are in `experimental-assets/DESIGN.md`, section 2.
 2. **The design idea.** Everything is made from lines. The logo is lines, and so is whatever grows from it.
 
 Nothing else is fixed.
@@ -97,7 +97,7 @@ Constant one. A hand-drawn stick figure in a loop.
 
 - **A, Three Loops, is the main logo.** This is the constant, and the one on the live site.
 - **B, Peek, and C, Doppler, are companion marks from the same exploration.** Use them as reference, and ask Sahil before using either as a logo. Their generators no longer exist, so their drawings live only as inline SVG in the page.
-- **Not constants:** the fonts paired with each mark, and "two colours a loop", were proposals at the time. Type and colour are Abhishek's.
+- **Not constants:** the fonts paired with each mark, "two colours a loop", and the UI, UX and security colours were proposals and mock-ups. Type and colour are Abhishek's.
 
 | File | Use |
 | --- | --- |
@@ -117,7 +117,7 @@ Sahil's sketch was the start of it. The brush strokes keep the marks of a hand.
 - **Middle ring:** the arms, holding the loop from inside in its own shape.
 - **Inner ring:** the head, meaning attention.
 - **S-shaped spine:** movement and joy. A person, not a pictogram.
-- **Legs on the loop:** the human stands on the field. In the fall, the legs turn into a surfboard and the human rides them.
+- **Legs on the loop:** the human stands on the field. In the fall, the human rides the loop like a surfboard. The legs stay legs; they do not become a board.
 - **The opening:** one wedge cut through all three rings at eleven o'clock, exactly 30 degrees. That is one hour on a clock face: the eleventh hour, with humans still watching. It is also the one way in, because every loop stays open to readers.
 - **Dry-brush streaks and round ends:** a hand made this.
 - **Drawing order, if it draws itself:** loop, arms, head, spine, legs.
@@ -126,7 +126,8 @@ Sahil's sketch was the start of it. The brush strokes keep the marks of a hand.
 
 - **Fixed:** the shape, its proportions and the opening. Do not redraw it, trace it, tidy it, or rebuild it in another style.
 - **Allowed:** animating it. The figure may fall, walk, wave or draw itself on. Wherever the mark itself appears, it is the real mark. `experimental-assets/kit/video/mark.js`, `markbody.js` and `markfig.js` hold the mark as data and a posable body for this.
-- **Colour:** the logo page shows the mark in each loop's own colours, as examples ("One mark, many loops"), and says the marks can be recoloured per loop. So a loop's colours can apply to the mark; its shape does not change. To recolour, generate it or swap the fill; do not alter the paths.
+- **Colour is free.** Each loop's keeper can colour the logo however they want for their loop: any colour, or a mix. The UI, UX and security colours on the logo page are mock-ups, not decisions. To recolour, generate it or swap the fills; do not alter the paths.
+- **Ownership:** the logo belongs to Sahil Tomar. Keepers use it by Sahil's permission, for their loop. Do not use it outside human-in-loop.dev, change its shape, license it, or file any application for it without asking Sahil. Keeping the shape unchanged also protects the trademark.
 
 ---
 
