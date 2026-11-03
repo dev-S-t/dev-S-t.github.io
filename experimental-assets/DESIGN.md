@@ -16,7 +16,7 @@ Copy the subsections below, down to the next horizontal rule, into the repo's `C
 
 ### The two constants
 
-1. **The logo.** A hand-drawn stick figure in a loop. Use the files in `assets/img/` (`logo.svg`, `favicon.svg`, `wordmark.svg`) or generate from `tools/logo/logo-gen.cjs`. Never redraw it, restyle its shape, or replace it. Full notes are in `experimental-assets/DESIGN.md`, section 2.
+1. **The logo.** A hand-drawn stick figure in a loop. Use the files in `assets/img/` (`logo.svg`, `favicon.svg`, `wordmark.svg`) or generate from `tools/logo/logo-gen.cjs`. Never redraw it, restyle its shape, or replace it. Before any work that touches the logo, refer to the logo page, `experimental-assets/pages/marks.html` (its text is in `experimental-assets/pages/marks.md`). Full notes are in `experimental-assets/DESIGN.md`, section 2.
 2. **The design idea.** Everything is made from lines. The logo is lines, and so is whatever grows from it.
 
 Nothing else is fixed.
@@ -93,6 +93,12 @@ These are Sahil's preferences, not constants, and Abhishek can overrule them. Th
 
 Constant one. A hand-drawn stick figure in a loop.
 
+**The logo page is `experimental-assets/pages/marks.html`. Refer to it before any work that touches the logo.** It shows the three marks, what every part means and how each was made, with lockups, sizes, patterns and uses. View it through the local server. The file is 1.4 MB, mostly SVG paths, so read `experimental-assets/pages/marks.md` for its text.
+
+- **A, Three Loops, is the main logo.** This is the constant, and the one on the live site.
+- **B, Peek, and C, Doppler, are companion marks from the same exploration.** Use them as reference, and ask Sahil before using either as a logo. Their generators no longer exist, so their drawings live only as inline SVG in the page.
+- **Not constants:** the fonts paired with each mark, and "two colours a loop", were proposals at the time. Type and colour are Abhishek's.
+
 | File | Use |
 | --- | --- |
 | `assets/img/logo.svg` | The mark in full detail, filled with `#0D0D0C`. |
@@ -111,7 +117,7 @@ Sahil's sketch was the start of it. The brush strokes keep the marks of a hand.
 - **Middle ring:** the arms, holding the loop from inside in its own shape.
 - **Inner ring:** the head, meaning attention.
 - **S-shaped spine:** movement and joy. A person, not a pictogram.
-- **Legs on the loop:** the human stands on the field. In the fall, the human rides the loop like a surfboard.
+- **Legs on the loop:** the human stands on the field. In the fall, the legs turn into a surfboard and the human rides them.
 - **The opening:** one wedge cut through all three rings at eleven o'clock, exactly 30 degrees. That is one hour on a clock face: the eleventh hour, with humans still watching. It is also the one way in, because every loop stays open to readers.
 - **Dry-brush streaks and round ends:** a hand made this.
 - **Drawing order, if it draws itself:** loop, arms, head, spine, legs.
@@ -120,7 +126,7 @@ Sahil's sketch was the start of it. The brush strokes keep the marks of a hand.
 
 - **Fixed:** the shape, its proportions and the opening. Do not redraw it, trace it, tidy it, or rebuild it in another style.
 - **Allowed:** animating it. The figure may fall, walk, wave or draw itself on. Wherever the mark itself appears, it is the real mark. `experimental-assets/kit/video/mark.js`, `markbody.js` and `markfig.js` hold the mark as data and a posable body for this.
-- **Not settled: its colour on a coloured page.** So far it has only appeared as ink on paper and paper on ink. If Abhishek's palette raises the question, ask Sahil rather than deciding it here. To recolour for a test, generate it or swap the fill; do not alter the paths.
+- **Colour:** the logo page shows the mark in each loop's own colours, as examples ("One mark, many loops"), and says the marks can be recoloured per loop. So a loop's colours can apply to the mark; its shape does not change. To recolour, generate it or swap the fill; do not alter the paths.
 
 ---
 
@@ -158,7 +164,7 @@ This is one reading, by one keeper, for one loop:
 - Contour fields, topologies, dashes and fingerprint-like streamlines.
 - Engraved 3D heads and hands, and a stick-figure cast in short films.
 
-The earlier decision log (`experimental-assets/pages/line-design-system.html`) and the AI loop's page mention "two colours a loop". That does not bind this work. **Any colour is open now.**
+The logo page says "two colours a loop", and the earlier decision log (`experimental-assets/pages/line-design-system.html`) says only two colours exist in the system. That does not bind this work. **Any colour is open now.**
 
 If everything you propose looks like the examples above, you have narrowed the idea. Try at least one direction that shares nothing with them except being made of lines and carrying the logo.
 
@@ -210,12 +216,22 @@ experimental-assets/
   kit/video/                      Film sources and the render pipeline
   kit/video/STORYBOARD.md         How the first films were planned
   kit/video/NIGHT-LOG.md          A log of why films were made and what was learned
-  pages/marks.html                The logo's explorations and its stories
+  pages/marks.html                The logo page: the three marks, what every part means, how each was made
+  pages/marks.md                  The logo page's text, for reading without a browser
   pages/line-design-system.html   The AI loop's decision log
   pages/line-type-lab.html        An interactive tool for trying fonts over a line field
+  extra/index.html                Everything in extra/, listed by film
+  extra/masters/                  Full-size renders under 50 MB
+  extra/sound/                    Each film's sound on its own, as M4A
+  extra/sheets/                   One contact sheet per film, as JPG
+  extra/rejected/                 First Light and Firefly, rejected, kept for reference
 ```
 
-The films in `kit/films/` are compressed web copies, mostly 1080p, each under about 15 MB. The large master renders are not stored, because they can be regenerated from `kit/video/`.
+The films in `kit/films/` are compressed web copies, mostly 1080p, each under about 15 MB. `extra/` adds full-size renders under 50 MB, the sound on its own, and a contact sheet per film. Larger renders are not stored, because they can be regenerated from `kit/video/`.
+
+Nothing here has to be used. It is here in case it helps.
+
+You can't watch a video, so read `extra/sheets/<id>.jpg` to see what is in a film: 30 evenly spaced frames, left to right, top to bottom.
 
 ### What Sahil thought of the existing work
 
@@ -223,7 +239,7 @@ Use these as clues about taste. They are not rules for the new work.
 
 - **Liked:** the Loop (fingerprint) background and Strings; the figure animations; the films The Gap, Strings and Uphill; Showtime and Storm; Fall, the first logo film Sahil felt made sense; Starry Night.
 - **Liked with fixes wanted:** Arrival, which was rushed from telescope to landing (Arrival v2 is the attempt to fix that); Loops, a brilliant idea whose connecting lines looked random.
-- **Rejected:** First Light and Firefly (their films are left out, though the source files remain); Open, where the head became a big eye; a Fall background, a spinning-rings loader, a Speaking animation and a waveform voice object; a double-spiral Starry III (rebuilt since).
+- **Rejected:** First Light and Firefly (kept in `extra/rejected/`); Open, where the head became a big eye; a Fall background, a spinning-rings loader, a Speaking animation and a waveform voice object; a double-spiral Starry III (rebuilt since).
 - **No verdict yet:** Constellation, Open again, Eyes, Keep Up, Both Readings, Stuck, the section loops, the rebuilt Starry III.
 
 The quality bar for drawn assets on the AI loop was the UniBias eye (`projects/unibias/`): a drawing that tracks the pointer, blinks and means something. Not everything needs an asset, but an asset should have a reason to exist.
@@ -420,7 +436,7 @@ Then open `http://localhost:4321/`. The asset hub is at `http://localhost:4321/e
 ## 10. Housekeeping
 
 - **The repo is public.** Anything pushed can be seen by anyone, so nothing private goes in it.
-- **`experimental-assets/` does not go to `main` without Sahil's say.** It is about 250 MB, and because of `.nojekyll`, everything on `main` is served publicly. Before opening a pull request, ask Sahil how to handle this folder. Promoted assets get copied into `assets/` and go through with the page.
+- **`experimental-assets/` does not go to `main` without Sahil's say.** It is about 500 MB, and because of `.nojekyll`, everything on `main` is served publicly. Before opening a pull request, ask Sahil how to handle this folder. Promoted assets get copied into `assets/` and go through with the page.
 - **Keep files under 100 MB** (GitHub's limit) and keep generated output out of commits. `experimental-assets/.gitignore` already excludes `kit/video/out/`.
 - **Saved pages are history.** `pages/line-design-system.html` is the AI loop's working doc. Read it for reasoning, and don't treat its rules as rules for this loop.
 - **Add to this file** when something is learned that the next session would need. Keep the two constants as they are.

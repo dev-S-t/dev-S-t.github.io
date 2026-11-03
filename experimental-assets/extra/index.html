@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Experimental assets: extras</title>
+<style>
+  :root { --paper: #F3F1EC; --ink: #0D0D0C; --rule: rgba(13, 13, 12, .32); }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.5 ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif; }
+  main { padding: clamp(24px, 5vw, 72px) clamp(16px, 5vw, 72px); }
+  h1 { margin: 12px 0 8px; font-size: clamp(30px, 4.4vw, 60px); line-height: 1.05; font-weight: 500; letter-spacing: -.015em; }
+  main > p { margin: 0 0 10px; max-width: 70ch; }
+  h2 { margin: clamp(32px, 4vw, 48px) 0 10px; font-size: 15px; font-weight: 600; }
+  h3 { margin: 0 0 4px; font-size: clamp(18px, 1.5vw, 22px); font-weight: 500; }
+  ul { list-style: none; margin: 0; padding: 0; border-top: 1.5px solid var(--ink); }
+  li { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--rule); }
+  li p { margin: 0; }
+  img { display: block; width: 100%; height: auto; background: var(--ink); }
+  small { font-size: 14px; color: rgba(13, 13, 12, .74); }
+  a { color: inherit; text-underline-offset: 3px; }
+  a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+  code { font: 14px/1.4 ui-monospace, "Cascadia Mono", Consolas, monospace; }
+  @media (min-width: 720px) { li { grid-template-columns: minmax(0, 3fr) minmax(170px, 1fr); gap: 28px; } }
+  @media (min-width: 1500px) { ul.films { display: grid; grid-template-columns: 1fr 1fr; column-gap: 48px; } }
+</style>
+</head>
+<body>
+<main>
+  <p><a href="../index.html">Experimental assets</a></p>
+  <h1>Extras</h1>
+  <p>Extra files that go with the collection. None of them has to be used.</p>
+  <p>Full-size renders over 50 MB are not stored. Make them with <code>kit/video/render.mjs</code>.</p>
+
+  <h2>Rejected</h2>
+  <p>Sahil rejected these two: the arms snap to a circle, and a leg grows out into the mark. Kept for reference.</p>
+  <ul class="films">
+    <li><a class="thumb" href="sheets/light.jpg"><img src="sheets/light.jpg" alt="Contact sheet of the film First Light: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>First Light</h3><p><a href="rejected/film-light.mp4">Film</a> <small>6.1 MB</small><br><a href="sound/light.m4a">Sound</a> <small>0.6 MB</small><br><a href="sheets/light.jpg">Contact sheet</a> <small>0.1 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/firefly.jpg"><img src="sheets/firefly.jpg" alt="Contact sheet of the film Firefly: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Firefly</h3><p><a href="rejected/film-firefly.mp4">Film</a> <small>5.0 MB</small><br><a href="sound/firefly.m4a">Sound</a> <small>0.6 MB</small><br><a href="sheets/firefly.jpg">Contact sheet</a> <small>0.1 MB</small></p></div></li>
+  </ul>
+
+  <h2>Films</h2>
+  <ul class="films">
+    <li><a class="thumb" href="sheets/arrival2.jpg"><img src="sheets/arrival2.jpg" alt="Contact sheet of the film Arrival v2: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Arrival v2</h3><p><a href="../kit/films/film-arrival2.mp4">Film</a> <small>14 MB</small><br><a href="sound/arrival2.m4a">Sound</a> <small>1.5 MB</small><br><a href="sheets/arrival2.jpg">Contact sheet</a> <small>0.3 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/cycle2.jpg"><img src="sheets/cycle2.jpg" alt="Contact sheet of the film Fall and Arrival v2, round and round: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Fall and Arrival v2, round and round</h3><p><a href="../kit/films/film-cycle2.mp4">Film</a> <small>13 MB</small><br><a href="sheets/cycle2.jpg">Contact sheet</a> <small>0.3 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/arrival.jpg"><img src="sheets/arrival.jpg" alt="Contact sheet of the film Arrival: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Arrival</h3><p><a href="../kit/films/film-arrival.mp4">Film</a> <small>14 MB</small><br><a href="sound/arrival.m4a">Sound</a> <small>1.1 MB</small><br><a href="sheets/arrival.jpg">Contact sheet</a> <small>0.3 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/cycle.jpg"><img src="sheets/cycle.jpg" alt="Contact sheet of the film Fall and Arrival, round and round: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Fall and Arrival, round and round</h3><p><a href="../kit/films/film-cycle.mp4">Film</a> <small>13 MB</small><br><a href="sheets/cycle.jpg">Contact sheet</a> <small>0.3 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/both.jpg"><img src="sheets/both.jpg" alt="Contact sheet of the film Fall, then Constellation: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Fall, then Constellation</h3><p><a href="../kit/films/film-both.mp4">Film</a> <small>13 MB</small><br><a href="sheets/both.jpg">Contact sheet</a> <small>0.2 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/fall.jpg"><img src="sheets/fall.jpg" alt="Contact sheet of the film Fall: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Fall</h3><p><a href="../kit/films/film-fall.mp4">Film</a> <small>13 MB</small><br><a href="masters/fall.mp4">Full size</a> <small>46 MB</small><br><a href="sound/fall.m4a">Sound</a> <small>0.8 MB</small><br><a href="sheets/fall.jpg">Contact sheet</a> <small>0.3 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/constellation.jpg"><img src="sheets/constellation.jpg" alt="Contact sheet of the film Constellation: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Constellation</h3><p><a href="../kit/films/film-constellation.mp4">Film</a> <small>14 MB</small><br><a href="masters/constellation.mp4">Full size</a> <small>25 MB</small><br><a href="sound/constellation.m4a">Sound</a> <small>0.8 MB</small><br><a href="sheets/constellation.jpg">Contact sheet</a> <small>0.1 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/idea.jpg"><img src="sheets/idea.jpg" alt="Contact sheet of the film All three: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>All three</h3><p><a href="../kit/films/film-idea.mp4">Film</a> <small>14 MB</small><br><a href="sheets/idea.jpg">Contact sheet</a> <small>0.3 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/keeper.jpg"><img src="sheets/keeper.jpg" alt="Contact sheet of the film Keeper: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Keeper</h3><p><a href="../kit/films/film-keeper.mp4">Film</a> <small>13 MB</small><br><a href="sound/keeper.m4a">Sound</a> <small>0.7 MB</small><br><a href="sheets/keeper.jpg">Contact sheet</a> <small>0.4 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/loops.jpg"><img src="sheets/loops.jpg" alt="Contact sheet of the film Loops: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Loops</h3><p><a href="../kit/films/film-loops.mp4">Film</a> <small>13 MB</small><br><a href="masters/loops.mp4">Full size</a> <small>25 MB</small><br><a href="sound/loops.m4a">Sound</a> <small>0.8 MB</small><br><a href="sheets/loops.jpg">Contact sheet</a> <small>0.2 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/open.jpg"><img src="sheets/open.jpg" alt="Contact sheet of the film Open: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Open</h3><p><a href="../kit/films/film-open.mp4">Film</a> <small>13 MB</small><br><a href="sound/open.m4a">Sound</a> <small>0.7 MB</small><br><a href="sheets/open.jpg">Contact sheet</a> <small>0.4 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/open2.jpg"><img src="sheets/open2.jpg" alt="Contact sheet of the film Open, again: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Open, again</h3><p><a href="../kit/films/film-open2.mp4">Film</a> <small>13 MB</small><br><a href="sound/open2.m4a">Sound</a> <small>0.7 MB</small><br><a href="sheets/open2.jpg">Contact sheet</a> <small>0.4 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/loop-kept.jpg"><img src="sheets/loop-kept.jpg" alt="Contact sheet of the film Kept: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Kept</h3><p><a href="../kit/films/film-loop-kept.mp4">Film</a> <small>5.4 MB</small><br><a href="masters/loop-kept.mp4">Full size</a> <small>18 MB</small><br><a href="sheets/loop-kept.jpg">Contact sheet</a> <small>0.4 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/loop-edge.jpg"><img src="sheets/loop-edge.jpg" alt="Contact sheet of the film Edge: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Edge</h3><p><a href="../kit/films/film-loop-edge.mp4">Film</a> <small>5.4 MB</small><br><a href="masters/loop-edge.mp4">Full size</a> <small>20 MB</small><br><a href="sheets/loop-edge.jpg">Contact sheet</a> <small>0.3 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/loop-island.jpg"><img src="sheets/loop-island.jpg" alt="Contact sheet of the film Island: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Island</h3><p><a href="../kit/films/film-loop-island.mp4">Film</a> <small>5.4 MB</small><br><a href="sheets/loop-island.jpg">Contact sheet</a> <small>0.4 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/eyes.jpg"><img src="sheets/eyes.jpg" alt="Contact sheet of the film Eyes: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Eyes</h3><p><a href="../kit/films/film-eyes.mp4">Film</a> <small>2.8 MB</small><br><a href="sound/eyes.m4a">Sound</a> <small>0.3 MB</small><br><a href="sheets/eyes.jpg">Contact sheet</a> <small>0.1 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/keepup.jpg"><img src="sheets/keepup.jpg" alt="Contact sheet of the film Keep Up: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Keep Up</h3><p><a href="../kit/films/film-keepup.mp4">Film</a> <small>14 MB</small><br><a href="masters/keepup.mp4">Full size</a> <small>47 MB</small><br><a href="sound/keepup.m4a">Sound</a> <small>0.7 MB</small><br><a href="sheets/keepup.jpg">Contact sheet</a> <small>0.3 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/readings.jpg"><img src="sheets/readings.jpg" alt="Contact sheet of the film Both Readings: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Both Readings</h3><p><a href="../kit/films/film-readings.mp4">Film</a> <small>13 MB</small><br><a href="masters/readings.mp4">Full size</a> <small>44 MB</small><br><a href="sound/readings.m4a">Sound</a> <small>0.5 MB</small><br><a href="sheets/readings.jpg">Contact sheet</a> <small>0.3 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/stuck.jpg"><img src="sheets/stuck.jpg" alt="Contact sheet of the film Stuck: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Stuck</h3><p><a href="../kit/films/film-stuck.mp4">Film</a> <small>4.7 MB</small><br><a href="sound/stuck.m4a">Sound</a> <small>0.5 MB</small><br><a href="sheets/stuck.jpg">Contact sheet</a> <small>0.1 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/showtime.jpg"><img src="sheets/showtime.jpg" alt="Contact sheet of the film Showtime: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Showtime</h3><p><a href="../kit/films/film-showtime.mp4">Film</a> <small>6.3 MB</small><br><a href="sound/showtime.m4a">Sound</a> <small>0.6 MB</small><br><a href="sheets/showtime.jpg">Contact sheet</a> <small>0.1 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/storm.jpg"><img src="sheets/storm.jpg" alt="Contact sheet of the film Storm: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Storm</h3><p><a href="../kit/films/film-storm.mp4">Film</a> <small>7.5 MB</small><br><a href="sound/storm.m4a">Sound</a> <small>0.6 MB</small><br><a href="sheets/storm.jpg">Contact sheet</a> <small>0.1 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/gap.jpg"><img src="sheets/gap.jpg" alt="Contact sheet of the film The Gap: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>The Gap</h3><p><a href="../kit/films/film-gap.mp4">Film</a> <small>5.3 MB</small><br><a href="sound/gap.m4a">Sound</a> <small>0.6 MB</small><br><a href="sheets/gap.jpg">Contact sheet</a> <small>0.1 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/strings.jpg"><img src="sheets/strings.jpg" alt="Contact sheet of the film Strings: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Strings</h3><p><a href="../kit/films/film-strings.mp4">Film</a> <small>10.0 MB</small><br><a href="sound/strings.m4a">Sound</a> <small>0.6 MB</small><br><a href="sheets/strings.jpg">Contact sheet</a> <small>0.1 MB</small></p></div></li>
+    <li><a class="thumb" href="sheets/uphill.jpg"><img src="sheets/uphill.jpg" alt="Contact sheet of the film Uphill: 30 evenly spaced frames" width="1920" height="900" loading="lazy"></a><div><h3>Uphill</h3><p><a href="../kit/films/film-uphill.mp4">Film</a> <small>7.4 MB</small><br><a href="sound/uphill.m4a">Sound</a> <small>0.6 MB</small><br><a href="sheets/uphill.jpg">Contact sheet</a> <small>0.1 MB</small></p></div></li>
+  </ul>
+</main>
+</body>
+</html>
