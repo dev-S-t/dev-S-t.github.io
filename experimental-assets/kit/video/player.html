@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Film player</title>
+<style>
+  html, body { margin: 0; background: #1a1a19; color: #ddd; font: 13px/1.4 ui-monospace, monospace; }
+  canvas { display: block; width: 100%; height: auto; max-height: calc(100vh - 44px); object-fit: contain; }
+  .bar { display: flex; gap: 10px; align-items: center; padding: 8px 12px; }
+  .bar input[type=range] { flex: 1; }
+  body.render .bar { display: none; }
+  body.render canvas { width: 1920px; max-height: none; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div class="bar"><button id="play">play</button><select id="pick"></select><input id="scrub" type="range" min="0" max="1000" value="0"><span id="time">0.00</span></div>
+<script src="rig.js"></script>
+<script src="ink.js"></script>
+<script src="mark.js"></script>
+<script src="markfig.js"></script>
+<script src="markbody.js"></script>
+<script src="field.js"></script>
+<script src="film-poses.js" onerror="this.remove()"></script>
+<script src="film-keeper.js" onerror="this.remove()"></script>
+<script src="film-loops.js" onerror="this.remove()"></script>
+<script src="film-open.js" onerror="this.remove()"></script>
+<script src="film-open2.js" onerror="this.remove()"></script>
+<script src="film-fall.js" onerror="this.remove()"></script>
+<script src="film-arrival.js" onerror="this.remove()"></script>
+<script src="film-arrival2.js" onerror="this.remove()"></script>
+<script src="wordmark.js"></script>
+<script src="film-eyes.js" onerror="this.remove()"></script>
+<script src="film-keepup.js" onerror="this.remove()"></script>
+<script src="film-readings.js" onerror="this.remove()"></script>
+<script src="film-stuck.js" onerror="this.remove()"></script>
+<script src="film-constellation.js" onerror="this.remove()"></script>
+<script src="film-heroloops.js" onerror="this.remove()"></script>
+<script src="film-showtime.js" onerror="this.remove()"></script>
+<script src="film-storm.js" onerror="this.remove()"></script>
+<script src="film-gap.js"></script>
+<script src="film-light.js" onerror="this.remove()"></script>
+<script src="film-firefly.js" onerror="this.remove()"></script>
+<script src="film-strings.js" onerror="this.remove()"></script>
+<script src="film-uphill.js" onerror="this.remove()"></script>
+<script>
+  // one film on one canvas; the renderer calls renderFrame(i) and gets a PNG back; sheet() lays frames out in a grid
+  const q = new URLSearchParams(location.search), films = window.Films;
+  const id = q.get('film') && films[q.get('film')] ? q.get('film') : Object.keys(films)[0], F = films[id];
+  const c = document.getElementById('c'), ctx = c.getContext('2d');
+  if (q.has('render')) document.body.classList.add('render');
+  window.FILM = { id, fps: F.fps, dur: F.dur, frames: Math.round(F.dur * F.fps) };
+  window.renderFrame = (i) => { F.draw(ctx, i / F.fps); return c.toDataURL('image/png'); };
+  window.sheet = (times, cols = 4, w = 640, crop = null) => {
+    const cw = crop ? crop[2] : F.W, ch = crop ? crop[3] : F.H, h = Math.round(w * ch / cw), rows = Math.ceil(times.length / cols), S = document.createElement('canvas');
+    S.width = cols * w + (cols + 1) * 4; S.height = rows * h + (rows + 1) * 4; const g = S.getContext('2d');
+    g.fillStyle = '#888'; g.fillRect(0, 0, S.width, S.height); g.font = '15px monospace';
+    times.forEach((t, i) => { F.draw(ctx, t); const x = 4 + (i % cols) * (w + 4), y = 4 + Math.floor(i / cols) * (h + 4); if (crop) g.drawImage(c, crop[0], crop[1], crop[2], crop[3], x, y, w, h); else g.drawImage(c, x, y, w, h); g.fillStyle = '#e33'; g.fillText(t.toFixed(2) + 's', x + 6, y + 18); });
+    return S.toDataURL('image/png');
+  };
+  // the player
+  const pick = document.getElementById('pick'), scrub = document.getElementById('scrub'), time = document.getElementById('time'), play = document.getElementById('play');
+  Object.keys(films).forEach((k) => pick.add(new Option(films[k].title, k, k === id, k === id)));
+  pick.onchange = () => { location.search = '?film=' + pick.value; };
+  let t = +(q.get('t') || 0), playing = false, last = 0;
+  const show = () => { F.draw(ctx, t); scrub.value = Math.round(t / F.dur * 1000); time.textContent = t.toFixed(2) + ' / ' + F.dur.toFixed(2); };
+  scrub.oninput = () => { t = scrub.value / 1000 * F.dur; show(); };
+  play.onclick = () => { playing = !playing; play.textContent = playing ? 'pause' : 'play'; last = performance.now(); if (playing) requestAnimationFrame(tick); };
+  function tick(now) { if (!playing) return; t = (t + (now - last) / 1000) % F.dur; last = now; show(); requestAnimationFrame(tick); }
+  if (!q.has('render')) show();
+</script>
+</body>
+</html>

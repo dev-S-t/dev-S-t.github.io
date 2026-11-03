@@ -1,0 +1,554 @@
+{
+ "backgrounds": [
+  {
+   "id": "loop",
+   "name": "Loop",
+   "note": "",
+   "w": 1600,
+   "h": 900,
+   "files": {
+    "paper": "backgrounds/loop-paper.svg",
+    "ink": "backgrounds/loop-ink.svg"
+   },
+   "kb": 32
+  },
+  {
+   "id": "in-sync",
+   "name": "In Sync",
+   "note": "",
+   "w": 1600,
+   "h": 900,
+   "files": {
+    "paper": "backgrounds/in-sync-paper.svg",
+    "ink": "backgrounds/in-sync-ink.svg"
+   },
+   "kb": 9
+  },
+  {
+   "id": "strings",
+   "name": "Strings",
+   "note": "",
+   "w": 1600,
+   "h": 900,
+   "files": {
+    "paper": "backgrounds/strings-paper.svg",
+    "ink": "backgrounds/strings-ink.svg"
+   },
+   "kb": 7
+  },
+  {
+   "id": "sweep",
+   "name": "Sweep",
+   "note": "",
+   "w": 1600,
+   "h": 900,
+   "files": {
+    "paper": "backgrounds/sweep-paper.svg",
+    "ink": "backgrounds/sweep-ink.svg"
+   },
+   "kb": 36
+  },
+  {
+   "id": "constellation",
+   "name": "Constellation",
+   "note": "",
+   "w": 1600,
+   "h": 900,
+   "files": {
+    "paper": "backgrounds/constellation-paper.svg",
+    "ink": "backgrounds/constellation-ink.svg"
+   },
+   "kb": 34
+  },
+  {
+   "id": "starry",
+   "name": "Starry Night",
+   "note": "",
+   "w": 1600,
+   "h": 900,
+   "files": {
+    "ink": "backgrounds/starry.svg",
+    "paper": "backgrounds/starry.svg"
+   },
+   "kb": 214
+  },
+  {
+   "id": "starry-2",
+   "name": "Starry Night II",
+   "note": "",
+   "w": 1600,
+   "h": 900,
+   "files": {
+    "ink": "backgrounds/starry-2.svg",
+    "paper": "backgrounds/starry-2.svg"
+   },
+   "kb": 253
+  },
+  {
+   "id": "starry-3",
+   "name": "Starry Night III",
+   "note": "",
+   "w": 1600,
+   "h": 900,
+   "files": {
+    "ink": "backgrounds/starry-3.svg",
+    "paper": "backgrounds/starry-3.svg"
+   },
+   "kb": 263
+  }
+ ],
+ "animations": [
+  {
+   "id": "agents-zoom",
+   "name": "Agents on the loop, forever",
+   "note": "",
+   "w": 360,
+   "h": 360,
+   "files": {
+    "paper": "animations/agents-zoom-paper.svg",
+    "ink": "animations/agents-zoom-ink.svg"
+   },
+   "kb": 9
+  },
+  {
+   "id": "loader-orbit",
+   "name": "Orbit loader",
+   "note": "",
+   "w": 360,
+   "h": 360,
+   "files": {
+    "paper": "animations/loader-orbit-paper.svg",
+    "ink": "animations/loader-orbit-ink.svg"
+   },
+   "kb": 150
+  },
+  {
+   "id": "loader-wheel",
+   "name": "Wheel loader",
+   "note": "",
+   "w": 480,
+   "h": 240,
+   "files": {
+    "paper": "animations/loader-wheel-paper.svg",
+    "ink": "animations/loader-wheel-ink.svg"
+   },
+   "kb": 145
+  },
+  {
+   "id": "watching",
+   "name": "Watching",
+   "note": "",
+   "w": 553,
+   "h": 85,
+   "files": {
+    "paper": "animations/watching-paper.svg",
+    "ink": "animations/watching-ink.svg"
+   },
+   "kb": 8
+  },
+  {
+   "id": "eyes",
+   "name": "Eyes",
+   "note": "",
+   "w": 727,
+   "h": 150,
+   "files": {
+    "paper": "animations/eyes-paper.svg",
+    "ink": "animations/eyes-ink.svg"
+   },
+   "kb": 33
+  },
+  {
+   "id": "walk",
+   "name": "Walk",
+   "note": "",
+   "w": 320,
+   "h": 200,
+   "files": {
+    "paper": "animations/walk-paper.svg",
+    "ink": "animations/walk-ink.svg"
+   },
+   "kb": 13
+  },
+  {
+   "id": "draw-on",
+   "name": "Draw-on",
+   "note": "",
+   "w": 240,
+   "h": 240,
+   "files": {
+    "paper": "animations/draw-on-paper.svg",
+    "ink": "animations/draw-on-ink.svg"
+   },
+   "kb": 28
+  },
+  {
+   "id": "scroll",
+   "name": "Scroll",
+   "note": "",
+   "w": 60,
+   "h": 160,
+   "files": {
+    "paper": "animations/scroll-paper.svg",
+    "ink": "animations/scroll-ink.svg"
+   },
+   "kb": 1
+  },
+  {
+   "id": "thinking",
+   "name": "Thinking",
+   "note": "",
+   "w": 120,
+   "h": 40,
+   "files": {
+    "paper": "animations/thinking-paper.svg",
+    "ink": "animations/thinking-ink.svg"
+   },
+   "kb": 1
+  },
+  {
+   "id": "listening",
+   "name": "Listening",
+   "note": "",
+   "w": 160,
+   "h": 160,
+   "files": {
+    "paper": "animations/listening-paper.svg",
+    "ink": "animations/listening-ink.svg"
+   },
+   "kb": 1
+  },
+  {
+   "id": "searching",
+   "name": "Searching",
+   "note": "",
+   "w": 200,
+   "h": 200,
+   "files": {
+    "paper": "animations/searching-paper.svg",
+    "ink": "animations/searching-ink.svg"
+   },
+   "kb": 12
+  },
+  {
+   "id": "hello",
+   "name": "Hello",
+   "note": "",
+   "w": 200,
+   "h": 200,
+   "files": {
+    "paper": "animations/hello-paper.svg",
+    "ink": "animations/hello-ink.svg"
+   },
+   "kb": 8
+  }
+ ],
+ "figures": [
+  {
+   "id": "figure-stand",
+   "name": "Stand",
+   "note": "",
+   "w": 200,
+   "h": 200,
+   "files": {
+    "paper": "figures/figure-stand-paper.svg",
+    "ink": "figures/figure-stand-ink.svg"
+   },
+   "kb": 2
+  },
+  {
+   "id": "figure-walk",
+   "name": "Walk",
+   "note": "",
+   "w": 200,
+   "h": 200,
+   "files": {
+    "paper": "figures/figure-walk-paper.svg",
+    "ink": "figures/figure-walk-ink.svg"
+   },
+   "kb": 2
+  },
+  {
+   "id": "figure-point",
+   "name": "Point",
+   "note": "",
+   "w": 200,
+   "h": 200,
+   "files": {
+    "paper": "figures/figure-point-paper.svg",
+    "ink": "figures/figure-point-ink.svg"
+   },
+   "kb": 2
+  },
+  {
+   "id": "figure-wave",
+   "name": "Wave",
+   "note": "",
+   "w": 200,
+   "h": 200,
+   "files": {
+    "paper": "figures/figure-wave-paper.svg",
+    "ink": "figures/figure-wave-ink.svg"
+   },
+   "kb": 2
+  },
+  {
+   "id": "figure-watch",
+   "name": "Watch",
+   "note": "",
+   "w": 200,
+   "h": 200,
+   "files": {
+    "paper": "figures/figure-watch-paper.svg",
+    "ink": "figures/figure-watch-ink.svg"
+   },
+   "kb": 2
+  },
+  {
+   "id": "figure-pull",
+   "name": "Pull",
+   "note": "",
+   "w": 200,
+   "h": 200,
+   "files": {
+    "paper": "figures/figure-pull-paper.svg",
+    "ink": "figures/figure-pull-ink.svg"
+   },
+   "kb": 2
+  },
+  {
+   "id": "figure-sit",
+   "name": "Sit",
+   "note": "",
+   "w": 200,
+   "h": 200,
+   "files": {
+    "paper": "figures/figure-sit-paper.svg",
+    "ink": "figures/figure-sit-ink.svg"
+   },
+   "kb": 2
+  }
+ ],
+ "objects": [
+  {
+   "id": "eye",
+   "name": "Eye",
+   "note": "",
+   "w": 200,
+   "h": 200,
+   "files": {
+    "paper": "objects/eye-paper.svg",
+    "ink": "objects/eye-ink.svg"
+   },
+   "kb": 0
+  },
+  {
+   "id": "ring",
+   "name": "Open ring",
+   "note": "",
+   "w": 200,
+   "h": 200,
+   "files": {
+    "paper": "objects/ring-paper.svg",
+    "ink": "objects/ring-ink.svg"
+   },
+   "kb": 4
+  },
+  {
+   "id": "fingerprint",
+   "name": "Fingerprint",
+   "note": "",
+   "w": 200,
+   "h": 200,
+   "files": {
+    "paper": "objects/fingerprint-paper.svg",
+    "ink": "objects/fingerprint-ink.svg"
+   },
+   "kb": 8
+  },
+  {
+   "id": "voice",
+   "name": "Voice",
+   "note": "",
+   "w": 200,
+   "h": 200,
+   "files": {
+    "paper": "objects/voice-paper.svg",
+    "ink": "objects/voice-ink.svg"
+   },
+   "kb": 2
+  },
+  {
+   "id": "knot",
+   "name": "Knot",
+   "note": "",
+   "w": 200,
+   "h": 200,
+   "files": {
+    "paper": "objects/knot-paper.svg",
+    "ink": "objects/knot-ink.svg"
+   },
+   "kb": 0
+  },
+  {
+   "id": "agents",
+   "name": "Agents",
+   "note": "",
+   "w": 200,
+   "h": 200,
+   "files": {
+    "paper": "objects/agents-paper.svg",
+    "ink": "objects/agents-ink.svg"
+   },
+   "kb": 13
+  },
+  {
+   "id": "agents-loop",
+   "name": "Agents on the loop",
+   "note": "",
+   "w": 200,
+   "h": 200,
+   "files": {
+    "paper": "objects/agents-loop-paper.svg",
+    "ink": "objects/agents-loop-ink.svg"
+   },
+   "kb": 20
+  }
+ ],
+ "dividers": [
+  {
+   "id": "divider-tear",
+   "name": "Tear",
+   "note": "",
+   "w": 1600,
+   "h": 80,
+   "files": {
+    "paper": "dividers/divider-tear-paper.svg",
+    "ink": "dividers/divider-tear-ink.svg"
+   },
+   "kb": 5
+  },
+  {
+   "id": "divider-wave",
+   "name": "Wave",
+   "note": "",
+   "w": 1600,
+   "h": 80,
+   "files": {
+    "paper": "dividers/divider-wave-paper.svg",
+    "ink": "dividers/divider-wave-ink.svg"
+   },
+   "kb": 3
+  },
+  {
+   "id": "divider-rules",
+   "name": "Rules",
+   "note": "",
+   "w": 1600,
+   "h": 80,
+   "files": {
+    "paper": "dividers/divider-rules-paper.svg",
+    "ink": "dividers/divider-rules-ink.svg"
+   },
+   "kb": 0
+  },
+  {
+   "id": "divider-loop",
+   "name": "Loop line",
+   "note": "",
+   "w": 1600,
+   "h": 80,
+   "files": {
+    "paper": "dividers/divider-loop-paper.svg",
+    "ink": "dividers/divider-loop-ink.svg"
+   },
+   "kb": 0
+  }
+ ],
+ "stories": [
+  {
+   "id": "story-ship",
+   "name": "Ship",
+   "note": "",
+   "w": 480,
+   "h": 320,
+   "files": {
+    "paper": "stories/story-ship-paper.svg",
+    "ink": "stories/story-ship-ink.svg"
+   },
+   "kb": 93
+  },
+  {
+   "id": "story-reach",
+   "name": "Reach",
+   "note": "",
+   "w": 480,
+   "h": 320,
+   "files": {
+    "paper": "stories/story-reach-paper.svg",
+    "ink": "stories/story-reach-ink.svg"
+   },
+   "kb": 75
+  },
+  {
+   "id": "story-mimic",
+   "name": "Mimic",
+   "note": "",
+   "w": 480,
+   "h": 320,
+   "files": {
+    "paper": "stories/story-mimic-paper.svg",
+    "ink": "stories/story-mimic-ink.svg"
+   },
+   "kb": 95
+  },
+  {
+   "id": "story-meteor",
+   "name": "Meteor",
+   "note": "",
+   "w": 480,
+   "h": 320,
+   "files": {
+    "paper": "stories/story-meteor-paper.svg",
+    "ink": "stories/story-meteor-ink.svg"
+   },
+   "kb": 74
+  },
+  {
+   "id": "story-bubble",
+   "name": "Bubble",
+   "note": "",
+   "w": 480,
+   "h": 320,
+   "files": {
+    "paper": "stories/story-bubble-paper.svg",
+    "ink": "stories/story-bubble-ink.svg"
+   },
+   "kb": 81
+  },
+  {
+   "id": "story-wheel",
+   "name": "Wheel",
+   "note": "",
+   "w": 480,
+   "h": 320,
+   "files": {
+    "paper": "stories/story-wheel-paper.svg",
+    "ink": "stories/story-wheel-ink.svg"
+   },
+   "kb": 77
+  },
+  {
+   "id": "story-orbit",
+   "name": "Orbit",
+   "note": "",
+   "w": 480,
+   "h": 320,
+   "files": {
+    "paper": "stories/story-orbit-paper.svg",
+    "ink": "stories/story-orbit-ink.svg"
+   },
+   "kb": 89
+  }
+ ]
+}
