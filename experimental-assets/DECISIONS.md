@@ -2,6 +2,23 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-10: colour, and how the references work
+
+- **Dark ground:** `#4A1E1A` (oxblood) in place of oryzo's green, for now.
+- **Line and particle effects:** in the manner of igloo.inc. **Card and vector motion on scroll and hover:** in the manner of lusion.co. Build our own versions of these techniques; do not copy their code, models or media.
+
+### How the references do it (studied 2026-11-10)
+
+**adasilv2.framer.website (humour).** Every interactive element has a resting state and a hover state, and the hover state reveals a short, casual line under or beside it, set small in a plain sans: "So much experience :O" under a fanned stack of company logos, "Press me!" under a toolbox, "... thinking about moving pixels..." under the illustration. Objects move as they reveal: the logo stack fans out; project cards are folders that tilt, scale up and let their screens slide out while the description appears. Section subtitles are jokes too ("Blood, sweat, and tears were sacrificed", "Faking it until I made it"). Built with Framer component variants.
+
+**igloo.inc (lines and particles).** One WebGL scene in three.js r165, with GSAP and ScrollTrigger driving a camera along the scroll. Behind the pointer runs a GPU fluid simulation (splat, curl, vorticity, divergence, pressure, advection passes); the fluid's velocity pushes the image, with a chromatic, rainbow-edged smear that follows the cursor. Particles are point sprites whose size scales with a `progress` value, so shapes assemble and dissolve as you scroll. Text is MSDF, drawn in the scene. Post-processing: bokeh, god rays, Kawase blur, SMAA, dithering. Cost: about 15 MB over 95 requests (KTX2 textures 10.5 MB, Draco models 0.5 MB, music 2.9 MB, JS 0.56 MB). Its own scroll handling barely responds to a normal wheel in an embedded browser.
+
+**lusion.co (cards and vectors).** three.js r158 on three canvases, about 300 KB of JS and 186 KB of fonts before media. Scrolling is smoothed with heavy inertia. A thick ribbon draws itself across the page as you scroll, and a small video card beside the intro grows into the full-width reel. A thin outlined line trails the cursor. Headings are split into characters that rise and rotate into place. Project titles are odometers: each letter is a column of four copies that slides on hover with a stagger. Buttons roll their label up by 100% and fill their background, on `cubic-bezier(0.35, 0, 0, 1)` and `cubic-bezier(0.4, 0, 0.1, 1)`.
+
+### What this means for our performance rule
+
+igloo.inc and lusion.co both trade load time for spectacle; neither would load in under a second. To keep both, the page renders as plain HTML, CSS and inline SVG first, with all text present, and the WebGL layer (one canvas for the dot and line field and the pointer effects) loads after first paint and only on devices that can run it. Prefer a small WebGL library or raw WebGL over the full three.js where the effect allows.
+
 ## 2026-11-09: first session
 
 ### Who
@@ -44,7 +61,8 @@ What has been agreed with Abhishek, newest first. Read this before designing, an
   | grey-brown | `#6C5F51` | muted text |
   | sand | `#BBAC97` | lines, borders |
   | orange | `#DC5000` | accent |
-  | green | `#445231`, `#5D6C49` | **not used**; their main background, to be replaced by a warm colour (open) |
+  | green | `#445231`, `#5D6C49` | **not used**; their main background |
+  | **oxblood (ours)** | **`#4A1E1A`** | **replaces the green as the dark ground, for now; may change once seen in use** (2026-11-10) |
 
 - **Motion:** GSAP, scroll-driven, very smooth, with a sense of weight. Every scroll should glide.
 - **A character that travels the page on scroll**, in the way oryzo.ai carries its product through the page.
@@ -61,7 +79,7 @@ What has been agreed with Abhishek, newest first. Read this before designing, an
 
 ## Open questions
 
-- Which warm colour replaces oryzo's green.
+- How loud the humour should be next to "minimal, slight luxury".
 - Licences and font files for Canela Web Thin and Mazzard.
 - Who the scroll character is.
 - Who writes the hover remarks and other copy.
