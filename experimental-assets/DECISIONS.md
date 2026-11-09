@@ -2,6 +2,15 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-10: first build of the home page
+
+- `index.html`, `assets/css/home.css`, `assets/js/home.js` replace the earlier landing draft (`hil.css`, `hil.js`). Sections follow the IA: hero, about, loops, featured work, journey (placeholder copy), team, CTA, footer.
+- Body font stand-in: **Outfit** (SIL OFL), self-hosted in `assets/fonts/`, until Mazzard arrives. Swap it in `home.css`.
+- GSAP 3.12.5 with ScrollTrigger and Lenis 1.1.13 are served from `assets/js/vendor/` (licences in its README).
+- Dots become lines: the hero's dot field stretches under the pointer and when scrolling; loop rings are dotted and stretch into dashes on hover; the journey track fills from dots to a line as you scroll.
+- Images still needed from Abhishek, by keyword: the three project cards (voice AI call centre; video interview with an avatar; server room and on-prem documents), and portraits of Sahil and Abhishek.
+- Placeholder copy (dotted underline in the page): the "What we do" section and the agency CTA.
+
 ## 2026-11-10: humour, the scroll character, fonts
 
 - **Humour:** Claude writes the hover lines. The aim is a smile of recognition: small, human truths, in the spirit of "So much experience :O" on the resume button. Abhishek reviews them. Set them small, in the body face, so they stay minimal.

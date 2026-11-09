@@ -10,9 +10,12 @@ News about fast-moving fields mostly reaches us through feeds and summaries. We 
 So each loop is kept by one person who works in that field. They post short updates and longer notes, and their projects and case studies sit next to what they write.
 
 ## The loops
-- [AI loop](https://human-in-loop.dev/ai/) ([Markdown](/ai.md)) — Sahil Tomar (dev-S-t). Voice AI, retrieval and agents in production: case studies, projects and notes.
-- Design loop — Abhishek. UI and UX. Opening soon.
-- Your field — new loops open as people join.
+One field, one human. Two loops are open; more are on the way.
+
+- [AI loop](https://human-in-loop.dev/ai/) ([Markdown](/ai.md)) — kept by Sahil Tomar (dev-S-t). Voice AI, retrieval and agents in production: case studies, projects and notes.
+- Design loop — kept by Abhishek. UI and UX. Opening soon.
+- Cyber — later.
+- Abyss-Admin — later.
 
 ## Featured work (from the AI loop)
 - [VOAG — Enterprise Voice AI SaaS](/projects/voag.md): 1,000+ daily calls in Mr. LADs app, sub-300ms p95 latency, DigitalOcean & UAE LAN SIP modem architecture.
@@ -21,9 +24,8 @@ So each loop is kept by one person who works in that field. They post short upda
 - [All projects in the AI loop](/projects.md)
 
 ## The people
-- Sahil Tomar — keeps the AI loop. AI Solutions Engineer.
-- Abhishek — keeps the Design loop. UI and UX.
-- Abyss — all of us, watching from far: where everything is heading. Mostly on social media; links soon.
+- Sahil Tomar — keeps the AI loop. AI solution architect.
+- Abhishek — keeps the Design loop. Product designer.
 
 ## Keep a loop
 Work in a field you follow closely? We open a new loop when we meet the right person for it. [Get in touch](/contact.md).
