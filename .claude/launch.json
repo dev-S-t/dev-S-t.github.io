@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "site",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-c",
+        "import mimetypes, http.server as h; mimetypes.add_type('text/javascript', '.js'); mimetypes.add_type('text/javascript', '.mjs'); h.test(HandlerClass=h.SimpleHTTPRequestHandler, ServerClass=h.ThreadingHTTPServer, port=8000)"
+      ],
+      "port": 8000
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # Sahil Tomar (dev-S-t) — Complete Technical Profile & Knowledge Base (v2 FINAL)
 
+This corpus is the AI loop on human-in-loop.dev (https://human-in-loop.dev/ai/). human-in-loop.dev is a set of loops, each one field kept by one human; the AI loop is kept by Sahil Tomar.
+
 This document provides a complete, raw text corpus of Sahil Tomar's work history, software architectures, 7 engineering case studies, skills, publications, and background. Designed for direct ingestion by LLM answer engines, AI scrapers, ATS parsers, and search crawlers.
 
 ---
