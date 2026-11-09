@@ -36,6 +36,16 @@ Nothing else is fixed.
 - To use an experimental asset on a page, copy the file into `assets/`. Never link a page to `experimental-assets/`.
 - Anything from outside (3D models, fonts, textures, images) needs a licence that allows it. Record its source and licence in the file header, or next to the file, and give the credit the licence requires.
 
+## Abhishek's rules
+
+Set by Abhishek on 2026-11-09. Decisions taken so far are in `experimental-assets/DECISIONS.md`; read it before designing.
+
+1. Follow UX concepts and laws (for example Fitts, Hick, Jakob, Miller, proximity, the aesthetic-usability effect). Name the law when it drives a decision.
+2. Design an experience, not a landing page or a website. Conversion matters, and so does the story: every section's design, typography, animation and colour should carry the narrative forward.
+3. Minimal, professional, with a slight touch of luxury.
+4. Performance comes first. Pages should load in under a second and score top marks. Prefer WebP images, subset and preload fonts, and add no script that does not earn its weight.
+5. Images come from Abhishek. When a page needs one, ask for it with a short keyword or brief, and he supplies a WebP file. Do not use stock or generated images in its place.
+
 ## The site floor
 
 The design is free, but these engineering requirements still hold. Details are in `experimental-assets/DESIGN.md`, section 9.
