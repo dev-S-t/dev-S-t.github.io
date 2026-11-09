@@ -44,7 +44,8 @@ Set by Abhishek on 2026-11-09. Decisions taken so far are in `experimental-asset
 2. Design an experience, not a landing page or a website. Conversion matters, and so does the story: every section's design, typography, animation and colour should carry the narrative forward.
 3. Minimal, professional, with a slight touch of luxury.
 4. Performance comes first. Pages should load in under a second and score top marks. Prefer WebP images, subset and preload fonts, and add no script that does not earn its weight.
-5. Images come from Abhishek. When a page needs one, ask for it with a short keyword or brief, and he supplies a WebP file. Do not use stock or generated images in its place.
+5. Humour is part of the experience. Claude writes the hover lines and other small jokes: short, human, the kind that makes someone smile because they recognise it (for example "So much experience :O" on a resume button). This is the one exception to "Copy comes from people" below; Abhishek reviews every line. Headlines and body copy still come from people.
+6. Images come from Abhishek. When a page needs one, ask for it with a short keyword or brief, and he supplies a WebP file. Do not use stock or generated images in its place.
 
 ## The site floor
 

@@ -2,6 +2,14 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-10: humour, the scroll character, fonts
+
+- **Humour:** Claude writes the hover lines. The aim is a smile of recognition: small, human truths, in the spirit of "So much experience :O" on the resume button. Abhishek reviews them. Set them small, in the body face, so they stay minimal.
+- **Scroll character:** the logo's figure is the human who travels with the reader through the page. It may walk, fall, wave, sit, ride the loop or draw itself on, as section 2 of `DESIGN.md` allows; its shape is never redrawn. Start from `experimental-assets/kit/video/mark.js`, `markbody.js` and `markfig.js`.
+- **Fonts:**
+  - Canela Thin: Abhishek's file is Commercial Type's desktop font (EULA, "All rights reserved"). Subset to Latin WOFF2 (14 KB) in `assets/fonts/local/`, which git ignores. It stays local until a Canela web licence is confirmed.
+  - Mazzard (Pepper Type, Oleh Lishchuk, "All rights reserved"): the zip came from GraphicUX.com, not the foundry, and holds only MazzardH Black and Black Italic. Those are too heavy for body text and UI. Not set up yet; needs the text weights and a licence that allows web use.
+
 ## 2026-11-10: colour, and how the references work
 
 - **Dark ground:** `#4A1E1A` (oxblood) in place of oryzo's green, for now.
@@ -80,8 +88,6 @@ igloo.inc and lusion.co both trade load time for spectacle; neither would load i
 ## Open questions
 
 - How loud the humour should be next to "minimal, slight luxury".
-- Licences and font files for Canela Web Thin and Mazzard.
-- Who the scroll character is.
-- Who writes the hover remarks and other copy.
+- A web licence for Canela Thin; Mazzard's text weights and a web licence.
 - How to measure "under a second, top scores".
 - What to keep from the current landing draft.
