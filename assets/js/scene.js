@@ -759,33 +759,45 @@ function arrival(MB, ST) {
       from = null; return;
     }
 
-    // the jump, out of the top of the screen
-    if (ps >= 0.93 && ps < 1 && pr.bottom > h * 0.5) {
-      if (!from) from = HAND.k ? { x: HAND.x, y: HAND.y, k: HAND.k } : { x: w * 0.5, y: h * 0.62, k: K };
-      const j = clamp((ps - 0.93) / 0.07);
-      if (j < 0.32) {
-        const c = smooth(j / 0.32);
-        draw(og, mixPose(glidePose(ps * 60), crouchPose(), c), lerp(from.x, w * 0.5, c), lerp(from.y, h * 0.66, c), lerp(from.k, K, c), t, '#FFEDD7', true);
-      } else {
-        const l = (j - 0.32) / 0.68;
-        const pose = mixPose(crouchPose(), leapPose(), smooth(clamp(l * 3)));
-        draw(og, pose, w * 0.5, lerp(h * 0.66, -0.75 * K, Math.pow(l, 1.3)), K, t, '#FFEDD7', true);
-      }
-      return;
-    }
-    if (ps < 0.93) from = null;
-
-    // the landing, behind the words of the contact section
+    // The jump, one arc, always on screen: crouch, leap to the top of the arc (his head still in view), hang there
+    // as the space section ends, then fall as the contact section rises, and land behind its words.
+    // A runs 0 to 1 across four stretches of scroll: the crouch (scene 0.93-0.95), the leap (0.95-1), the contact
+    // section rising (its top from the bottom of the screen to the top), and the first 30% of its pin.
     const rise = clamp(1 - r.top / h), cst = ST.getById('cta'), q = cst ? cst.progress : 0;
-    const L = clamp((rise - 0.55) / 0.45) * 0.55 + clamp(q / 0.3) * 0.45;
-    if (L <= 0) return;
-    const landY = ch * 0.6, F = clamp(L / 0.75), G = clamp((L - 0.75) / 0.25);
-    let pose, y = landY;
-    if (F < 1) { pose = leapPose(); y = lerp(-0.8 * K, landY, F * F); }                         // dropping in, gathering speed
-    else if (G < 0.4) pose = mixPose(leapPose(), crouchPose(), smooth(G / 0.4));                 // the landing: knees give
-    else pose = mixPose(crouchPose(), standPose(t, smooth(clamp(q / 0.3 - 1) * 2)), smooth((G - 0.4) / 0.6));   // up, and a wave
-    if (L >= 1) pose = standPose(t, smooth(clamp((q - 0.3) / 0.15)));
-    draw(cg, pose, cw * 0.5, y + (L >= 1 ? Math.sin(t * 1.5) * 4 : 0), K, t, '#DC5000', false);
+    if (ps < 0.93 && rise <= 0) { from = null; return; }
+    if (!from) from = ps < 0.995 && HAND.k ? { x: HAND.x, y: HAND.y, k: HAND.k } : { x: w * 0.5, y: h * 0.66, k: K };
+    let A;
+    if (ps < 0.95) A = lerp(0, 0.12, clamp((ps - 0.93) / 0.02));
+    else if (ps < 1 || rise <= 0) A = lerp(0.12, 0.4, clamp((ps - 0.95) / 0.05));
+    else if (rise < 1) A = 0.4 + 0.3 * rise;
+    else A = 0.7 + 0.3 * clamp(q / 0.3);
+
+    const baseY = h * 0.66, landY = h * 0.6, apexY = Math.max(h * 0.3, K * 0.9 + h * 0.04);   // pelvis heights; his head (ring included) reaches ~0.85K above, so it stays on screen
+    let x = w * 0.5, y, k = K, pose;
+    if (A < 0.12) {                                               // the crouch, gathering
+      const c = smooth(A / 0.12);
+      x = lerp(from.x, w * 0.5, c); y = lerp(from.y, baseY, c); k = lerp(from.k, K, c);
+      pose = mixPose(glidePose(ps * 60), crouchPose(), c);
+    } else if (A < 0.45) {                                        // the leap: fast off the ground, slowing to the top
+      const l = (A - 0.12) / 0.33;
+      y = lerp(baseY, apexY, 1 - Math.pow(1 - l, 2.2));
+      pose = mixPose(crouchPose(), leapPose(), smooth(clamp(l * 2.5)));
+    } else if (A < 0.53) {                                        // the top of the arc: weightless for a moment
+      y = apexY; pose = mixPose(leapPose(), floatPose(A * 30, 0), smooth((A - 0.45) / 0.08) * 0.6);
+    } else if (A < 0.86) {                                        // falling, gathering speed
+      const f = (A - 0.53) / 0.33;
+      y = lerp(apexY, landY, f * f); pose = mixPose(floatPose(A * 30, 0), leapPose(), smooth(clamp(f * 2)) * 0.6 + 0.4);
+    } else if (A < 0.93) {                                        // landing: the knees give
+      y = landY; pose = mixPose(leapPose(), crouchPose(), smooth((A - 0.86) / 0.07));
+    } else {                                                      // up, and a wave
+      y = landY; pose = mixPose(crouchPose(), standPose(t, smooth((A - 0.93) / 0.07)), smooth((A - 0.93) / 0.07));
+    }
+    if (A >= 1) { pose = standPose(t, 1); y = landY + Math.sin(t * 1.5) * 4; }
+
+    // Until the contact section is in place he is drawn over everything; once it is (pinned), behind its words,
+    // on its own canvas, which then carries him away with the section.
+    if (rise < 1) draw(og, pose, x, y, k, t, mixHex('#FFEDD7', '#DC5000', smooth(rise)), true);
+    else draw(cg, pose, x, y, k, t, '#DC5000', false);
   };
   let on = false;
   const vis = new Set();
