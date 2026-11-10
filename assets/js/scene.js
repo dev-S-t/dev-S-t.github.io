@@ -6,8 +6,9 @@
    loops   One cloud of dots. First it is the AI: a sphere of nodes joined by lines. Then the dots
            scatter, stretch and settle into the design: a golden spiral, a grid, and a loop with the
            logo's opening at eleven o'clock.
-   portal  A real 3D fall: stars all round, a glass-sphere wormhole that bends the starlight behind it, a tunnel
-           of wobbling lines, a warm corridor of line arches, and a pane of glass the logo's human breaks through.
+   portal  A real 3D fall, igloo-style: a glowing stone ring with a membrane of fine crackling lines and three
+           open rings inside; a tunnel of brush-stroke rings; a flash and a flip; then the logo's human glides
+           toward us down a corridor of line arches and breaks the glass between us.
    contact The human arrives: four seconds falling in, three coming toward us, then a wave.
 
    Each scene reads the progress of the pinned ScrollTrigger home.js made for it, and only renders
@@ -21,6 +22,12 @@ const easeOut = (t) => 1 - Math.pow(1 - t, 3);
 const easeIn = (t) => t * t * t;
 
 const pointer = { x: 0, y: 0, sx: 0, sy: 0 };
+// The shared clock: GSAP's ticker (set in start). Drawing on it keeps every canvas in step with the smoothed scroll.
+let TICK = null;
+const onClock = (fn, on) => {
+  if (TICK) { if (on) TICK.add(fn); else TICK.remove(fn); return; }
+  if (on) { const run = (ms) => { fn.raf = requestAnimationFrame(run); fn(ms / 1000); }; fn.raf = requestAnimationFrame(run); } else cancelAnimationFrame(fn.raf);
+};
 addEventListener('pointermove', (e) => { pointer.x = e.clientX / innerWidth * 2 - 1; pointer.y = e.clientY / innerHeight * 2 - 1; }, { passive: true });
 
 function stage(THREE, canvas, { fov = 35, z = 5, dpr = 1.75 } = {}) {
@@ -36,12 +43,9 @@ function stage(THREE, canvas, { fov = 35, z = 5, dpr = 1.75 } = {}) {
     renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
   };
   size(); new ResizeObserver(size).observe(canvas);
-  let raf = 0, tick = null;
-  const loop = (t) => { raf = requestAnimationFrame(loop); pointer.sx += (pointer.x - pointer.sx) * 0.05; pointer.sy += (pointer.y - pointer.sy) * 0.05; if (tick) tick(t / 1000); renderer.render(scene, camera); };
-  new IntersectionObserver(([e]) => {
-    if (e.isIntersecting && !raf) raf = requestAnimationFrame(loop);
-    if (!e.isIntersecting && raf) { cancelAnimationFrame(raf); raf = 0; }
-  }).observe(canvas);
+  let on = false, tick = null;
+  const frame = (t) => { pointer.sx += (pointer.x - pointer.sx) * 0.05; pointer.sy += (pointer.y - pointer.sy) * 0.05; if (tick) tick(t); renderer.render(scene, camera); };
+  new IntersectionObserver(([e]) => { if (e.isIntersecting !== on) { on = e.isIntersecting; onClock(frame, on); } }).observe(canvas);
   return {
     THREE, renderer, scene, camera,
     onTick(f) { tick = f; },
@@ -340,249 +344,194 @@ function drawFig(MB, g, pose, x, y, k, t, color) {
 
 const loadScript = (src) => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.appendChild(s); });
 
-/* ---------------- portal: a real 3D fall ---------------- */
-// The camera falls through a 3D world, scrubbed by the scroll, with the logo's human just ahead of it:
-//   approach  stars all round (real parallax) and a wormhole: a glass sphere showing another sky, whose
-//             gravity bends the stars behind it (a lens pass on the background), ringed by fine dotted lines
-//             and spirals of particles flowing in.
-//   through   a tunnel of wobbling line rings; stars pass as streaks.
-//   a new place  a warm corridor of line arches, light at the far end, a pane of glass across it.
-//   the glass he reaches it, it shatters toward us, he jumps through and falls, into the contact section.
-const R_HOLE = 10, RINGS = 120, GAPZ = 1.2, TUN_R = 3.2;
-const TUN_L = RINGS * GAPZ;
-const Z_START = 140, Z_SURF = R_HOLE + 1.5, Z_TUN_END = -(R_HOLE + TUN_L);
-const ARCHES = 9, ARCH_GAP = 8, Z_ROOM0 = Z_TUN_END - 6, Z_GLASS = Z_ROOM0 - ARCHES * ARCH_GAP - 6, Z_ROOM_END = Z_GLASS + 16;
-const tunnelOffset = (z) => {           // the tunnel bends, but runs straight where it meets the hole and the room
-  const u = -R_HOLE - z;
-  if (u <= 0 || u >= TUN_L) return [0, 0];
-  const amp = Math.min(1, u / 24) * Math.min(1, (TUN_L - u) / 24);
-  return [(Math.sin(z * 0.06) * 2.6 + Math.sin(z * 0.023) * 1.8) * amp, Math.cos(z * 0.05) * 1.8 * amp * Math.min(1, u / 24)];
-};
+/* ---------------- portal: the fall, igloo-style ---------------- */
+// The camera falls through a 3D world, scrubbed by the scroll, the logo's human just ahead of it:
+//   approach  dark space, dust and stars; a portal ahead: a heavy glowing ring of stone, a membrane of fine
+//             crackling lines across it (dots joined into lines), and three open rings floating inside, each with
+//             the loop's opening at eleven o'clock. He is dragged toward it and into it.
+//   through   the membrane ripples and we pass it; a tunnel of soft brush-stroke rings rushes past toward a bright core.
+//   flip      a white flash, and the world turns over.
+//   glide     a warm corridor of line arches; he glides out of the light toward us as we scroll, larger and larger,
+//             and hits the pane of glass between us. It shatters toward us and he jumps through, into the contact section.
+const RR = 9;                                  // the portal ring's radius
+const Z_CAM0 = 95, Z_CAM1 = 3;                 // approach
+const TUN_N = 46, TUN_GAP = 3.2, TUN_Z0 = -4;  // tunnel rings
+const TUN_END = TUN_Z0 - TUN_N * TUN_GAP;
+const ROOM_Z = -600;                           // the corridor lives elsewhere; we arrive there in the flash
 
 const GLSL_NOISE = /* glsl */`
   float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+  vec2 hash2(vec2 p) { return vec2(hash(p), hash(p + 17.31)); }
   float noise(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
     return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y); }
-  float fbm(vec2 p) { float s = 0.0, a = 0.5; for (int i = 0; i < 4; i++) { s += a * noise(p); p *= 2.03; a *= 0.5; } return s; }
+  float fbm(vec2 p) { float s = 0.0, a = 0.5; for (int i = 0; i < 5; i++) { s += a * noise(p); p *= 2.03; a *= 0.5; } return s; }
 `;
+// Stone: lit from the front and above, grooved into blocks (lines), with a bright glow on its inner face.
+const stoneMat = (THREE, u, inner) => new THREE.ShaderMaterial({
+  uniforms: u,
+  vertexShader: /* glsl */`
+    varying vec3 vN; varying vec3 vV; varying vec2 vUv; varying vec3 vP;
+    void main() { vUv = uv; vP = position; vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = -mv.xyz; gl_Position = projectionMatrix * mv; }`,
+  fragmentShader: GLSL_NOISE + /* glsl */`
+    uniform float uTime, uGlow; varying vec3 vN; varying vec3 vV; varying vec2 vUv; varying vec3 vP;
+    void main() {
+      vec3 n = normalize(vN), v = normalize(vV), l = normalize(vec3(0.3, 0.6, 0.8));
+      float tex = fbm(vUv * vec2(40.0, 6.0)) * 0.5 + fbm(vUv * vec2(160.0, 20.0)) * 0.25;
+      float groove = smoothstep(0.012, 0.0, abs(fract(vUv.x * ${inner ? '1.0' : '12.0'}) - 0.5) - 0.488);   // block joints
+      vec3 base = mix(vec3(0.23, 0.2, 0.19), vec3(0.62, 0.57, 0.52), tex);
+      float dif = max(dot(n, l), 0.0) * 0.8 + 0.2;
+      float spec = pow(max(dot(reflect(-l, n), v), 0.0), 24.0) * 0.5;
+      float fres = pow(1.0 - max(dot(n, v), 0.0), 3.0);
+      vec3 col = base * dif + spec + vec3(1.0, 0.92, 0.82) * fres * 0.35;
+      col *= 1.0 - groove * 0.6;
+      float r = length(vP.xy);
+      float glow = ${inner ? '0.0' : 'smoothstep(' + (RR + 0.4).toFixed(1) + ', ' + (RR - 1.4).toFixed(1) + ', r)'};
+      col += vec3(1.0, 0.86, 0.68) * glow * uGlow * (0.8 + 0.2 * sin(uTime * 2.0 + vUv.x * 30.0));
+      gl_FragColor = vec4(col, 1.0);
+    }`
+});
 
 function portal(THREE, ST, MB) {
   const sec = document.querySelector('.portal');
   const st = ST.getById('portal');
   if (!sec || !st) return;
-  const canvas = sec.querySelector('.portal-canvas');
+  const canvas = sec.querySelector('.portal-canvas'), flashEl = sec.querySelector('.portal-flash');
   const narrow = innerWidth < 900;
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-  const PR = Math.min(devicePixelRatio || 1, narrow ? 1.25 : 1.5);
-  renderer.setPixelRatio(PR); renderer.autoClear = false;
-  const camera = new THREE.PerspectiveCamera(60, 1, 0.05, 2000);
-  const bg = new THREE.Scene(), fg = new THREE.Scene();
-  fg.fog = new THREE.Fog(0x000000, 30, 110);
-  const rt = new THREE.WebGLRenderTarget(4, 4);
-  const size = () => {
-    const w = canvas.clientWidth, h = canvas.clientHeight; if (!w || !h) return;
-    renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
-    rt.setSize(Math.round(w * PR), Math.round(h * PR));
-  };
-  size(); new ResizeObserver(size).observe(canvas);
+  const S = stage(THREE, canvas, { fov: 55, z: Z_CAM0, dpr: narrow ? 1 : 1.25 });
+  const { scene, camera, renderer } = S;
+  camera.far = 1500; camera.updateProjectionMatrix();
+  scene.fog = new THREE.FogExp2(0x050403, 0.012);
+  renderer.setClearColor(0x050403, 1);
 
-  // 1. Stars, all round the path of the fall.
-  const NS = narrow ? 4500 : 9000;
-  const sP = new Float32Array(NS * 3), sS = new Float32Array(NS), sR = new Float32Array(NS);
-  for (let i = 0; i < NS; i++) {
-    let x, y; do { x = (Math.random() - 0.5) * 600; y = (Math.random() - 0.5) * 600; } while (x * x + y * y < 64);
-    sP.set([x, y, -520 + Math.random() * 980], i * 3); sS[i] = Math.pow(Math.random(), 3) * 3 + 0.6; sR[i] = Math.random();
-  }
-  const sGeo = new THREE.BufferGeometry();
-  sGeo.setAttribute('position', new THREE.BufferAttribute(sP, 3));
-  sGeo.setAttribute('aS', new THREE.BufferAttribute(sS, 1)); sGeo.setAttribute('aR', new THREE.BufferAttribute(sR, 1));
-  const sU = { uTime: { value: 0 }, uPR: { value: PR }, uDim: { value: 1 } };
+  // Stars and dust.
+  const NS = narrow ? 2500 : 5000, sp = new Float32Array(NS * 3), ss = new Float32Array(NS);
+  for (let i = 0; i < NS; i++) { const a = Math.random() * TAU, r = 14 + Math.pow(Math.random(), 0.6) * 260; sp.set([Math.cos(a) * r, Math.sin(a) * r, -260 + Math.random() * 380], i * 3); ss[i] = Math.random(); }
+  const sGeo = new THREE.BufferGeometry(); sGeo.setAttribute('position', new THREE.BufferAttribute(sp, 3)); sGeo.setAttribute('aS', new THREE.BufferAttribute(ss, 1));
+  const sU = { uTime: { value: 0 }, uPR: { value: renderer.getPixelRatio() } };
   const stars = new THREE.Points(sGeo, new THREE.ShaderMaterial({
     uniforms: sU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-    vertexShader: /* glsl */`
-      attribute float aS, aR; uniform float uTime, uPR; varying float vA; varying vec3 vC;
-      void main() {
-        vec4 mv = modelViewMatrix * vec4(position, 1.0);
-        gl_Position = projectionMatrix * mv;
-        gl_PointSize = clamp(aS * uPR * 90.0 / -mv.z, 1.0, 9.0);
-        vA = (0.55 + 0.45 * sin(uTime * (1.0 + aR * 3.0) + aR * 50.0)) * smoothstep(600.0, 60.0, -mv.z);
-        vC = mix(vec3(1.0, 0.93, 0.84), mix(vec3(0.78, 0.86, 1.0), vec3(1.0, 0.62, 0.38), step(0.5, aR)), 0.35);
-      }`,
-    fragmentShader: /* glsl */`
-      uniform float uDim; varying float vA; varying vec3 vC;
-      void main() { float d = length(gl_PointCoord - 0.5); if (d > 0.5) discard; gl_FragColor = vec4(vC, vA * uDim * smoothstep(0.5, 0.0, d)); }`
+    vertexShader: 'attribute float aS; uniform float uTime, uPR; varying float vA; void main() { vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_Position = projectionMatrix * mv; gl_PointSize = clamp((0.6 + aS * 2.2) * uPR * 60.0 / -mv.z, 1.0, 6.0); vA = (0.5 + 0.5 * sin(uTime * (1.0 + aS * 3.0) + aS * 40.0)) * smoothstep(300.0, 20.0, -mv.z); }',
+    fragmentShader: 'varying float vA; void main() { float d = length(gl_PointCoord - 0.5); if (d > 0.5) discard; gl_FragColor = vec4(1.0, 0.93, 0.84, vA * smoothstep(0.5, 0.0, d)); }'
   }));
-  stars.frustumCulled = false; bg.add(stars);
+  stars.frustumCulled = false; scene.add(stars);
 
-  // 2. The lens: the background (stars) is drawn first, then bent round the hole on its way to the screen.
-  const lensScene = new THREE.Scene(), ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-  const lU = { tBg: { value: rt.texture }, uC: { value: new THREE.Vector2(0.5, 0.5) }, uR: { value: 0 }, uAspect: { value: 1 }, uOn: { value: 0 }, uTime: { value: 0 } };
-  lensScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
-    uniforms: lU, depthTest: false, depthWrite: false,
-    vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
-    fragmentShader: /* glsl */`
-      uniform sampler2D tBg; uniform vec2 uC; uniform float uR, uAspect, uOn, uTime; varying vec2 vUv;
-      void main() {
-        vec2 d = (vUv - uC) * vec2(uAspect, 1.0); float r = length(d);
-        vec2 uv = vUv;
-        if (uOn > 0.0 && r > 1e-4) {
-          float a = atan(d.y, d.x);
-          float Re = uR * 1.3 * (1.0 + 0.035 * sin(a * 3.0 + uTime * 1.2) + 0.02 * sin(a * 5.0 - uTime));
-          uv -= (d / r) * (Re * Re / max(r, uR * 0.98)) / vec2(uAspect, 1.0) * uOn;   // light bent round the hole
-        }
-        vec3 c = texture2D(tBg, uv).rgb;
-        c += vec3(1.0, 0.86, 0.72) * 0.55 * uOn * smoothstep(uR * 1.28, uR, r) * smoothstep(uR * 0.95, uR * 1.02, r);  // photon ring
-        gl_FragColor = vec4(c, 1.0);
-      }`
-  })));
-
-  // 3. The wormhole: a glass sphere. Through it, another sky, swirling slowly; a bright rim where the glass turns.
-  const hU = { uTime: { value: 0 } };
-  const hole = new THREE.Mesh(new THREE.SphereGeometry(R_HOLE, 128, 96), new THREE.ShaderMaterial({
-    uniforms: hU,
-    vertexShader: /* glsl */`
-      uniform float uTime; varying vec3 vN; varying vec3 vV;
-      void main() {
-        vec3 p = position + normal * (sin(position.y * 0.6 + uTime * 1.2) * 0.14 + sin(position.x * 0.5 - uTime) * 0.1);
-        vec4 mv = modelViewMatrix * vec4(p, 1.0);
-        vN = normalize(normalMatrix * normal); vV = -mv.xyz;
-        gl_Position = projectionMatrix * mv;
-      }`,
+  // The portal: the ring, the membrane, the floating open rings, a halo of light.
+  const portalG = new THREE.Group(); scene.add(portalG);
+  const ringU = { uTime: { value: 0 }, uGlow: { value: 1 } };
+  portalG.add(new THREE.Mesh(new THREE.TorusGeometry(RR, 1.7, 48, 220), stoneMat(THREE, ringU, false)));
+  const inU = { uTime: { value: 0 }, uGlow: { value: 0 } };
+  const GAP = 30 * Math.PI / 180;
+  [4.6, 3.3, 2.0].forEach((r, i) => {
+    const arc = new THREE.Mesh(new THREE.TorusGeometry(r, 0.34 - i * 0.04, 24, 120, TAU - GAP), stoneMat(THREE, inU, true));
+    arc.rotation.z = (-135 + 15) * Math.PI / 180 + GAP; // the opening sits at eleven o'clock
+    arc.position.z = -0.6 - i * 0.5; arc.userData.k = i; portalG.add(arc);
+  });
+  const memU = { uTime: { value: 0 }, uRip: { value: 0 }, uOn: { value: 1 } };
+  const membrane = new THREE.Mesh(new THREE.CircleGeometry(RR - 0.9, 160), new THREE.ShaderMaterial({
+    uniforms: memU, transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
+    vertexShader: 'uniform float uRip, uTime; varying vec2 vP; void main() { vP = position.xy; vec3 p = position; float r = length(p.xy); p.z += sin(r * 1.6 - uTime * 6.0) * uRip * (1.0 - r / 8.0); gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0); }',
     fragmentShader: GLSL_NOISE + /* glsl */`
-      uniform float uTime; varying vec3 vN; varying vec3 vV;
-      vec3 farSky(vec3 d) {
-        vec2 s = vec2(atan(d.z, d.x), asin(clamp(d.y, -1.0, 1.0)));
-        vec3 c = vec3(0.0);
-        for (int L = 0; L < 3; L++) {
-          vec2 g = s * (9.0 + float(L) * 8.0) + float(L) * 13.1;
-          vec2 id = floor(g), f = fract(g) - 0.5;
-          float h = hash(id);
-          if (h > 0.62) { vec2 o = vec2(hash(id + 1.7), hash(id + 9.2)) - 0.5; float dd = length(f - o * 0.5);
-            c += mix(vec3(1.0, 0.93, 0.84), vec3(1.0, 0.6, 0.35), step(0.8, hash(id + 2.2))) * smoothstep(0.08, 0.0, dd) * (0.4 + 0.6 * hash(id + 6.3)); }
+      uniform float uTime, uOn; varying vec2 vP;
+      // Voronoi edges: fine lines where cells meet, drifting, like igloo's crackle.
+      float cells(vec2 p) {
+        vec2 i = floor(p), f = fract(p); float d1 = 8.0, d2 = 8.0;
+        for (int y = -1; y <= 1; y++) for (int x = -1; x <= 1; x++) {
+          vec2 g = vec2(float(x), float(y)), o = hash2(i + g); o = 0.5 + 0.45 * sin(uTime * 0.6 + 6.2831 * o);
+          float d = length(g + o - f); if (d < d1) { d2 = d1; d1 = d; } else if (d < d2) d2 = d;
         }
-        // Mostly dark: a faint galaxy band and a little warm dust, so the stars read as stars.
-        float band = exp(-pow(s.y - 0.35 * sin(s.x * 1.3), 2.0) * 12.0) * pow(fbm(s * 2.5 + 3.0), 2.0);
-        c += vec3(0.85, 0.86, 0.95) * band * 0.22 + vec3(0.86, 0.33, 0.08) * pow(fbm(s * 1.6 + 9.0), 5.0) * 0.35;
-        return c;
+        return d2 - d1;
       }
       void main() {
-        vec3 n = normalize(vN), v = normalize(vV);
-        float ndv = max(dot(n, v), 0.0);
-        vec3 d = refract(-v, n, 0.55); if (dot(d, d) < 1e-4) d = reflect(-v, n);
-        float a = uTime * 0.08; d.xz = mat2(cos(a), -sin(a), sin(a), cos(a)) * d.xz;
-        vec3 col = farSky(normalize(d)) * 1.3;
-        float fres = pow(1.0 - ndv, 3.5);
-        col = mix(col, vec3(1.0, 0.9, 0.8), fres * 0.6);
-        col += vec3(0.86, 0.32, 0.05) * pow(1.0 - ndv, 8.0) * 0.6;
-        gl_FragColor = vec4(col, 1.0);
+        float r = length(vP) / ${(RR - 0.9).toFixed(2)};
+        float e1 = smoothstep(0.06, 0.0, cells(vP * 1.1)), e2 = smoothstep(0.05, 0.0, cells(vP * 2.7 + 4.0));
+        float web = (e1 * 0.8 + e2 * 0.45) * smoothstep(0.15, 0.95, r);      // denser toward the rim
+        float haze = 0.08 + 0.18 * smoothstep(0.4, 1.0, r) + 0.06 * fbm(vP * 0.6 + uTime * 0.1);
+        vec3 col = vec3(1.0, 0.9, 0.78) * web * 0.9 + vec3(0.95, 0.88, 0.8) * haze;
+        gl_FragColor = vec4(col, (web * 0.9 + haze) * uOn);
       }`
   }));
-  fg.add(hole);
+  portalG.add(membrane);
+  const halo = (size, color, strength, z) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.ShaderMaterial({
+      uniforms: { uS: { value: strength } }, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+      vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+      fragmentShader: `uniform float uS; varying vec2 vUv; void main() { float d = length(vUv - 0.5) * 2.0; float ring = exp(-pow((d - 0.42) * 7.0, 2.0)); gl_FragColor = vec4(vec3(${color}), (ring * 0.9 + exp(-d * 4.0) * 0.25) * uS); }`
+    }));
+    m.position.z = z; return m;
+  };
+  const halo1 = halo(RR * 4.6, '1.0, 0.92, 0.8', 0.9, 0.2); portalG.add(halo1);
+  // dust round the portal, drifting
+  const ND = narrow ? 500 : 1000, dp = new Float32Array(ND * 3);
+  for (let i = 0; i < ND; i++) dp.set([(Math.random() - 0.5) * 50, (Math.random() - 0.5) * 34, (Math.random() - 0.5) * 30 + 6], i * 3);
+  const dust = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(dp, 3)),
+    new THREE.PointsMaterial({ color: 0xFFEDD7, size: 0.08, transparent: true, opacity: 0.5, depthWrite: false }));
+  portalG.add(dust);
 
-  // 4. Fine lines round it: dotted rings, and particles spiralling in (igloo's minute lines, in our dots).
-  const fine = new THREE.Group(); fg.add(fine);
-  const ringMat = new THREE.PointsMaterial({ color: 0xFFEDD7, size: 0.11, transparent: true, opacity: 0.75, depthWrite: false });
-  for (let k = 0; k < 5; k++) {
-    const r = R_HOLE * (1.32 + k * 0.32), n = Math.round(r * 18), pts = new Float32Array(n * 3);
-    for (let i = 0; i < n; i++) { const a = i / n * TAU; pts.set([Math.cos(a) * r, Math.sin(a) * r, 0], i * 3); }
-    const ring = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(pts, 3)), ringMat);
-    ring.rotation.set(0.25 * Math.sin(k * 1.7), 0.3 * Math.cos(k * 2.3), 0); ring.userData.spin = (k % 2 ? -1 : 1) * (0.02 + k * 0.01);
-    fine.add(ring);
-  }
-  const NI = narrow ? 1200 : 2400, iSeed = new Float32Array(NI * 3);
-  for (let i = 0; i < NI; i++) iSeed.set([Math.random(), Math.random() * TAU, (Math.random() - 0.5) * 6], i * 3);
-  const iGeo = new THREE.BufferGeometry();
-  iGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(NI * 3), 3));
-  iGeo.setAttribute('aSeed', new THREE.BufferAttribute(iSeed, 3));
-  const iU = { uTime: { value: 0 }, uPR: { value: PR } };
-  const inflow = new THREE.Points(iGeo, new THREE.ShaderMaterial({
-    uniforms: iU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-    vertexShader: /* glsl */`
-      attribute vec3 aSeed; uniform float uTime, uPR; varying float vA;
+  // The tunnel: soft brush-stroke rings, broken into arcs, rushing toward a bright core.
+  const tunnel = new THREE.Group(); scene.add(tunnel);
+  const tU = { uTime: { value: 0 }, uOn: { value: 0 } };
+  const brush = new THREE.ShaderMaterial({
+    uniforms: tU, transparent: true, depthWrite: false, side: THREE.DoubleSide,
+    vertexShader: 'varying vec2 vP; varying float vZ; void main() { vP = position.xy; vec4 mv = modelViewMatrix * vec4(position, 1.0); vZ = -mv.z; gl_Position = projectionMatrix * mv; }',
+    fragmentShader: GLSL_NOISE + /* glsl */`
+      uniform float uTime, uOn; varying vec2 vP; varying float vZ;
       void main() {
-        float s = fract(aSeed.x + uTime * 0.045);
-        float r = ${R_HOLE.toFixed(1)} * (1.04 + 2.6 * (1.0 - s));
-        float a = aSeed.y + s * 6.2832 * 1.4;
-        vec3 p = vec3(cos(a) * r, sin(a) * r * 0.82, aSeed.z * (1.0 - s));
-        vec4 mv = modelViewMatrix * vec4(p, 1.0);
-        gl_Position = projectionMatrix * mv;
-        gl_PointSize = clamp(uPR * 40.0 / -mv.z, 1.0, 4.0);
-        vA = s * (1.0 - s) * 3.2;
-      }`,
-    fragmentShader: 'varying float vA; void main() { float d = length(gl_PointCoord - 0.5); if (d > 0.5) discard; gl_FragColor = vec4(1.0, 0.86, 0.7, vA); }'
+        float a = atan(vP.y, vP.x), r = length(vP);
+        // A brush stroke round the ring: bristle streaks run along it (stretched in angle, fine across it),
+        // its edges ragged and soft, broken by a few gaps where the brush lifted.
+        float ua = a * 3.0 / 6.2832;
+        float bristle = fbm(vec2(ua * 2.5, r * 16.0)) * 0.7 + fbm(vec2(ua * 9.0, r * 40.0)) * 0.3;
+        float rag = (fbm(vec2(ua * 6.0, 3.0)) - 0.5) * 0.5;
+        float edge = smoothstep(0.0, 0.5, r - 3.05 - rag) * smoothstep(0.0, 0.5, 4.35 + rag - r);
+        float lift = smoothstep(0.06, 0.16, abs(fract(ua + 0.13) - 0.5));
+        float alpha = edge * lift * smoothstep(0.3, 0.7, bristle + 0.15) * smoothstep(90.0, 8.0, vZ) * smoothstep(0.5, 3.0, vZ);
+        vec3 col = mix(vec3(0.42, 0.4, 0.42), vec3(0.95, 0.92, 0.9), bristle);
+        gl_FragColor = vec4(col, alpha * uOn);
+      }`
+  });
+  const ringGeo = new THREE.RingGeometry(3.0, 4.4, 128, 4);
+  for (let i = 0; i < TUN_N; i++) { const m = new THREE.Mesh(ringGeo, brush); m.position.z = TUN_Z0 - i * TUN_GAP; m.rotation.z = i * 0.7; m.userData.spin = (i % 2 ? 1 : -1) * 0.15; tunnel.add(m); }
+  const coreU = { uS: { value: 0 } };
+  const core = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.ShaderMaterial({
+    uniforms: coreU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+    fragmentShader: 'uniform float uS; varying vec2 vUv; void main() { float d = length(vUv - 0.5) * 2.0; gl_FragColor = vec4(1.0, 0.97, 0.92, (exp(-d * 6.0) + exp(-d * 18.0)) * uS); }'
   }));
-  inflow.frustumCulled = false; fine.add(inflow);
+  core.position.z = TUN_END - 12; tunnel.add(core);
 
-  // 5. The tunnel through: rings of lines that wobble, and lines along its length.
-  const SEG = narrow ? 72 : 112, LONG = 16;
-  const tv = RINGS * SEG * 2 + (RINGS - 1) * LONG * 2;
-  const tAng = new Float32Array(tv), tRing = new Float32Array(tv), tKind = new Float32Array(tv);
-  let v = 0;
-  for (let r = 0; r < RINGS; r++) for (let s = 0; s < SEG; s++) { tAng[v] = s / SEG * TAU; tRing[v++] = r; tAng[v] = (s + 1) / SEG * TAU; tRing[v++] = r; }
-  for (let r = 0; r < RINGS - 1; r++) for (let l = 0; l < LONG; l++) { const a = l / LONG * TAU; tAng[v] = a; tRing[v] = r; tKind[v++] = 1; tAng[v] = a; tRing[v] = r + 1; tKind[v++] = 1; }
-  const tGeo = new THREE.BufferGeometry();
-  tGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(tv * 3), 3));
-  tGeo.setAttribute('aAng', new THREE.BufferAttribute(tAng, 1)); tGeo.setAttribute('aRing', new THREE.BufferAttribute(tRing, 1)); tGeo.setAttribute('aKind', new THREE.BufferAttribute(tKind, 1));
-  const tU = { uTime: { value: 0 }, uWob: { value: 0.12 }, uOn: { value: 0 } };
-  const tunnel = new THREE.LineSegments(tGeo, new THREE.ShaderMaterial({
-    uniforms: tU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-    vertexShader: /* glsl */`
-      attribute float aAng, aRing, aKind; uniform float uTime, uWob; varying float vFog; varying float vHot; varying float vKind;
-      vec2 off(float z) { float u = -${R_HOLE.toFixed(1)} - z, L = ${TUN_L.toFixed(1)};
-        float amp = clamp(u / 24.0, 0.0, 1.0) * clamp((L - u) / 24.0, 0.0, 1.0);
-        return vec2((sin(z * 0.06) * 2.6 + sin(z * 0.023) * 1.8) * amp, cos(z * 0.05) * 1.8 * amp * clamp(u / 24.0, 0.0, 1.0)); }
-      void main() {
-        float z = -${R_HOLE.toFixed(1)} - aRing * ${GAPZ.toFixed(2)};
-        float n = sin(aAng * 3.0 + uTime * 0.9 + aRing * 0.31) * 0.5 + sin(aAng * 5.0 - uTime * 0.7 + aRing * 0.17) * 0.3 + sin(aAng * 2.0 + aRing * 0.11 + uTime * 0.4) * 0.2;
-        float r = ${TUN_R.toFixed(1)} * (1.0 + n * uWob);
-        vec3 p = vec3(off(z) + vec2(cos(aAng), sin(aAng)) * r, z);
-        vec4 mv = modelViewMatrix * vec4(p, 1.0);
-        float dist = -mv.z;
-        vFog = smoothstep(60.0, 6.0, dist) * smoothstep(0.2, 2.0, dist);
-        vHot = (1.0 - step(0.5, mod(aRing, 9.0))) * (1.0 - aKind); vKind = aKind;
-        gl_Position = projectionMatrix * mv;
-      }`,
-    fragmentShader: /* glsl */`
-      uniform float uOn; varying float vFog; varying float vHot; varying float vKind;
-      void main() { vec3 c = mix(vec3(1.0, 0.929, 0.843), vec3(0.863, 0.314, 0.0), vHot); gl_FragColor = vec4(c, vFog * uOn * mix(0.75, 0.28, vKind)); }`
-  }));
-  tunnel.frustumCulled = false; fg.add(tunnel);
-
-  // 6. A new place: a warm corridor of line arches, light beyond the glass at its end.
-  const arch = [];
-  const push = (a, b) => arch.push(a[0], a[1], a[2], b[0], b[1], b[2]);
-  for (let k = 0; k < ARCHES; k++) {
-    const z = Z_ROOM0 - k * ARCH_GAP, R = 6.5, cy = 1.2, floor = -7;
+  // The corridor, after the flip: warm line arches, light at the far end, glass right in front of us.
+  const room = new THREE.Group(); room.position.z = ROOM_Z; scene.add(room);
+  const arch = [], push = (a, b) => arch.push(a[0], a[1], a[2], b[0], b[1], b[2]);
+  for (let k = 0; k < 10; k++) {
+    const z = -14 - k * 8, R = 6.5, cy = 1.2, floor = -7;
     for (let i = 0; i < 40; i++) { const a0 = i / 40 * Math.PI, a1 = (i + 1) / 40 * Math.PI; push([Math.cos(a0) * R, cy + Math.sin(a0) * R, z], [Math.cos(a1) * R, cy + Math.sin(a1) * R, z]); }
     push([R, cy, z], [R, floor, z]); push([-R, cy, z], [-R, floor, z]);
-    // an inner, smaller arch: doorways within doorways
     for (let i = 0; i < 30; i++) { const a0 = i / 30 * Math.PI, a1 = (i + 1) / 30 * Math.PI, r2 = R * 0.78; push([Math.cos(a0) * r2, cy + Math.sin(a0) * r2, z - 0.6], [Math.cos(a1) * r2, cy + Math.sin(a1) * r2, z - 0.6]); }
   }
-  for (const x of [-6.5, -3.25, 0, 3.25, 6.5]) push([x, -7, Z_ROOM0 + 4], [x, -7, Z_GLASS - 4]);
-  for (let z = Z_ROOM0 + 4; z > Z_GLASS - 4; z -= 4) push([-6.5, -7, z], [6.5, -7, z]);
-  const roomMat = new THREE.LineBasicMaterial({ color: 0xFFEDD7, transparent: true, opacity: 0 });
-  fg.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(arch, 3)), roomMat));
-  const glowU = { uOn: { value: 0 } };
-  const glow = new THREE.Mesh(new THREE.PlaneGeometry(60, 40), new THREE.ShaderMaterial({
-    uniforms: glowU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  for (const x of [-6.5, -3.25, 0, 3.25, 6.5]) push([x, -7, -6], [x, -7, -96]);
+  for (let z = -6; z > -96; z -= 4) push([-6.5, -7, z], [6.5, -7, z]);
+  const roomMat = new THREE.LineBasicMaterial({ color: 0xFFEDD7, transparent: true, opacity: 0.7, fog: false });
+  room.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(arch, 3)), roomMat));
+  const roomGlowU = { uOn: { value: 1 } };
+  const roomGlow = new THREE.Mesh(new THREE.PlaneGeometry(90, 60), new THREE.ShaderMaterial({
+    uniforms: roomGlowU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false,
     vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
     fragmentShader: 'uniform float uOn; varying vec2 vUv; void main() { float d = length((vUv - 0.5) * vec2(1.5, 1.0)); gl_FragColor = vec4(mix(vec3(1.0, 0.93, 0.84), vec3(0.86, 0.32, 0.05), smoothstep(0.0, 0.5, d)), uOn * smoothstep(0.55, 0.0, d)); }'
   }));
-  glow.position.z = Z_GLASS - 14; fg.add(glow);
-
-  // 7. The glass: a pane of triangles that shatters toward us.
-  const GW = 15, GH = 11, GX = 8, GY = 6, grid = [];
+  roomGlow.position.z = -100; room.add(roomGlow);
+  // the glass, a little in front of the camera, made of triangles that fly at us when it breaks
+  const GW = 7.5, GH = 5, GX = 9, GY = 6, grid = [];
   for (let j = 0; j <= GY; j++) for (let i = 0; i <= GX; i++) {
-    const edge = i === 0 || j === 0 || i === GX || j === GY, jx = edge ? 0 : (Math.random() - 0.5) * 0.7, jy = edge ? 0 : (Math.random() - 0.5) * 0.7;
-    grid.push([(i + jx) / GX * GW - GW / 2, (j + jy) / GY * GH - GH / 2 - 1]);
+    const edge = i === 0 || j === 0 || i === GX || j === GY;
+    grid.push([(i + (edge ? 0 : (Math.random() - 0.5) * 0.7)) / GX * GW - GW / 2, (j + (edge ? 0 : (Math.random() - 0.5) * 0.7)) / GY * GH - GH / 2]);
   }
-  const gPos = [], gC = [], gR = [], lPos = [], lC = [], lR = [];
+  const gP = [], gC = [], gR = [], lP = [], lC = [], lR = [];
   for (let j = 0; j < GY; j++) for (let i = 0; i < GX; i++) {
     const a = grid[j * (GX + 1) + i], b = grid[j * (GX + 1) + i + 1], c = grid[(j + 1) * (GX + 1) + i], d = grid[(j + 1) * (GX + 1) + i + 1];
     for (const tri of [[a, b, d], [a, d, c]]) {
       const cx = (tri[0][0] + tri[1][0] + tri[2][0]) / 3, cy = (tri[0][1] + tri[1][1] + tri[2][1]) / 3, rr = Math.random();
-      tri.forEach((q) => { gPos.push(q[0], q[1], 0); gC.push(cx, cy, 0); gR.push(rr); });
-      [[0, 1], [1, 2], [2, 0]].forEach(([m, n]) => { [tri[m], tri[n]].forEach((q) => { lPos.push(q[0], q[1], 0); lC.push(cx, cy, 0); lR.push(rr); }); });
+      tri.forEach((q) => { gP.push(q[0], q[1], 0); gC.push(cx, cy, 0); gR.push(rr); });
+      [[0, 1], [1, 2], [2, 0]].forEach(([m, n]) => [tri[m], tri[n]].forEach((q) => { lP.push(q[0], q[1], 0); lC.push(cx, cy, 0); lR.push(rr); }));
     }
   }
   const gU = { uB: { value: 0 } };
@@ -590,112 +539,116 @@ function portal(THREE, ST, MB) {
     attribute vec3 aC; attribute float aR; uniform float uB; varying float vR;
     vec3 rot(vec3 p, vec3 ax, float a) { ax = normalize(ax); return p * cos(a) + cross(ax, p) * sin(a) + ax * dot(ax, p) * (1.0 - cos(a)); }
     void main() {
-      vec3 local = position - aC;
-      local = rot(local, vec3(aR, 1.0 - aR, 0.5), aR * uB * 9.0);
-      vec3 p = aC + local + vec3(aC.xy * uB * (0.4 + aR * 0.6), uB * (8.0 + aR * 26.0)) + vec3(0.0, -uB * uB * 7.0, 0.0);
-      vR = aR;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+      vec3 local = rot(position - aC, vec3(aR, 1.0 - aR, 0.5), aR * uB * 9.0);
+      vec3 p = aC + local + vec3(aC.xy * uB * (1.2 + aR * 1.6), uB * (3.0 + aR * 9.0)) + vec3(0.0, -uB * uB * 3.0, 0.0);
+      vR = aR; gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
     }`;
-  const glassGeo = new THREE.BufferGeometry();
-  glassGeo.setAttribute('position', new THREE.Float32BufferAttribute(gPos, 3)); glassGeo.setAttribute('aC', new THREE.Float32BufferAttribute(gC, 3)); glassGeo.setAttribute('aR', new THREE.Float32BufferAttribute(gR, 1));
-  const glass = new THREE.Mesh(glassGeo, new THREE.ShaderMaterial({
-    uniforms: gU, vertexShader: shardVert, transparent: true, depthWrite: false, side: THREE.DoubleSide,
-    fragmentShader: 'uniform float uB; varying float vR; void main() { gl_FragColor = vec4(vec3(1.0, 0.95, 0.9), 0.06 + 0.1 * vR * uB); }'
-  }));
-  const crackGeo = new THREE.BufferGeometry();
-  crackGeo.setAttribute('position', new THREE.Float32BufferAttribute(lPos, 3)); crackGeo.setAttribute('aC', new THREE.Float32BufferAttribute(lC, 3)); crackGeo.setAttribute('aR', new THREE.Float32BufferAttribute(lR, 1));
-  const cracks = new THREE.LineSegments(crackGeo, new THREE.ShaderMaterial({
-    uniforms: gU, vertexShader: shardVert, transparent: true, depthWrite: false,
-    fragmentShader: 'uniform float uB; varying float vR; void main() { gl_FragColor = vec4(1.0, 0.95, 0.9, mix(0.04, 0.85, smoothstep(0.0, 0.04, uB))); }'
-  }));
-  const pane = new THREE.Group(); pane.add(glass, cracks); pane.position.z = Z_GLASS; fg.add(pane);
+  const mk = (pos, cen, rnd) => { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('aC', new THREE.Float32BufferAttribute(cen, 3)); g.setAttribute('aR', new THREE.Float32BufferAttribute(rnd, 1)); return g; };
+  const glass = new THREE.Group();
+  glass.add(new THREE.Mesh(mk(gP, gC, gR), new THREE.ShaderMaterial({ uniforms: gU, vertexShader: shardVert, transparent: true, depthWrite: false, side: THREE.DoubleSide, fog: false,
+    fragmentShader: 'uniform float uB; varying float vR; void main() { gl_FragColor = vec4(1.0, 0.96, 0.92, 0.05 + 0.12 * vR * step(0.001, uB)); }' })));
+  glass.add(new THREE.LineSegments(mk(lP, lC, lR), new THREE.ShaderMaterial({ uniforms: gU, vertexShader: shardVert, transparent: true, depthWrite: false, fog: false,
+    fragmentShader: 'uniform float uB; varying float vR; void main() { gl_FragColor = vec4(1.0, 0.96, 0.92, mix(0.05, 0.9, smoothstep(0.0, 0.03, uB))); }' })));
+  glass.position.z = -3.2; room.add(glass);
 
-  // 8. The human: the logo's figure, drawn each frame onto a card that always faces us, just ahead of the camera.
+  // The human, on a card that always faces us.
   const fc = document.createElement('canvas'); fc.width = fc.height = 512;
-  const fg2 = fc.getContext('2d');
+  const fx2 = fc.getContext('2d');
   const figTex = new THREE.CanvasTexture(fc); figTex.colorSpace = THREE.SRGBColorSpace;
-  const fig = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 2.4), new THREE.MeshBasicMaterial({ map: figTex, transparent: true, depthWrite: false, fog: false }));
-  fg.add(fig);
-
-  // The camera's fall, from the scroll.
-  const camZ = (p) => {
-    if (p < 0.45) { const a = clamp((p - 0.02) / 0.43); return lerp(Z_START, Z_SURF, 1 - Math.pow(1 - a, 2.2)); }
-    if (p < 0.7) return lerp(Z_SURF, Z_TUN_END, smooth((p - 0.45) / 0.25));
-    if (p < 0.88) return lerp(Z_TUN_END, Z_ROOM_END, smooth((p - 0.7) / 0.18));
-    return Z_ROOM_END - (p - 0.88) * 20;
+  const fig = new THREE.Mesh(new THREE.PlaneGeometry(3, 3), new THREE.MeshBasicMaterial({ map: figTex, transparent: true, depthWrite: false, fog: false }));
+  scene.add(fig);
+  // Gliding: arms out wide, legs trailing, facing us.
+  const glidePose = (t) => ({
+    root: { x: 0, y: 0, rot: 0.08 * Math.sin(t * 0.9), sx: 1 }, lean: 0.05, bend: 0.75, nod: 0.06 * Math.sin(t * 1.2),
+    feet: { L: { x: -0.13, y: 0.3 }, R: { x: 0.15, y: 0.27 } }, knee: { L: 1, R: -1 },
+    hands: { F: { x: 0.44, y: -0.3 + 0.05 * Math.sin(t * 2.0) }, B: { x: -0.44, y: -0.28 + 0.05 * Math.cos(t * 2.0) } },
+    elbow: { F: -1, B: 1 }, round: { F: 0.7, B: 0.7 }
+  });
+  // Falling, but readable: his tumble is a sway, not a spin, and his arms are up.
+  const sinkPose = (t, sway) => {
+    const p = fallPose(t, sway);
+    p.hands = { F: { x: 0.28 + 0.06 * Math.sin(t * 1.4), y: -0.48 + 0.06 * Math.sin(t * 1.9) }, B: { x: -0.28 + 0.06 * Math.sin(t * 1.2 + 1), y: -0.46 + 0.06 * Math.cos(t * 1.6) } };
+    return p;
   };
-  const black = new THREE.Color(0x000000), ox = new THREE.Color(0x2a0f0c), clear = new THREE.Color();
-  const tmpV = new THREE.Vector3(), fwd = new THREE.Vector3();
-  let raf = 0, last = 0, vel = 0;
-  const loop = (ms) => {
-    raf = requestAnimationFrame(loop);
-    const t = ms / 1000, p = st.progress;
-    vel += ((p - last) * 60 - vel) * 0.08; last = p;
-    pointer.sx += (pointer.x - pointer.sx) * 0.05; pointer.sy += (pointer.y - pointer.sy) * 0.05;
+
+  const v3 = new THREE.Vector3(), fwd = new THREE.Vector3();
+  let lastP = 0, vel = 0, flipRoll = 0;
+  S.onTick((t) => {
+    const p = st.progress;
+    vel += ((p - lastP) * 60 - vel) * 0.08; lastP = p;
+    ringU.uTime.value = inU.uTime.value = memU.uTime.value = tU.uTime.value = sU.uTime.value = t;
+
+    // phases
+    const a = clamp(p / 0.42), b = clamp((p - 0.42) / 0.28), flash = Math.exp(-Math.pow((p - 0.72) / 0.014, 2));
+    const glide = clamp((p - 0.75) / 0.17), brk = smooth(clamp((p - 0.915) / 0.06)), after = p >= 0.72;
+    const crack = Math.exp(-Math.pow((p - 0.918) / 0.006, 2));
+    flashEl.style.opacity = Math.min(1, flash * 1.15 + crack * 0.6).toFixed(3);
 
     // camera
-    const z = camZ(p), o = tunnelOffset(z), oa = tunnelOffset(z - 6);
-    camera.position.set(o[0] + pointer.sx * 0.6, o[1] - pointer.sy * 0.45, z);
-    camera.lookAt(oa[0], oa[1], z - 6);
-    const inTunnel = z < -R_HOLE && z > Z_TUN_END;
-    if (inTunnel) camera.rotateZ(t * 0.05 + (p - 0.45) * 2.0);
+    if (!after) {
+      const z = p < 0.42 ? lerp(Z_CAM0, Z_CAM1, 1 - Math.pow(1 - a, 2.4)) : lerp(Z_CAM1, TUN_END + 6, smooth(b));
+      camera.position.set(pointer.sx * 1.2, -pointer.sy * 0.8, z);
+      camera.lookAt(0, 0, z - 10);
+      camera.rotateZ((p < 0.42 ? 0 : b * 1.6) + Math.sin(t * 0.3) * 0.02);
+      flipRoll = 0;
+    } else {
+      // the flip: the world turns over in the flash, then settles; we stand in the corridor looking down it
+      flipRoll = Math.PI * (1 - smooth(clamp((p - 0.72) / 0.03)));
+      camera.position.set(pointer.sx * 0.5, -pointer.sy * 0.35, ROOM_Z + 2 + brk * 1.5);
+      camera.lookAt(0, 0, ROOM_Z - 20);
+      camera.rotateZ(flipRoll);
+    }
     camera.updateMatrixWorld();
 
-    // what is on, and how much
-    const room = clamp((p - 0.7) / 0.08);
-    sU.uTime.value = t; sU.uDim.value = 1 - room * 0.9;
-    hU.uTime.value = t; iU.uTime.value = t; tU.uTime.value = t; lU.uTime.value = t;
-    tU.uOn.value = clamp((R_HOLE + 2 - z) / 6) * (1 - room);
-    tU.uWob.value = 0.1 + clamp(Math.abs(vel) * 2.5, 0, 0.35);
-    hole.visible = z > -R_HOLE - 2; fine.visible = z > -2;
-    fine.children.forEach((r) => { if (r.userData.spin) r.rotation.z += r.userData.spin * 0.016; });
-    roomMat.opacity = room * 0.75; glowU.uOn.value = room * 0.9;
-    fg.fog.color.copy(clear.copy(black).lerp(ox, room)); fg.fog.near = 20; fg.fog.far = 95;
-    const brk = smooth(clamp((p - 0.865) / 0.07)); gU.uB.value = brk; pane.visible = room > 0;
+    // what is on
+    portalG.visible = !after && camera.position.z > -2;
+    memU.uRip.value = Math.exp(-Math.pow((camera.position.z - 0.5) / 2.0, 2)) * 1.2;
+    memU.uOn.value = clamp((camera.position.z - 0.2) / 3);
+    ringU.uGlow.value = 0.8 + 0.4 * a;
+    portalG.children.forEach((c) => { if (c.userData.k !== undefined) c.rotation.z += 0.0025 * (c.userData.k % 2 ? -1 : 1) * (1 + c.userData.k); });
+    tunnel.visible = !after;
+    tU.uOn.value = clamp((2 - camera.position.z) / 4);
+    tunnel.children.forEach((c) => { if (c.userData.spin) c.rotation.z += c.userData.spin * 0.016 * (1 + Math.abs(vel) * 20); });
+    coreU.uS.value = clamp((p - 0.5) / 0.2) * 1.4;
+    room.visible = after; gU.uB.value = brk;
+    scene.fog.density = after ? 0.004 : 0.012;
+    renderer.setClearColor(after ? 0x1a0a08 : 0x050403, 1);
 
-    // the lens, while we are outside the hole
-    const dist = camera.position.length();
-    const outside = dist > R_HOLE + 0.3;
-    tmpV.set(0, 0, 0).project(camera);
-    const ang = Math.asin(Math.min(1, R_HOLE / Math.max(dist, R_HOLE + 0.01)));
-    lU.uC.value.set(tmpV.x * 0.5 + 0.5, tmpV.y * 0.5 + 0.5);
-    lU.uR.value = Math.tan(ang) / Math.tan(camera.fov * Math.PI / 360) * 0.5;
-    lU.uAspect.value = camera.aspect;
-    lU.uOn.value = outside && tmpV.z < 1 ? 1 : 0;
-
-    // the human, ahead of the camera
-    camera.getWorldDirection(fwd);
-    let D = lerp(9, 6.5, clamp(p / 0.45)), fx = Math.sin(t * 0.4) * 0.7, fy = Math.cos(t * 0.3) * 0.45 - 0.3, spin = t * 0.35 + p * 9;
-    if (p > 0.84) {                                   // he reaches the glass, breaks it, and drops through
-      const g1 = smooth((p - 0.84) / 0.03);
-      D = lerp(D, camera.position.z - Z_GLASS - 0.5, g1);   // right up to the pane
-      fx *= 1 - g1; fy = lerp(fy, -0.5, g1);
-      const g2 = clamp((p - 0.87) / 0.1);
-      D += g2 * 30; fy -= g2 * g2 * 30; spin += g2 * 6;
+    // the human
+    let pose, pos, scale = 1;
+    if (!after) {
+      camera.getWorldDirection(fwd);
+      if (p < 0.42) {
+        // ahead of us, falling toward the portal; near the end he is pulled into it, small and stretched
+        const pull = smooth(clamp((a - 0.55) / 0.4));
+        const ahead = v3.copy(camera.position).addScaledVector(fwd, 9).add(new THREE.Vector3(Math.sin(t * 0.4) * 0.8, Math.cos(t * 0.33) * 0.5 - 0.4, 0));
+        pos = ahead.lerp(new THREE.Vector3(0, 0, -1.2), pull);
+        scale = 1 - pull * 0.55;
+        pose = sinkPose(t, 0.5 * Math.sin(t * 0.6) + pull * 2.5);
+        if (pull > 0) pose.root.stretch = [Math.PI / 2, 1 + pull * 0.9];
+      } else {
+        pos = v3.copy(camera.position).addScaledVector(fwd, 7).add(new THREE.Vector3(Math.sin(t * 0.5) * 0.6, Math.cos(t * 0.4) * 0.4, 0));
+        pose = sinkPose(t, 0.6 * Math.sin(t * 0.7) + b * 3);
+      }
+    } else {
+      // out of the light, gliding toward us as we scroll; through the glass and past us
+      const z = lerp(ROOM_Z - 46, ROOM_Z - 3.6, 1 - Math.pow(1 - glide, 1.6)) + brk * 6;   // quickly out of the light, then slowing as he reaches the glass
+      pos = v3.set(Math.sin(t * 0.5) * 0.4 * (1 - glide), -0.2 + Math.sin(t * 1.1) * 0.15 - brk * 1.5, z);
+      pose = glidePose(t);
     }
-    fig.position.copy(camera.position).addScaledVector(fwd, D);
-    fig.position.x += fx; fig.position.y += fy;
+    fig.position.copy(pos); fig.scale.setScalar(scale);
     fig.quaternion.copy(camera.quaternion);
-    fig.visible = !!MB && p > 0.015 && p < 0.985;
+    fig.visible = !!MB && p > 0.01 && p < 0.985 && !(p > 0.715 && p < 0.745);
     if (fig.visible) {
-      fg2.clearRect(0, 0, 512, 512);
-      drawFig(MB, fg2, fallPose(t, spin), 256, 270, 190, t, '#FFEDD7');
-      figTex.needsUpdate = true;
+      fx2.clearRect(0, 0, 512, 512);
+      // a soft dark halo, so he reads against the bright light of the corridor as well as against dark space
+      fx2.shadowColor = 'rgba(16, 9, 4, 0.85)'; fx2.shadowBlur = after ? 14 : 6;
+      drawFig(MB, fx2, pose, 256, 280, 175, t, '#FFEDD7');
+      fx2.shadowBlur = 0; figTex.needsUpdate = true;
     }
 
-    // draw: background into the target, then bent onto the screen, then the world on top
-    renderer.setClearColor(clear.copy(black).lerp(ox, room), 1);
-    renderer.setRenderTarget(rt); renderer.clear(); renderer.render(bg, camera);
-    renderer.setRenderTarget(null); renderer.clear();
-    renderer.render(lensScene, ortho);
-    renderer.clearDepth();
-    renderer.render(fg, camera);
-    canvas.style.opacity = (1 - smooth(clamp((p - 0.955) / 0.045))).toFixed(3);
-  };
-  new IntersectionObserver(([e]) => {
-    if (e.isIntersecting && !raf) raf = requestAnimationFrame(loop);
-    if (!e.isIntersecting && raf) { cancelAnimationFrame(raf); raf = 0; }
-  }).observe(canvas);
+    canvas.style.opacity = (1 - smooth(clamp((p - 0.965) / 0.035))).toFixed(3);
+  });
   sec.classList.add('has-gl');
 }
 
@@ -706,12 +659,11 @@ function ctaFigure(MB) {
   const sec = document.querySelector('.cta'), cv = sec && sec.querySelector('.cta-fig');
   if (!cv || !MB) return;
   const g = cv.getContext('2d');
-  let w = 0, h = 0, dpr = 1, start = -1, raf = 0;
+  let w = 0, h = 0, dpr = 1, start = -1, on = false;
   const size = () => { dpr = Math.min(devicePixelRatio || 1, 2); w = cv.clientWidth; h = cv.clientHeight; cv.width = w * dpr; cv.height = h * dpr; };
   size(); new ResizeObserver(size).observe(cv);
-  const frame = (ms) => {
-    raf = requestAnimationFrame(frame);
-    const T = ms / 1000; if (start < 0) start = T;
+  const frame = (T) => {
+    if (start < 0) start = T;
     const t = T - start, m = Math.min(w, h);
     g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
     const u = clamp(t / 4), rotA = T * 0.9 + u * 4;
@@ -728,15 +680,16 @@ function ctaFigure(MB) {
     g.globalAlpha = 1;
   };
   new IntersectionObserver(([e]) => {
-    if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(frame); }
+    if (e.isIntersecting) { if (!on) { on = true; onClock(frame, true); } }
     else {
-      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      if (on) { on = false; onClock(frame, false); }
       if (e.boundingClientRect.top > 0) start = -1;   // scrolled back up above it: play the arrival again next time
     }
   }, { threshold: 0.25 }).observe(cv);
 }
 
-export async function start({ ST }) {
+export async function start({ gsap, ST }) {
+  TICK = gsap ? gsap.ticker : null;
   const [THREE] = await Promise.all([
     import(THREE_URL),
     loadScript('/assets/js/figure/mark.js').then(() => loadScript('/assets/js/figure/markbody.js')).catch((e) => console.warn('[scene] figure', e))

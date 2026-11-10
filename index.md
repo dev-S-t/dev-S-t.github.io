@@ -31,10 +31,6 @@ Design
 - UI and UX — interfaces that are clear at first glance and still pleasant later.
 - Design systems — components and rules so the next screen designs itself, nearly.
 
-## The humans
-- Sahil Tomar
-- Abhishek
-
 ## How it goes
 1. Listen — we start with your problem, not our tools.
 2. Sketch — rough lines first, so ideas stay cheap to change.
@@ -52,6 +48,13 @@ Every line here was drawn by a human.
 Let's make it together.
 
 Tell us what you are building. A human reads every message. [Start a project](/contact.md).
+
+## The humans
+- Sahil Tomar
+- Abhishek
+
+## Next
+[About us](/about/) (coming soon).
 
 ## For agents
 - [llms.txt](/llms.txt)

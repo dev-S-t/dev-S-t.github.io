@@ -2,6 +2,21 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-10: fifth pass, igloo's portal, the flip and the glide
+
+Abhishek's notes: the walker got lost before Process and should be dragged into the wormhole; the wormhole should look like igloo.inc's portal, properly 3D; the scroll felt jittery; at the wormhole's end, flip and flash, then he glides toward us as we scroll, breaks the glass and jumps into the contact section; a smaller contact title; one button size; team below contact; a next-page section like Lusion's, leading to the About page (design to come).
+
+- **Order:** hero, reel, about, loops, work, services, process, the fall, contact, team, next page, footer.
+- **The walker** has a perch on the process ribbon ("Last stop before the deep end."), then as the fall begins he is pulled to the middle of the screen, spinning and shrinking, and the 3D figure takes over.
+- **The portal (igloo-style, in our palette):** a heavy stone ring cut into blocks and glowing on its inner face; a membrane of fine crackling lines (Voronoi edges, densest at the rim) that ripples as we pass it; three open rings floating inside, each with the loop's opening at eleven o'clock; dust and stars. He is dragged into it ahead of us.
+- **The tunnel:** soft brush-stroke rings, ragged at the edges and broken where the brush lifted, rushing toward a bright core.
+- **The flip:** a white flash at 72%; the world rolls over and we are in the warm corridor of line arches.
+- **The glide:** he comes out of the light toward us as we scroll, arms wide, a soft dark halo so he reads against the light; the glass is between us; it shatters toward us at 92% and he jumps through.
+- **Jitter:** every 3D scene and the contact figure now draw on GSAP's ticker, the same clock as ScrollSmoother, so canvas and page move in the same frame.
+- **Contact title** 44 to 124px; **buttons** one size everywhere (52px).
+- **Next page:** pinned; the bar fills as you keep scrolling; at the end it goes to /about/ if that page exists (checked first), otherwise it waits.
+- **Speed (Lighthouse 12.6.1, local, compressed):** desktop 100/100/100/100; mobile 98.
+
 ## 2026-11-10: fourth pass, a real 3D fall and the arrival
 
 Abhishek's notes: the fall must be long (2,000px or more) and look like a real 3D wormhole, with our character falling in it; at the end of the wormhole, Lusion's sequence: a new place, glass that breaks, a jump, a fall into the contact section, then coming toward us and waving (4 seconds falling, 3 coming toward us); the contact section should get the hero's dot field; the stages should tilt in 3D with the pointer; scrolling should feel like gsap.com.

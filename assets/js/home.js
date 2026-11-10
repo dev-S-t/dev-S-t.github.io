@@ -193,11 +193,13 @@
     // (scene.js draws the space, the wormhole and the human from this trigger's progress.)
     // Ten screens of scroll (at least 4,000px): the approach, the wormhole, the tunnel, a new place, the glass.
     const portalTl = gsap.timeline({ scrollTrigger: { id: 'portal', trigger: '.portal', start: 'top top', end: () => '+=' + Math.max(4000, innerHeight * 10), pin: '.portal-stick', scrub: 1.8, invalidateOnRefresh: true } });
+    // Phases (scene.js): approach the portal 0-0.42, through it and the tunnel 0.42-0.70, flash and flip at 0.72,
+    // he glides toward us 0.75-0.92, breaks the glass at 0.92, and jumps out toward the contact section.
     portalTl.to('.portal-intro', { autoAlpha: 0, y: -80, duration: 0.08, ease: 'power2.in' }, 0.05)
-      .fromTo('.portal-mid', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.05 }, 0.5)
-      .to('.portal-mid', { autoAlpha: 0, y: -30, duration: 0.05 }, 0.63)
-      .fromTo('.portal-end', { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.05 }, 0.75)
-      .to('.portal-end', { autoAlpha: 0, scale: 1.08, duration: 0.04 }, 0.83)
+      .fromTo('.portal-mid', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.05 }, 0.52)
+      .to('.portal-mid', { autoAlpha: 0, y: -30, duration: 0.05 }, 0.64)
+      .fromTo('.portal-end', { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.04 }, 0.77)
+      .to('.portal-end', { autoAlpha: 0, scale: 1.08, duration: 0.04 }, 0.85)
       .fromTo('.portal-meter b', { scaleX: 0 }, { scaleX: 1, ease: 'none', duration: 1 }, 0)
       .set({}, {}, 1);
   });
@@ -348,8 +350,8 @@
     walker.style.setProperty('--s', scaleOf(perches[0]));
     walker.classList.toggle('on-dark', darkAt(perches[0]));
     setTimeout(() => { if (scrollY < 40) say(perches[0]); }, 1400);
-    // He leaves before the fall: from here the falling figure in the space and contact sections takes over.
-    ST.create({ trigger: '.portal', start: 'top 70%', endTrigger: '.foot', end: 'bottom bottom', onToggle: (s) => walker.classList.toggle('away', s.isActive) });
+    // Once he has been pulled into the hole, the 3D figure carries on for him, through to the contact section.
+    ST.create({ trigger: '.portal', start: 'top top', endTrigger: '.foot', end: 'bottom bottom', onToggle: (s) => walker.classList.toggle('away', s.isActive) });
 
     perches.slice(1).forEach((to, k) => {
       const from = perches[k];
@@ -371,6 +373,30 @@
         { x: () => at(to).x, y: () => at(to).y, scale: scaleOf(to), ease: 'power1.inOut', immediateRender: false }, 0);
       tl.fromTo(mark, { y: 0, rotation: 0 }, { keyframes: { y: [0, -80, -40, 0], rotation: [0, -14 * dir, 8 * dir, 0] }, ease: 'none', immediateRender: false }, 0);
     });
+
+    // Dragged in: as the space section arrives he is pulled from his last perch to the middle of the screen,
+    // spinning and shrinking, into the hole; the 3D figure takes over from that point.
+    const last = perches[perches.length - 1], portalEl = document.querySelector('.portal');
+    if (portalEl) {
+      const target = () => { const a = at(portalEl); return { x: a.x + innerWidth / 2, y: a.y + innerHeight * 0.55 }; };
+      gsap.timeline({ scrollTrigger: { trigger: portalEl, start: 'top 85%', end: 'top top', scrub: 1.2, invalidateOnRefresh: true,
+        onUpdate: (self) => { walker.classList.toggle('on-dark', self.progress > 0.3); if (self.progress > 0.05) hush(); } } })
+        .fromTo(walker, { x: () => at(last).x, y: () => at(last).y, scale: scaleOf(last), rotation: 0 },
+          { x: () => target().x, y: () => target().y, scale: 0.1, rotation: 720, ease: 'power2.in', immediateRender: false });
+    }
+  });
+
+  /* 5b. Next page: the bar fills as you keep scrolling; at the end it goes to the About page, if there is one yet. */
+  later(() => {
+    const next = document.querySelector('.next'), bar = document.querySelector('.next-bar b'), link = document.querySelector('.next-title');
+    if (!next || !bar) return;
+    let gone = false;
+    gsap.fromTo(bar, { scaleX: 0 }, { scaleX: 1, ease: 'none', scrollTrigger: { trigger: next, start: 'top top', end: '+=120%', pin: '.next-stick', scrub: 0.6,
+      onUpdate: (self) => {
+        if (gone || self.progress < 0.999 || self.direction < 0) return;
+        gone = true;
+        fetch(link.getAttribute('href'), { method: 'HEAD' }).then((r) => { if (r.ok) location.href = link.href; else gone = false; }).catch(() => { gone = false; });
+      } } });
   });
 
   /* 6. Nav, cards, buttons */
