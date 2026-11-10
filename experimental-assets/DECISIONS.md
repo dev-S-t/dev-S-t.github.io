@@ -2,6 +2,17 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-10: fourth pass, a real 3D fall and the arrival
+
+Abhishek's notes: the fall must be long (2,000px or more) and look like a real 3D wormhole, with our character falling in it; at the end of the wormhole, Lusion's sequence: a new place, glass that breaks, a jump, a fall into the contact section, then coming toward us and waving (4 seconds falling, 3 coming toward us); the contact section should get the hero's dot field; the stages should tilt in 3D with the pointer; scrolling should feel like gsap.com.
+
+- **Scroll:** GSAP 3.13 with ScrollSmoother (smooth 1.8, effects on), as gsap.com uses, on mouse and trackpad. Touch keeps native momentum. Lenis removed.
+- **The fall (scene.js, pinned for 10 screens, at least 4,000px):** a real 3D scene. About 9,000 stars around the path; the wormhole is a glass sphere that refracts another sky, with a lens pass that bends the stars behind it, a photon ring, dotted rings and spirals of particles flowing in. Through it, a tunnel of wobbling line rings. Out the other side, a warm corridor of line arches lit from the far end, and a pane of glass. The human (the logo's MarkBody, drawn each frame onto a card in 3D) falls just ahead of the camera the whole way, reaches the glass, which shatters toward us, and drops through.
+- **Contact:** the hero's dot field in cream on black. The human arrives on a clock, not the scroll: 4 seconds falling in, 3 seconds turning to face us and coming closer, then he floats and waves, in orange behind the headline. It replays each time the section is reached from above.
+- **Tilt:** the reel, loops, fall and contact stages lean a few degrees with the pointer.
+- **The walker** steps aside when the fall begins; the falling figure takes over from there.
+- **Speed:** below-the-fold setup (all scroll triggers) waits for the first scroll, pointer, touch or key, like three.js. Lighthouse 12.6.1, local with compression: desktop 100/100/100/100 (LCP 0.5s, TBT 0ms); mobile 98 to 99 (TBT 60 to 90ms).
+
 ## 2026-11-10: third pass, into space
 
 Abhishek's notes: the design board's lines should run at angles; the portal should be real space, Interstellar-like, with stars that bend and stretch near the wormhole; a very long, heavy scroll; the logo's human falling through it like Lusion's astronaut; the section moved after Process, leading into a Lusion-style contact section with hover effects; fine, igloo-like lines; a smoother process line; the design board should split like a slash under the cursor and reassemble.

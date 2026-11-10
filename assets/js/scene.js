@@ -6,8 +6,9 @@
    loops   One cloud of dots. First it is the AI: a sphere of nodes joined by lines. Then the dots
            scatter, stretch and settle into the design: a golden spiral, a grid, and a loop with the
            logo's opening at eleven o'clock.
-   portal  Space: a wormhole that bends the starlight, ringed with fine dotted lines. The logo's human tumbles
-           toward it and is gone; then you follow, and the stars become lines.
+   portal  A real 3D fall: stars all round, a glass-sphere wormhole that bends the starlight behind it, a tunnel
+           of wobbling lines, a warm corridor of line arches, and a pane of glass the logo's human breaks through.
+   contact The human arrives: four seconds falling in, three coming toward us, then a wave.
 
    Each scene reads the progress of the pinned ScrollTrigger home.js made for it, and only renders
    while its canvas is on screen. */
@@ -299,178 +300,440 @@ function loops(THREE, ST) {
   sec.classList.add('has-gl');
 }
 
-/* ---------------- portal: into space ---------------- */
-// One full-screen shader. A black sky with three layers of stars and a faint warm nebula. A wormhole at the centre
-// bends the light around it (stars near its edge smear into arcs and wobble), rimmed by a bright photon ring and by
-// fine dotted rings that stretch into lines when you scroll fast. Inside it, another sky. Scroll on and the hole
-// opens to fill the screen, and you rush through: stars become long lines, rings of fine lines fly past.
-const SPACE_FRAG = /* glsl */`
-  uniform vec2 uRes; uniform float uTime, uP, uVel; uniform vec2 uMouse;
-  varying vec2 vUv;
+/* ---------------- the figure: poses for the logo's own body ---------------- */
+// MarkBody units: one unit is his height, y down, the pelvis at 0,0. Shape is never redrawn; only posed.
+const TAU = Math.PI * 2;
+const hsh = (x) => { const v = Math.sin(x * 127.1) * 43758.5453; return v - Math.floor(v); };
+// Falling, spread out like a floating astronaut: arms wide and drifting, legs apart, knees soft.
+const fallPose = (t, rot) => ({
+  root: { x: 0, y: 0, rot, sx: 1 }, lean: 0.25 * Math.sin(t * 0.6), bend: 0.7, nod: 0.15 * Math.sin(t * 0.8),
+  feet: { L: { x: -0.19 + 0.06 * Math.sin(t * 0.9), y: 0.26 }, R: { x: 0.2 + 0.05 * Math.cos(t * 1.2), y: 0.22 + 0.05 * Math.sin(t) } }, knee: { L: 1, R: -1 },
+  hands: { F: { x: 0.42 + 0.05 * Math.sin(t * 1.3), y: -0.16 + 0.12 * Math.sin(t * 1.7) }, B: { x: -0.4 + 0.05 * Math.sin(t * 1.1 + 1), y: -0.1 + 0.12 * Math.cos(t * 1.4) } },
+  elbow: { F: 1, B: -1 }, round: { F: 0.5, B: 0.5 }
+});
+// Upright, facing us; wave (0..1) raises the front hand and swings it.
+const standPose = (t, wave) => ({
+  root: { x: 0, y: 0, rot: 0, sx: 1 }, lean: 0.04 * Math.sin(t * 0.9), bend: 0.8, nod: 0.05 * Math.sin(t * 1.3),
+  feet: { L: { x: -0.09, y: 0.33 }, R: { x: 0.1, y: 0.33 } }, knee: { L: 1, R: -1 },
+  hands: { F: { x: 0.2 + 0.09 * Math.sin(t * 7) * wave, y: -0.05 - 0.47 * wave }, B: { x: -0.21, y: -0.02 - 0.06 * wave } },
+  elbow: { F: 1, B: -1 }, round: { F: 0.3, B: 0.5 }
+});
+const mixPose = (a, b, u) => {
+  const o = {};
+  for (const k in b) {
+    const A = a[k], B = b[k];
+    if (typeof A === 'number' && typeof B === 'number') o[k] = A + (B - A) * u;
+    else if (A && B && typeof A === 'object' && typeof B === 'object') o[k] = mixPose(A, B, u);
+    else o[k] = u < 0.5 && A !== undefined ? A : B;
+  }
+  return o;
+};
+const wrapAngle = (a) => Math.atan2(Math.sin(a), Math.cos(a));
+// Draw a pose with the films' hand-drawn boil: the lines re-drawn 8 times a second.
+function drawFig(MB, g, pose, x, y, k, t, color) {
+  const ln = MB.body(pose);
+  const cam = (px, py) => [x + px * k, y + py * k]; cam.k = k;
+  const bf = Math.floor(t * 8), jit = Math.max(0.6, k * 0.006);
+  const j = (s) => [s[0] + (hsh(s[0] * 0.07 + bf) - 0.5) * jit, s[1] + (hsh(s[1] * 0.07 + bf + 3.1) - 0.5) * jit];
+  MB.draw(g, ln, cam, j, color);
+}
+
+const loadScript = (src) => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.appendChild(s); });
+
+/* ---------------- portal: a real 3D fall ---------------- */
+// The camera falls through a 3D world, scrubbed by the scroll, with the logo's human just ahead of it:
+//   approach  stars all round (real parallax) and a wormhole: a glass sphere showing another sky, whose
+//             gravity bends the stars behind it (a lens pass on the background), ringed by fine dotted lines
+//             and spirals of particles flowing in.
+//   through   a tunnel of wobbling line rings; stars pass as streaks.
+//   a new place  a warm corridor of line arches, light at the far end, a pane of glass across it.
+//   the glass he reaches it, it shatters toward us, he jumps through and falls, into the contact section.
+const R_HOLE = 10, RINGS = 120, GAPZ = 1.2, TUN_R = 3.2;
+const TUN_L = RINGS * GAPZ;
+const Z_START = 140, Z_SURF = R_HOLE + 1.5, Z_TUN_END = -(R_HOLE + TUN_L);
+const ARCHES = 9, ARCH_GAP = 8, Z_ROOM0 = Z_TUN_END - 6, Z_GLASS = Z_ROOM0 - ARCHES * ARCH_GAP - 6, Z_ROOM_END = Z_GLASS + 16;
+const tunnelOffset = (z) => {           // the tunnel bends, but runs straight where it meets the hole and the room
+  const u = -R_HOLE - z;
+  if (u <= 0 || u >= TUN_L) return [0, 0];
+  const amp = Math.min(1, u / 24) * Math.min(1, (TUN_L - u) / 24);
+  return [(Math.sin(z * 0.06) * 2.6 + Math.sin(z * 0.023) * 1.8) * amp, Math.cos(z * 0.05) * 1.8 * amp * Math.min(1, u / 24)];
+};
+
+const GLSL_NOISE = /* glsl */`
   float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
   float noise(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
     return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y); }
   float fbm(vec2 p) { float s = 0.0, a = 0.5; for (int i = 0; i < 4; i++) { s += a * noise(p); p *= 2.03; a *= 0.5; } return s; }
-  vec3 stars(vec2 p, vec2 dir, float stretch, float seed) {
-    vec3 c = vec3(0.0);
-    for (int L = 0; L < 4; L++) {
-      float sc = 14.0 + float(L) * 18.0;
-      vec2 g = p * sc + seed * 17.0 + float(L) * 31.7;
-      vec2 id = floor(g), f = fract(g) - 0.5;
-      float h = hash(id);
-      if (h > 0.7) {
-        vec2 o = vec2(hash(id + 1.7), hash(id + 9.2)) - 0.5;
-        vec2 q = f - o * 0.5;
-        float a = dot(q, dir), b = dot(q, vec2(-dir.y, dir.x));
-        float d = length(vec2(a / stretch, b));
-        float sz = (0.035 + 0.06 * hash(id + 4.1)) * (1.0 - float(L) * 0.2);
-        float br = smoothstep(sz, 0.0, d) * (0.35 + 0.65 * hash(id + 6.3));
-        br *= 0.7 + 0.3 * sin(uTime * (1.5 + h * 3.0) + h * 40.0);
-        vec3 tint = mix(vec3(1.0, 0.93, 0.84), mix(vec3(0.78, 0.86, 1.0), vec3(1.0, 0.62, 0.38), step(0.5, hash(id + 2.2))), 0.4 * hash(id + 8.8));
-        c += tint * br;
-      }
-    }
-    return c;
-  }
-  // A band of the galaxy across the sky. The hole bends it, which is what makes the lensing readable.
-  float band(vec2 s) {
-    vec2 dir = normalize(vec2(1.0, 0.38));
-    float dist = dot(s, vec2(-dir.y, dir.x)) + 0.06 * sin(dot(s, dir) * 3.0);
-    return exp(-dist * dist * 10.0) * (0.3 + 0.7 * fbm(s * 3.2 + 2.0));
-  }
-  vec3 sky(vec2 s, vec2 dir, float stretch, float seed) {
-    float b = band(s);
-    vec3 c = stars(s, dir, stretch, seed) + stars(s * 1.8 + 3.0, dir, stretch, seed + 1.0) * b * 1.3;
-    c += vec3(0.93, 0.87, 0.8) * b * 0.2;
-    c += vec3(0.86, 0.38, 0.12) * b * smoothstep(0.55, 0.85, fbm(s * 5.0 + seed)) * 0.22;
-    return c;
-  }
-  void main() {
-    vec2 uv = (vUv - 0.5) * vec2(uRes.x / uRes.y, 1.0);
-    float p = uP;
-    vec2 c = uMouse * vec2(0.02, -0.02);
-    float approach = smoothstep(0.04, 0.72, p), enter = smoothstep(0.68, 0.8, p), tunnel = smoothstep(0.76, 0.86, p);
-    float R = mix(0.03, 0.24, approach * approach);
-    R = mix(R, 1.5, enter * enter);
-    vec2 d = uv - c; float r = length(d); vec2 rd = d / max(r, 1e-4); float ang = atan(d.y, d.x);
-    float wob = 1.0 + 0.04 * sin(ang * 3.0 + uTime * 1.3) + 0.025 * sin(ang * 5.0 - uTime * 0.9 + p * 20.0);
-    float Re = R * 1.2 * wob;
-    float speed = clamp(abs(uVel) * 0.9, 0.0, 1.0);
-    vec3 col;
-    if (r > R) {
-      vec2 src = uv - rd * (Re * Re / r);                 // light bent round the hole
-      vec2 sk = (src - c) / (1.0 + p * 1.6) + c;           // the sky opens out as we fall
-      float stretch = 1.0 + speed * 2.5 + smoothstep(R * 2.4, R, r) * 2.5;
-      col = sky(sk, normalize(sk - c + 1e-5), min(stretch, 5.0), 0.0);
-      col += vec3(1.0, 0.86, 0.72) * 0.55 * smoothstep(R * 1.22, R, r) * smoothstep(R * 0.97, R * 1.03, r);   // photon ring
-      for (int k = 0; k < 4; k++) {                        // fine dotted rings: dots that stretch into lines
-        float fk = float(k);
-        float rk = R * (1.4 + fk * 0.5 + 0.03 * sin(uTime * 0.7 + fk));
-        float ring = smoothstep(1.8 / uRes.y, 0.0, abs(r - rk));
-        float n2 = 90.0 + fk * 40.0;
-        float dir = mod(fk, 2.0) < 1.0 ? 1.0 : -1.0;
-        float da = fract(ang / 6.2832 * n2 + uTime * (0.05 + 0.03 * fk) * dir) - 0.5;
-        float duty = mix(0.07, 0.46, speed);
-        ring *= smoothstep(duty, duty * 0.4, abs(da));
-        col += vec3(1.0, 0.93, 0.84) * ring * 0.4 * (1.0 - enter);
-      }
-    } else {
-      vec2 q = d / R; float z = sqrt(max(0.0, 1.0 - dot(q, q)));
-      vec2 d2 = q / (z + 0.35) * 1.6;
-      float ca = cos(uTime * 0.05), sa = sin(uTime * 0.05);
-      d2 = mat2(ca, -sa, sa, ca) * d2;
-      // Inside: another sky, seen through a glass ball. Brighter, its galaxy band crossing at another angle.
-      col = sky(mat2(0.6, -0.8, 0.8, 0.6) * d2 * 0.5 + 0.4, normalize(d2 + 1e-5), 1.0, 3.0) * 1.6;
-      col += vec3(0.86, 0.36, 0.1) * pow(fbm(d2 * 1.4 + uTime * 0.02), 3.0) * 0.5;
-      col *= 0.6 + 0.4 * z;
-      col += vec3(1.0, 0.9, 0.78) * pow(1.0 - z, 4.0) * 0.6;  // the glassy rim
-    }
-    if (tunnel > 0.0) {                                     // through: long star lines and rings rushing past
-      float lr = log(max(r, 1e-3)), tr = uTime * 0.6 + p * 30.0;
-      vec2 tp = vec2(ang / 6.2832 * 48.0, lr * 6.0 - tr);
-      vec2 tid = floor(tp), tf = fract(tp) - 0.5;
-      float th = hash(tid);
-      float streak = step(0.86, th) * smoothstep(0.06, 0.0, abs(tf.x)) * smoothstep(0.5, 0.1, abs(tf.y) * (0.6 + speed));
-      vec3 tcol = mix(vec3(1.0, 0.93, 0.84), vec3(1.0, 0.48, 0.2), step(0.95, th)) * streak * smoothstep(0.02, 0.25, r);
-      float rr = fract(lr * 2.2 - tr * 0.35);
-      tcol += vec3(1.0, 0.9, 0.8) * smoothstep(0.02, 0.0, abs(rr - 0.5)) * 0.25 * (1.0 + 0.5 * sin(ang * 6.0 + uTime)) * smoothstep(0.03, 0.3, r);
-      col = mix(col, tcol + col * 0.3, tunnel);
-    }
-    float done = smoothstep(0.95, 1.0, p);                  // out the other side: quiet space, ready for the contact section
-    col = mix(col, stars(uv * 1.2, vec2(1.0, 0.0), 1.0, 7.0) * 0.45, done);
-    col *= 1.0 - 0.35 * dot(uv, uv);
-    gl_FragColor = vec4(col, 1.0);
-  }`;
-
-const loadScript = (src) => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.appendChild(s); });
+`;
 
 function portal(THREE, ST, MB) {
   const sec = document.querySelector('.portal');
   const st = ST.getById('portal');
   if (!sec || !st) return;
-  const S = stage(THREE, sec.querySelector('.portal-canvas'), { fov: 50, z: 1, dpr: innerWidth < 900 ? 1 : 1.25 });
-  const u = { uRes: { value: new THREE.Vector2(1, 1) }, uTime: { value: 0 }, uP: { value: 0 }, uVel: { value: 0 }, uMouse: { value: new THREE.Vector2() } };
-  const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
-    uniforms: u, depthWrite: false, depthTest: false,
-    vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
-    fragmentShader: SPACE_FRAG
+  const canvas = sec.querySelector('.portal-canvas');
+  const narrow = innerWidth < 900;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+  const PR = Math.min(devicePixelRatio || 1, narrow ? 1.25 : 1.5);
+  renderer.setPixelRatio(PR); renderer.autoClear = false;
+  const camera = new THREE.PerspectiveCamera(60, 1, 0.05, 2000);
+  const bg = new THREE.Scene(), fg = new THREE.Scene();
+  fg.fog = new THREE.Fog(0x000000, 30, 110);
+  const rt = new THREE.WebGLRenderTarget(4, 4);
+  const size = () => {
+    const w = canvas.clientWidth, h = canvas.clientHeight; if (!w || !h) return;
+    renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+    rt.setSize(Math.round(w * PR), Math.round(h * PR));
+  };
+  size(); new ResizeObserver(size).observe(canvas);
+
+  // 1. Stars, all round the path of the fall.
+  const NS = narrow ? 4500 : 9000;
+  const sP = new Float32Array(NS * 3), sS = new Float32Array(NS), sR = new Float32Array(NS);
+  for (let i = 0; i < NS; i++) {
+    let x, y; do { x = (Math.random() - 0.5) * 600; y = (Math.random() - 0.5) * 600; } while (x * x + y * y < 64);
+    sP.set([x, y, -520 + Math.random() * 980], i * 3); sS[i] = Math.pow(Math.random(), 3) * 3 + 0.6; sR[i] = Math.random();
+  }
+  const sGeo = new THREE.BufferGeometry();
+  sGeo.setAttribute('position', new THREE.BufferAttribute(sP, 3));
+  sGeo.setAttribute('aS', new THREE.BufferAttribute(sS, 1)); sGeo.setAttribute('aR', new THREE.BufferAttribute(sR, 1));
+  const sU = { uTime: { value: 0 }, uPR: { value: PR }, uDim: { value: 1 } };
+  const stars = new THREE.Points(sGeo, new THREE.ShaderMaterial({
+    uniforms: sU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    vertexShader: /* glsl */`
+      attribute float aS, aR; uniform float uTime, uPR; varying float vA; varying vec3 vC;
+      void main() {
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * mv;
+        gl_PointSize = clamp(aS * uPR * 90.0 / -mv.z, 1.0, 9.0);
+        vA = (0.55 + 0.45 * sin(uTime * (1.0 + aR * 3.0) + aR * 50.0)) * smoothstep(600.0, 60.0, -mv.z);
+        vC = mix(vec3(1.0, 0.93, 0.84), mix(vec3(0.78, 0.86, 1.0), vec3(1.0, 0.62, 0.38), step(0.5, aR)), 0.35);
+      }`,
+    fragmentShader: /* glsl */`
+      uniform float uDim; varying float vA; varying vec3 vC;
+      void main() { float d = length(gl_PointCoord - 0.5); if (d > 0.5) discard; gl_FragColor = vec4(vC, vA * uDim * smoothstep(0.5, 0.0, d)); }`
   }));
-  quad.frustumCulled = false; S.scene.add(quad);
+  stars.frustumCulled = false; bg.add(stars);
 
-  // The human, falling: the logo's own figure (MarkBody), tumbling, arms and legs drifting like an astronaut's,
-  // drawn with a slight hand-drawn boil. Near the hole he is stretched toward it, then gone.
-  const fig = sec.querySelector('.portal-fig'), g = fig.getContext('2d');
-  let fw = 0, fh = 0, fdpr = 1;
-  const sizeFig = () => { fdpr = Math.min(devicePixelRatio || 1, 2); fw = fig.clientWidth; fh = fig.clientHeight; fig.width = fw * fdpr; fig.height = fh * fdpr; };
-  sizeFig(); new ResizeObserver(sizeFig).observe(fig);
-  const bez = (a, b, c, d, t) => { const s = 1 - t; return s * s * s * a + 3 * s * s * t * b + 3 * s * t * t * c + t * t * t * d; };
-  const hsh = (x) => { const v = Math.sin(x * 127.1) * 43758.5453; return v - Math.floor(v); };
-  const size = new THREE.Vector2();
-  let last = 0, vel = 0, prev = null;
-  S.onTick((t) => {
-    const p = st.progress;
-    vel += ((p - last) * 60 - vel) * 0.08; last = p;
-    S.renderer.getSize(size);
-    u.uRes.value.set(size.x, size.y); u.uTime.value = t; u.uP.value = p; u.uVel.value = vel * 6; u.uMouse.value.set(pointer.sx, pointer.sy);
-
-    g.setTransform(fdpr, 0, 0, fdpr, 0, 0); g.clearRect(0, 0, fw, fh);
-    const f = clamp((p - 0.05) / 0.66);
-    if (!MB || f <= 0 || f >= 1) { prev = null; return; }
-    const e = f * f * (3 - 2 * f);
-    const x = fw * bez(0.2, 0.06, 0.8, 0.5, e) + pointer.sx * 12, y = fh * bez(-0.08, 0.6, 0.12, 0.5, e) + pointer.sy * 8;
-    const k = Math.min(fw, fh) * 0.24 * (1 - 0.9 * Math.pow(e, 1.4));
-    const toC = Math.atan2(fh / 2 - y, fw / 2 - x), pull = 1 + 2.2 * Math.pow(clamp((e - 0.7) / 0.3), 2);
-    const rot = t * 0.3 + e * 5 + Math.sin(t * 0.7) * 0.25;
-    const pose = {
-      root: { x: 0, y: 0, rot, sx: 1, stretch: [toC, pull], squashHead: true },   // stretched toward the hole
-      lean: 0.25 * Math.sin(t * 0.6), bend: 0.7, nod: 0.15 * Math.sin(t * 0.8),
-      // Spread out like a floating astronaut: arms wide and drifting, legs apart, knees soft.
-      feet: { L: { x: -0.19 + 0.06 * Math.sin(t * 0.9), y: 0.26 }, R: { x: 0.2 + 0.05 * Math.cos(t * 1.2), y: 0.22 + 0.05 * Math.sin(t) } }, knee: { L: 1, R: -1 },
-      hands: { F: { x: 0.42 + 0.05 * Math.sin(t * 1.3), y: -0.16 + 0.12 * Math.sin(t * 1.7) }, B: { x: -0.4 + 0.05 * Math.sin(t * 1.1 + 1), y: -0.1 + 0.12 * Math.cos(t * 1.4) } },
-      elbow: { F: 1, B: -1 }, round: { F: 0.5, B: 0.5 }
-    };
-    const ln = MB.body(pose);
-    const cam = (px, py) => [x + px * k, y + py * k]; cam.k = k;
-    const bf = Math.floor(t * 8);                                   // the boil: lines re-drawn 8 times a second
-    const j = (s) => [s[0] + (hsh(s[0] * 0.07 + bf) - 0.5) * 1.1, s[1] + (hsh(s[1] * 0.07 + bf + 3.1) - 0.5) * 1.1];
-    // Speed lines behind him: dots that stretch into lines the faster he falls.
-    if (prev) {
-      const dx = x - prev[0], dy = y - prev[1], dl = Math.hypot(dx, dy) || 1, sp = Math.min(60, dl * 6 + Math.abs(vel) * 400);
-      if (sp > 2) {
-        const ux = -dx / dl, uy = -dy / dl;
-        g.strokeStyle = 'rgba(255,237,215,0.45)'; g.lineWidth = 1.2; g.lineCap = 'round';
-        for (let i = 0; i < 7; i++) {
-          const o = (i - 3) * k * 0.09, sx = x - uy * o + ux * k * 0.35, sy = y + ux * o + uy * k * 0.35, L = sp * (0.6 + hsh(i + bf) * 0.8);
-          g.beginPath(); g.moveTo(sx, sy); g.lineTo(sx + ux * L, sy + uy * L); g.stroke();
+  // 2. The lens: the background (stars) is drawn first, then bent round the hole on its way to the screen.
+  const lensScene = new THREE.Scene(), ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  const lU = { tBg: { value: rt.texture }, uC: { value: new THREE.Vector2(0.5, 0.5) }, uR: { value: 0 }, uAspect: { value: 1 }, uOn: { value: 0 }, uTime: { value: 0 } };
+  lensScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
+    uniforms: lU, depthTest: false, depthWrite: false,
+    vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+    fragmentShader: /* glsl */`
+      uniform sampler2D tBg; uniform vec2 uC; uniform float uR, uAspect, uOn, uTime; varying vec2 vUv;
+      void main() {
+        vec2 d = (vUv - uC) * vec2(uAspect, 1.0); float r = length(d);
+        vec2 uv = vUv;
+        if (uOn > 0.0 && r > 1e-4) {
+          float a = atan(d.y, d.x);
+          float Re = uR * 1.3 * (1.0 + 0.035 * sin(a * 3.0 + uTime * 1.2) + 0.02 * sin(a * 5.0 - uTime));
+          uv -= (d / r) * (Re * Re / max(r, uR * 0.98)) / vec2(uAspect, 1.0) * uOn;   // light bent round the hole
         }
+        vec3 c = texture2D(tBg, uv).rgb;
+        c += vec3(1.0, 0.86, 0.72) * 0.55 * uOn * smoothstep(uR * 1.28, uR, r) * smoothstep(uR * 0.95, uR * 1.02, r);  // photon ring
+        gl_FragColor = vec4(c, 1.0);
+      }`
+  })));
+
+  // 3. The wormhole: a glass sphere. Through it, another sky, swirling slowly; a bright rim where the glass turns.
+  const hU = { uTime: { value: 0 } };
+  const hole = new THREE.Mesh(new THREE.SphereGeometry(R_HOLE, 128, 96), new THREE.ShaderMaterial({
+    uniforms: hU,
+    vertexShader: /* glsl */`
+      uniform float uTime; varying vec3 vN; varying vec3 vV;
+      void main() {
+        vec3 p = position + normal * (sin(position.y * 0.6 + uTime * 1.2) * 0.14 + sin(position.x * 0.5 - uTime) * 0.1);
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        vN = normalize(normalMatrix * normal); vV = -mv.xyz;
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader: GLSL_NOISE + /* glsl */`
+      uniform float uTime; varying vec3 vN; varying vec3 vV;
+      vec3 farSky(vec3 d) {
+        vec2 s = vec2(atan(d.z, d.x), asin(clamp(d.y, -1.0, 1.0)));
+        vec3 c = vec3(0.0);
+        for (int L = 0; L < 3; L++) {
+          vec2 g = s * (9.0 + float(L) * 8.0) + float(L) * 13.1;
+          vec2 id = floor(g), f = fract(g) - 0.5;
+          float h = hash(id);
+          if (h > 0.62) { vec2 o = vec2(hash(id + 1.7), hash(id + 9.2)) - 0.5; float dd = length(f - o * 0.5);
+            c += mix(vec3(1.0, 0.93, 0.84), vec3(1.0, 0.6, 0.35), step(0.8, hash(id + 2.2))) * smoothstep(0.08, 0.0, dd) * (0.4 + 0.6 * hash(id + 6.3)); }
+        }
+        // Mostly dark: a faint galaxy band and a little warm dust, so the stars read as stars.
+        float band = exp(-pow(s.y - 0.35 * sin(s.x * 1.3), 2.0) * 12.0) * pow(fbm(s * 2.5 + 3.0), 2.0);
+        c += vec3(0.85, 0.86, 0.95) * band * 0.22 + vec3(0.86, 0.33, 0.08) * pow(fbm(s * 1.6 + 9.0), 5.0) * 0.35;
+        return c;
       }
+      void main() {
+        vec3 n = normalize(vN), v = normalize(vV);
+        float ndv = max(dot(n, v), 0.0);
+        vec3 d = refract(-v, n, 0.55); if (dot(d, d) < 1e-4) d = reflect(-v, n);
+        float a = uTime * 0.08; d.xz = mat2(cos(a), -sin(a), sin(a), cos(a)) * d.xz;
+        vec3 col = farSky(normalize(d)) * 1.3;
+        float fres = pow(1.0 - ndv, 3.5);
+        col = mix(col, vec3(1.0, 0.9, 0.8), fres * 0.6);
+        col += vec3(0.86, 0.32, 0.05) * pow(1.0 - ndv, 8.0) * 0.6;
+        gl_FragColor = vec4(col, 1.0);
+      }`
+  }));
+  fg.add(hole);
+
+  // 4. Fine lines round it: dotted rings, and particles spiralling in (igloo's minute lines, in our dots).
+  const fine = new THREE.Group(); fg.add(fine);
+  const ringMat = new THREE.PointsMaterial({ color: 0xFFEDD7, size: 0.11, transparent: true, opacity: 0.75, depthWrite: false });
+  for (let k = 0; k < 5; k++) {
+    const r = R_HOLE * (1.32 + k * 0.32), n = Math.round(r * 18), pts = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) { const a = i / n * TAU; pts.set([Math.cos(a) * r, Math.sin(a) * r, 0], i * 3); }
+    const ring = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(pts, 3)), ringMat);
+    ring.rotation.set(0.25 * Math.sin(k * 1.7), 0.3 * Math.cos(k * 2.3), 0); ring.userData.spin = (k % 2 ? -1 : 1) * (0.02 + k * 0.01);
+    fine.add(ring);
+  }
+  const NI = narrow ? 1200 : 2400, iSeed = new Float32Array(NI * 3);
+  for (let i = 0; i < NI; i++) iSeed.set([Math.random(), Math.random() * TAU, (Math.random() - 0.5) * 6], i * 3);
+  const iGeo = new THREE.BufferGeometry();
+  iGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(NI * 3), 3));
+  iGeo.setAttribute('aSeed', new THREE.BufferAttribute(iSeed, 3));
+  const iU = { uTime: { value: 0 }, uPR: { value: PR } };
+  const inflow = new THREE.Points(iGeo, new THREE.ShaderMaterial({
+    uniforms: iU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    vertexShader: /* glsl */`
+      attribute vec3 aSeed; uniform float uTime, uPR; varying float vA;
+      void main() {
+        float s = fract(aSeed.x + uTime * 0.045);
+        float r = ${R_HOLE.toFixed(1)} * (1.04 + 2.6 * (1.0 - s));
+        float a = aSeed.y + s * 6.2832 * 1.4;
+        vec3 p = vec3(cos(a) * r, sin(a) * r * 0.82, aSeed.z * (1.0 - s));
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        gl_Position = projectionMatrix * mv;
+        gl_PointSize = clamp(uPR * 40.0 / -mv.z, 1.0, 4.0);
+        vA = s * (1.0 - s) * 3.2;
+      }`,
+    fragmentShader: 'varying float vA; void main() { float d = length(gl_PointCoord - 0.5); if (d > 0.5) discard; gl_FragColor = vec4(1.0, 0.86, 0.7, vA); }'
+  }));
+  inflow.frustumCulled = false; fine.add(inflow);
+
+  // 5. The tunnel through: rings of lines that wobble, and lines along its length.
+  const SEG = narrow ? 72 : 112, LONG = 16;
+  const tv = RINGS * SEG * 2 + (RINGS - 1) * LONG * 2;
+  const tAng = new Float32Array(tv), tRing = new Float32Array(tv), tKind = new Float32Array(tv);
+  let v = 0;
+  for (let r = 0; r < RINGS; r++) for (let s = 0; s < SEG; s++) { tAng[v] = s / SEG * TAU; tRing[v++] = r; tAng[v] = (s + 1) / SEG * TAU; tRing[v++] = r; }
+  for (let r = 0; r < RINGS - 1; r++) for (let l = 0; l < LONG; l++) { const a = l / LONG * TAU; tAng[v] = a; tRing[v] = r; tKind[v++] = 1; tAng[v] = a; tRing[v] = r + 1; tKind[v++] = 1; }
+  const tGeo = new THREE.BufferGeometry();
+  tGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(tv * 3), 3));
+  tGeo.setAttribute('aAng', new THREE.BufferAttribute(tAng, 1)); tGeo.setAttribute('aRing', new THREE.BufferAttribute(tRing, 1)); tGeo.setAttribute('aKind', new THREE.BufferAttribute(tKind, 1));
+  const tU = { uTime: { value: 0 }, uWob: { value: 0.12 }, uOn: { value: 0 } };
+  const tunnel = new THREE.LineSegments(tGeo, new THREE.ShaderMaterial({
+    uniforms: tU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    vertexShader: /* glsl */`
+      attribute float aAng, aRing, aKind; uniform float uTime, uWob; varying float vFog; varying float vHot; varying float vKind;
+      vec2 off(float z) { float u = -${R_HOLE.toFixed(1)} - z, L = ${TUN_L.toFixed(1)};
+        float amp = clamp(u / 24.0, 0.0, 1.0) * clamp((L - u) / 24.0, 0.0, 1.0);
+        return vec2((sin(z * 0.06) * 2.6 + sin(z * 0.023) * 1.8) * amp, cos(z * 0.05) * 1.8 * amp * clamp(u / 24.0, 0.0, 1.0)); }
+      void main() {
+        float z = -${R_HOLE.toFixed(1)} - aRing * ${GAPZ.toFixed(2)};
+        float n = sin(aAng * 3.0 + uTime * 0.9 + aRing * 0.31) * 0.5 + sin(aAng * 5.0 - uTime * 0.7 + aRing * 0.17) * 0.3 + sin(aAng * 2.0 + aRing * 0.11 + uTime * 0.4) * 0.2;
+        float r = ${TUN_R.toFixed(1)} * (1.0 + n * uWob);
+        vec3 p = vec3(off(z) + vec2(cos(aAng), sin(aAng)) * r, z);
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        float dist = -mv.z;
+        vFog = smoothstep(60.0, 6.0, dist) * smoothstep(0.2, 2.0, dist);
+        vHot = (1.0 - step(0.5, mod(aRing, 9.0))) * (1.0 - aKind); vKind = aKind;
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader: /* glsl */`
+      uniform float uOn; varying float vFog; varying float vHot; varying float vKind;
+      void main() { vec3 c = mix(vec3(1.0, 0.929, 0.843), vec3(0.863, 0.314, 0.0), vHot); gl_FragColor = vec4(c, vFog * uOn * mix(0.75, 0.28, vKind)); }`
+  }));
+  tunnel.frustumCulled = false; fg.add(tunnel);
+
+  // 6. A new place: a warm corridor of line arches, light beyond the glass at its end.
+  const arch = [];
+  const push = (a, b) => arch.push(a[0], a[1], a[2], b[0], b[1], b[2]);
+  for (let k = 0; k < ARCHES; k++) {
+    const z = Z_ROOM0 - k * ARCH_GAP, R = 6.5, cy = 1.2, floor = -7;
+    for (let i = 0; i < 40; i++) { const a0 = i / 40 * Math.PI, a1 = (i + 1) / 40 * Math.PI; push([Math.cos(a0) * R, cy + Math.sin(a0) * R, z], [Math.cos(a1) * R, cy + Math.sin(a1) * R, z]); }
+    push([R, cy, z], [R, floor, z]); push([-R, cy, z], [-R, floor, z]);
+    // an inner, smaller arch: doorways within doorways
+    for (let i = 0; i < 30; i++) { const a0 = i / 30 * Math.PI, a1 = (i + 1) / 30 * Math.PI, r2 = R * 0.78; push([Math.cos(a0) * r2, cy + Math.sin(a0) * r2, z - 0.6], [Math.cos(a1) * r2, cy + Math.sin(a1) * r2, z - 0.6]); }
+  }
+  for (const x of [-6.5, -3.25, 0, 3.25, 6.5]) push([x, -7, Z_ROOM0 + 4], [x, -7, Z_GLASS - 4]);
+  for (let z = Z_ROOM0 + 4; z > Z_GLASS - 4; z -= 4) push([-6.5, -7, z], [6.5, -7, z]);
+  const roomMat = new THREE.LineBasicMaterial({ color: 0xFFEDD7, transparent: true, opacity: 0 });
+  fg.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(arch, 3)), roomMat));
+  const glowU = { uOn: { value: 0 } };
+  const glow = new THREE.Mesh(new THREE.PlaneGeometry(60, 40), new THREE.ShaderMaterial({
+    uniforms: glowU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+    fragmentShader: 'uniform float uOn; varying vec2 vUv; void main() { float d = length((vUv - 0.5) * vec2(1.5, 1.0)); gl_FragColor = vec4(mix(vec3(1.0, 0.93, 0.84), vec3(0.86, 0.32, 0.05), smoothstep(0.0, 0.5, d)), uOn * smoothstep(0.55, 0.0, d)); }'
+  }));
+  glow.position.z = Z_GLASS - 14; fg.add(glow);
+
+  // 7. The glass: a pane of triangles that shatters toward us.
+  const GW = 15, GH = 11, GX = 8, GY = 6, grid = [];
+  for (let j = 0; j <= GY; j++) for (let i = 0; i <= GX; i++) {
+    const edge = i === 0 || j === 0 || i === GX || j === GY, jx = edge ? 0 : (Math.random() - 0.5) * 0.7, jy = edge ? 0 : (Math.random() - 0.5) * 0.7;
+    grid.push([(i + jx) / GX * GW - GW / 2, (j + jy) / GY * GH - GH / 2 - 1]);
+  }
+  const gPos = [], gC = [], gR = [], lPos = [], lC = [], lR = [];
+  for (let j = 0; j < GY; j++) for (let i = 0; i < GX; i++) {
+    const a = grid[j * (GX + 1) + i], b = grid[j * (GX + 1) + i + 1], c = grid[(j + 1) * (GX + 1) + i], d = grid[(j + 1) * (GX + 1) + i + 1];
+    for (const tri of [[a, b, d], [a, d, c]]) {
+      const cx = (tri[0][0] + tri[1][0] + tri[2][0]) / 3, cy = (tri[0][1] + tri[1][1] + tri[2][1]) / 3, rr = Math.random();
+      tri.forEach((q) => { gPos.push(q[0], q[1], 0); gC.push(cx, cy, 0); gR.push(rr); });
+      [[0, 1], [1, 2], [2, 0]].forEach(([m, n]) => { [tri[m], tri[n]].forEach((q) => { lPos.push(q[0], q[1], 0); lC.push(cx, cy, 0); lR.push(rr); }); });
     }
-    prev = [x, y];
-    g.globalAlpha = 1 - clamp((e - 0.88) / 0.12);
-    MB.draw(g, ln, cam, j, '#FFEDD7');
-    g.globalAlpha = 1;
-  });
+  }
+  const gU = { uB: { value: 0 } };
+  const shardVert = /* glsl */`
+    attribute vec3 aC; attribute float aR; uniform float uB; varying float vR;
+    vec3 rot(vec3 p, vec3 ax, float a) { ax = normalize(ax); return p * cos(a) + cross(ax, p) * sin(a) + ax * dot(ax, p) * (1.0 - cos(a)); }
+    void main() {
+      vec3 local = position - aC;
+      local = rot(local, vec3(aR, 1.0 - aR, 0.5), aR * uB * 9.0);
+      vec3 p = aC + local + vec3(aC.xy * uB * (0.4 + aR * 0.6), uB * (8.0 + aR * 26.0)) + vec3(0.0, -uB * uB * 7.0, 0.0);
+      vR = aR;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+    }`;
+  const glassGeo = new THREE.BufferGeometry();
+  glassGeo.setAttribute('position', new THREE.Float32BufferAttribute(gPos, 3)); glassGeo.setAttribute('aC', new THREE.Float32BufferAttribute(gC, 3)); glassGeo.setAttribute('aR', new THREE.Float32BufferAttribute(gR, 1));
+  const glass = new THREE.Mesh(glassGeo, new THREE.ShaderMaterial({
+    uniforms: gU, vertexShader: shardVert, transparent: true, depthWrite: false, side: THREE.DoubleSide,
+    fragmentShader: 'uniform float uB; varying float vR; void main() { gl_FragColor = vec4(vec3(1.0, 0.95, 0.9), 0.06 + 0.1 * vR * uB); }'
+  }));
+  const crackGeo = new THREE.BufferGeometry();
+  crackGeo.setAttribute('position', new THREE.Float32BufferAttribute(lPos, 3)); crackGeo.setAttribute('aC', new THREE.Float32BufferAttribute(lC, 3)); crackGeo.setAttribute('aR', new THREE.Float32BufferAttribute(lR, 1));
+  const cracks = new THREE.LineSegments(crackGeo, new THREE.ShaderMaterial({
+    uniforms: gU, vertexShader: shardVert, transparent: true, depthWrite: false,
+    fragmentShader: 'uniform float uB; varying float vR; void main() { gl_FragColor = vec4(1.0, 0.95, 0.9, mix(0.04, 0.85, smoothstep(0.0, 0.04, uB))); }'
+  }));
+  const pane = new THREE.Group(); pane.add(glass, cracks); pane.position.z = Z_GLASS; fg.add(pane);
+
+  // 8. The human: the logo's figure, drawn each frame onto a card that always faces us, just ahead of the camera.
+  const fc = document.createElement('canvas'); fc.width = fc.height = 512;
+  const fg2 = fc.getContext('2d');
+  const figTex = new THREE.CanvasTexture(fc); figTex.colorSpace = THREE.SRGBColorSpace;
+  const fig = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 2.4), new THREE.MeshBasicMaterial({ map: figTex, transparent: true, depthWrite: false, fog: false }));
+  fg.add(fig);
+
+  // The camera's fall, from the scroll.
+  const camZ = (p) => {
+    if (p < 0.45) { const a = clamp((p - 0.02) / 0.43); return lerp(Z_START, Z_SURF, 1 - Math.pow(1 - a, 2.2)); }
+    if (p < 0.7) return lerp(Z_SURF, Z_TUN_END, smooth((p - 0.45) / 0.25));
+    if (p < 0.88) return lerp(Z_TUN_END, Z_ROOM_END, smooth((p - 0.7) / 0.18));
+    return Z_ROOM_END - (p - 0.88) * 20;
+  };
+  const black = new THREE.Color(0x000000), ox = new THREE.Color(0x2a0f0c), clear = new THREE.Color();
+  const tmpV = new THREE.Vector3(), fwd = new THREE.Vector3();
+  let raf = 0, last = 0, vel = 0;
+  const loop = (ms) => {
+    raf = requestAnimationFrame(loop);
+    const t = ms / 1000, p = st.progress;
+    vel += ((p - last) * 60 - vel) * 0.08; last = p;
+    pointer.sx += (pointer.x - pointer.sx) * 0.05; pointer.sy += (pointer.y - pointer.sy) * 0.05;
+
+    // camera
+    const z = camZ(p), o = tunnelOffset(z), oa = tunnelOffset(z - 6);
+    camera.position.set(o[0] + pointer.sx * 0.6, o[1] - pointer.sy * 0.45, z);
+    camera.lookAt(oa[0], oa[1], z - 6);
+    const inTunnel = z < -R_HOLE && z > Z_TUN_END;
+    if (inTunnel) camera.rotateZ(t * 0.05 + (p - 0.45) * 2.0);
+    camera.updateMatrixWorld();
+
+    // what is on, and how much
+    const room = clamp((p - 0.7) / 0.08);
+    sU.uTime.value = t; sU.uDim.value = 1 - room * 0.9;
+    hU.uTime.value = t; iU.uTime.value = t; tU.uTime.value = t; lU.uTime.value = t;
+    tU.uOn.value = clamp((R_HOLE + 2 - z) / 6) * (1 - room);
+    tU.uWob.value = 0.1 + clamp(Math.abs(vel) * 2.5, 0, 0.35);
+    hole.visible = z > -R_HOLE - 2; fine.visible = z > -2;
+    fine.children.forEach((r) => { if (r.userData.spin) r.rotation.z += r.userData.spin * 0.016; });
+    roomMat.opacity = room * 0.75; glowU.uOn.value = room * 0.9;
+    fg.fog.color.copy(clear.copy(black).lerp(ox, room)); fg.fog.near = 20; fg.fog.far = 95;
+    const brk = smooth(clamp((p - 0.865) / 0.07)); gU.uB.value = brk; pane.visible = room > 0;
+
+    // the lens, while we are outside the hole
+    const dist = camera.position.length();
+    const outside = dist > R_HOLE + 0.3;
+    tmpV.set(0, 0, 0).project(camera);
+    const ang = Math.asin(Math.min(1, R_HOLE / Math.max(dist, R_HOLE + 0.01)));
+    lU.uC.value.set(tmpV.x * 0.5 + 0.5, tmpV.y * 0.5 + 0.5);
+    lU.uR.value = Math.tan(ang) / Math.tan(camera.fov * Math.PI / 360) * 0.5;
+    lU.uAspect.value = camera.aspect;
+    lU.uOn.value = outside && tmpV.z < 1 ? 1 : 0;
+
+    // the human, ahead of the camera
+    camera.getWorldDirection(fwd);
+    let D = lerp(9, 6.5, clamp(p / 0.45)), fx = Math.sin(t * 0.4) * 0.7, fy = Math.cos(t * 0.3) * 0.45 - 0.3, spin = t * 0.35 + p * 9;
+    if (p > 0.84) {                                   // he reaches the glass, breaks it, and drops through
+      const g1 = smooth((p - 0.84) / 0.03);
+      D = lerp(D, camera.position.z - Z_GLASS - 0.5, g1);   // right up to the pane
+      fx *= 1 - g1; fy = lerp(fy, -0.5, g1);
+      const g2 = clamp((p - 0.87) / 0.1);
+      D += g2 * 30; fy -= g2 * g2 * 30; spin += g2 * 6;
+    }
+    fig.position.copy(camera.position).addScaledVector(fwd, D);
+    fig.position.x += fx; fig.position.y += fy;
+    fig.quaternion.copy(camera.quaternion);
+    fig.visible = !!MB && p > 0.015 && p < 0.985;
+    if (fig.visible) {
+      fg2.clearRect(0, 0, 512, 512);
+      drawFig(MB, fg2, fallPose(t, spin), 256, 270, 190, t, '#FFEDD7');
+      figTex.needsUpdate = true;
+    }
+
+    // draw: background into the target, then bent onto the screen, then the world on top
+    renderer.setClearColor(clear.copy(black).lerp(ox, room), 1);
+    renderer.setRenderTarget(rt); renderer.clear(); renderer.render(bg, camera);
+    renderer.setRenderTarget(null); renderer.clear();
+    renderer.render(lensScene, ortho);
+    renderer.clearDepth();
+    renderer.render(fg, camera);
+    canvas.style.opacity = (1 - smooth(clamp((p - 0.955) / 0.045))).toFixed(3);
+  };
+  new IntersectionObserver(([e]) => {
+    if (e.isIntersecting && !raf) raf = requestAnimationFrame(loop);
+    if (!e.isIntersecting && raf) { cancelAnimationFrame(raf); raf = 0; }
+  }).observe(canvas);
   sec.classList.add('has-gl');
+}
+
+/* ---------------- contact: he arrives ---------------- */
+// When the contact section comes into view: 4 seconds of falling in from above, tumbling; 3 seconds turning to
+// face us and coming toward us; then he floats there and waves. Orange, behind the headline. Replays each visit.
+function ctaFigure(MB) {
+  const sec = document.querySelector('.cta'), cv = sec && sec.querySelector('.cta-fig');
+  if (!cv || !MB) return;
+  const g = cv.getContext('2d');
+  let w = 0, h = 0, dpr = 1, start = -1, raf = 0;
+  const size = () => { dpr = Math.min(devicePixelRatio || 1, 2); w = cv.clientWidth; h = cv.clientHeight; cv.width = w * dpr; cv.height = h * dpr; };
+  size(); new ResizeObserver(size).observe(cv);
+  const frame = (ms) => {
+    raf = requestAnimationFrame(frame);
+    const T = ms / 1000; if (start < 0) start = T;
+    const t = T - start, m = Math.min(w, h);
+    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+    const u = clamp(t / 4), rotA = T * 0.9 + u * 4;
+    const xA = w * (0.5 + 0.16 * Math.sin(u * 3.2)), yA = lerp(-0.12 * h, 0.4 * h, 1 - Math.pow(1 - u, 1.6)), kA = m * lerp(0.08, 0.13, u);
+    let pose, x, y, k;
+    if (t < 4) { pose = fallPose(T, rotA); x = xA; y = yA; k = kA; }
+    else if (t < 7) {
+      const v = smooth((t - 4) / 3);
+      const A = fallPose(T, wrapAngle(rotA) * (1 - v)), B = standPose(T, v);
+      pose = mixPose(A, B, v); x = lerp(xA, w * 0.5, v); y = lerp(0.4 * h, 0.6 * h, v); k = lerp(kA, m * 0.3, v * v);
+    } else { pose = standPose(T, 1); x = w * 0.5; y = 0.6 * h + Math.sin(T * 1.5) * 6; k = m * 0.3; }
+    g.globalAlpha = 0.95;
+    drawFig(MB, g, pose, x, y, k, T, '#DC5000');
+    g.globalAlpha = 1;
+  };
+  new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(frame); }
+    else {
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      if (e.boundingClientRect.top > 0) start = -1;   // scrolled back up above it: play the arrival again next time
+    }
+  }, { threshold: 0.25 }).observe(cv);
 }
 
 export async function start({ ST }) {
@@ -482,4 +745,5 @@ export async function start({ ST }) {
   for (const make of [reel, loops, portal]) {
     try { make(THREE, ST, MB); } catch (err) { console.warn('[scene]', make.name, err); }
   }
+  try { ctaFigure(MB); } catch (err) { console.warn('[scene] contact', err); }
 }

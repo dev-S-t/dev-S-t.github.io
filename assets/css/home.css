@@ -27,9 +27,7 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
-html.lenis, html.lenis body { height: auto; }
-.lenis.lenis-smooth { scroll-behavior: auto !important; }
-.lenis.lenis-stopped { overflow: hidden; }
+#smooth-content { position: relative; }
 body {
   margin: 0; background: var(--cream); color: var(--brown);
   font-family: var(--sans); font-weight: 300;
@@ -174,7 +172,11 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------- 2. Reel ---------- */
 .reel { position: relative; }
-.reel-stick { position: relative; height: 100svh; display: grid; place-items: center; overflow: hidden; }
+.reel-stick { position: relative; height: 100svh; overflow: hidden; }
+/* Stages that lean with the pointer, like a screen you can tip (home.js). */
+.reel-stick, .loops-stick, .portal-stick, .cta { perspective: 1400px; }
+.tilt { position: absolute; inset: 0; transform-style: preserve-3d; }
+.reel-stick > .tilt { display: grid; place-items: center; }
 .reel-card { width: min(78vw, 1200px); aspect-ratio: 16 / 9; border-radius: 14px; background-color: var(--oxblood); }
 .reel-card.fill { background: radial-gradient(circle at 1px 1px, rgba(255, 237, 215, .16) 1px, transparent 1.4px) 0 0 / 18px 18px, linear-gradient(135deg, #5A2A24, var(--oxblood) 45%, #2A1410); }
 .reel-card.fill::after { color: var(--sand); }
@@ -220,7 +222,7 @@ a { color: inherit; text-decoration: none; }
   background: radial-gradient(circle at 1px 1px, rgba(255, 237, 215, .5) .6px, transparent 1px) 0 0 / 97px 89px,
               radial-gradient(circle at 1px 1px, rgba(255, 237, 215, .35) .5px, transparent .9px) 31px 17px / 53px 61px, #030203; }
 .portal.has-gl .portal-stick { background: #030203; }
-.portal-canvas, .portal-fig { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.portal-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; transition: opacity .3s; }
 .portal-intro { position: absolute; left: var(--gutter); top: clamp(96px, 14vh, 150px); z-index: 2; display: grid; gap: 18px; max-width: 640px; }
 .portal-title { font-size: clamp(48px, 8vw, 148px); line-height: .92; letter-spacing: -0.04em; }
 .portal-copy { max-width: 40ch; font-size: clamp(16px, .9vw + 10px, 20px); color: var(--cream-2); }
@@ -298,11 +300,16 @@ a { color: inherit; text-decoration: none; }
 .perch-person { left: 82%; top: 0; }
 
 /* ---------- 10. Contact: still in space ---------- */
-.cta { position: relative; background: #030203; min-height: 100svh; display: grid; place-items: center; padding: clamp(120px, 14vw, 200px) var(--gutter); overflow: hidden; }
+.cta { position: relative; background: #030203; overflow: hidden; }
+.cta > .tilt { position: relative; min-height: 100svh; display: grid; place-items: center; padding: clamp(120px, 14vw, 200px) var(--gutter); }
+.cta-field, .cta-fig { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cta-fig { z-index: 1; pointer-events: none; }
 .cta-space { position: absolute; inset: 0; }
-.float { position: absolute; left: var(--x); top: var(--y); width: var(--s); height: var(--s); color: var(--cream); transform: rotate(var(--r)); will-change: transform; cursor: pointer; }
+.float { position: absolute; left: var(--x); top: var(--y); width: var(--s); height: var(--s); color: var(--cream); transform: rotate(var(--r)); cursor: pointer; }
 .float i { display: block; width: 100%; height: 100%; background: currentColor; -webkit-mask: var(--img) center / contain no-repeat; mask: var(--img) center / contain no-repeat;
   transition: transform .8s var(--ease-out), background-color .4s; animation: drift 9s var(--ease-io) infinite alternate; }
+.js .float i { animation-play-state: paused; }   /* drifting starts when the section is on screen (home.js) */
+.js .cta.live .float i { animation-play-state: running; }
 .float:nth-child(2n) i { animation-duration: 12s; animation-delay: -3s; }
 .float:nth-child(3n) i { animation-duration: 15s; animation-delay: -6s; }
 .float:hover i { transform: scale(1.25) rotate(-12deg); background-color: var(--orange); }
@@ -319,7 +326,6 @@ a { color: inherit; text-decoration: none; }
 .cta-title:hover .ul::after { animation: wipe .9s var(--ease-io); }
 @keyframes wipe { 0% { transform: scaleX(1); transform-origin: right; } 45% { transform: scaleX(0); transform-origin: right; } 55% { transform: scaleX(0); transform-origin: left; } 100% { transform: scaleX(1); transform-origin: left; } }
 .cta-sub { max-width: 34ch; font-size: clamp(17px, 1vw + 10px, 22px); color: var(--cream-2); }
-.perch-cta { left: 76%; top: 18%; }
 
 /* ---------- 11. Footer ---------- */
 .foot { background: var(--ink); color: var(--cream-2); padding: clamp(64px, 8vw, 110px) var(--gutter) 24px; overflow: hidden; }
@@ -336,6 +342,7 @@ a { color: inherit; text-decoration: none; }
 .js .walker { display: block; position: absolute; left: 0; top: 0; z-index: 40; width: 72px; height: 72px; margin: -72px 0 0 -36px; pointer-events: none; color: var(--ink); transition: color .5s var(--ease-out); will-change: transform; --s: 1; }
 .walker-mark { width: 100%; height: 100%; transform-origin: 50% 100%; animation: breathe 3.2s var(--ease-io) infinite; }
 .walker.on-dark { color: var(--cream); }
+.walker.away { opacity: 0; transition: opacity .5s; }
 @keyframes breathe { 50% { transform: scale(1.015, .985); } }
 .walker-say {
   position: absolute; left: 50%; bottom: calc(100% + 6px);

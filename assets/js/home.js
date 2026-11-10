@@ -1,7 +1,7 @@
 /* human-in-loop.dev: home page behaviour. Everything here is an enhancement; the page reads in full without it.
    1. Hero field: a grid of dots, and three rings of dots flowing round a loop with the logo's opening at eleven
       o'clock. The pointer and scrolling stretch dots into lines.
-   2. Weighted scrolling (Lenis) driving GSAP ScrollTrigger.
+   2. Weighted scrolling: GSAP ScrollSmoother, as on gsap.com, driving ScrollTrigger.
    3. Pinned scenes: the reel unrolls, the loops turn from AI to design, the portal opens into a tunnel.
       The three.js versions load later, from scene.js; until then (and without WebGL) the CSS versions run.
    4. Words that ink in, headings that rise, line drawings that draw themselves.
@@ -16,9 +16,11 @@
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
   /* ---------------- 1. Hero field ---------------- */
-  function heroField(canvas, perch) {
+  function heroField(canvas, perch, opts = {}) {
     const ctx = canvas.getContext('2d');
-    const INK = col('--brown'), HOT = col('--orange'), DARK = col('--ink');
+    // opts.dark: cream dots on a dark ground (the contact section); opts.rings: false for the grid alone.
+    const dark = !!opts.dark, rings = opts.rings !== false;
+    const INK = dark ? col('--cream') : col('--brown'), HOT = col('--orange'), DARK = col('--ink');
     let w = 0, h = 0, n = 0, m = 0, visible = true, running = false, t0 = performance.now();
     let rx, ry, x, y, vx, vy; // all dots: grid first (n), then ring dots (m)
     let ringU, ringR, ringS;   // ring dots: position along the arc, ring radius, speed
@@ -39,7 +41,7 @@
       const cols = Math.ceil(w / gap) + 1, rows = Math.ceil(h / gap) + 1;
       n = cols * rows;
       const radii = [1, 0.76, 0.52], speeds = [0.018, -0.026, 0.04];
-      const counts = radii.map((f) => Math.round((2 * Math.PI * R * f) / 9));
+      const counts = rings ? radii.map((f) => Math.round((2 * Math.PI * R * f) / 9)) : [0, 0, 0];
       m = counts.reduce((a, b) => a + b, 0);
       const N = n + m;
       rx = new Float32Array(N); ry = new Float32Array(N); x = new Float32Array(N); y = new Float32Array(N);
@@ -90,9 +92,9 @@
           path.moveTo(x[i] - vx[i] * 3.2, y[i] - vy[i] * 3.2); path.lineTo(x[i], y[i]);
         }
       }
-      ctx.globalAlpha = 0.22; ctx.fillStyle = INK; ctx.fill(gridDots);
+      ctx.globalAlpha = dark ? 0.16 : 0.22; ctx.fillStyle = INK; ctx.fill(gridDots);
       ctx.globalAlpha = 0.85; ctx.fillStyle = DARK; ctx.fill(ringDots);
-      ctx.globalAlpha = 0.6; ctx.lineWidth = 1.5; ctx.strokeStyle = INK; ctx.stroke(slow);
+      ctx.globalAlpha = dark ? 0.5 : 0.6; ctx.lineWidth = 1.5; ctx.strokeStyle = INK; ctx.stroke(slow);
       ctx.globalAlpha = 0.95; ctx.strokeStyle = HOT; ctx.stroke(fast);
       ctx.globalAlpha = 1;
       if (!visible || reduce) { running = false; return; }
@@ -123,6 +125,8 @@
     };
   }
   const field = (() => { const c = document.querySelector('.field'); return c ? heroField(c, document.querySelector('.perch-hero')) : { kick() {} }; })();
+  // The contact section gets the same field: cream dots on black, stretched into lines by the pointer.
+  const ctaField = (() => { const c = document.querySelector('.cta-field'); return c ? heroField(c, null, { rings: false, dark: true }) : { kick() {} }; })();
 
   /* ---------------- Everything below needs GSAP ---------------- */
   const gsap = window.gsap, ST = window.ScrollTrigger;
@@ -145,18 +149,18 @@
     setTimeout(next, 0);
   };
 
-  /* 2. Weighted scrolling */
-  let lenis = null;
-  if (!reduce && window.Lenis) {
-    // A low lerp gives the scroll its weight: the page keeps gliding after the wheel stops.
-    lenis = new window.Lenis({ lerp: 0.06, wheelMultiplier: 0.85, touchMultiplier: 1.2 });
-    lenis.on('scroll', (e) => { ST.update(); field.kick(e.velocity); });
-    gsap.ticker.add((t) => lenis.raf(t * 1000));
-    gsap.ticker.lagSmoothing(0);
+  /* 2. Weighted scrolling: ScrollSmoother, the engine gsap.com uses. The page follows the wheel with a long,
+     eased lag (smooth: 1.8 seconds to catch up), so every scroll glides and settles like something heavy. */
+  let smoother = null;
+  // Mouse and trackpad only: on touch screens native scrolling already has momentum, and smoothing it fights the finger.
+  if (!reduce && finePointer && window.ScrollSmoother) {
+    gsap.registerPlugin(window.ScrollSmoother);
+    smoother = window.ScrollSmoother.create({ wrapper: '#smooth-wrapper', content: '#smooth-content', smooth: 1.8, effects: true, smoothTouch: 0.12 });
+    gsap.ticker.add(() => { const v = smoother.getVelocity() / 60; field.kick(v); ctaField.kick(v); });
     document.querySelectorAll('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => {
       const id = a.getAttribute('href'); const target = id === '#top' ? 0 : document.querySelector(id);
       if (target === null) return;
-      e.preventDefault(); lenis.scrollTo(target, { duration: 1.8, easing: (t) => 1 - Math.pow(1 - t, 4) });
+      e.preventDefault(); smoother.scrollTo(target, true, 'top top');
     }));
   }
 
@@ -187,11 +191,13 @@
   later(() => {
     // Into space: a long fall. The words drift away, the human tumbles toward the wormhole and through it.
     // (scene.js draws the space, the wormhole and the human from this trigger's progress.)
-    const portalTl = gsap.timeline({ scrollTrigger: { id: 'portal', trigger: '.portal', start: 'top top', end: '+=650%', pin: '.portal-stick', scrub: 1.8 } });
-    portalTl.to('.portal-intro', { autoAlpha: 0, y: -80, duration: 0.1, ease: 'power2.in' }, 0.08)
-      .fromTo('.portal-mid', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.06 }, 0.42)
-      .to('.portal-mid', { autoAlpha: 0, y: -30, duration: 0.06 }, 0.58)
-      .fromTo('.portal-end', { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.07 }, 0.86)
+    // Ten screens of scroll (at least 4,000px): the approach, the wormhole, the tunnel, a new place, the glass.
+    const portalTl = gsap.timeline({ scrollTrigger: { id: 'portal', trigger: '.portal', start: 'top top', end: () => '+=' + Math.max(4000, innerHeight * 10), pin: '.portal-stick', scrub: 1.8, invalidateOnRefresh: true } });
+    portalTl.to('.portal-intro', { autoAlpha: 0, y: -80, duration: 0.08, ease: 'power2.in' }, 0.05)
+      .fromTo('.portal-mid', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.05 }, 0.5)
+      .to('.portal-mid', { autoAlpha: 0, y: -30, duration: 0.05 }, 0.63)
+      .fromTo('.portal-end', { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.05 }, 0.75)
+      .to('.portal-end', { autoAlpha: 0, scale: 1.08, duration: 0.04 }, 0.83)
       .fromTo('.portal-meter b', { scaleX: 0 }, { scaleX: 1, ease: 'none', duration: 1 }, 0)
       .set({}, {}, 1);
   });
@@ -291,18 +297,41 @@
     gsap.from('.cta-center > *', { y: 50, opacity: 0, duration: 1.4, ease: 'expo.out', stagger: 0.1, scrollTrigger: { trigger: '.cta-center', start: 'top 80%' } });
   });
 
+  // The contact section's drawings only drift while it is on screen.
+  { const cta = document.querySelector('.cta'); if (cta) new IntersectionObserver(([e]) => cta.classList.toggle('live', e.isIntersecting)).observe(cta); }
+
   // Hover lines near the right edge open leftwards, so they never run off the screen.
   document.querySelectorAll('.quipped').forEach((el) => el.addEventListener('pointerenter', () => {
     const q = el.querySelector(':scope > .quip'); if (!q || q.classList.contains('quip-pill')) return;
     q.classList.toggle('quip-end', el.getBoundingClientRect().left + 270 > innerWidth);
   }));
 
+  /* 4d. The stages lean with the pointer, like a screen being tipped: the reel, the loops, space and contact. */
+  if (finePointer) later(() => {
+    document.querySelectorAll('.tilt').forEach((el) => {
+      const host = el.parentElement;
+      gsap.set(el, { scale: 1.04, transformPerspective: 1400 });
+      const rx = gsap.quickTo(el, 'rotationX', { duration: 1.4, ease: 'power3.out' }), ry = gsap.quickTo(el, 'rotationY', { duration: 1.4, ease: 'power3.out' });
+      host.addEventListener('pointermove', (e) => { const r = host.getBoundingClientRect(); ry(((e.clientX - r.left) / r.width - 0.5) * 6); rx(-((e.clientY - r.top) / r.height - 0.5) * 4.5); });
+      host.addEventListener('pointerleave', () => { rx(0); ry(0); });
+    });
+    // Titles trail their pictures a little, as on gsap.com.
+    if (smoother) smoother.effects('.card-title, .card-desc, .person-name', { lag: (i) => 0.12 + (i % 3) * 0.06 });
+  });
+
   /* 5. The walker */
   const walker = document.querySelector('.walker');
   const perches = [...document.querySelectorAll('[data-perch]')];
+  // Stand him on the hero's rings straight away; his travels are set up with the rest.
+  if (walker && perches[0] && !reduce) {
+    const c0 = document.querySelector('#smooth-content') || document.body, r0 = perches[0].getBoundingClientRect(), cr = c0.getBoundingClientRect();
+    gsap.set(walker, { x: r0.left - cr.left, y: r0.top - cr.top, scale: parseFloat(perches[0].dataset.scale || '1') });
+  }
   if (walker && perches.length > 1) later(() => {
     const mark = walker.querySelector('.walker-mark'), bubble = walker.querySelector('.walker-say');
-    const at = (el) => { const r = el.getBoundingClientRect(); return { x: r.left + scrollX, y: r.top + scrollY }; };
+    // Positions inside the scrolling content (the walker lives there too), so smoothing never makes him drift.
+    const content = document.querySelector('#smooth-content') || document.body;
+    const at = (el) => { const r = el.getBoundingClientRect(), c = content.getBoundingClientRect(); return { x: r.left - c.left, y: r.top - c.top }; };
     const scaleOf = (el) => parseFloat(el.dataset.scale || '1');
     const darkAt = (el) => el.closest('[data-theme]')?.dataset.theme === 'dark';
     let saidFor = null, hushTimer = 0;
@@ -319,6 +348,8 @@
     walker.style.setProperty('--s', scaleOf(perches[0]));
     walker.classList.toggle('on-dark', darkAt(perches[0]));
     setTimeout(() => { if (scrollY < 40) say(perches[0]); }, 1400);
+    // He leaves before the fall: from here the falling figure in the space and contact sections takes over.
+    ST.create({ trigger: '.portal', start: 'top 70%', endTrigger: '.foot', end: 'bottom bottom', onToggle: (s) => walker.classList.toggle('away', s.isActive) });
 
     perches.slice(1).forEach((to, k) => {
       const from = perches[k];
@@ -377,7 +408,15 @@
       b.addEventListener('pointerleave', () => { mx(0); my(0); });
     });
   });
-  runTasks();
+  // Below-the-fold setup waits for the first sign of a reader (scroll, wheel, pointer, touch, key): nothing it
+  // drives is visible before then, and the first paint and main thread stay free while the page loads.
+  {
+    const evs = ['scroll', 'wheel', 'pointermove', 'touchstart', 'keydown'];
+    let started = false;
+    const start = () => { if (started) return; started = true; evs.forEach((ev) => removeEventListener(ev, start)); runTasks(); };
+    evs.forEach((ev) => addEventListener(ev, start, { passive: true }));
+    if (scrollY > 50 || location.hash) start();
+  }
 
   /* 3b. Load the three.js scenes on the first interaction (scroll, pointer, touch, key). They all sit below the
      fold, so nobody sees them before interacting, and the first paint and main thread never wait for them.
