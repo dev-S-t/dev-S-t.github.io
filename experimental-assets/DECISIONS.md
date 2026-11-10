@@ -2,6 +2,12 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-10: ninth pass, the humans section and the reveal
+
+- **The humans (Abhishek picked "pinned list", after fragment-website-ten.vercel.app's "What drives us"):** the section pins and the scroll walks through the people. Names on the left; the one you are on is ink and nudged right, the other muted brown, so hierarchy comes from colour and stays AA on cream. A line under the active name fills with the scroll in orange. The picture on the right wipes in from the right edge (clip-path, 0.9s, power4.out). Each name is a button that scrolls to its person. Phones, no scripts and reduced motion get a plain list (reduced motion: the names switch the picture, no pin).
+- **Copy:** name and role only (Abhishek). The roles are placeholders, "Role, to be written", until they are supplied. Portraits are still placeholders; Abhishek supplies them as WebP.
+- **The reveal (taken from the same site):** a block fades in (0.6s) while a soft oval mask opens across it from just off its left edge (0.76s, power2.out), in batches staggered by 0.08s, once, when it reaches 92% down the screen. It replaces the old slide-up entrances. It is used on section labels, the services, the process steps, the humans' names and roles, the contact section's lines, the next-page kicker and the footer columns; not on the hero (already on screen), the pinned 3D stages or headings that already animate letter by letter.
+
 ## 2026-11-10: eighth pass, a strict type scale, the 8px grid, the work showcase
 
 - **Type scale (Abhishek):** h1 72, h2 48, h3 40, h4 32, h5 28, h6 24. Paragraphs 14, 16, 18, 20. Labels 11, 12, 14. UI text (buttons, nav, brand) at 100% line height. Tracking -3% everywhere. Phones: h1 40, each step 4px smaller (40, 36, 32, 28, 24, 20). All sizes are tokens in `:root` of `assets/css/home.css`.

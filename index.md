@@ -48,8 +48,8 @@ Let's make it together.
 Tell us what you are building. A human reads every message. [Start a project](/contact.md).
 
 ## The humans
-- Sahil Tomar
-- Abhishek
+- Sahil Tomar — role to be written
+- Abhishek — role to be written
 
 ## Next
 [About us](/about/) (coming soon).

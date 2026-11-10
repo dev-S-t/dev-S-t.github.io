@@ -310,7 +310,6 @@
       const strokes = svc.querySelectorAll('.draw [pathLength]');
       gsap.fromTo(strokes, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.8, ease: 'power2.inOut', stagger: 0.12, scrollTrigger: { trigger: svc, start: 'top 85%' } });
       svc.addEventListener('mouseenter', () => gsap.fromTo(strokes, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.1, ease: 'power2.inOut', stagger: 0.08, overwrite: true }));
-      gsap.from(svc, { y: 36, opacity: 0, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: svc, start: 'top 92%' } });
     });
 
     // The process ribbon: a thick line draws over a dotted track, its head (a dot) leading the way.
@@ -327,10 +326,49 @@
       gsap.to(state, { p: 1, ease: 'none', onUpdate: draw, scrollTrigger: { trigger: '.proc', start: 'top 80%', end: 'bottom 50%', scrub: 0.8 } });
     }
 
-    document.querySelectorAll('.card, .step, .person, .statement-foot').forEach((el) => {
-      gsap.from(el, { y: 50, opacity: 0, duration: 1.3, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
+    // The reveal (after Fragment): each block fades in while a soft oval opens across it from the left, in small
+    // staggered batches as they reach the bottom of the screen. Only blocks with no entrance of their own; never the
+    // hero (already on screen) or the pinned 3D stages. The mask comes off once it is done.
+    const shown = gsap.utils.toArray('.idx, .statement-foot, .svc-col-name, .svc, .step, .tm-name, .tm-copy, .cta-center > *, .next-kicker, .foot-grid > *')
+      .filter((el) => !el.closest('.hero, .reel, .loops, .portal, .work-stage'));
+    shown.forEach((el) => el.classList.add('entry'));
+    gsap.set(shown, { opacity: 0, '--reveal': '0%' });
+    ST.batch(shown, {
+      start: 'top 92%', once: true, interval: 0.08,
+      onEnter: (els) => {
+        gsap.to(els, { opacity: 1, duration: 0.6, ease: 'power2.out', stagger: 0.08, overwrite: 'auto' });
+        gsap.to(els, { '--reveal': '230%', duration: 0.76, ease: 'power2.out', stagger: 0.08, onComplete: () => els.forEach((el) => el.classList.remove('entry')) });
+      }
     });
   });
+
+  /* 4a. The humans: the section pins and the scroll walks through the people. The name you are on turns ink and
+     its line fills; the picture wipes in from the right. A name is a button that scrolls to its person.
+     Phones keep a plain stacked list. */
+  later(() => {
+    const sec = document.querySelector('.team'), items = gsap.utils.toArray('.tm');
+    if (!sec || items.length < 2 || innerWidth < 900) return;
+    const bars = items.map((it) => it.querySelector('.tm-bar i')), n = items.length;
+    let on = 0;
+    const pick = (i) => {
+      if (i === on) return;
+      items.forEach((it, k) => it.classList.toggle('is-on', k === i));
+      const m = items[i].querySelector('.tm-media');
+      if (m && !reduce) gsap.fromTo(m, { clipPath: 'inset(0% 0% 0% 100% round 16px)' }, { clipPath: 'inset(0% 0% 0% 0% round 16px)', duration: 0.9, ease: 'power4.out', clearProps: 'clipPath' });
+      on = i;
+    };
+    const st = ST.create({
+      id: 'team', trigger: sec, start: 'top top', end: () => '+=' + innerHeight * n * 0.6, pin: '.team-stick', anticipatePin: 1,
+      onUpdate: (s) => { const f = s.progress * n, i = Math.min(n - 1, Math.floor(f)); pick(i); bars.forEach((b, k) => gsap.set(b, { scaleX: k === i ? Math.min(1, f - i) : 0 })); }
+    });
+    items.forEach((it, k) => it.querySelector('.tm-name').addEventListener('click', () => {
+      const y = st.start + (st.end - st.start) * ((k + 0.5) / n);
+      smoother ? smoother.scrollTo(y, true) : scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
+    }));
+  });
+
+  // With reduced motion there is no pin: the names simply switch the picture.
+  if (reduce) document.querySelectorAll('.tm').forEach((it, k, all) => it.querySelector('.tm-name').addEventListener('click', () => all.forEach((o, j) => o.classList.toggle('is-on', j === k))));
 
   /* 4b. Weight in every section: parts move at different speeds (parallax), and lists lean with the speed of the
      scroll, then settle, so a flick of the wheel feels like moving something heavy. */
@@ -338,13 +376,14 @@
     const lag = (sel, dist) => document.querySelectorAll(sel).forEach((el) => {
       gsap.fromTo(el, { y: dist }, { y: -dist, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 0.8 } });
     });
-    lag('.sec-head h2', 40); lag('.statement-text', 50); lag('.svc-col-name', 30);
-    lag('.card:nth-child(2), .card:nth-child(4)', 70); lag('.person:nth-child(2)', 80); lag('.proc-steps', 24);
+    lag('.sec-head h2:not(.team h2)', 40);  // not in the pinned humans section, where it would slide onto its label
+    lag('.statement-text', 50); lag('.svc-col-name', 30);
+    lag('.card:nth-child(2), .card:nth-child(4)', 70); lag('.proc-steps', 24);
     // Pictures drift inside their frames.
-    document.querySelectorAll('.card-media, .person-photo').forEach((m) => {
+    document.querySelectorAll('.card-media').forEach((m) => {
       gsap.fromTo(m, { backgroundPosition: '50% 0%' }, { backgroundPosition: '50% 100%', ease: 'none', scrollTrigger: { trigger: m, start: 'top bottom', end: 'bottom top', scrub: 0.8 } });
     });
-    const leaners = gsap.utils.toArray('.work-list, .team-list, .svc-cols');
+    const leaners = gsap.utils.toArray('.work-list, .svc-cols');
     const skew = gsap.quickTo(leaners, 'skewY', { duration: 0.9, ease: 'power3.out' });
     ST.create({ start: 0, end: 'max', onUpdate: (s) => skew(clamp(s.getVelocity() / -900, -3, 3)) });
   });
@@ -368,7 +407,6 @@
       cta.addEventListener('pointerleave', () => movers.forEach((m) => { m.x(0); m.y(0); }));
     }
     gsap.fromTo('.cta-title .ul', { '--u': 0 }, { '--u': 1, duration: 1.4, ease: 'expo.inOut', stagger: 0.18, scrollTrigger: { trigger: '.cta-title', start: 'top 75%' } });
-    gsap.from('.cta-center > *', { y: 50, opacity: 0, duration: 1.4, ease: 'expo.out', stagger: 0.1, scrollTrigger: { trigger: '.cta-center', start: 'top 80%' } });
   });
 
   // The contact section's drawings only drift while it is on screen.
@@ -390,7 +428,7 @@
       host.addEventListener('pointerleave', () => { rx(0); ry(0); });
     });
     // Titles trail their pictures a little, as on gsap.com.
-    if (smoother) smoother.effects('.card-title, .card-desc, .person-name', { lag: (i) => 0.12 + (i % 3) * 0.06 });
+    if (smoother) smoother.effects('.card-title, .card-desc', { lag: (i) => 0.12 + (i % 3) * 0.06 });
   });
 
   /* 5. The walker */

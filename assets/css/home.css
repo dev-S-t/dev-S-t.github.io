@@ -161,7 +161,7 @@ a { color: inherit; text-decoration: none; }
 .nav-links { display: flex; gap: 24px; font-size: 14px; line-height: 1; font-weight: 400; }
 
 /* Each section fills at least one screen; its padding sits inside that height, its content centred in what is left. */
-.statement, .services, .process, .team, .next-stick { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; }
+.statement, .services, .process, .next-stick { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; }
 
 /* ---------- 1. Hero ---------- */
 .hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; justify-content: flex-end; padding: 120px var(--gutter) 0; overflow: hidden; }
@@ -318,16 +318,38 @@ a { color: inherit; text-decoration: none; }
 .step p { font-size: var(--p); line-height: var(--lh-p); max-width: 26ch; }
 
 /* ---------- 9. Team ---------- */
-.team { padding: var(--pad-y) var(--gutter); }
-.team-list { display: grid; grid-template-columns: repeat(12, 1fr); gap: 32px; }
-.person { position: relative; }
-.person:nth-child(1) { grid-column: 3 / 7; }
-.person:nth-child(2) { grid-column: 8 / 12; margin-top: 128px; }
-.person-link { display: grid; gap: 8px; outline-offset: 8px; perspective: 1000px; }
-.person-photo { aspect-ratio: 4 / 5; border-radius: 6px; transition: border-radius .8s var(--ease-out); }
-.person-link:hover .person-photo, .person-link:focus-visible .person-photo { border-radius: 50% 50% 6px 6px / 32% 32% 6px 6px; }
-.person-name { font-family: var(--serif); font-weight: 250; font-size: var(--h4); line-height: var(--lh4); color: var(--ink); margin-top: 8px; }
-.perch-person { left: 82%; top: 0; }
+.team { padding: 0; }
+.team-stick { min-height: 100svh; padding: var(--pad-y) var(--gutter); display: flex; flex-direction: column; justify-content: center; gap: var(--s8); }
+.tm-items { display: grid; gap: var(--s8); }
+.tm-name { display: block; width: fit-content; padding: var(--s1) 0; background: none; border: 0; color: inherit; font: inherit; letter-spacing: inherit; text-align: start; cursor: pointer; }
+.tm-word { display: block; font-family: var(--serif); font-weight: 250; font-size: var(--h3); line-height: var(--lh3); color: var(--ink); transition: color .5s, translate .6s var(--ease-out); }
+.tm-bar { display: none; }
+.tm-panel { display: grid; gap: var(--s3); margin-top: var(--s3); }
+.tm-media { margin: 0; aspect-ratio: 4 / 5; border-radius: 16px; }
+.tm-copy { display: flex; align-items: baseline; gap: var(--s3); }
+.tm-count { font-size: var(--label); line-height: 1; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tm-role { margin: 0; font-size: var(--p-lg); line-height: var(--lh-p-lg); color: var(--brown); }
+/* Desktop with scripts: the section pins; names on the left, one picture at a time on the right.
+   Hierarchy by colour: the person you are on in ink, the other in muted brown (still AA on cream). */
+@media (min-width: 900px) {
+  .js .tm-items { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); grid-template-rows: repeat(2, auto) 1fr; column-gap: var(--s12); row-gap: var(--s2); align-items: start; }
+  .js .tm { display: contents; }
+  .js .tm:nth-child(1) .tm-name { grid-row: 1; }
+  .js .tm:nth-child(2) .tm-name { grid-row: 2; }
+  .js .tm-name { grid-column: 1; }
+  .js .tm-word { color: var(--muted); }
+  .js .tm-name:hover .tm-word { color: var(--brown); }
+  .js .tm.is-on .tm-word { color: var(--ink); translate: var(--s1) 0; }
+  .js .tm-bar { display: block; position: relative; height: 1px; margin-top: var(--s1); background: rgba(56, 36, 22, .18); overflow: hidden; opacity: 0; transition: opacity .4s; }
+  .js .tm.is-on .tm-bar { opacity: 1; }
+  .js .tm-bar i { position: absolute; inset: 0; background: var(--orange); transform-origin: left; transform: scaleX(0); }
+  .js .tm-panel { grid-column: 2; grid-row: 1 / -1; margin: 0; opacity: 0; visibility: hidden; transition: opacity .6s, visibility .6s; }
+  .js .tm.is-on .tm-panel { opacity: 1; visibility: visible; transition: opacity .6s, visibility 0s; }
+  .js .tm-media { aspect-ratio: auto; height: min(56svh, 544px); }
+}
+
+/* The reveal (after Fragment): a soft oval opens from just off the left edge as the block fades in. */
+.entry { --reveal-x: -8%; -webkit-mask-image: radial-gradient(ellipse var(--reveal, 0%) 165% at var(--reveal-x) 50%, #000 68%, transparent 100%); mask-image: radial-gradient(ellipse var(--reveal, 0%) 165% at var(--reveal-x) 50%, #000 68%, transparent 100%); -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
 
 /* ---------- 10. Contact: still in space ---------- */
 .cta { position: relative; background: #030203; overflow: hidden; }
@@ -428,8 +450,8 @@ a { color: inherit; text-decoration: none; }
   .loops-head h2 { max-width: none; }
   .portal-intro { right: var(--gutter); }
   .float { opacity: .55; }
-  .work-list, .team-list { grid-template-columns: 1fr; }
-  .card:nth-child(n), .person:nth-child(n) { grid-column: 1 / -1; margin-top: 0; }
+  .work-list { grid-template-columns: 1fr; }
+  .card:nth-child(n) { grid-column: 1 / -1; margin-top: 0; }
   .card:nth-child(n) .card-media { aspect-ratio: 4 / 3; }
   .svc-cols { grid-template-columns: 1fr; }
   .proc-line { margin-bottom: 8px; }
