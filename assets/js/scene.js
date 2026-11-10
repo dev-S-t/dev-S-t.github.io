@@ -794,10 +794,24 @@ function arrival(MB, ST) {
     }
     if (A >= 1) { pose = standPose(t, 1); y = landY + Math.sin(t * 1.5) * 4; }
 
-    // Until the contact section is in place he is drawn over everything; once it is (pinned), behind its words,
-    // on its own canvas, which then carries him away with the section.
-    if (rise < 1) draw(og, pose, x, y, k, t, mixHex('#FFEDD7', '#DC5000', smooth(rise)), true);
-    else draw(cg, pose, x, y, k, t, '#DC5000', false);
+    // Two layers, split exactly at the contact section's top edge, so there is never a switch: the part of him above
+    // the edge is drawn over the space scene (fixed layer), the part inside the section on the section's own canvas,
+    // behind its words. As he falls he slides behind the content. Once landed, the section's canvas alone carries
+    // him, and he leaves with it.
+    const color = mixHex('#FFEDD7', '#DC5000', smooth(rise));
+    const cr = ccv.getBoundingClientRect(), sx = cw / (cr.width || cw), sy = ch / (cr.height || ch);
+    if (A < 1 && r.top > 0) {
+      og.save(); og.beginPath(); og.rect(0, 0, w, Math.min(h, r.top)); og.clip();
+      draw(og, pose, x, y, k, t, color, true);
+      og.restore();
+    }
+    if (rise > 0) {
+      // viewport position -> the section canvas's own pixels (it sits in a stage scaled slightly for the tilt)
+      // once landed, his spot is fixed within the section (measured as if the section's top were at the screen's top,
+      // which is where it is while pinned), so he scrolls away with it; before that, plain screen-to-canvas mapping
+      const cx2 = (x - cr.left) * sx, cy2 = A >= 1 ? (y - (cr.top - r.top)) * sy : (y - cr.top) * sy;
+      draw(cg, pose, cx2, cy2, k * sx, t, color, false);
+    }
   };
   let on = false;
   const vis = new Set();
