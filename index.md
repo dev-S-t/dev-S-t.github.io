@@ -42,8 +42,6 @@ We do not chase trends. We sit with a problem until it is clear, then draw it, b
 
 That is the loop: look closely, make carefully, look again.
 
-Every line here was drawn by a human.
-
 ## Got something in mind?
 Let's make it together.
 

@@ -333,6 +333,15 @@ const mixPose = (a, b, u) => {
   return o;
 };
 const wrapAngle = (a) => Math.atan2(Math.sin(a), Math.cos(a));
+// Gliding: arms out wide, legs trailing, facing us.
+const glidePose = (t) => ({
+  root: { x: 0, y: 0, rot: 0.08 * Math.sin(t * 0.9), sx: 1 }, lean: 0.05, bend: 0.75, nod: 0.06 * Math.sin(t * 1.2),
+  feet: { L: { x: -0.13, y: 0.3 }, R: { x: 0.15, y: 0.27 } }, knee: { L: 1, R: -1 },
+  hands: { F: { x: 0.44, y: -0.3 + 0.05 * Math.sin(t * 2.0) }, B: { x: -0.44, y: -0.28 + 0.05 * Math.cos(t * 2.0) } },
+  elbow: { F: -1, B: 1 }, round: { F: 0.7, B: 0.7 }
+});
+// Where the 3D figure is on screen (px), so the 2D figure can take over from exactly there.
+const HAND = { x: 0, y: 0, k: 0 };
 // Draw a pose with the films' hand-drawn boil: the lines re-drawn 8 times a second.
 function drawFig(MB, g, pose, x, y, k, t, color) {
   const ln = MB.body(pose);
@@ -368,12 +377,12 @@ const GLSL_NOISE = /* glsl */`
 `;
 // Stone: lit from the front and above, grooved into blocks (lines), with a bright glow on its inner face.
 const stoneMat = (THREE, u, inner) => new THREE.ShaderMaterial({
-  uniforms: u,
+  uniforms: u, transparent: true,
   vertexShader: /* glsl */`
     varying vec3 vN; varying vec3 vV; varying vec2 vUv; varying vec3 vP;
     void main() { vUv = uv; vP = position; vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = -mv.xyz; gl_Position = projectionMatrix * mv; }`,
   fragmentShader: GLSL_NOISE + /* glsl */`
-    uniform float uTime, uGlow; varying vec3 vN; varying vec3 vV; varying vec2 vUv; varying vec3 vP;
+    uniform float uTime, uGlow, uFade; varying vec3 vN; varying vec3 vV; varying vec2 vUv; varying vec3 vP;
     void main() {
       vec3 n = normalize(vN), v = normalize(vV), l = normalize(vec3(0.3, 0.6, 0.8));
       float tex = fbm(vUv * vec2(40.0, 6.0)) * 0.5 + fbm(vUv * vec2(160.0, 20.0)) * 0.25;
@@ -387,7 +396,7 @@ const stoneMat = (THREE, u, inner) => new THREE.ShaderMaterial({
       float r = length(vP.xy);
       float glow = ${inner ? '0.0' : 'smoothstep(' + (RR + 0.4).toFixed(1) + ', ' + (RR - 1.4).toFixed(1) + ', r)'};
       col += vec3(1.0, 0.86, 0.68) * glow * uGlow * (0.8 + 0.2 * sin(uTime * 2.0 + vUv.x * 30.0));
-      gl_FragColor = vec4(col, 1.0);
+      gl_FragColor = vec4(col, uFade);
     }`
 });
 
@@ -417,9 +426,9 @@ function portal(THREE, ST, MB) {
 
   // The portal: the ring, the membrane, the floating open rings, a halo of light.
   const portalG = new THREE.Group(); scene.add(portalG);
-  const ringU = { uTime: { value: 0 }, uGlow: { value: 1 } };
+  const ringU = { uTime: { value: 0 }, uGlow: { value: 1 }, uFade: { value: 1 } };
   portalG.add(new THREE.Mesh(new THREE.TorusGeometry(RR, 1.7, 48, 220), stoneMat(THREE, ringU, false)));
-  const inU = { uTime: { value: 0 }, uGlow: { value: 0 } };
+  const inU = { uTime: { value: 0 }, uGlow: { value: 0 }, uFade: { value: 1 } };
   const GAP = 30 * Math.PI / 180;
   [4.6, 3.3, 2.0].forEach((r, i) => {
     const arc = new THREE.Mesh(new THREE.TorusGeometry(r, 0.34 - i * 0.04, 24, 120, TAU - GAP), stoneMat(THREE, inU, true));
@@ -460,6 +469,7 @@ function portal(THREE, ST, MB) {
     m.position.z = z; return m;
   };
   const halo1 = halo(RR * 4.6, '1.0, 0.92, 0.8', 0.9, 0.2); portalG.add(halo1);
+  const haloU = halo1.material.uniforms.uS;
   // dust round the portal, drifting
   const ND = narrow ? 500 : 1000, dp = new Float32Array(ND * 3);
   for (let i = 0; i < ND; i++) dp.set([(Math.random() - 0.5) * 50, (Math.random() - 0.5) * 34, (Math.random() - 0.5) * 30 + 6], i * 3);
@@ -471,7 +481,7 @@ function portal(THREE, ST, MB) {
   const tunnel = new THREE.Group(); scene.add(tunnel);
   const tU = { uTime: { value: 0 }, uOn: { value: 0 } };
   const brush = new THREE.ShaderMaterial({
-    uniforms: tU, transparent: true, depthWrite: false, side: THREE.DoubleSide,
+    uniforms: tU, transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
     vertexShader: 'varying vec2 vP; varying float vZ; void main() { vP = position.xy; vec4 mv = modelViewMatrix * vec4(position, 1.0); vZ = -mv.z; gl_Position = projectionMatrix * mv; }',
     fragmentShader: GLSL_NOISE + /* glsl */`
       uniform float uTime, uOn; varying vec2 vP; varying float vZ;
@@ -479,13 +489,15 @@ function portal(THREE, ST, MB) {
         float a = atan(vP.y, vP.x), r = length(vP);
         // A brush stroke round the ring: bristle streaks run along it (stretched in angle, fine across it),
         // its edges ragged and soft, broken by a few gaps where the brush lifted.
+        // Everything is sampled round the circle (cos, sin), so the stroke has no seam where the angle wraps.
+        vec2 cs = vec2(cos(a), sin(a));
         float ua = a * 3.0 / 6.2832;
-        float bristle = fbm(vec2(ua * 2.5, r * 16.0)) * 0.7 + fbm(vec2(ua * 9.0, r * 40.0)) * 0.3;
-        float rag = (fbm(vec2(ua * 6.0, 3.0)) - 0.5) * 0.5;
-        float edge = smoothstep(0.0, 0.5, r - 3.05 - rag) * smoothstep(0.0, 0.5, 4.35 + rag - r);
-        float lift = smoothstep(0.06, 0.16, abs(fract(ua + 0.13) - 0.5));
-        float alpha = edge * lift * smoothstep(0.3, 0.7, bristle + 0.15) * smoothstep(90.0, 8.0, vZ) * smoothstep(0.5, 3.0, vZ);
-        vec3 col = mix(vec3(0.42, 0.4, 0.42), vec3(0.95, 0.92, 0.9), bristle);
+        float bristle = fbm(cs * 2.2 + vec2(r * 9.0, 0.0)) * 0.6 + fbm(cs * 5.0 + vec2(0.0, r * 26.0)) * 0.4;
+        float rag = (fbm(cs * 3.0 + 7.0) - 0.5) * 0.6;
+        float edge = smoothstep(0.0, 0.7, r - 3.0 - rag) * smoothstep(0.0, 0.7, 4.4 + rag - r);
+        float lift = mix(0.25, 1.0, smoothstep(0.02, 0.24, abs(fract(ua + 0.13) - 0.5)));   // the brush thins rather than stops
+        float alpha = edge * lift * (0.3 + 0.7 * smoothstep(0.25, 0.8, bristle)) * smoothstep(90.0, 10.0, vZ) * smoothstep(0.5, 4.0, vZ) * 0.6;
+        vec3 col = mix(vec3(0.36, 0.33, 0.33), vec3(1.0, 0.95, 0.9), bristle);
         gl_FragColor = vec4(col, alpha * uOn);
       }`
   });
@@ -499,26 +511,54 @@ function portal(THREE, ST, MB) {
   }));
   core.position.z = TUN_END - 12; tunnel.add(core);
 
-  // The corridor, after the flip: warm line arches, light at the far end, glass right in front of us.
+  // After the flip: a warm sky with a low sun, over a sea of ridge lines rolling toward us. He glides over it.
   const room = new THREE.Group(); room.position.z = ROOM_Z; scene.add(room);
-  const arch = [], push = (a, b) => arch.push(a[0], a[1], a[2], b[0], b[1], b[2]);
-  for (let k = 0; k < 10; k++) {
-    const z = -14 - k * 8, R = 6.5, cy = 1.2, floor = -7;
-    for (let i = 0; i < 40; i++) { const a0 = i / 40 * Math.PI, a1 = (i + 1) / 40 * Math.PI; push([Math.cos(a0) * R, cy + Math.sin(a0) * R, z], [Math.cos(a1) * R, cy + Math.sin(a1) * R, z]); }
-    push([R, cy, z], [R, floor, z]); push([-R, cy, z], [-R, floor, z]);
-    for (let i = 0; i < 30; i++) { const a0 = i / 30 * Math.PI, a1 = (i + 1) / 30 * Math.PI, r2 = R * 0.78; push([Math.cos(a0) * r2, cy + Math.sin(a0) * r2, z - 0.6], [Math.cos(a1) * r2, cy + Math.sin(a1) * r2, z - 0.6]); }
-  }
-  for (const x of [-6.5, -3.25, 0, 3.25, 6.5]) push([x, -7, -6], [x, -7, -96]);
-  for (let z = -6; z > -96; z -= 4) push([-6.5, -7, z], [6.5, -7, z]);
-  const roomMat = new THREE.LineBasicMaterial({ color: 0xFFEDD7, transparent: true, opacity: 0.7, fog: false });
-  room.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(arch, 3)), roomMat));
-  const roomGlowU = { uOn: { value: 1 } };
-  const roomGlow = new THREE.Mesh(new THREE.PlaneGeometry(90, 60), new THREE.ShaderMaterial({
-    uniforms: roomGlowU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false,
-    vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-    fragmentShader: 'uniform float uOn; varying vec2 vUv; void main() { float d = length((vUv - 0.5) * vec2(1.5, 1.0)); gl_FragColor = vec4(mix(vec3(1.0, 0.93, 0.84), vec3(0.86, 0.32, 0.05), smoothstep(0.0, 0.5, d)), uOn * smoothstep(0.55, 0.0, d)); }'
+  const ROWS = narrow ? 56 : 90, COLS = 180, ROW_GAP = 2.2;
+  const nv = ROWS * (COLS - 1) * 2, ax = new Float32Array(nv), arow = new Float32Array(nv);
+  let q = 0;
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS - 1; c++) { ax[q] = c / (COLS - 1); arow[q++] = r; ax[q] = (c + 1) / (COLS - 1); arow[q++] = r; }
+  const seaGeo = new THREE.BufferGeometry();
+  seaGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(nv * 3), 3));
+  seaGeo.setAttribute('aX', new THREE.BufferAttribute(ax, 1)); seaGeo.setAttribute('aRow', new THREE.BufferAttribute(arow, 1));
+  const seaU = { uTime: { value: 0 }, uFlow: { value: 0 } };
+  const sea = new THREE.LineSegments(seaGeo, new THREE.ShaderMaterial({
+    uniforms: seaU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false,
+    vertexShader: GLSL_NOISE + `
+      attribute float aX, aRow; uniform float uTime, uFlow; varying float vA; varying float vD; varying float vH;
+      void main() {
+        float x = mix(-80.0, 80.0, aX), z = -6.0 - aRow * ${ROW_GAP.toFixed(1)};
+        float side = smoothstep(3.0, 26.0, abs(x));                       // a clear way down the middle, ridges rising either side
+        float h = fbm(vec2(x * 0.05, (z - uFlow) * 0.05)) * 1.6 + fbm(vec2(x * 0.17, (z - uFlow) * 0.17)) * 0.4;
+        float y = -7.5 + h * (1.5 + 9.0 * side);
+        vec4 mv = modelViewMatrix * vec4(x, y, z, 1.0);
+        vD = -mv.z; vH = h;
+        vA = smoothstep(${(ROWS * ROW_GAP).toFixed(1)}, 25.0, vD) * smoothstep(1.0, 8.0, vD);
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader: `
+      varying float vA; varying float vD; varying float vH;
+      void main() {
+        vec3 near = vec3(1.0, 0.93, 0.84), far = vec3(0.98, 0.45, 0.16);
+        gl_FragColor = vec4(mix(near, far, smoothstep(30.0, 160.0, vD)) * (0.7 + 0.5 * vH), vA * 0.75);
+      }`
   }));
-  roomGlow.position.z = -100; room.add(roomGlow);
+  sea.frustumCulled = false; room.add(sea);
+  const sky = new THREE.Mesh(new THREE.PlaneGeometry(900, 420), new THREE.ShaderMaterial({
+    depthWrite: false, fog: false,
+    vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+    fragmentShader: `
+      varying vec2 vUv;
+      void main() {
+        float y = vUv.y;
+        vec3 top = vec3(0.1, 0.035, 0.03), mid = vec3(0.29, 0.12, 0.1), low = vec3(0.86, 0.36, 0.12);
+        vec3 c = mix(low, mid, smoothstep(0.42, 0.56, y)); c = mix(c, top, smoothstep(0.56, 0.95, y));
+        vec2 sp = (vUv - vec2(0.5, 0.47)) * vec2(2.14, 1.0);
+        float d = length(sp);
+        c += vec3(1.0, 0.9, 0.75) * (smoothstep(0.075, 0.068, d) * 0.9 + exp(-d * 9.0) * 0.6);   // the sun, low on the horizon
+        gl_FragColor = vec4(c, 1.0);
+      }`
+  }));
+  sky.position.set(0, 20, -260); room.add(sky);
   // the glass, a little in front of the camera, made of triangles that fly at us when it breaks
   const GW = 7.5, GH = 5, GX = 9, GY = 6, grid = [];
   for (let j = 0; j <= GY; j++) for (let i = 0; i <= GX; i++) {
@@ -546,9 +586,9 @@ function portal(THREE, ST, MB) {
   const mk = (pos, cen, rnd) => { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('aC', new THREE.Float32BufferAttribute(cen, 3)); g.setAttribute('aR', new THREE.Float32BufferAttribute(rnd, 1)); return g; };
   const glass = new THREE.Group();
   glass.add(new THREE.Mesh(mk(gP, gC, gR), new THREE.ShaderMaterial({ uniforms: gU, vertexShader: shardVert, transparent: true, depthWrite: false, side: THREE.DoubleSide, fog: false,
-    fragmentShader: 'uniform float uB; varying float vR; void main() { gl_FragColor = vec4(1.0, 0.96, 0.92, 0.05 + 0.12 * vR * step(0.001, uB)); }' })));
+    fragmentShader: 'uniform float uB; varying float vR; void main() { gl_FragColor = vec4(1.0, 0.96, 0.92, (0.04 + 0.14 * vR) * smoothstep(0.0, 0.02, uB)); }' })));
   glass.add(new THREE.LineSegments(mk(lP, lC, lR), new THREE.ShaderMaterial({ uniforms: gU, vertexShader: shardVert, transparent: true, depthWrite: false, fog: false,
-    fragmentShader: 'uniform float uB; varying float vR; void main() { gl_FragColor = vec4(1.0, 0.96, 0.92, mix(0.05, 0.9, smoothstep(0.0, 0.03, uB))); }' })));
+    fragmentShader: 'uniform float uB; varying float vR; void main() { gl_FragColor = vec4(1.0, 0.96, 0.92, 0.9 * smoothstep(0.0, 0.03, uB)); }' })));
   glass.position.z = -3.2; room.add(glass);
 
   // The human, on a card that always faces us.
@@ -557,13 +597,6 @@ function portal(THREE, ST, MB) {
   const figTex = new THREE.CanvasTexture(fc); figTex.colorSpace = THREE.SRGBColorSpace;
   const fig = new THREE.Mesh(new THREE.PlaneGeometry(3, 3), new THREE.MeshBasicMaterial({ map: figTex, transparent: true, depthWrite: false, fog: false }));
   scene.add(fig);
-  // Gliding: arms out wide, legs trailing, facing us.
-  const glidePose = (t) => ({
-    root: { x: 0, y: 0, rot: 0.08 * Math.sin(t * 0.9), sx: 1 }, lean: 0.05, bend: 0.75, nod: 0.06 * Math.sin(t * 1.2),
-    feet: { L: { x: -0.13, y: 0.3 }, R: { x: 0.15, y: 0.27 } }, knee: { L: 1, R: -1 },
-    hands: { F: { x: 0.44, y: -0.3 + 0.05 * Math.sin(t * 2.0) }, B: { x: -0.44, y: -0.28 + 0.05 * Math.cos(t * 2.0) } },
-    elbow: { F: -1, B: 1 }, round: { F: 0.7, B: 0.7 }
-  });
   // Falling, but readable: his tumble is a sway, not a spin, and his arms are up.
   const sinkPose = (t, sway) => {
     const p = fallPose(t, sway);
@@ -582,12 +615,16 @@ function portal(THREE, ST, MB) {
     const a = clamp(p / 0.42), b = clamp((p - 0.42) / 0.28), flash = Math.exp(-Math.pow((p - 0.72) / 0.014, 2));
     const glide = clamp((p - 0.75) / 0.17), brk = smooth(clamp((p - 0.915) / 0.06)), after = p >= 0.72;
     const crack = Math.exp(-Math.pow((p - 0.918) / 0.006, 2));
-    flashEl.style.opacity = Math.min(1, flash * 1.15 + crack * 0.6).toFixed(3);
+    // a soft veil of light as we cross the portal's membrane, a full flash at the flip, a crack at the glass
+    const crossing = p < 0.6 ? Math.exp(-Math.pow((camera.position.z - 0.5) / 2.2, 2)) * 0.55 : 0;
+    flashEl.style.opacity = Math.min(1, flash * 1.15 + crack * 0.6 + crossing).toFixed(3);
 
     // camera
     if (!after) {
-      const z = p < 0.42 ? lerp(Z_CAM0, Z_CAM1, 1 - Math.pow(1 - a, 2.4)) : lerp(Z_CAM1, TUN_END + 6, smooth(b));
-      camera.position.set(pointer.sx * 1.2, -pointer.sy * 0.8, z);
+      // through the tunnel the camera slows as the core nears (ease-out): more scroll for less ground, a pull to fight
+      const z = p < 0.42 ? lerp(Z_CAM0, Z_CAM1, 1 - Math.pow(1 - a, 2.4)) : lerp(Z_CAM1, TUN_END + 6, 1 - Math.pow(1 - b, 2.4));
+      const shake = Math.pow(b, 3) * 0.12;
+      camera.position.set(pointer.sx * 1.2 + Math.sin(t * 31) * shake, -pointer.sy * 0.8 + Math.cos(t * 27) * shake, z);
       camera.lookAt(0, 0, z - 10);
       camera.rotateZ((p < 0.42 ? 0 : b * 1.6) + Math.sin(t * 0.3) * 0.02);
       flipRoll = 0;
@@ -601,16 +638,20 @@ function portal(THREE, ST, MB) {
     camera.updateMatrixWorld();
 
     // what is on
-    portalG.visible = !after && camera.position.z > -2;
+    // the portal fades as we pass through it, the tunnel fades in under it: no hard cut
+    const cross = clamp((camera.position.z + 1.5) / 7);
+    portalG.visible = !after && cross > 0;
+    ringU.uFade.value = inU.uFade.value = cross; haloU.value = 0.9 * cross; dust.material.opacity = 0.5 * cross;
     memU.uRip.value = Math.exp(-Math.pow((camera.position.z - 0.5) / 2.0, 2)) * 1.2;
-    memU.uOn.value = clamp((camera.position.z - 0.2) / 3);
+    memU.uOn.value = clamp((camera.position.z - 0.2) / 3) * cross;
     ringU.uGlow.value = 0.8 + 0.4 * a;
     portalG.children.forEach((c) => { if (c.userData.k !== undefined) c.rotation.z += 0.0025 * (c.userData.k % 2 ? -1 : 1) * (1 + c.userData.k); });
     tunnel.visible = !after;
-    tU.uOn.value = clamp((2 - camera.position.z) / 4);
+    tU.uOn.value = clamp((5 - camera.position.z) / 8);
     tunnel.children.forEach((c) => { if (c.userData.spin) c.rotation.z += c.userData.spin * 0.016 * (1 + Math.abs(vel) * 20); });
     coreU.uS.value = clamp((p - 0.5) / 0.2) * 1.4;
     room.visible = after; gU.uB.value = brk;
+    seaU.uTime.value = t; seaU.uFlow.value = t * 3 + glide * 90;
     scene.fog.density = after ? 0.004 : 0.012;
     renderer.setClearColor(after ? 0x1a0a08 : 0x050403, 1);
 
@@ -638,54 +679,65 @@ function portal(THREE, ST, MB) {
     }
     fig.position.copy(pos); fig.scale.setScalar(scale);
     fig.quaternion.copy(camera.quaternion);
-    fig.visible = !!MB && p > 0.01 && p < 0.985 && !(p > 0.715 && p < 0.745);
+    // from 0.93 the 2D figure (arrival) carries him on, at the same place and size, into the contact section
+    fig.visible = !!MB && p > 0.01 && p < 0.93 && !(p > 0.715 && p < 0.745);
     if (fig.visible) {
       fx2.clearRect(0, 0, 512, 512);
       // a soft dark halo, so he reads against the bright light of the corridor as well as against dark space
       fx2.shadowColor = 'rgba(16, 9, 4, 0.85)'; fx2.shadowBlur = after ? 14 : 6;
       drawFig(MB, fx2, pose, 256, 280, 175, t, '#FFEDD7');
       fx2.shadowBlur = 0; figTex.needsUpdate = true;
+      // where he is on screen, and how big
+      const pr = fig.position.clone().project(camera), d = camera.position.distanceTo(fig.position), hpx = canvas.clientHeight;
+      const kpx = (175 * 3 / 512) * fig.scale.x * hpx / (2 * Math.tan(camera.fov * Math.PI / 360) * d);
+      HAND.x = (pr.x * 0.5 + 0.5) * canvas.clientWidth; HAND.y = (-pr.y * 0.5 + 0.5) * hpx + kpx * (24 / 175); HAND.k = kpx;
     }
 
-    canvas.style.opacity = (1 - smooth(clamp((p - 0.965) / 0.035))).toFixed(3);
   });
   sec.classList.add('has-gl');
 }
 
-/* ---------------- contact: he arrives ---------------- */
-// When the contact section comes into view: 4 seconds of falling in from above, tumbling; 3 seconds turning to
-// face us and coming toward us; then he floats there and waves. Orange, behind the headline. Replays each visit.
-function ctaFigure(MB) {
-  const sec = document.querySelector('.cta'), cv = sec && sec.querySelector('.cta-fig');
-  if (!cv || !MB) return;
-  const g = cv.getContext('2d');
-  let w = 0, h = 0, dpr = 1, start = -1, on = false;
-  const size = () => { dpr = Math.min(devicePixelRatio || 1, 2); w = cv.clientWidth; h = cv.clientHeight; cv.width = w * dpr; cv.height = h * dpr; };
-  size(); new ResizeObserver(size).observe(cv);
-  const frame = (T) => {
-    if (start < 0) start = T;
-    const t = T - start, m = Math.min(w, h);
-    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    const u = clamp(t / 4), rotA = T * 0.9 + u * 4;
-    const xA = w * (0.5 + 0.16 * Math.sin(u * 3.2)), yA = lerp(-0.12 * h, 0.4 * h, 1 - Math.pow(1 - u, 1.6)), kA = m * lerp(0.08, 0.13, u);
-    let pose, x, y, k;
-    if (t < 4) { pose = fallPose(T, rotA); x = xA; y = yA; k = kA; }
-    else if (t < 7) {
-      const v = smooth((t - 4) / 3);
-      const A = fallPose(T, wrapAngle(rotA) * (1 - v)), B = standPose(T, v);
-      pose = mixPose(A, B, v); x = lerp(xA, w * 0.5, v); y = lerp(0.4 * h, 0.6 * h, v); k = lerp(kA, m * 0.3, v * v);
-    } else { pose = standPose(T, 1); x = w * 0.5; y = 0.6 * h + Math.sin(T * 1.5) * 6; k = m * 0.3; }
-    g.globalAlpha = 0.95;
-    drawFig(MB, g, pose, x, y, k, T, '#DC5000');
-    g.globalAlpha = 1;
-  };
-  new IntersectionObserver(([e]) => {
-    if (e.isIntersecting) { if (!on) { on = true; onClock(frame, true); } }
-    else {
-      if (on) { on = false; onClock(frame, false); }
-      if (e.boundingClientRect.top > 0) start = -1;   // scrolled back up above it: play the arrival again next time
+/* ---------------- arrival: through the glass and into the contact section ---------------- */
+// From the moment the glass breaks, a 2D figure takes over from the 3D one at exactly its place and size, on a
+// layer fixed over the page. As you keep scrolling he comes to rest in the middle, never smaller, and turns from
+// cream to orange as the contact section rises under him. Once the section is in place (it is pinned), he moves
+// onto its own canvas, behind its words, floating and waving, and leaves with it when it scrolls away.
+const mixHex = (a, b, u) => { const pa = [1, 3, 5].map((i) => parseInt(a.substr(i, 2), 16)), pb = [1, 3, 5].map((i) => parseInt(b.substr(i, 2), 16)); return 'rgb(' + pa.map((v, i) => Math.round(v + (pb[i] - v) * u)).join(',') + ')'; };
+function arrival(MB, ST) {
+  const pst = ST.getById('portal'), cta = document.querySelector('.cta'), ccv = cta && cta.querySelector('.cta-fig'), portalEl = document.querySelector('.portal');
+  if (!MB || !pst || !cta || !ccv) return;
+  const ov = document.createElement('canvas'); ov.className = 'hand-fig'; ov.setAttribute('aria-hidden', 'true'); document.body.appendChild(ov);
+  const og = ov.getContext('2d'), cg = ccv.getContext('2d');
+  let dpr = 1, w = 0, h = 0, cw = 0, ch = 0;
+  const size = () => { dpr = Math.min(devicePixelRatio || 1, 2); w = innerWidth; h = innerHeight; ov.width = w * dpr; ov.height = h * dpr; cw = ccv.clientWidth; ch = ccv.clientHeight; ccv.width = cw * dpr; ccv.height = ch * dpr; };
+  size(); addEventListener('resize', size);
+  let from = null;
+  const frame = (t) => {
+    og.setTransform(dpr, 0, 0, dpr, 0, 0); og.clearRect(0, 0, w, h);
+    cg.setTransform(dpr, 0, 0, dpr, 0, 0); cg.clearRect(0, 0, cw, ch);
+    const p = pst.progress, r = cta.getBoundingClientRect();
+    const rise = clamp(1 - r.top / h);                       // the contact section coming up under him, 0 to 1
+    if (p < 0.93 && rise <= 0) { from = null; return; }
+    const K = Math.max(HAND.k || 0, 0.42 * Math.min(w, h));  // never smaller than he was
+    if (!from) from = p < 0.995 && HAND.k ? { x: HAND.x, y: HAND.y, k: HAND.k } : { x: w * 0.5, y: h * 0.6, k: K };
+    const u = smooth(clamp((p - 0.93) / 0.07));
+    const x = lerp(from.x, w * 0.5, u), y = lerp(from.y, h * 0.6, u), k = Math.max(from.k, lerp(from.k, K, u));
+    const pose = mixPose(glidePose(t), standPose(t, 1), smooth(rise));
+    if (rise < 1) {
+      og.shadowColor = 'rgba(16, 9, 4, 0.8)'; og.shadowBlur = 14;
+      drawFig(MB, og, pose, x, y, k, t, mixHex('#FFEDD7', '#DC5000', smooth(rise)));
+      og.shadowBlur = 0;
+    } else {
+      drawFig(MB, cg, pose, cw * 0.5, ch * 0.6 + Math.sin(t * 1.5) * 6, K, t, '#DC5000');   // behind the words, moving with the section
     }
-  }, { threshold: 0.25 }).observe(cv);
+  };
+  let on = false, vis = new Set();
+  const io = new IntersectionObserver((es) => {
+    es.forEach((e) => (e.isIntersecting ? vis.add(e.target) : vis.delete(e.target)));
+    const want = vis.size > 0;
+    if (want !== on) { on = want; onClock(frame, on); if (!on) { og.clearRect(0, 0, ov.width, ov.height); } }
+  });
+  io.observe(portalEl); io.observe(cta);
 }
 
 export async function start({ gsap, ST }) {
@@ -698,5 +750,5 @@ export async function start({ gsap, ST }) {
   for (const make of [reel, loops, portal]) {
     try { make(THREE, ST, MB); } catch (err) { console.warn('[scene]', make.name, err); }
   }
-  try { ctaFigure(MB); } catch (err) { console.warn('[scene] contact', err); }
+  try { arrival(MB, ST); } catch (err) { console.warn('[scene] arrival', err); }
 }

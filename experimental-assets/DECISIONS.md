@@ -2,6 +2,18 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-10: sixth pass, the hand-over and the sea of lines
+
+Abhishek's notes: after the glass, don't fade to black; keep him visible and at full size, and carry him into the contact section by scroll; pin the contact section for 120vh so a fast scroll can't skip it; replace the corridor and drop its text; blend the tunnel better and make the scroll heavy near the end of the wormhole; smooth the way into the portal.
+
+- **The way in:** the stone portal fades as the camera passes it (its ring, halo, dust and membrane together), with a soft veil of light at the crossing; the tunnel fades in under it.
+- **The tunnel:** strokes are sampled round the circle (no seam where the angle wraps), thin where the brush lifts rather than stopping, and added together like light.
+- **Heavier near the core:** the camera slows toward the core (ease-out), a slight tremor grows, and ScrollSmoother's smoothing deepens from 1.8 to 4.4 seconds, so the page lags behind the wheel as if pulled back; it eases after the flip.
+- **After the flip:** a warm sky with a low sun over a sea of ridge lines rolling toward us, a clear way down the middle. The corridor and its line are gone.
+- **The hand-over:** from the moment the glass breaks, a 2D figure on a layer fixed over the page takes over from the 3D one at its exact place and size, comes to rest in the middle (never smaller), and turns from cream to orange as the contact section rises under him; once the section is pinned he moves onto its canvas, behind its words, floating and waving, and leaves with it.
+- **Contact** is pinned for 120% of the screen.
+- **Speed:** desktop 100/100/100/100; mobile 93 to 98 across three runs.
+
 ## 2026-11-10: fifth pass, igloo's portal, the flip and the glide
 
 Abhishek's notes: the walker got lost before Process and should be dragged into the wormhole; the wormhole should look like igloo.inc's portal, properly 3D; the scroll felt jittery; at the wormhole's end, flip and flash, then he glides toward us as we scroll, breaks the glass and jumps into the contact section; a smaller contact title; one button size; team below contact; a next-page section like Lusion's, leading to the About page (design to come).

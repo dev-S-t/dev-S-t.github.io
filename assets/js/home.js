@@ -192,16 +192,23 @@
     // Into space: a long fall. The words drift away, the human tumbles toward the wormhole and through it.
     // (scene.js draws the space, the wormhole and the human from this trigger's progress.)
     // Ten screens of scroll (at least 4,000px): the approach, the wormhole, the tunnel, a new place, the glass.
-    const portalTl = gsap.timeline({ scrollTrigger: { id: 'portal', trigger: '.portal', start: 'top top', end: () => '+=' + Math.max(4000, innerHeight * 10), pin: '.portal-stick', scrub: 1.8, invalidateOnRefresh: true } });
+    // Near the end of the tunnel the scroll gets heavy: the smoothing deepens, so the page lags further behind the
+    // wheel, as if the hole were pulling back. It eases off again after the flip.
+    const heavy = (p) => Math.max(0, Math.min(1, (p - 0.5) / 0.12)) * (1 - Math.max(0, Math.min(1, (p - 0.71) / 0.03)));
+    const portalTl = gsap.timeline({ scrollTrigger: { id: 'portal', trigger: '.portal', start: 'top top', end: () => '+=' + Math.max(4000, innerHeight * 10), pin: '.portal-stick', scrub: 1.8, invalidateOnRefresh: true,
+      onUpdate: (self) => { if (smoother) smoother.smooth(1.8 + 2.6 * heavy(self.progress)); } } });
     // Phases (scene.js): approach the portal 0-0.42, through it and the tunnel 0.42-0.70, flash and flip at 0.72,
     // he glides toward us 0.75-0.92, breaks the glass at 0.92, and jumps out toward the contact section.
     portalTl.to('.portal-intro', { autoAlpha: 0, y: -80, duration: 0.08, ease: 'power2.in' }, 0.05)
       .fromTo('.portal-mid', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.05 }, 0.52)
       .to('.portal-mid', { autoAlpha: 0, y: -30, duration: 0.05 }, 0.64)
-      .fromTo('.portal-end', { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.04 }, 0.77)
-      .to('.portal-end', { autoAlpha: 0, scale: 1.08, duration: 0.04 }, 0.85)
+
       .fromTo('.portal-meter b', { scaleX: 0 }, { scaleX: 1, ease: 'none', duration: 1 }, 0)
       .set({}, {}, 1);
+  });
+  later(() => {
+    // The contact section holds still for 120% of the screen, so a fast scroll can't skip past it.
+    ST.create({ id: 'cta', trigger: '.cta', start: 'top top', end: '+=120%', pin: true });
   });
 
   /* 4. Words, headings, drawings */
