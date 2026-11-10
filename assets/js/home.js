@@ -329,7 +329,7 @@
     // The reveal (after Fragment): each block fades in while a soft oval opens across it from the left, in small
     // staggered batches as they reach the bottom of the screen. Only blocks with no entrance of their own; never the
     // hero (already on screen) or the pinned 3D stages. The mask comes off once it is done.
-    const shown = gsap.utils.toArray('.idx, .statement-foot, .svc-col-name, .svc, .step, .tm-name, .tm-copy, .cta-center > *, .next-kicker, .foot-grid > *')
+    const shown = gsap.utils.toArray('.idx, .statement-foot, .svc-col-name, .svc, .step, .tm-name, .cta-center > *, .next-kicker, .foot-grid > *')
       .filter((el) => !el.closest('.hero, .reel, .loops, .portal, .work-stage'));
     shown.forEach((el) => el.classList.add('entry'));
     gsap.set(shown, { opacity: 0, '--reveal': '0%' });

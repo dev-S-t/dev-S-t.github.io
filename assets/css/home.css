@@ -319,33 +319,38 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------- 9. Team ---------- */
 .team { padding: 0; }
-.team-stick { min-height: 100svh; padding: var(--pad-y) var(--gutter); display: flex; flex-direction: column; justify-content: center; gap: var(--s8); }
+.team-stick { min-height: 100svh; padding: var(--pad-y) var(--gutter); display: flex; flex-direction: column; justify-content: center; }
 .tm-items { display: grid; gap: var(--s8); }
-.tm-name { display: block; width: fit-content; padding: var(--s1) 0; background: none; border: 0; color: inherit; font: inherit; letter-spacing: inherit; text-align: start; cursor: pointer; }
+.tm { display: grid; gap: var(--s3); }
+.tm-name { display: block; width: 100%; max-width: 400px; padding: var(--s1) 0; background: none; border: 0; color: inherit; font: inherit; letter-spacing: inherit; text-align: start; cursor: pointer; }
 .tm-word { display: block; font-family: var(--serif); font-weight: 250; font-size: var(--h3); line-height: var(--lh3); color: var(--ink); transition: color .5s, translate .6s var(--ease-out); }
 .tm-bar { display: none; }
-.tm-panel { display: grid; gap: var(--s3); margin-top: var(--s3); }
 .tm-media { margin: 0; aspect-ratio: 4 / 5; border-radius: 16px; }
+.tm-media .quip-pill { white-space: nowrap; }
 .tm-copy { display: flex; align-items: baseline; gap: var(--s3); }
 .tm-count { font-size: var(--label); line-height: 1; color: var(--muted); font-variant-numeric: tabular-nums; }
 .tm-role { margin: 0; font-size: var(--p-lg); line-height: var(--lh-p-lg); color: var(--brown); }
-/* Desktop with scripts: the section pins; names on the left, one picture at a time on the right.
-   Hierarchy by colour: the person you are on in ink, the other in muted brown (still AA on cream). */
+/* Desktop with scripts: the section pins and fits one screen. Left column: label, heading, the names (each on a
+   thin line that fills for the person you are on), and at its foot that person's number and role. Right column:
+   their picture, the full height. Hierarchy by colour: the active name in ink, the other in muted brown (AA). */
 @media (min-width: 900px) {
-  .js .tm-items { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); grid-template-rows: repeat(2, auto) 1fr; column-gap: var(--s12); row-gap: var(--s2); align-items: start; }
-  .js .tm { display: contents; }
-  .js .tm:nth-child(1) .tm-name { grid-row: 1; }
-  .js .tm:nth-child(2) .tm-name { grid-row: 2; }
-  .js .tm-name { grid-column: 1; }
+  .js .team-stick { display: grid; height: 100svh; padding: var(--s16) var(--gutter) var(--s8);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-rows: auto auto auto 1fr auto; column-gap: var(--s12); }
+  .js .team .sec-head { grid-column: 1; grid-row: 1; margin-bottom: var(--s8); }
+  .js .tm-items, .js .tm { display: contents; }
+  .js .tm-name { grid-column: 1; padding: var(--s2) 0 0; }
+  .js .tm:nth-child(1) .tm-name { grid-row: 2; }
+  .js .tm:nth-child(2) .tm-name { grid-row: 3; }
   .js .tm-word { color: var(--muted); }
   .js .tm-name:hover .tm-word { color: var(--brown); }
   .js .tm.is-on .tm-word { color: var(--ink); translate: var(--s1) 0; }
-  .js .tm-bar { display: block; position: relative; height: 1px; margin-top: var(--s1); background: rgba(56, 36, 22, .18); overflow: hidden; opacity: 0; transition: opacity .4s; }
-  .js .tm.is-on .tm-bar { opacity: 1; }
+  .js .tm-bar { display: block; position: relative; height: 1px; margin-top: var(--s2); background: rgba(56, 36, 22, .16); overflow: hidden; }
   .js .tm-bar i { position: absolute; inset: 0; background: var(--orange); transform-origin: left; transform: scaleX(0); }
-  .js .tm-panel { grid-column: 2; grid-row: 1 / -1; margin: 0; opacity: 0; visibility: hidden; transition: opacity .6s, visibility .6s; }
-  .js .tm.is-on .tm-panel { opacity: 1; visibility: visible; transition: opacity .6s, visibility 0s; }
-  .js .tm-media { aspect-ratio: auto; height: min(56svh, 544px); }
+  .js .tm-media, .js .tm-copy { opacity: 0; visibility: hidden; transition: opacity .6s, visibility .6s; }
+  .js .tm.is-on .tm-media, .js .tm.is-on .tm-copy { opacity: 1; visibility: visible; transition: opacity .6s, visibility 0s; }
+  .js .tm-media { grid-column: 2; grid-row: 1 / -1; aspect-ratio: auto; height: 100%; min-height: 0; }
+  .js .tm-copy { grid-column: 1; grid-row: 5; align-self: end; }
+  .js .tm-count { font-family: var(--serif); font-weight: 250; font-size: var(--h5); line-height: 1; color: var(--tone); }
 }
 
 /* The reveal (after Fragment): a soft oval opens from just off the left edge as the block fades in. */
