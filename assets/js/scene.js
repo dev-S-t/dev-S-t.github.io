@@ -763,7 +763,9 @@ function arrival(MB, ST) {
     // as the space section ends, then fall as the contact section rises, and land behind its words.
     // A runs 0 to 1 across four stretches of scroll: the crouch (scene 0.93-0.95), the leap (0.95-1), the contact
     // section rising (its top from the bottom of the screen to the top), and the first 30% of its pin.
-    const rise = clamp(1 - r.top / h), cst = ST.getById('cta'), q = cst ? cst.progress : 0;
+    // Once the contact section's pin has begun, the pin alone decides: while pinned, its top can sit a fraction of a
+    // pixel below the screen's top, which must not read as "still rising" (that snapped him back into the air).
+    const cst = ST.getById('cta'), q = cst ? cst.progress : 0, rise = q > 0 ? 1 : clamp(1 - r.top / h);
     if (ps < 0.93 && rise <= 0) { from = null; return; }
     if (!from) from = ps < 0.995 && HAND.k ? { x: HAND.x, y: HAND.y, k: HAND.k } : { x: w * 0.5, y: h * 0.66, k: K };
     let A;
