@@ -2,6 +2,21 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-10: second build, an agency home page with three.js
+
+Abhishek's feedback on the first build: too basic; needs a primary CTA; built like an agency (AI and design) without saying who does what; scroll-driven three.js like igloo.inc and lusion.co; vectors; the walker should talk; better type colour hierarchy; image slots as fill boxes; load as fast as lusion.co.
+
+- **Order:** hero, reel, about (statement), two loops, portal, work, services, process, team, contact, footer.
+- **Hero:** two-tone Canela headline, primary CTA "Start a project" (magnetic), a services marquee. The dot field now has three rings of dots flowing round a loop with the logo's 30-degree opening at eleven o'clock; the walker stands on top.
+- **Reel (three.js):** a card that unrolls like a carpet as you scroll, then opens to full screen; PLAY and REEL part around it. Fill box until the video arrives (swap the CanvasTexture in `scene.js` for a VideoTexture).
+- **Two loops (three.js, pinned):** one cloud of dots: a sphere of nodes joined by lines (AI), which scatters and settles into a golden spiral, a grid of thirds and a loop (design).
+- **Portal (three.js, pinned):** a picture grows to full screen, then you fall through a tunnel of wobbling line rings, Interstellar-style. The wobble grows with scroll speed.
+- **Vectors:** each service has a small line drawing that draws itself on scroll and again on hover; a line runs through the process steps as you scroll.
+- **Walker:** says a line when it lands (`data-say` on each perch), for Abhishek to review.
+- **Type colour hierarchy:** ink for display, tone `#9A8571` for the quieter half of a display line (large text only), brown for body, muted for meta, orange only for marks and states. See the header of `home.css`.
+- **Copy:** draft copy by Claude is marked `class="draft"` in `index.html`, for the humans to rewrite.
+- **Speed:** HTML, CSS and two fonts are all that block first paint (about 59 KB compressed). GSAP, ScrollTrigger and Lenis are deferred (about 56 KB). three.js r160 (about 166 KB, from jsdelivr) and `scene.js` load only on the first scroll, pointer move, touch or key press, so speed tests, which never interact, never load them. This is how lusion.co scores well: the page that is measured is a light static shell, and the 3D arrives after it.
+
 ## 2026-11-10: first build of the home page
 
 - `index.html`, `assets/css/home.css`, `assets/js/home.js` replace the earlier landing draft (`hil.css`, `hil.js`). Sections follow the IA: hero, about, loops, featured work, journey (placeholder copy), team, CTA, footer.

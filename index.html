@@ -79,6 +79,7 @@
 
   <link rel="preload" href="/assets/fonts/local/canela-thin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/outfit-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="/assets/css/home.css">
   <script src="/assets/js/vendor/gsap.min.js" defer></script>
   <script src="/assets/js/vendor/ScrollTrigger.min.js" defer></script>
@@ -93,242 +94,282 @@
   <a class="skip" href="#about">Skip to content</a>
 
   <!--
-    Hover lines (.quip) are small jokes written by Claude for Abhishek to review.
-    Text marked .ph is a placeholder until the humans write it.
+    Copy marked class="draft" is a first draft by Claude, for the humans to rewrite.
+    Hover lines (.quip) and the walker's lines (data-say) are Claude's, for Abhishek to review.
+    Boxes marked .fill are image or video slots; data-keyword says what goes there.
   -->
 
   <header class="nav">
     <a class="brand quipped" href="#top" aria-label="human in loop, back to the top">
       <span class="brand-mark" aria-hidden="true"></span>
       <span class="brand-word" aria-hidden="true">human in loop</span>
-      <span class="quip quip-below" aria-hidden="true">Hand-drawn. Obviously.</span>
+      <span class="quip" aria-hidden="true">Drawn by a human. Wobbles included.</span>
     </a>
     <nav aria-label="Sections">
       <ul class="nav-links">
-        <li><a class="roll" href="#about"><span class="roll-in"><span>About</span><span aria-hidden="true">About</span></span></a></li>
-        <li><a class="roll" href="#loops"><span class="roll-in"><span>Loops</span><span aria-hidden="true">Loops</span></span></a></li>
         <li><a class="roll" href="#work"><span class="roll-in"><span>Work</span><span aria-hidden="true">Work</span></span></a></li>
-        <li><a class="roll" href="#journey"><span class="roll-in"><span>Journey</span><span aria-hidden="true">Journey</span></span></a></li>
-        <li><a class="roll" href="#team"><span class="roll-in"><span>Team</span><span aria-hidden="true">Team</span></span></a></li>
+        <li><a class="roll" href="#services"><span class="roll-in"><span>Services</span><span aria-hidden="true">Services</span></span></a></li>
+        <li><a class="roll" href="#process"><span class="roll-in"><span>Process</span><span aria-hidden="true">Process</span></span></a></li>
+        <li><a class="roll" href="#about"><span class="roll-in"><span>About</span><span aria-hidden="true">About</span></span></a></li>
       </ul>
     </nav>
     <a class="btn btn-ink roll quipped" href="/contact/">
-      <span class="roll-in"><span>Let’s talk</span><span aria-hidden="true">Let’s talk</span></span>
-      <span class="quip quip-below" aria-hidden="true">We actually reply. Humans, remember?</span>
+      <span class="roll-in"><span>Start a project</span><span aria-hidden="true">Start a project</span></span>
+      <span class="quip quip-end" aria-hidden="true">A real human reads this. Probably today.</span>
     </a>
   </header>
 
   <main>
-    <!-- 1. Hero: a field of dots; move through it and the dots stretch into lines -->
+    <!-- 1. Hero -->
     <section class="hero" id="top" data-theme="light">
       <canvas class="field" aria-hidden="true"></canvas>
       <div class="hero-inner">
-        <h1 class="hero-title split">People who work in a field, writing about what changes in&nbsp;it.</h1>
-        <div class="hero-foot">
-          <p class="hero-sub">Every loop here is one field and one person: their updates, their views and the work they have done.</p>
-          <a class="link-line quipped" href="/ai/">Start with the AI loop<span class="quip quip-below" aria-hidden="true">Warning: contains opinions about LLMs.</span></a>
+        <p class="kicker"><span class="kicker-dot" aria-hidden="true"></span><span class="draft">AI and design studio</span></p>
+        <h1 class="hero-title draft">
+          <span class="ln">We design products</span>
+          <span class="ln tone">and build the AI</span>
+          <span class="ln">inside them.</span>
+        </h1>
+        <div class="hero-row">
+          <p class="hero-sub draft">A small studio with a human in the loop at every step, from the first sketch to the last deploy.</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary btn-lg magnetic quipped" href="/contact/">
+              <span class="btn-label">Start a project</span><span class="btn-arrow" aria-hidden="true"></span>
+              <span class="quip" aria-hidden="true">Say hi. We say hi back.</span>
+            </a>
+            <a class="link-line quipped" href="#work">See the work<span class="quip" aria-hidden="true">Contains strong feelings about prompts.</span></a>
+          </div>
         </div>
       </div>
-      <span class="perch perch-hero" data-perch="hero" data-scale="1.6"></span>
-      <p class="hero-scroll" aria-hidden="true"><span class="hero-scroll-dot"></span>Scroll <span class="hero-scroll-quip">He’s already walking.</span></p>
-    </section>
-
-    <!-- 2. About us -->
-    <section class="about" id="about" data-theme="light">
-      <div class="about-grid">
-        <h2 class="about-title split">Why this exists</h2>
-        <p class="about-lede rv">News about fast-moving fields mostly reaches us through feeds and summaries. We would rather hear it from someone who does the work: what actually changed, whether it matters, and what they built with it.</p>
-        <p class="about-body rv">So each loop is kept by one person who works in that field. They post short updates and longer notes, and their projects and case studies sit next to what they write.</p>
-        <span class="perch perch-about" data-perch="about" data-scale="0.9"></span>
+      <span class="perch perch-hero" data-perch data-scale="1.15" data-say="Hi. I'm the human in the loop."></span>
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+          <span>Voice agents</span><span>Retrieval</span><span>Automation</span><span>Product design</span><span>UI and UX</span><span>Design systems</span><span>Brand</span>
+          <span>Voice agents</span><span>Retrieval</span><span>Automation</span><span>Product design</span><span>UI and UX</span><span>Design systems</span><span>Brand</span>
+        </div>
       </div>
     </section>
 
-    <!-- 3. The loops: each one a field, drawn as a ring of dots that stretch into lines on hover -->
-    <section class="loops" id="loops" data-theme="dark">
-      <div class="loops-head">
-        <h2 class="split">The loops</h2>
-        <p class="loops-note rv">One field, one human. Two loops are open; more are on the way.</p>
+    <!-- 2. The reel: a card that unrolls like a carpet and opens to full screen -->
+    <section class="reel" id="reel" data-theme="light" aria-label="Showreel">
+      <div class="reel-stick">
+        <div class="reel-card fill" data-keyword="showreel video"><span class="reel-play" aria-hidden="true"></span></div>
+        <canvas class="reel-canvas" aria-hidden="true"></canvas>
+        <p class="reel-label" aria-hidden="true"><span>Play</span><span>reel</span></p>
       </div>
-      <ul class="loop-list">
-        <li class="loop loop-ai">
-          <a class="loop-link quipped" href="/ai/">
-            <svg class="loop-ring" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="92"/><circle class="loop-ring-in" cx="100" cy="100" r="78"/></svg>
-            <span class="loop-text">
-              <span class="loop-name">AI</span>
-              <span class="loop-keeper">kept by Sahil Tomar</span>
-              <span class="loop-desc">Voice AI, retrieval and agents in production: case studies, projects and notes.</span>
-            </span>
-            <span class="quip quip-below" aria-hidden="true">Mostly talks to machines. Nice to humans too.</span>
-          </a>
-          <span class="perch perch-loop" data-perch="loops" data-scale="1.1"></span>
-        </li>
-        <li class="loop loop-design">
-          <div class="loop-link quipped" tabindex="0">
-            <svg class="loop-ring" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="92"/><circle class="loop-ring-in" cx="100" cy="100" r="78"/></svg>
-            <span class="loop-text">
-              <span class="loop-name">Design</span>
-              <span class="loop-keeper">kept by Abhishek</span>
-              <span class="loop-desc">UI and UX. Opening soon.</span>
-            </span>
-            <span class="quip quip-below" aria-hidden="true">Has noticed your 2px misalignment.</span>
-          </div>
-        </li>
-        <li class="loop loop-next">
-          <div class="loop-link quipped" tabindex="0">
-            <svg class="loop-ring" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="92"/></svg>
-            <span class="loop-text">
-              <span class="loop-name">Cyber</span>
-              <span class="loop-keeper">Later</span>
-            </span>
-            <span class="quip quip-below" aria-hidden="true">Locked. Obviously.</span>
-          </div>
-        </li>
-        <li class="loop loop-next">
-          <div class="loop-link quipped" tabindex="0">
-            <svg class="loop-ring" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="92"/></svg>
-            <span class="loop-text">
-              <span class="loop-name">Abyss-Admin</span>
-              <span class="loop-keeper">Later</span>
-            </span>
-            <span class="quip quip-below" aria-hidden="true">It’s staring back. Give it a minute.</span>
-          </div>
-        </li>
-      </ul>
     </section>
 
-    <!-- 4. Featured work -->
+    <!-- 3. About: a statement that inks in word by word -->
+    <section class="statement" id="about" data-theme="light">
+      <p class="idx"><span>01</span> About</p>
+      <p class="statement-text words draft">We are a small studio of humans who design with care and build with AI. Every project has a person in the loop, watching what changes and deciding what matters.</p>
+      <div class="statement-foot">
+        <p class="draft">Two disciplines, one table. Design shapes what people see and touch; AI does the heavy lifting underneath. We keep both in the same room from day one.</p>
+        <a class="link-line quipped" href="/contact/">Talk to us<span class="quip" aria-hidden="true">We actually reply. Humans, remember?</span></a>
+      </div>
+      <span class="perch perch-statement" data-perch data-scale="1" data-say="I read every line. Twice."></span>
+    </section>
+
+    <!-- 4. Two loops: one cloud of dots that is the AI, then becomes the design -->
+    <section class="loops" id="loops" data-theme="dark" aria-labelledby="loops-title">
+      <div class="loops-stick">
+        <canvas class="loops-canvas" aria-hidden="true"></canvas>
+        <svg class="loops-fallback" viewBox="0 0 400 400" aria-hidden="true"><circle cx="200" cy="200" r="170"/><circle cx="200" cy="200" r="130"/><circle cx="200" cy="200" r="90"/></svg>
+        <div class="loops-head">
+          <p class="idx"><span>02</span> Two loops</p>
+          <h2 id="loops-title" class="draft">One studio, two&nbsp;loops.</h2>
+        </div>
+        <article class="panel panel-ai">
+          <p class="panel-no">Loop 01</p>
+          <h3>AI</h3>
+          <p class="draft">Voice agents, retrieval and automation that run in production, not just in a demo.</p>
+          <ul class="tags"><li>Voice agents</li><li>RAG</li><li>Agents</li><li>Automation</li></ul>
+          <a class="link-line link-cream quipped" href="/ai/">Inside the AI loop<span class="quip" aria-hidden="true">Speaks fluent API. Small talk in progress.</span></a>
+        </article>
+        <article class="panel panel-design">
+          <p class="panel-no">Loop 02</p>
+          <h3>Design</h3>
+          <p class="draft">Products, interfaces and systems that people understand at first glance and enjoy at the hundredth.</p>
+          <ul class="tags"><li>Product</li><li>UI and UX</li><li>Systems</li><li>Brand</li></ul>
+          <span class="link-line link-cream link-off quipped" tabindex="0">Opening soon<span class="quip" aria-hidden="true">Already judged your font pairing. Kindly.</span></span>
+        </article>
+        <div class="loops-meter" aria-hidden="true"><span>AI</span><i><b></b></i><span>Design</span></div>
+      </div>
+    </section>
+
+    <!-- 5. The portal: a picture opens to full screen and you fall into a tunnel of lines -->
+    <section class="portal" id="portal" data-theme="dark" aria-labelledby="portal-title">
+      <div class="portal-stick">
+        <h2 id="portal-title" class="portal-title draft"><span class="ln">Step inside</span> <span class="ln tone">the loop</span></h2>
+        <div class="portal-grid">
+          <div class="portal-card fill" data-keyword="close-up of a hand sketching, warm light"></div>
+          <div class="portal-copy">
+            <p class="draft">We do not chase trends. We sit with a problem until it is clear, then draw it, build it and keep watching it after launch.</p>
+            <p class="draft">That is the loop: look closely, make carefully, look again.</p>
+          </div>
+        </div>
+        <svg class="portal-fallback" viewBox="-100 -100 200 200" aria-hidden="true"><circle r="96"/><circle r="72"/><circle r="52"/><circle r="36"/><circle r="24"/><circle r="15"/><circle r="9"/></svg>
+        <canvas class="portal-canvas" aria-hidden="true"></canvas>
+        <p class="portal-end draft" aria-hidden="true">Every line here was drawn by a human.</p>
+      </div>
+    </section>
+
+    <!-- 6. Work -->
     <section class="work" id="work" data-theme="light">
-      <div class="work-head">
-        <h2 class="split">Featured work</h2>
-        <p class="rv">From the AI loop.</p>
+      <div class="sec-head">
+        <p class="idx"><span>03</span> Work</p>
+        <h2 class="split">Selected work</h2>
+        <a class="link-line quipped" href="/projects/">All projects<span class="quip" aria-hidden="true">There's more. There's always more.</span></a>
       </div>
       <ul class="work-list">
-        <li class="card rv">
+        <li class="card">
           <a class="card-link quipped" href="/projects/voag/">
-            <span class="card-media ph-img" data-keyword="voice AI call centre, phone waveform"><span class="card-dots" aria-hidden="true"></span></span>
-            <span class="card-meta">AI loop · project</span>
+            <span class="card-media fill" data-keyword="voice AI call centre, phone waveform"><span class="card-dots" aria-hidden="true"></span></span>
+            <span class="card-row"><span class="card-cat">AI</span><span class="card-year">Voice</span></span>
             <span class="card-title">VOAG — Enterprise Voice AI SaaS</span>
             <span class="card-desc">1,000+ daily calls in Mr. LADs app, sub-300ms p95 latency, DigitalOcean &amp; UAE LAN SIP modem architecture.</span>
-            <span class="quip quip-on" aria-hidden="true">Picks up the phone so you don’t have to.</span>
+            <span class="quip quip-pill" aria-hidden="true">Answers calls. Never puts you on hold.</span>
           </a>
-          <span class="perch perch-card" data-perch="work" data-scale="0.8"></span>
+          <span class="perch perch-card" data-perch data-scale="0.8" data-say="I helped. Mostly emotionally."></span>
         </li>
-        <li class="card rv">
+        <li class="card">
           <a class="card-link quipped" href="/projects/hireups/">
-            <span class="card-media ph-img" data-keyword="video interview, avatar on a laptop screen"><span class="card-dots" aria-hidden="true"></span></span>
-            <span class="card-meta">AI loop · project</span>
+            <span class="card-media fill" data-keyword="video interview, avatar on a laptop screen"><span class="card-dots" aria-hidden="true"></span></span>
+            <span class="card-row"><span class="card-cat">AI</span><span class="card-year">Realtime</span></span>
             <span class="card-title">Hireups — Real-Time AI Interviewer with Photorealistic Avatar</span>
             <span class="card-desc">Photorealistic video avatar interviewer built on Gemini Realtime and self-hosted LiveKit on GCP.</span>
-            <span class="quip quip-on" aria-hidden="true">Never late. Never nervous. Slightly unsettling.</span>
+            <span class="quip quip-pill" aria-hidden="true">Never late. Never nervous. Always on camera.</span>
           </a>
         </li>
-        <li class="card rv">
+        <li class="card">
+          <div class="card-link quipped" tabindex="0">
+            <span class="card-media fill" data-keyword="design case study: product screens"><span class="card-dots" aria-hidden="true"></span></span>
+            <span class="card-row"><span class="card-cat">Design</span><span class="card-year">Soon</span></span>
+            <span class="card-title draft">Design case study</span>
+            <span class="card-desc draft">The first design case study goes here.</span>
+            <span class="quip quip-pill" aria-hidden="true">Version 7. Final. Really final.</span>
+          </div>
+        </li>
+        <li class="card">
           <a class="card-link quipped" href="/projects/privacy-rag/">
-            <span class="card-media ph-img" data-keyword="server room, locked documents, on-premise"><span class="card-dots" aria-hidden="true"></span></span>
-            <span class="card-meta">AI loop · project</span>
+            <span class="card-media fill" data-keyword="server room, locked documents, on-premise"><span class="card-dots" aria-hidden="true"></span></span>
+            <span class="card-row"><span class="card-cat">AI</span><span class="card-year">Retrieval</span></span>
             <span class="card-title">Privacy-First On-Prem RAG (A2A Protocol)</span>
             <span class="card-desc">Inverted RAG topology for legal/compliance clients over Agent-to-Agent (A2A) protocol with hybrid vector + keyword search.</span>
-            <span class="quip quip-on" aria-hidden="true">What happens on-prem stays on-prem.</span>
+            <span class="quip quip-pill" aria-hidden="true">Your data never left the building.</span>
           </a>
         </li>
       </ul>
-      <p class="work-all"><a class="link-line quipped" href="/projects/">All projects in the AI loop<span class="quip quip-below" aria-hidden="true">Yes, there’s more. We couldn’t stop.</span></a></p>
     </section>
 
-    <!-- 5. Services, creative ideas, journey: placeholders until the humans write them -->
-    <section class="journey" id="journey" data-theme="light">
-      <h2 class="split"><span class="ph">What we do</span></h2>
-      <div class="journey-track">
-        <svg class="journey-line" viewBox="0 0 1000 20" preserveAspectRatio="none" aria-hidden="true"><path d="M0 10H1000"/></svg>
-        <ol class="journey-steps">
-          <li class="step rv quipped" tabindex="0">
-            <span class="step-dot" aria-hidden="true"></span>
-            <h3 class="ph">Service one</h3>
-            <p class="ph">A line or two about it, in your words.</p>
-            <span class="quip quip-below" aria-hidden="true">Step one: coffee. This is step two.</span>
-          </li>
-          <li class="step rv quipped" tabindex="0">
-            <span class="step-dot" aria-hidden="true"></span>
-            <h3 class="ph">Service two</h3>
-            <p class="ph">A line or two about it, in your words.</p>
-            <span class="quip quip-below" aria-hidden="true">The part where the sticky notes multiply.</span>
-          </li>
-          <li class="step rv quipped" tabindex="0">
-            <span class="step-dot" aria-hidden="true"></span>
-            <h3 class="ph">Service three</h3>
-            <p class="ph">A line or two about it, in your words.</p>
-            <span class="quip quip-below" aria-hidden="true">Shipped. Then fixed one more thing.</span>
-          </li>
+    <!-- 7. Services: each one a small line drawing that draws itself -->
+    <section class="services" id="services" data-theme="light">
+      <div class="sec-head">
+        <p class="idx"><span>04</span> Services</p>
+        <h2 class="split draft">What we make</h2>
+      </div>
+      <div class="svc-cols">
+        <div class="svc-col">
+          <p class="svc-col-name">AI</p>
+          <ul class="svc-list">
+            <li class="svc quipped" tabindex="0"><svg class="draw" viewBox="0 0 48 48" aria-hidden="true"><path pathLength="1" d="M3 24h5l3-8 4 16 4-22 4 28 4-20 4 12 3-6h11"/></svg><div><h3 class="draft">Voice agents</h3><p class="draft">Agents that pick up the phone, understand and act.</p></div><span class="quip" aria-hidden="true">Polite on the thousandth call too.</span></li>
+            <li class="svc quipped" tabindex="0"><svg class="draw" viewBox="0 0 48 48" aria-hidden="true"><circle pathLength="1" cx="20" cy="20" r="12"/><path pathLength="1" d="M29 29l13 13M14 16h12M14 20h12M14 24h7"/></svg><div><h3 class="draft">Retrieval</h3><p class="draft">Search and answers over your own documents, private by default.</p></div><span class="quip" aria-hidden="true">Finds the PDF you swore you saved.</span></li>
+            <li class="svc quipped" tabindex="0"><svg class="draw" viewBox="0 0 48 48" aria-hidden="true"><path pathLength="1" d="M9 24a15 15 0 0 1 26-10M39 24a15 15 0 0 1-26 10M35 7v7h-7M13 41v-7h7"/></svg><div><h3 class="draft">Automation</h3><p class="draft">The repetitive work, handed to software that does not get bored.</p></div><span class="quip" aria-hidden="true">Does the boring bit. Never complains.</span></li>
+          </ul>
+        </div>
+        <div class="svc-col">
+          <p class="svc-col-name">Design</p>
+          <ul class="svc-list">
+            <li class="svc quipped" tabindex="0"><svg class="draw" viewBox="0 0 48 48" aria-hidden="true"><path pathLength="1" d="M24 5l12 17-12 21-12-21zM24 5v19"/><circle pathLength="1" cx="24" cy="27" r="2.6"/></svg><div><h3 class="draft">Product design</h3><p class="draft">From a rough idea to something people want to use.</p></div><span class="quip" aria-hidden="true">Asks "why" five times. Lovingly.</span></li>
+            <li class="svc quipped" tabindex="0"><svg class="draw" viewBox="0 0 48 48" aria-hidden="true"><rect pathLength="1" x="5" y="9" width="38" height="30" rx="3"/><path pathLength="1" d="M5 16h38M11 23h12M11 29h18M31 23h6v10h-6z"/></svg><div><h3 class="draft">UI and UX</h3><p class="draft">Interfaces that are clear at first glance and still pleasant later.</p></div><span class="quip" aria-hidden="true">Has noticed your 2px misalignment.</span></li>
+            <li class="svc quipped" tabindex="0"><svg class="draw" viewBox="0 0 48 48" aria-hidden="true"><rect pathLength="1" x="7" y="7" width="14" height="14" rx="1"/><circle pathLength="1" cx="34" cy="14" r="7"/><rect pathLength="1" x="7" y="27" width="14" height="14" rx="7"/><path pathLength="1" d="M34 27l7 14H27z"/></svg><div><h3 class="draft">Design systems</h3><p class="draft">Components and rules so the next screen designs itself, nearly.</p></div><span class="quip" aria-hidden="true">One button. Fourteen states.</span></li>
+          </ul>
+        </div>
+      </div>
+      <span class="perch perch-svc" data-perch data-scale="0.9" data-say="Pick one. Or two. I won't tell."></span>
+    </section>
+
+    <!-- 8. Process: one line runs through the steps -->
+    <section class="process" id="process" data-theme="light">
+      <div class="sec-head">
+        <p class="idx"><span>05</span> Process</p>
+        <h2 class="split draft">How it goes</h2>
+      </div>
+      <div class="proc">
+        <svg class="proc-line" viewBox="0 0 1200 160" preserveAspectRatio="none" aria-hidden="true"><path d="M0 80 C 150 0, 250 160, 400 80 S 650 0, 800 80 S 1050 160, 1200 80"/></svg>
+        <ol class="proc-steps">
+          <li class="step quipped" tabindex="0"><span class="step-no">01</span><h3 class="draft">Listen</h3><p class="draft">We start with your problem, not our tools.</p><span class="quip" aria-hidden="true">Mostly nodding. Some note-taking.</span></li>
+          <li class="step quipped" tabindex="0"><span class="step-no">02</span><h3 class="draft">Sketch</h3><p class="draft">Rough lines first, so ideas stay cheap to change.</p><span class="quip" aria-hidden="true">Where the whiteboard gets messy.</span></li>
+          <li class="step quipped" tabindex="0"><span class="step-no">03</span><h3 class="draft">Build</h3><p class="draft">Design and AI built side by side, shipped in small pieces.</p><span class="quip" aria-hidden="true">Shipped. Celebrated. Fixed one more thing.</span></li>
+          <li class="step quipped" tabindex="0"><span class="step-no">04</span><h3 class="draft">Stay in the loop</h3><p class="draft">We keep watching after launch and tune what needs tuning.</p><span class="quip" aria-hidden="true">We don't ghost. It's in the name.</span></li>
         </ol>
-        <span class="perch perch-journey" data-perch="journey" data-scale="0.9"></span>
       </div>
     </section>
 
-    <!-- 6. Team -->
+    <!-- 9. The humans -->
     <section class="team" id="team" data-theme="light">
-      <h2 class="split">The people</h2>
+      <div class="sec-head">
+        <p class="idx"><span>06</span> Team</p>
+        <h2 class="split">The humans</h2>
+      </div>
       <ul class="team-list">
-        <li class="person rv">
-          <a class="person-link quipped" href="/ai/">
-            <span class="person-photo ph-img" data-keyword="portrait of Sahil"></span>
-            <span class="person-name">Sahil Tomar</span>
-            <span class="person-role">Keeps the AI loop. AI solution architect.</span>
-            <span class="quip quip-on" aria-hidden="true">Ships on Fridays. Brave.</span>
-          </a>
-          <span class="perch perch-person" data-perch="team" data-scale="0.8"></span>
-        </li>
-        <li class="person rv">
+        <li class="person">
           <div class="person-link quipped" tabindex="0">
-            <span class="person-photo ph-img" data-keyword="portrait of Abhishek"></span>
+            <span class="person-photo fill" data-keyword="portrait of Sahil"></span>
+            <span class="person-name">Sahil Tomar</span>
+            <span class="quip quip-pill" aria-hidden="true">Has a terminal open right now. Guaranteed.</span>
+          </div>
+          <span class="perch perch-person" data-perch data-scale="0.8" data-say="Nice people. Bad at naming files."></span>
+        </li>
+        <li class="person">
+          <div class="person-link quipped" tabindex="0">
+            <span class="person-photo fill" data-keyword="portrait of Abhishek"></span>
             <span class="person-name">Abhishek</span>
-            <span class="person-role">Keeps the Design loop. Product designer.</span>
-            <span class="quip quip-on" aria-hidden="true">Has 47 creams saved. Uses one.</span>
+            <span class="quip quip-pill" aria-hidden="true">Can tell #FFEDD7 from #F6E0C6 by eye.</span>
           </div>
         </li>
       </ul>
     </section>
 
-    <!-- 7. Call to action -->
-    <section class="cta" id="join" data-theme="dark">
-      <div class="cta-inner">
-        <h2 class="split">Keep a loop</h2>
-        <p class="rv">Work in a field you follow closely? We open a new loop when we meet the right person for it.</p>
-        <div class="cta-actions rv">
-          <a class="btn btn-cream roll quipped" href="/contact/">
-            <span class="roll-in"><span>Get in touch</span><span aria-hidden="true">Get in touch</span></span>
-            <span class="quip quip-below" aria-hidden="true">We read every message. Twice if it’s nice.</span>
-          </a>
-          <a class="link-line link-line-cream quipped" href="/contact/"><span class="ph">Work with the agency</span><span class="quip quip-below" aria-hidden="true">Same humans. Bigger calendar.</span></a>
-        </div>
+    <!-- 10. Call to action -->
+    <section class="cta" id="contact" data-theme="dark">
+      <p class="idx"><span>07</span> Contact</p>
+      <h2 class="cta-title draft"><span class="ln">Got something</span> <span class="ln tone">in mind?</span></h2>
+      <div class="cta-row">
+        <p class="draft">Tell us what you are building. A human reads every message.</p>
+        <a class="btn btn-primary btn-xl magnetic quipped" href="/contact/">
+          <span class="btn-label">Start a project</span><span class="btn-arrow" aria-hidden="true"></span>
+          <span class="quip" aria-hidden="true">We read every message. Twice if it's nice.</span>
+        </a>
       </div>
-      <span class="perch perch-cta" data-perch="cta" data-scale="1.4"></span>
+      <span class="perch perch-cta" data-perch data-scale="1.3" data-say="Go on. I'll wait right here."></span>
     </section>
   </main>
 
-  <!-- 8. Footer -->
   <footer class="foot" data-theme="dark">
     <div class="foot-grid">
-      <p class="foot-word" aria-hidden="true">human in loop</p>
       <div>
-        <p class="foot-label">Loops</p>
+        <p class="foot-label">Explore</p>
         <ul>
-          <li><a href="/ai/">AI, kept by Sahil Tomar</a></li>
-          <li>Design, kept by Abhishek (opening soon)</li>
+          <li><a href="#work">Work</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="/ai/">AI loop</a></li>
+          <li><a href="/contact/">Contact</a></li>
         </ul>
       </div>
       <div>
         <p class="foot-label">For agents</p>
         <ul>
-          <li><a class="quipped" href="/llms.txt">llms.txt<span class="quip quip-below" aria-hidden="true">Hi, robots.</span></a></li>
+          <li><a class="quipped" href="/llms.txt">llms.txt<span class="quip" aria-hidden="true">Hello, fellow crawlers.</span></a></li>
           <li><a href="/llms-full.txt">llms-full.txt</a></li>
-          <li><a href="/contact/">Contact</a></li>
         </ul>
       </div>
     </div>
+    <p class="foot-word" aria-hidden="true">human in loop</p>
     <p class="foot-small"><small>&copy; human-in-loop.dev</small></p>
   </footer>
 
-  <!-- The human from the logo, who travels with the reader. Shape fixed: the real mark, recoloured only. -->
-  <div class="walker" aria-hidden="true"><span class="walker-mark"></span></div>
+  <!-- The human from the logo, who travels with the reader and talks when it lands. Shape fixed: the real mark, recoloured only. -->
+  <div class="walker" aria-hidden="true"><span class="walker-say"></span><span class="walker-mark"></span></div>
 </body>
 </html>

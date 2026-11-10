@@ -1,34 +1,53 @@
-# human-in-loop.dev — Loops kept by people who do the work
+# human-in-loop.dev — AI and design studio
 
-People who work in a field, writing about what changes in it.
+We design products and build the AI inside them.
 
-Every loop here is one field and one person: their updates, their views and the work they have done. Start with the [AI loop](https://human-in-loop.dev/ai/).
+A small studio with a human in the loop at every step, from the first sketch to the last deploy. [Start a project](/contact.md).
 
-## Why this exists
-News about fast-moving fields mostly reaches us through feeds and summaries. We would rather hear it from someone who does the work: what actually changed, whether it matters, and what they built with it.
+## About
+We are a small studio of humans who design with care and build with AI. Every project has a person in the loop, watching what changes and deciding what matters.
 
-So each loop is kept by one person who works in that field. They post short updates and longer notes, and their projects and case studies sit next to what they write.
+Two disciplines, one table. Design shapes what people see and touch; AI does the heavy lifting underneath. We keep both in the same room from day one.
 
-## The loops
-One field, one human. Two loops are open; more are on the way.
+## Two loops
+- **AI** — Voice agents, retrieval and automation that run in production, not just in a demo. [Inside the AI loop](https://human-in-loop.dev/ai/) ([Markdown](/ai.md)).
+- **Design** — Products, interfaces and systems that people understand at first glance and enjoy at the hundredth. Opening soon.
 
-- [AI loop](https://human-in-loop.dev/ai/) ([Markdown](/ai.md)) — kept by Sahil Tomar (dev-S-t). Voice AI, retrieval and agents in production: case studies, projects and notes.
-- Design loop — kept by Abhishek. UI and UX. Opening soon.
-- Cyber — later.
-- Abyss-Admin — later.
+## Step inside the loop
+We do not chase trends. We sit with a problem until it is clear, then draw it, build it and keep watching it after launch.
 
-## Featured work (from the AI loop)
+That is the loop: look closely, make carefully, look again.
+
+## Selected work
 - [VOAG — Enterprise Voice AI SaaS](/projects/voag.md): 1,000+ daily calls in Mr. LADs app, sub-300ms p95 latency, DigitalOcean & UAE LAN SIP modem architecture.
 - [Hireups — Real-Time AI Interviewer with Photorealistic Avatar](/projects/hireups.md): Photorealistic video avatar interviewer built on Gemini Realtime and self-hosted LiveKit on GCP.
+- Design case study — coming soon.
 - [Privacy-First On-Prem RAG (A2A Protocol)](/projects/privacy-rag.md): Inverted RAG topology for legal/compliance clients over Agent-to-Agent (A2A) protocol with hybrid vector + keyword search.
-- [All projects in the AI loop](/projects.md)
+- [All projects](/projects.md)
 
-## The people
-- Sahil Tomar — keeps the AI loop. AI solution architect.
-- Abhishek — keeps the Design loop. Product designer.
+## What we make
+AI
+- Voice agents — agents that pick up the phone, understand and act.
+- Retrieval — search and answers over your own documents, private by default.
+- Automation — the repetitive work, handed to software that does not get bored.
 
-## Keep a loop
-Work in a field you follow closely? We open a new loop when we meet the right person for it. [Get in touch](/contact.md).
+Design
+- Product design — from a rough idea to something people want to use.
+- UI and UX — interfaces that are clear at first glance and still pleasant later.
+- Design systems — components and rules so the next screen designs itself, nearly.
+
+## How it goes
+1. Listen — we start with your problem, not our tools.
+2. Sketch — rough lines first, so ideas stay cheap to change.
+3. Build — design and AI built side by side, shipped in small pieces.
+4. Stay in the loop — we keep watching after launch and tune what needs tuning.
+
+## The humans
+- Sahil Tomar
+- Abhishek
+
+## Got something in mind?
+Tell us what you are building. A human reads every message. [Start a project](/contact.md).
 
 ## For agents
 - [llms.txt](/llms.txt)
