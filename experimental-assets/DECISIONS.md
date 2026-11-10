@@ -2,6 +2,14 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-10: eighth pass, a strict type scale, the 8px grid, the work showcase
+
+- **Type scale (Abhishek):** h1 72, h2 48, h3 40, h4 32, h5 28, h6 24. Paragraphs 14, 16, 18, 20. Labels 11, 12, 14. UI text (buttons, nav, brand) at 100% line height. Tracking -3% everywhere. Phones: h1 40, each step 4px smaller (40, 36, 32, 28, 24, 20). All sizes are tokens in `:root` of `assets/css/home.css`.
+- **8px grid:** every space is a step of 8 (`--s1` to `--s16`). All `clamp()` spacing was removed.
+- **Sections:** each fills at least one screen, with its padding inside that height and its content centred.
+- **Marquee:** the track now holds six copies of the line, so the loop never shows a gap on wide screens.
+- **Work:** a pinned showcase in place of the card grid. Scrolling down moves the cards right to left; the centre card faces you and the others turn away in 3D. A bar below names the current project, counts it (01 / 05), and keeps the call to action in reach (Fitts). Every card is a link. On hover the image bends like a plane in water (an SVG displacement filter driven by GSAP). Phones get a native swipe row.
+
 ## 2026-11-10: seventh pass, the spiral, the jump, and a lighter scroll
 
 Abhishek's notes: in the space section the human appeared small and tumbled on his own, then grew; he should arrive, stretch to his real size, and fall in a spiral only as you scroll. Later: the screen scrolled too much on its own; it should feel like gsap.com, slower under the wheel; the figure distorted too much; when he jumps, show the jump and land behind the content.

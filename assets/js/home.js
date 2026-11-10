@@ -190,6 +190,72 @@
 
   });
   later(() => {
+    // The work showcase: the section pins and the cards move right to left as you scroll. The card in the middle
+    // faces you; the others turn away by how far they are from it. The bar below follows the one in the middle.
+    const sec = document.querySelector('.work'), track = sec && sec.querySelector('.work-track');
+    if (!sec || !track) return;
+    const cards = [...track.querySelectorAll('.wcard')], stage = sec.querySelector('.work-stage');
+    const nameEl = sec.querySelector('.work-name'), tagsEl = sec.querySelector('.work-tags'), noEl = sec.querySelector('.work-no');
+    const curEl = sec.querySelector('.work-cur'), totEl = sec.querySelector('.work-total'), bar = sec.querySelector('.work-count b');
+    const pad2 = (n) => String(n).padStart(2, '0');
+    totEl.textContent = pad2(cards.length);
+    let active = -1;
+    const show = (a) => {
+      if (a === active) return; active = a;
+      cards.forEach((c, i) => c.classList.toggle('on', i === a));
+      nameEl.textContent = cards[a].querySelector('.wcard-title').textContent;
+      tagsEl.textContent = cards[a].dataset.tags || '';
+      noEl.textContent = curEl.textContent = pad2(a + 1);
+    };
+    show(0);
+    if (innerWidth < 900) return;                  // phones keep a row you swipe through
+    sec.classList.add('is-show');
+    gsap.set(track, { overflow: 'visible', scrollSnapType: 'none' });
+    const centre = (el) => el.offsetLeft + el.offsetWidth / 2;
+    const layout = (prog) => {
+      const mid = stage.clientWidth / 2, first = centre(cards[0]), span = centre(cards[cards.length - 1]) - first;
+      const x = mid - first - span * prog, step = cards[0].offsetWidth + 32;
+      gsap.set(track, { x });
+      cards.forEach((c) => {
+        const d = (centre(c) + x - mid) / step, ad = Math.min(Math.abs(d), 2.5);
+        gsap.set(c, { rotationY: -Math.max(-1, Math.min(1, d)) * 38, z: -ad * 160, scale: 1 - ad * 0.06, opacity: 1 - Math.max(0, ad - 1.2) * 0.5, zIndex: 10 - Math.round(ad * 2) });
+      });
+      show(Math.round(prog * (cards.length - 1)));
+      gsap.set(bar, { scaleX: prog });
+    };
+    ST.create({ id: 'work', trigger: sec, start: 'top top', end: () => '+=' + Math.round(innerHeight * 0.75 * (cards.length - 1)), pin: '.work-stick',
+      invalidateOnRefresh: true, onUpdate: (s) => layout(s.progress), onRefresh: (s) => layout(s.progress) });
+    layout(0);
+
+    // A distorted plane on hover: the picture ripples like water (an SVG displacement over turbulence that drifts),
+    // and the card tips back a little. One shared filter; it is only applied to the card under the pointer.
+    if (!finePointer) return;
+    const disp = document.querySelector('#ripple feDisplacementMap'), turb = document.querySelector('#ripple feTurbulence');
+    if (!disp || !turb) return;
+    const fx = { s: 0, f: 0.006 };
+    let current = null;
+    gsap.ticker.add(() => {
+      if (!current) return;
+      disp.setAttribute('scale', fx.s.toFixed(2));
+      turb.setAttribute('baseFrequency', `${fx.f.toFixed(4)} ${(fx.f * 2).toFixed(4)}`);
+    });
+    cards.forEach((c) => {
+      const link = c.querySelector('.wcard-link'), media = c.querySelector('.wcard-media');
+      link.addEventListener('pointerenter', () => {
+        if (current && current !== media) current.style.filter = '';
+        current = media; media.style.filter = 'url(#ripple)';
+        gsap.to(fx, { s: 26, duration: 0.6, ease: 'power2.out', overwrite: 'auto' });
+        gsap.fromTo(fx, { f: 0.004 }, { f: 0.012, duration: 1.8, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+        gsap.to(media, { rotationX: 7, transformPerspective: 900, duration: 0.9, ease: 'expo.out' });
+      });
+      link.addEventListener('pointerleave', () => {
+        gsap.killTweensOf(fx, 'f');
+        gsap.to(fx, { s: 0, duration: 0.6, ease: 'power2.out', overwrite: 'auto', onComplete: () => { if (current === media) { media.style.filter = ''; current = null; } } });
+        gsap.to(media, { rotationX: 0, duration: 0.9, ease: 'expo.out' });
+      });
+    });
+  });
+  later(() => {
     // Into space: a long fall. The words drift away, the human tumbles toward the wormhole and through it.
     // (scene.js draws the space, the wormhole and the human from this trigger's progress.)
     // Ten screens of scroll (at least 4,000px): the approach, the wormhole, the tunnel, a new place, the glass.

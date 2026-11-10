@@ -147,6 +147,10 @@
         <div class="marquee-track">
           <span>Voice agents</span><span>Retrieval</span><span>Automation</span><span>Product design</span><span>UI and UX</span><span>Design systems</span><span>Brand</span>
           <span>Voice agents</span><span>Retrieval</span><span>Automation</span><span>Product design</span><span>UI and UX</span><span>Design systems</span><span>Brand</span>
+          <span>Voice agents</span><span>Retrieval</span><span>Automation</span><span>Product design</span><span>UI and UX</span><span>Design systems</span><span>Brand</span>
+          <span>Voice agents</span><span>Retrieval</span><span>Automation</span><span>Product design</span><span>UI and UX</span><span>Design systems</span><span>Brand</span>
+          <span>Voice agents</span><span>Retrieval</span><span>Automation</span><span>Product design</span><span>UI and UX</span><span>Design systems</span><span>Brand</span>
+          <span>Voice agents</span><span>Retrieval</span><span>Automation</span><span>Product design</span><span>UI and UX</span><span>Design systems</span><span>Brand</span>
         </div>
       </div>
     </section>
@@ -198,52 +202,67 @@
       </div></div>
     </section>
 
-    <!-- 5. Work -->
-    <section class="work" id="work" data-theme="light">
-      <div class="sec-head">
-        <p class="idx"><span>03</span> Work</p>
-        <h2 class="split">Selected work</h2>
-        <a class="link-line quipped" href="/projects/">All projects<span class="quip" aria-hidden="true">There's more. There's always more.</span></a>
+    <!-- 5. Work: a pinned showcase. Scroll down and the cards move right to left; the one in the middle is in focus,
+         the others turn away. Each card is a link; on hover its picture ripples like a plane of water. -->
+    <section class="work" id="work" data-theme="light" aria-labelledby="work-title">
+      <div class="work-stick">
+        <div class="work-top">
+          <p class="idx"><span>03</span> Selected work</p>
+          <h2 id="work-title" class="split">Selected work</h2>
+          <span class="perch perch-work" data-perch data-scale="0.8" data-say="I helped. Mostly emotionally."></span>
+        </div>
+        <div class="work-stage">
+          <ul class="work-track">
+            <li class="wcard" data-tags="AI · Voice">
+              <a class="wcard-link quipped" href="/projects/voag/">
+                <span class="wcard-media fill" data-keyword="voice AI call centre, phone waveform"></span>
+                <span class="wcard-title">VOAG — Enterprise Voice AI SaaS</span>
+                <span class="wcard-desc">1,000+ daily calls in Mr. LADs app, sub-300ms p95 latency, DigitalOcean &amp; UAE LAN SIP modem architecture.</span>
+                <span class="quip quip-pill" aria-hidden="true">Answers calls. Never puts you on hold.</span>
+              </a>
+            </li>
+            <li class="wcard" data-tags="AI · Realtime">
+              <a class="wcard-link quipped" href="/projects/hireups/">
+                <span class="wcard-media fill" data-keyword="video interview, avatar on a laptop screen"></span>
+                <span class="wcard-title">Hireups — Real-Time AI Interviewer with Photorealistic Avatar</span>
+                <span class="wcard-desc">Photorealistic video avatar interviewer built on Gemini Realtime and self-hosted LiveKit on GCP.</span>
+                <span class="quip quip-pill" aria-hidden="true">Never late. Never nervous. Always on camera.</span>
+              </a>
+            </li>
+            <li class="wcard" data-tags="Design · Soon">
+              <a class="wcard-link quipped" href="#contact">
+                <span class="wcard-media fill" data-keyword="design case study: product screens"></span>
+                <span class="wcard-title draft">Design case study</span>
+                <span class="wcard-desc draft">The first design case study goes here.</span>
+                <span class="quip quip-pill" aria-hidden="true">Version 7. Final. Really final.</span>
+              </a>
+            </li>
+            <li class="wcard" data-tags="AI · Retrieval">
+              <a class="wcard-link quipped" href="/projects/privacy-rag/">
+                <span class="wcard-media fill" data-keyword="server room, locked documents, on-premise"></span>
+                <span class="wcard-title">Privacy-First On-Prem RAG (A2A Protocol)</span>
+                <span class="wcard-desc">Inverted RAG topology for legal/compliance clients over Agent-to-Agent (A2A) protocol with hybrid vector + keyword search.</span>
+                <span class="quip quip-pill" aria-hidden="true">Your data never left the building.</span>
+              </a>
+            </li>
+            <li class="wcard" data-tags="All projects">
+              <a class="wcard-link quipped" href="/projects/">
+                <span class="wcard-media fill wcard-more" data-keyword="all projects"><span class="wcard-more-label">All projects</span></span>
+                <span class="wcard-title">All projects</span>
+                <span class="wcard-desc">Every project and case study, in one place.</span>
+                <span class="quip quip-pill" aria-hidden="true">There's more. There's always more.</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="work-bar">
+          <div class="work-now" aria-hidden="true"><span class="work-no">01</span><div><p class="work-name"></p><p class="work-tags"></p></div></div>
+          <div class="work-count" aria-hidden="true"><p><span class="work-cur">01</span> / <span class="work-total">05</span></p><i><b></b></i><p class="work-svc draft">Strategy · Design · Development · AI</p></div>
+          <a class="btn btn-ink work-cta" href="/contact/"><span class="btn-label draft">Start a project like these</span><span class="btn-arrow" aria-hidden="true"></span></a>
+        </div>
       </div>
-      <ul class="work-list">
-        <li class="card">
-          <a class="card-link quipped" href="/projects/voag/">
-            <span class="card-media fill" data-keyword="voice AI call centre, phone waveform"><span class="card-dots" aria-hidden="true"></span></span>
-            <span class="card-row"><span class="card-cat">AI</span><span class="card-year">Voice</span></span>
-            <span class="card-title">VOAG — Enterprise Voice AI SaaS</span>
-            <span class="card-desc">1,000+ daily calls in Mr. LADs app, sub-300ms p95 latency, DigitalOcean &amp; UAE LAN SIP modem architecture.</span>
-            <span class="quip quip-pill" aria-hidden="true">Answers calls. Never puts you on hold.</span>
-          </a>
-          <span class="perch perch-card" data-perch data-scale="0.8" data-say="I helped. Mostly emotionally."></span>
-        </li>
-        <li class="card">
-          <a class="card-link quipped" href="/projects/hireups/">
-            <span class="card-media fill" data-keyword="video interview, avatar on a laptop screen"><span class="card-dots" aria-hidden="true"></span></span>
-            <span class="card-row"><span class="card-cat">AI</span><span class="card-year">Realtime</span></span>
-            <span class="card-title">Hireups — Real-Time AI Interviewer with Photorealistic Avatar</span>
-            <span class="card-desc">Photorealistic video avatar interviewer built on Gemini Realtime and self-hosted LiveKit on GCP.</span>
-            <span class="quip quip-pill" aria-hidden="true">Never late. Never nervous. Always on camera.</span>
-          </a>
-        </li>
-        <li class="card">
-          <div class="card-link quipped" tabindex="0">
-            <span class="card-media fill" data-keyword="design case study: product screens"><span class="card-dots" aria-hidden="true"></span></span>
-            <span class="card-row"><span class="card-cat">Design</span><span class="card-year">Soon</span></span>
-            <span class="card-title draft">Design case study</span>
-            <span class="card-desc draft">The first design case study goes here.</span>
-            <span class="quip quip-pill" aria-hidden="true">Version 7. Final. Really final.</span>
-          </div>
-        </li>
-        <li class="card">
-          <a class="card-link quipped" href="/projects/privacy-rag/">
-            <span class="card-media fill" data-keyword="server room, locked documents, on-premise"><span class="card-dots" aria-hidden="true"></span></span>
-            <span class="card-row"><span class="card-cat">AI</span><span class="card-year">Retrieval</span></span>
-            <span class="card-title">Privacy-First On-Prem RAG (A2A Protocol)</span>
-            <span class="card-desc">Inverted RAG topology for legal/compliance clients over Agent-to-Agent (A2A) protocol with hybrid vector + keyword search.</span>
-            <span class="quip quip-pill" aria-hidden="true">Your data never left the building.</span>
-          </a>
-        </li>
-      </ul>
+      <!-- the hover ripple, shared by every card -->
+      <svg class="fx-defs" width="0" height="0" aria-hidden="true" focusable="false"><filter id="ripple" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.008 0.016" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
     </section>
 
     <!-- 6. Services: each one a small line drawing that draws itself -->
