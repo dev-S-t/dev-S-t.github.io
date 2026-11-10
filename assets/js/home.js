@@ -381,15 +381,17 @@
       tl.fromTo(mark, { y: 0, rotation: 0 }, { keyframes: { y: [0, -80, -40, 0], rotation: [0, -14 * dir, 8 * dir, 0] }, ease: 'none', immediateRender: false }, 0);
     });
 
-    // Dragged in: as the space section arrives he is pulled from his last perch to the middle of the screen,
+    // Into the space section: he comes down from his last perch to where his spiral will start (upper left of the
+    // portal), upright and growing; there the full figure takes over at his real size (scene.js, arrival).
+    // was: dragged in, pulled from his last perch to the middle of the screen,
     // spinning and shrinking, into the hole; the 3D figure takes over from that point.
     const last = perches[perches.length - 1], portalEl = document.querySelector('.portal');
     if (portalEl) {
-      const target = () => { const a = at(portalEl); return { x: a.x + innerWidth / 2, y: a.y + innerHeight * 0.55 }; };
+      const target = () => { const a = at(portalEl), m = Math.min(innerWidth, innerHeight); return { x: a.x + innerWidth / 2 + Math.cos(-2.75) * m * 0.36, y: a.y + innerHeight / 2 + Math.sin(-2.75) * m * 0.36 }; };
       gsap.timeline({ scrollTrigger: { trigger: portalEl, start: 'top 85%', end: 'top top', scrub: 1.2, invalidateOnRefresh: true,
         onUpdate: (self) => { walker.classList.toggle('on-dark', self.progress > 0.3); if (self.progress > 0.05) hush(); } } })
         .fromTo(walker, { x: () => at(last).x, y: () => at(last).y, scale: scaleOf(last), rotation: 0 },
-          { x: () => target().x, y: () => target().y, scale: 0.1, rotation: 720, ease: 'power2.in', immediateRender: false });
+          { x: () => target().x, y: () => target().y, scale: 2.4, rotation: 0, ease: 'power2.inOut', immediateRender: false });
     }
   });
 

@@ -341,7 +341,7 @@ const glidePose = (t) => ({
   elbow: { F: -1, B: 1 }, round: { F: 0.7, B: 0.7 }
 });
 // Where the 3D figure is on screen (px), so the 2D figure can take over from exactly there.
-const HAND = { x: 0, y: 0, k: 0 };
+const HAND = { x: 0, y: 0, k: 0, cx: 0, cy: 0 };   // cx, cy: the portal's centre on screen
 // Draw a pose with the films' hand-drawn boil: the lines re-drawn 8 times a second.
 function drawFig(MB, g, pose, x, y, k, t, color) {
   const ln = MB.body(pose);
@@ -636,6 +636,7 @@ function portal(THREE, ST, MB) {
       camera.rotateZ(flipRoll);
     }
     camera.updateMatrixWorld();
+    if (!after) { const c0 = new THREE.Vector3(0, 0, 0).project(camera); HAND.cx = (c0.x * 0.5 + 0.5) * canvas.clientWidth; HAND.cy = (-c0.y * 0.5 + 0.5) * canvas.clientHeight; }
 
     // what is on
     // the portal fades as we pass through it, the tunnel fades in under it: no hard cut
@@ -659,28 +660,21 @@ function portal(THREE, ST, MB) {
     let pose, pos, scale = 1;
     if (!after) {
       camera.getWorldDirection(fwd);
-      if (p < 0.42) {
-        // ahead of us, falling toward the portal; near the end he is pulled into it, small and stretched
-        const pull = smooth(clamp((a - 0.55) / 0.4));
-        const ahead = v3.copy(camera.position).addScaledVector(fwd, 9).add(new THREE.Vector3(Math.sin(t * 0.4) * 0.8, Math.cos(t * 0.33) * 0.5 - 0.4, 0));
-        pos = ahead.lerp(new THREE.Vector3(0, 0, -1.2), pull);
-        scale = 1 - pull * 0.55;
-        pose = sinkPose(t, 0.5 * Math.sin(t * 0.6) + pull * 2.5);
-        if (pull > 0) pose.root.stretch = [Math.PI / 2, 1 + pull * 0.9];
-      } else {
-        pos = v3.copy(camera.position).addScaledVector(fwd, 7).add(new THREE.Vector3(Math.sin(t * 0.5) * 0.6, Math.cos(t * 0.4) * 0.4, 0));
-        pose = sinkPose(t, 0.6 * Math.sin(t * 0.7) + b * 3);
-      }
+      // In the tunnel he falls ahead of us; every movement here comes from the scroll (s), none from the clock.
+      const sc = p * 60;
+      pos = v3.copy(camera.position).addScaledVector(fwd, 7).add(new THREE.Vector3(Math.sin(sc * 0.5) * 0.6, Math.cos(sc * 0.4) * 0.4, 0));
+      pose = sinkPose(sc, 0.6 * Math.sin(sc * 0.7) + b * 3);
     } else {
       // out of the light, gliding toward us as we scroll; through the glass and past us
       const z = lerp(ROOM_Z - 46, ROOM_Z - 3.6, 1 - Math.pow(1 - glide, 1.6)) + brk * 6;   // quickly out of the light, then slowing as he reaches the glass
-      pos = v3.set(Math.sin(t * 0.5) * 0.4 * (1 - glide), -0.2 + Math.sin(t * 1.1) * 0.15 - brk * 1.5, z);
-      pose = glidePose(t);
+      const sc = p * 60;
+      pos = v3.set(Math.sin(sc * 0.5) * 0.4 * (1 - glide), -0.2 + Math.sin(sc * 1.1) * 0.15 - brk * 1.5, z);
+      pose = glidePose(sc);
     }
     fig.position.copy(pos); fig.scale.setScalar(scale);
     fig.quaternion.copy(camera.quaternion);
     // from 0.93 the 2D figure (arrival) carries him on, at the same place and size, into the contact section
-    fig.visible = !!MB && p > 0.01 && p < 0.93 && !(p > 0.715 && p < 0.745);
+    fig.visible = !!MB && p > 0.42 && p < 0.93 && !(p > 0.715 && p < 0.745);   // before 0.42 he is the 2D spiral (arrival)
     if (fig.visible) {
       fx2.clearRect(0, 0, 512, 512);
       // a soft dark halo, so he reads against the bright light of the corridor as well as against dark space
@@ -696,6 +690,13 @@ function portal(THREE, ST, MB) {
   });
   sec.classList.add('has-gl');
 }
+
+// Falling with his arms up: the pose for the spiral, moved by a value the scroll drives (s), not the clock.
+const sinkPose2D = (s, rot) => {
+  const p = fallPose(s, rot);
+  p.hands = { F: { x: 0.28 + 0.06 * Math.sin(s * 1.4), y: -0.48 + 0.06 * Math.sin(s * 1.9) }, B: { x: -0.28 + 0.06 * Math.sin(s * 1.2 + 1), y: -0.46 + 0.06 * Math.cos(s * 1.6) } };
+  return p;
+};
 
 /* ---------------- arrival: through the glass and into the contact section ---------------- */
 // From the moment the glass breaks, a 2D figure takes over from the 3D one at exactly its place and size, on a
@@ -716,6 +717,26 @@ function arrival(MB, ST) {
     og.setTransform(dpr, 0, 0, dpr, 0, 0); og.clearRect(0, 0, w, h);
     cg.setTransform(dpr, 0, 0, dpr, 0, 0); cg.clearRect(0, 0, cw, ch);
     const p = pst.progress, r = cta.getBoundingClientRect();
+    // The spiral: he arrives (the walker's hand-over), stretches out to his real size, then, only as you scroll,
+    // falls round and in toward the portal's centre, turning and shrinking, and is gone into it by 0.42.
+    const pr = portalEl.getBoundingClientRect();
+    if (p < 0.42 && pr.top < h * 0.05 && pr.bottom > h * 0.5) {
+      const m = Math.min(w, h), sp = clamp(p / 0.41), cx = HAND.cx || w / 2, cy = HAND.cy || h / 2;
+      const grow = smooth(clamp(sp / 0.06));                            // stretching out to his real size
+      const ang = -2.75 + Math.pow(sp, 0.9) * Math.PI * 2 * 2.25;       // two and a quarter turns, starting at the left
+      const rad = m * 0.36 * Math.pow(1 - smooth(sp), 1.15);
+      const x = cx + Math.cos(ang) * rad, y = cy + Math.sin(ang) * rad;
+      const k = lerp(m * 0.09, m * 0.3, grow) * (1 - 0.88 * Math.pow(sp, 1.25));
+      // He stays upright enough to read, leaning into the turns; only as he is drawn in does he start to spin.
+      const lean = 0.55 * Math.sin(ang + 2.75) * smooth(clamp((sp - 0.04) / 0.15)), spin = Math.pow(smooth(clamp((sp - 0.62) / 0.38)), 1.5) * Math.PI * 3;
+      const pose = sinkPose2D(sp * 18, lean + spin);
+      pose.root.stretch = [ang + Math.PI, 1 + 0.7 * (1 - grow) + 1.4 * smooth(clamp((sp - 0.72) / 0.28))];   // tall as he arrives, drawn out as he goes in
+      og.globalAlpha = 1 - smooth(clamp((sp - 0.93) / 0.07));
+      og.shadowColor = 'rgba(16, 9, 4, 0.8)'; og.shadowBlur = 10;
+      drawFig(MB, og, pose, x, y, k, t, '#FFEDD7');
+      og.shadowBlur = 0; og.globalAlpha = 1;
+      from = null; return;
+    }
     const rise = clamp(1 - r.top / h);                       // the contact section coming up under him, 0 to 1
     if (p < 0.93 && rise <= 0) { from = null; return; }
     const K = Math.max(HAND.k || 0, 0.42 * Math.min(w, h));  // never smaller than he was
