@@ -16,6 +16,8 @@
 :root {
   --cream: #FFEDD7; --cream-2: #F6E0C6; --ink: #100904; --brown: #382416;
   --muted: #6C5F51; --tone: #9A8571; --sand: #BBAC97; --orange: #DC5000; --oxblood: #4A1E1A;
+  /* Orange for small text: deeper on the creams (5.1:1 or better), lighter on dark grounds (5.4:1). */
+  --orange-ink: #A33C00; --orange-glow: #FF7A33;
   --serif: "Canela", "Iowan Old Style", Georgia, serif;
   --sans: "Outfit", "Mazzard", system-ui, -apple-system, "Segoe UI", sans-serif;
   --ease-out: cubic-bezier(0.35, 0, 0, 1);
@@ -51,7 +53,8 @@ a { color: inherit; text-decoration: none; }
 
 /* Section index: a number and a word, quiet */
 .idx { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 400; color: var(--muted); letter-spacing: 0.02em; }
-.idx span { color: var(--orange); font-variant-numeric: tabular-nums; }
+.idx span { color: var(--orange-ink); font-variant-numeric: tabular-nums; }
+[data-theme="dark"] .idx span { color: var(--orange-glow); }
 .idx::after { content: ""; width: 28px; height: 1px; background: currentColor; opacity: .5; }
 [data-theme="dark"] .idx { color: var(--sand); }
 .sec-head { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 18px 24px; margin-bottom: clamp(44px, 6vw, 88px); }
@@ -201,7 +204,7 @@ a { color: inherit; text-decoration: none; }
 .panel { position: absolute; bottom: clamp(70px, 12vh, 130px); width: min(380px, 80vw); display: grid; gap: 14px; justify-items: start; }
 .panel-ai { left: var(--gutter); }
 .panel-design { right: var(--gutter); }
-.panel-no { font-size: 13px; color: var(--orange); font-weight: 400; }
+.panel-no { font-size: 13px; color: var(--orange-glow); font-weight: 400; }
 .panel h3 { font-size: clamp(64px, 8vw, 140px); line-height: .9; letter-spacing: -0.04em; }
 .panel p { color: var(--cream-2); }
 .tags { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -239,7 +242,7 @@ a { color: inherit; text-decoration: none; }
 .card-link:hover .card-media, .card-link:focus-visible .card-media { border-radius: 22px; }
 .card-link:hover .card-dots, .card-link:focus-visible .card-dots { opacity: .55; transform: scale(1); background-size: 22px 7px; }
 .card-row { display: flex; justify-content: space-between; margin-top: 8px; font-size: 13px; font-weight: 400; color: var(--muted); }
-.card-cat { color: var(--orange); }
+.card-cat { color: var(--orange-ink); }
 .card-title { font-family: var(--serif); font-weight: 250; color: var(--ink); font-size: clamp(26px, 2.3vw, 40px); line-height: 1.06; letter-spacing: -0.02em; }
 .card-desc { font-size: 15px; max-width: 48ch; }
 .perch-card { left: 74%; top: 0; }
@@ -247,7 +250,7 @@ a { color: inherit; text-decoration: none; }
 /* ---------- 7. Services ---------- */
 .services { position: relative; padding: clamp(110px, 13vw, 190px) var(--gutter); background: var(--cream-2); }
 .svc-cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 120px); }
-.svc-col-name { font-family: var(--serif); font-weight: 250; font-size: clamp(30px, 3vw, 52px); color: var(--tone); padding-bottom: 18px; border-bottom: 1px solid rgba(56, 36, 22, .2); }
+.svc-col-name { font-family: var(--serif); font-weight: 250; font-size: clamp(30px, 3vw, 52px); color: var(--muted); padding-bottom: 18px; border-bottom: 1px solid rgba(56, 36, 22, .2); }
 .svc { position: relative; display: grid; grid-template-columns: 56px 1fr; gap: 22px; align-items: start; padding: 28px 0; border-bottom: 1px solid rgba(56, 36, 22, .14); outline-offset: 6px; }
 .svc h3 { font-size: clamp(24px, 2vw, 34px); margin-bottom: 6px; transition: transform .6s var(--ease-out); }
 .svc p { font-size: 16px; max-width: 38ch; }
@@ -266,7 +269,7 @@ a { color: inherit; text-decoration: none; }
 .proc-steps { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(20px, 3vw, 48px); padding-top: 130px; }
 .step { position: relative; display: grid; gap: 10px; align-content: start; outline-offset: 8px; }
 .step:nth-child(even) { margin-top: 56px; }
-.step-no { font-size: 13px; font-weight: 400; color: var(--orange); }
+.step-no { font-size: 13px; font-weight: 400; color: var(--orange-ink); }
 .step h3 { font-size: clamp(28px, 2.6vw, 44px); }
 .step p { font-size: 16px; max-width: 26ch; }
 

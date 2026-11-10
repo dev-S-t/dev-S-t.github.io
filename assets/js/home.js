@@ -35,7 +35,7 @@
       const narrow = w < 900;
       cx = narrow ? w * 0.7 : w * 0.78; cy = narrow ? Math.max(h * 0.36, 290) : h * 0.5;
       R = narrow ? Math.min(w * 0.2, h * 0.1) : Math.min(w * 0.16, h * 0.27);
-      const gap = Math.max(20, Math.min(30, w / 56));
+      const gap = narrow ? 30 : Math.max(20, Math.min(30, w / 56)); // fewer dots on phones
       const cols = Math.ceil(w / gap) + 1, rows = Math.ceil(h / gap) + 1;
       n = cols * rows;
       const radii = [1, 0.76, 0.52], speeds = [0.018, -0.026, 0.04];
@@ -112,7 +112,8 @@
     new IntersectionObserver(([en]) => { visible = en.isIntersecting; if (visible) wake(); }).observe(canvas);
     let rt; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => { build(); wake(); }, 120); }).observe(canvas);
     for (let i = 0; i < n + m; i++) { const d = 0.5 + Math.random(); y[i] -= 60 * d; vy[i] = 9 * d; } // dots fall in as lines
-    wake();
+    // Start once the page has loaded, so the animation never competes with loading.
+    if (document.readyState === 'complete') wake(); else addEventListener('load', wake, { once: true });
     return {
       kick(v) {
         if (!visible || Math.abs(v) < 0.4) return;
@@ -127,6 +128,22 @@
   const gsap = window.gsap, ST = window.ScrollTrigger;
   if (!gsap || !ST) return;
   gsap.registerPlugin(ST);
+
+  // Setup below the fold runs in small tasks, each in its own turn of the event loop, so the main thread
+  // is never blocked for long while the page is loading (keeps Total Blocking Time low on slow phones).
+  const tasks = [];
+  const later = (fn) => { if (!reduce) tasks.push(fn); };
+  const runTasks = () => {
+    // One full re-measure, after the setup, the load event and the fonts: each refresh is a long task.
+    const loaded = document.readyState === 'complete' ? Promise.resolve() : new Promise((r) => addEventListener('load', r, { once: true }));
+    const fonts = document.fonts ? document.fonts.ready : Promise.resolve();
+    const next = () => {
+      const fn = tasks.shift();
+      if (!fn) { Promise.all([loaded, fonts]).then(() => setTimeout(() => ST.refresh(), 0)); return; }
+      fn(); setTimeout(next, 0);
+    };
+    setTimeout(next, 0);
+  };
 
   /* 2. Weighted scrolling */
   let lenis = null;
@@ -143,7 +160,7 @@
   }
 
   /* 3. Pinned scenes (created first, so later triggers measure the pin spacing) */
-  if (!reduce) {
+  later(() => {
     // The reel: a small, tilted card grows, flattens and opens to full screen; PLAY and REEL part.
     const card = document.querySelector('.reel-card');
     const cover = () => Math.max(innerWidth / card.offsetWidth, innerHeight / card.offsetHeight) * 1.02;
@@ -154,6 +171,8 @@
       .fromTo('.reel-label span:last-child', { xPercent: 0 }, { xPercent: 70, ease: 'power1.inOut', duration: 0.7 }, 0)
       .to('.reel-label', { opacity: 0, duration: 0.2 }, 0.75);
 
+  });
+  later(() => {
     // The loops: AI, then design.
     const loopsTl = gsap.timeline({ scrollTrigger: { id: 'loops', trigger: '.loops', start: 'top top', end: '+=300%', pin: '.loops-stick', scrub: 1 } });
     loopsTl.fromTo('.panel-ai', { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, duration: 0.1 }, 0.12)
@@ -163,6 +182,8 @@
       .fromTo('.loops-fallback', { rotation: 0, scale: 0.8 }, { rotation: 140, scale: 1.1, ease: 'none', duration: 1 }, 0)
       .set({}, {}, 1);
 
+  });
+  later(() => {
     // The portal: the picture grows to fill the screen, then you fall into a tunnel of lines.
     const pCard = document.querySelector('.portal-card'), pStick = document.querySelector('.portal-stick');
     const delta = () => {
@@ -176,23 +197,26 @@
       .fromTo('.portal-fallback', { scale: 0.2, autoAlpha: 0 }, { scale: 3, autoAlpha: 1, ease: 'power1.in', duration: 0.6 }, 0.3)
       .fromTo('.portal-end', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.1 }, 0.8)
       .set({}, {}, 1);
-  }
+  });
 
   /* 4. Words, headings, drawings */
   if (!reduce) {
     const hero = document.querySelector('.hero-title');
     if (hero) gsap.from(hero.querySelectorAll('.ln'), { y: 30, duration: 1.6, ease: 'expo.out', stagger: 0.08 });
-
-    // The statement inks in, word by word.
+  }
+  later(() => {
+    // The statement inks in, word by word, from the tone colour (which still passes contrast at this size).
     document.querySelectorAll('.words').forEach((el) => {
       const parts = el.textContent.trim().split(/\s+/);
       el.innerHTML = parts.map((w) => `<span class="wd">${w}</span>`).join(' ');
-      gsap.fromTo(el.querySelectorAll('.wd'), { color: '#D7C3A8' }, {
+      gsap.fromTo(el.querySelectorAll('.wd'), { color: col('--tone') }, {
         color: col('--ink'), stagger: 0.1, ease: 'none',
         scrollTrigger: { trigger: el, start: 'top 78%', end: 'bottom 42%', scrub: true }
       });
     });
 
+  });
+  later(() => {
     // Headings rise letter by letter.
     document.querySelectorAll('h2.split').forEach((h) => {
       h.setAttribute('aria-label', h.textContent.replace(/\s+/g, ' ').trim());
@@ -202,6 +226,8 @@
       gsap.from(h.querySelectorAll('.c'), { yPercent: 115, rotate: 7, opacity: 0, duration: 1.15, ease: 'expo.out', stagger: 0.022, scrollTrigger: { trigger: h, start: 'top 88%' } });
     });
 
+  });
+  later(() => {
     // Line drawings draw themselves on the way in, and again on hover.
     document.querySelectorAll('.svc').forEach((svc) => {
       const strokes = svc.querySelectorAll('.draw [pathLength]');
@@ -220,12 +246,12 @@
     document.querySelectorAll('.card, .step, .person, .statement-foot').forEach((el) => {
       gsap.from(el, { y: 50, opacity: 0, duration: 1.3, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
     });
-  }
+  });
 
   /* 5. The walker */
   const walker = document.querySelector('.walker');
   const perches = [...document.querySelectorAll('[data-perch]')];
-  if (walker && perches.length > 1 && !reduce) {
+  if (walker && perches.length > 1) later(() => {
     const mark = walker.querySelector('.walker-mark'), bubble = walker.querySelector('.walker-say');
     const at = (el) => { const r = el.getBoundingClientRect(); return { x: r.left + scrollX, y: r.top + scrollY }; };
     const scaleOf = (el) => parseFloat(el.dataset.scale || '1');
@@ -265,9 +291,7 @@
         { x: () => at(to).x, y: () => at(to).y, scale: scaleOf(to), ease: 'power1.inOut', immediateRender: false }, 0);
       tl.fromTo(mark, { y: 0, rotation: 0 }, { keyframes: { y: [0, -80, -40, 0], rotation: [0, -14 * dir, 8 * dir, 0] }, ease: 'none', immediateRender: false }, 0);
     });
-    addEventListener('load', () => ST.refresh());
-    document.fonts && document.fonts.ready.then(() => ST.refresh());
-  }
+  });
 
   /* 6. Nav, cards, buttons */
   const nav = document.querySelector('.nav');
@@ -289,7 +313,7 @@
     } });
   }
 
-  if (finePointer && !reduce) {
+  if (finePointer) later(() => {
     document.querySelectorAll('.card-media, .person-photo').forEach((m) => {
       const rx = gsap.quickTo(m, 'rotationX', { duration: 0.8, ease: 'expo.out' });
       const ry = gsap.quickTo(m, 'rotationY', { duration: 0.8, ease: 'expo.out' });
@@ -303,7 +327,8 @@
       b.addEventListener('pointermove', (e) => { const r = b.getBoundingClientRect(); mx((e.clientX - r.left - r.width / 2) * 0.28); my((e.clientY - r.top - r.height / 2) * 0.4); });
       b.addEventListener('pointerleave', () => { mx(0); my(0); });
     });
-  }
+  });
+  runTasks();
 
   /* 3b. Load the three.js scenes on the first interaction (scroll, pointer, touch, key). They all sit below the
      fold, so nobody sees them before interacting, and the first paint and main thread never wait for them.
