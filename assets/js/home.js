@@ -150,12 +150,13 @@
   };
 
   /* 2. Weighted scrolling: ScrollSmoother, the engine gsap.com uses. The page follows the wheel with a long,
-     eased lag (smooth: 1.8 seconds to catch up), so every scroll glides and settles like something heavy. */
+     eased lag. gsap.com itself scrolls natively and lets crisp entrance animations do the work, so the lag here is
+     kept light (1 second) and the scenes follow the scroll almost directly: one layer of smoothing, never two. */
   let smoother = null;
   // Mouse and trackpad only: on touch screens native scrolling already has momentum, and smoothing it fights the finger.
   if (!reduce && finePointer && window.ScrollSmoother) {
     gsap.registerPlugin(window.ScrollSmoother);
-    smoother = window.ScrollSmoother.create({ wrapper: '#smooth-wrapper', content: '#smooth-content', smooth: 1.8, effects: true, smoothTouch: 0.12 });
+    smoother = window.ScrollSmoother.create({ wrapper: '#smooth-wrapper', content: '#smooth-content', smooth: 1, effects: true, smoothTouch: 0.1 });
     gsap.ticker.add(() => { const v = smoother.getVelocity() / 60; field.kick(v); ctaField.kick(v); });
     document.querySelectorAll('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => {
       const id = a.getAttribute('href'); const target = id === '#top' ? 0 : document.querySelector(id);
@@ -169,7 +170,7 @@
     // The reel: a small, tilted card grows, flattens and opens to full screen; PLAY and REEL part.
     const card = document.querySelector('.reel-card');
     const cover = () => Math.max(innerWidth / card.offsetWidth, innerHeight / card.offsetHeight) * 1.02;
-    const reelTl = gsap.timeline({ scrollTrigger: { id: 'reel', trigger: '.reel', start: 'top top', end: '+=200%', pin: '.reel-stick', scrub: 1.6, invalidateOnRefresh: true } });
+    const reelTl = gsap.timeline({ scrollTrigger: { id: 'reel', trigger: '.reel', start: 'top top', end: '+=200%', pin: '.reel-stick', scrub: 0.5, invalidateOnRefresh: true } });
     reelTl.fromTo(card, { scale: 0.42, rotation: -5, borderRadius: 18 }, { scale: 1, rotation: 0, borderRadius: 14, ease: 'power2.out', duration: 0.55 }, 0)
       .to(card, { scale: cover, borderRadius: 0, ease: 'power2.in', duration: 0.45 }, 0.55)
       .fromTo('.reel-label span:first-child', { xPercent: 0 }, { xPercent: -70, ease: 'power1.inOut', duration: 0.7 }, 0)
@@ -179,7 +180,7 @@
   });
   later(() => {
     // The loops: AI, then design.
-    const loopsTl = gsap.timeline({ scrollTrigger: { id: 'loops', trigger: '.loops', start: 'top top', end: '+=360%', pin: '.loops-stick', scrub: 1.6 } });
+    const loopsTl = gsap.timeline({ scrollTrigger: { id: 'loops', trigger: '.loops', start: 'top top', end: '+=360%', pin: '.loops-stick', scrub: 0.5 } });
     loopsTl.fromTo('.panel-ai', { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, duration: 0.1 }, 0.12)
       .to('.panel-ai', { autoAlpha: 0, y: -40, duration: 0.08 }, 0.42)
       .fromTo('.panel-design', { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, duration: 0.1 }, 0.66)
@@ -194,9 +195,7 @@
     // Ten screens of scroll (at least 4,000px): the approach, the wormhole, the tunnel, a new place, the glass.
     // Near the end of the tunnel the scroll gets heavy: the smoothing deepens, so the page lags further behind the
     // wheel, as if the hole were pulling back. It eases off again after the flip.
-    const heavy = (p) => Math.max(0, Math.min(1, (p - 0.5) / 0.12)) * (1 - Math.max(0, Math.min(1, (p - 0.71) / 0.03)));
-    const portalTl = gsap.timeline({ scrollTrigger: { id: 'portal', trigger: '.portal', start: 'top top', end: () => '+=' + Math.max(4000, innerHeight * 10), pin: '.portal-stick', scrub: 1.8, invalidateOnRefresh: true,
-      onUpdate: (self) => { if (smoother) smoother.smooth(1.8 + 2.6 * heavy(self.progress)); } } });
+    const portalTl = gsap.timeline({ scrollTrigger: { id: 'portal', trigger: '.portal', start: 'top top', end: () => '+=' + Math.max(4800, innerHeight * 12), pin: '.portal-stick', scrub: 0.4, invalidateOnRefresh: true } });
     // Phases (scene.js): approach the portal 0-0.42, through it and the tunnel 0.42-0.70, flash and flip at 0.72,
     // he glides toward us 0.75-0.92, breaks the glass at 0.92, and jumps out toward the contact section.
     portalTl.to('.portal-intro', { autoAlpha: 0, y: -80, duration: 0.08, ease: 'power2.in' }, 0.05)
@@ -259,7 +258,7 @@
         const pt = ribbon.getPointAtLength(len * state.p); head.setAttribute('cx', pt.x); head.setAttribute('cy', pt.y);
         steps.forEach((s, i) => s.classList.toggle('on', state.p >= (i + 0.25) / steps.length)); // each step lights up as the head passes
       };
-      gsap.to(state, { p: 1, ease: 'none', onUpdate: draw, scrollTrigger: { trigger: '.proc', start: 'top 80%', end: 'bottom 50%', scrub: 1.6 } });
+      gsap.to(state, { p: 1, ease: 'none', onUpdate: draw, scrollTrigger: { trigger: '.proc', start: 'top 80%', end: 'bottom 50%', scrub: 0.8 } });
     }
 
     document.querySelectorAll('.card, .step, .person, .statement-foot').forEach((el) => {
@@ -271,13 +270,13 @@
      scroll, then settle, so a flick of the wheel feels like moving something heavy. */
   later(() => {
     const lag = (sel, dist) => document.querySelectorAll(sel).forEach((el) => {
-      gsap.fromTo(el, { y: dist }, { y: -dist, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 1.8 } });
+      gsap.fromTo(el, { y: dist }, { y: -dist, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 0.8 } });
     });
     lag('.sec-head h2', 40); lag('.statement-text', 50); lag('.svc-col-name', 30);
     lag('.card:nth-child(2), .card:nth-child(4)', 70); lag('.person:nth-child(2)', 80); lag('.proc-steps', 24);
     // Pictures drift inside their frames.
     document.querySelectorAll('.card-media, .person-photo').forEach((m) => {
-      gsap.fromTo(m, { backgroundPosition: '50% 0%' }, { backgroundPosition: '50% 100%', ease: 'none', scrollTrigger: { trigger: m, start: 'top bottom', end: 'bottom top', scrub: 1.8 } });
+      gsap.fromTo(m, { backgroundPosition: '50% 0%' }, { backgroundPosition: '50% 100%', ease: 'none', scrollTrigger: { trigger: m, start: 'top bottom', end: 'bottom top', scrub: 0.8 } });
     });
     const leaners = gsap.utils.toArray('.work-list, .team-list, .svc-cols');
     const skew = gsap.quickTo(leaners, 'skewY', { duration: 0.9, ease: 'power3.out' });
@@ -366,7 +365,7 @@
       const dir = Math.sign(at(to).x - at(from).x) || 1;
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: section, start: 'top 88%', end: 'top 28%', scrub: 1.4, invalidateOnRefresh: true,
+          trigger: section, start: 'top 88%', end: 'top 28%', scrub: 0.8, invalidateOnRefresh: true,
           onUpdate: (self) => {
             walker.classList.toggle('on-dark', self.progress > 0.5 ? darkAt(to) : darkAt(from));
             walker.style.setProperty('--s', gsap.getProperty(walker, 'scale'));
@@ -388,7 +387,7 @@
     const last = perches[perches.length - 1], portalEl = document.querySelector('.portal');
     if (portalEl) {
       const target = () => { const a = at(portalEl), m = Math.min(innerWidth, innerHeight); return { x: a.x + innerWidth / 2 + Math.cos(-2.75) * m * 0.36, y: a.y + innerHeight / 2 + Math.sin(-2.75) * m * 0.36 }; };
-      gsap.timeline({ scrollTrigger: { trigger: portalEl, start: 'top 85%', end: 'top top', scrub: 1.2, invalidateOnRefresh: true,
+      gsap.timeline({ scrollTrigger: { trigger: portalEl, start: 'top 85%', end: 'top top', scrub: 0.6, invalidateOnRefresh: true,
         onUpdate: (self) => { walker.classList.toggle('on-dark', self.progress > 0.3); if (self.progress > 0.05) hush(); } } })
         .fromTo(walker, { x: () => at(last).x, y: () => at(last).y, scale: scaleOf(last), rotation: 0 },
           { x: () => target().x, y: () => target().y, scale: 2.4, rotation: 0, ease: 'power2.inOut', immediateRender: false });

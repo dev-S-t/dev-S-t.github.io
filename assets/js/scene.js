@@ -338,10 +338,34 @@ const glidePose = (t) => ({
   root: { x: 0, y: 0, rot: 0.08 * Math.sin(t * 0.9), sx: 1 }, lean: 0.05, bend: 0.75, nod: 0.06 * Math.sin(t * 1.2),
   feet: { L: { x: -0.13, y: 0.3 }, R: { x: 0.15, y: 0.27 } }, knee: { L: 1, R: -1 },
   hands: { F: { x: 0.44, y: -0.3 + 0.05 * Math.sin(t * 2.0) }, B: { x: -0.44, y: -0.28 + 0.05 * Math.cos(t * 2.0) } },
-  elbow: { F: -1, B: 1 }, round: { F: 0.7, B: 0.7 }
+  elbow: { F: 1, B: -1 }, round: { F: 0.5, B: 0.5 }
+});
+// Floating as he falls: arms raised evenly, legs a little apart. Clean enough to read at any size and angle;
+// s is driven by the scroll, so he only moves when you do.
+const floatPose = (s, rot) => ({
+  root: { x: 0, y: 0, rot, sx: 1 }, lean: 0.06 * Math.sin(s * 0.7), bend: 0.75, nod: 0.08 * Math.sin(s * 0.9),
+  feet: { L: { x: -0.1 + 0.03 * Math.sin(s), y: 0.31 }, R: { x: 0.12 + 0.03 * Math.cos(s * 1.1), y: 0.29 } }, knee: { L: 1, R: -1 },
+  hands: { F: { x: 0.27 + 0.03 * Math.sin(s * 1.3), y: -0.5 + 0.03 * Math.sin(s * 1.7) }, B: { x: -0.27 + 0.03 * Math.sin(s * 1.2 + 1), y: -0.48 + 0.03 * Math.cos(s * 1.5) } },
+  elbow: { F: 1, B: -1 }, round: { F: 0.4, B: 0.4 }
+});
+// The jump: a crouch to spring from, the leap itself (straight, arms up), and the same crouch to land in.
+const crouchPose = (rot = 0) => ({
+  root: { x: 0, y: 0, rot, sx: 1 }, lean: 0.35, bend: 0.8, nod: 0.2,
+  feet: { L: { x: -0.14, y: 0.2 }, R: { x: 0.12, y: 0.21 } }, knee: { L: 1, R: 1 },
+  hands: { F: { x: 0.18, y: 0.06 }, B: { x: -0.24, y: 0.02 } }, elbow: { F: 1, B: -1 }, round: { F: 0.3, B: 0.3 }
+});
+const leapPose = (rot = 0) => ({
+  root: { x: 0, y: 0, rot, sx: 1 }, lean: -0.05, bend: 0.6, nod: -0.1,
+  feet: { L: { x: -0.05, y: 0.33 }, R: { x: 0.06, y: 0.33 } }, knee: { L: 1, R: 1 },
+  hands: { F: { x: 0.14, y: -0.6 }, B: { x: -0.14, y: -0.58 } }, elbow: { F: 1, B: -1 }, round: { F: 0.2, B: 0.2 }
 });
 // Where the 3D figure is on screen (px), so the 2D figure can take over from exactly there.
-const HAND = { x: 0, y: 0, k: 0, cx: 0, cy: 0 };   // cx, cy: the portal's centre on screen
+const HAND = { x: 0, y: 0, k: 0, cx: 0, cy: 0 };
+// The fall's scroll, mapped to the scene's own timeline. Near the core (scene 0.55 to 0.70) it takes about one and a
+// half times as much scrolling to move as far: the screen moves slower under the wheel, as if the hole held on, but it
+// stops the moment you stop.
+const WARP = [[0, 0], [0.36, 0.42], [0.5, 0.55], [0.74, 0.7], [1, 1]];
+const scenePos = (r) => { for (let i = 1; i < WARP.length; i++) { const [a0, b0] = WARP[i - 1], [a1, b1] = WARP[i]; if (r <= a1) return b0 + (b1 - b0) * clamp((r - a0) / (a1 - a0)); } return 1; };   // cx, cy: the portal's centre on screen
 // Draw a pose with the films' hand-drawn boil: the lines re-drawn 8 times a second.
 function drawFig(MB, g, pose, x, y, k, t, color) {
   const ln = MB.body(pose);
@@ -607,7 +631,7 @@ function portal(THREE, ST, MB) {
   const v3 = new THREE.Vector3(), fwd = new THREE.Vector3();
   let lastP = 0, vel = 0, flipRoll = 0;
   S.onTick((t) => {
-    const p = st.progress;
+    const p = scenePos(st.progress);
     vel += ((p - lastP) * 60 - vel) * 0.08; lastP = p;
     ringU.uTime.value = inU.uTime.value = memU.uTime.value = tU.uTime.value = sU.uTime.value = t;
 
@@ -663,7 +687,7 @@ function portal(THREE, ST, MB) {
       // In the tunnel he falls ahead of us; every movement here comes from the scroll (s), none from the clock.
       const sc = p * 60;
       pos = v3.copy(camera.position).addScaledVector(fwd, 7).add(new THREE.Vector3(Math.sin(sc * 0.5) * 0.6, Math.cos(sc * 0.4) * 0.4, 0));
-      pose = sinkPose(sc, 0.6 * Math.sin(sc * 0.7) + b * 3);
+      pose = floatPose(sc, 0.4 * Math.sin(sc * 0.7) + b * 2.5);
     } else {
       // out of the light, gliding toward us as we scroll; through the glass and past us
       const z = lerp(ROOM_Z - 46, ROOM_Z - 3.6, 1 - Math.pow(1 - glide, 1.6)) + brk * 6;   // quickly out of the light, then slowing as he reaches the glass
@@ -691,18 +715,13 @@ function portal(THREE, ST, MB) {
   sec.classList.add('has-gl');
 }
 
-// Falling with his arms up: the pose for the spiral, moved by a value the scroll drives (s), not the clock.
-const sinkPose2D = (s, rot) => {
-  const p = fallPose(s, rot);
-  p.hands = { F: { x: 0.28 + 0.06 * Math.sin(s * 1.4), y: -0.48 + 0.06 * Math.sin(s * 1.9) }, B: { x: -0.28 + 0.06 * Math.sin(s * 1.2 + 1), y: -0.46 + 0.06 * Math.cos(s * 1.6) } };
-  return p;
-};
-
-/* ---------------- arrival: through the glass and into the contact section ---------------- */
-// From the moment the glass breaks, a 2D figure takes over from the 3D one at exactly its place and size, on a
-// layer fixed over the page. As you keep scrolling he comes to rest in the middle, never smaller, and turns from
-// cream to orange as the contact section rises under him. Once the section is in place (it is pinned), he moves
-// onto its own canvas, behind its words, floating and waving, and leaves with it when it scrolls away.
+/* ---------------- arrival: the spiral in, and the jump out ---------------- */
+// One layer fixed over the page (the hand-over canvas) and the contact section's own canvas, behind its words.
+//   the spiral  (scene 0 to 0.42) he arrives from the walker, stretches up to his real size and falls round and in
+//               toward the portal's centre, leaning into the turns, spinning only as he is drawn in.
+//   the jump    (scene 0.93 to 1) after the glass breaks he crouches and leaps, up and out of the top of the screen.
+//   the landing as the contact section arrives he drops in from above, behind its words, lands in a crouch, stands
+//               and waves. All of it moves with the scroll; only the wave keeps time on its own.
 const mixHex = (a, b, u) => { const pa = [1, 3, 5].map((i) => parseInt(a.substr(i, 2), 16)), pb = [1, 3, 5].map((i) => parseInt(b.substr(i, 2), 16)); return 'rgb(' + pa.map((v, i) => Math.round(v + (pb[i] - v) * u)).join(',') + ')'; };
 function arrival(MB, ST) {
   const pst = ST.getById('portal'), cta = document.querySelector('.cta'), ccv = cta && cta.querySelector('.cta-fig'), portalEl = document.querySelector('.portal');
@@ -713,50 +732,67 @@ function arrival(MB, ST) {
   const size = () => { dpr = Math.min(devicePixelRatio || 1, 2); w = innerWidth; h = innerHeight; ov.width = w * dpr; ov.height = h * dpr; cw = ccv.clientWidth; ch = ccv.clientHeight; ccv.width = cw * dpr; ccv.height = ch * dpr; };
   size(); addEventListener('resize', size);
   let from = null;
+  const draw = (g, pose, x, y, k, t, color, halo) => {
+    if (halo) { g.shadowColor = 'rgba(16, 9, 4, 0.8)'; g.shadowBlur = 10; }
+    drawFig(MB, g, pose, x, y, k, t, color);
+    g.shadowBlur = 0;
+  };
   const frame = (t) => {
     og.setTransform(dpr, 0, 0, dpr, 0, 0); og.clearRect(0, 0, w, h);
     cg.setTransform(dpr, 0, 0, dpr, 0, 0); cg.clearRect(0, 0, cw, ch);
-    const p = pst.progress, r = cta.getBoundingClientRect();
-    // The spiral: he arrives (the walker's hand-over), stretches out to his real size, then, only as you scroll,
-    // falls round and in toward the portal's centre, turning and shrinking, and is gone into it by 0.42.
-    const pr = portalEl.getBoundingClientRect();
-    if (p < 0.42 && pr.top < h * 0.05 && pr.bottom > h * 0.5) {
-      const m = Math.min(w, h), sp = clamp(p / 0.41), cx = HAND.cx || w / 2, cy = HAND.cy || h / 2;
-      const grow = smooth(clamp(sp / 0.06));                            // stretching out to his real size
-      const ang = -2.75 + Math.pow(sp, 0.9) * Math.PI * 2 * 2.25;       // two and a quarter turns, starting at the left
+    const ps = scenePos(pst.progress), m = Math.min(w, h), K = Math.max(HAND.k || 0, 0.4 * m);
+    const pr = portalEl.getBoundingClientRect(), r = cta.getBoundingClientRect();
+
+    // the spiral
+    if (ps < 0.42 && pr.top < h * 0.05 && pr.bottom > h * 0.5) {
+      const sp = clamp(ps / 0.41), cx = HAND.cx || w / 2, cy = HAND.cy || h / 2;
+      const grow = smooth(clamp(sp / 0.06));
+      const ang = -2.75 + Math.pow(sp, 0.9) * Math.PI * 2 * 2.25;
       const rad = m * 0.36 * Math.pow(1 - smooth(sp), 1.15);
-      const x = cx + Math.cos(ang) * rad, y = cy + Math.sin(ang) * rad;
       const k = lerp(m * 0.09, m * 0.3, grow) * (1 - 0.88 * Math.pow(sp, 1.25));
-      // He stays upright enough to read, leaning into the turns; only as he is drawn in does he start to spin.
-      const lean = 0.55 * Math.sin(ang + 2.75) * smooth(clamp((sp - 0.04) / 0.15)), spin = Math.pow(smooth(clamp((sp - 0.62) / 0.38)), 1.5) * Math.PI * 3;
-      const pose = sinkPose2D(sp * 18, lean + spin);
-      pose.root.stretch = [ang + Math.PI, 1 + 0.7 * (1 - grow) + 1.4 * smooth(clamp((sp - 0.72) / 0.28))];   // tall as he arrives, drawn out as he goes in
+      const lean = 0.45 * Math.sin(ang + 2.75) * smooth(clamp((sp - 0.04) / 0.15)), spin = Math.pow(smooth(clamp((sp - 0.62) / 0.38)), 1.5) * Math.PI * 3;
+      const pose = floatPose(sp * 14, lean + spin);
+      pose.root.stretch = [ang + Math.PI, 1 + 0.35 * (1 - grow) + 0.35 * smooth(clamp((sp - 0.75) / 0.25))];   // a little tall as he arrives, a little drawn as he goes in
       og.globalAlpha = 1 - smooth(clamp((sp - 0.93) / 0.07));
-      og.shadowColor = 'rgba(16, 9, 4, 0.8)'; og.shadowBlur = 10;
-      drawFig(MB, og, pose, x, y, k, t, '#FFEDD7');
-      og.shadowBlur = 0; og.globalAlpha = 1;
+      draw(og, pose, cx + Math.cos(ang) * rad, cy + Math.sin(ang) * rad, k, t, '#FFEDD7', true);
+      og.globalAlpha = 1;
       from = null; return;
     }
-    const rise = clamp(1 - r.top / h);                       // the contact section coming up under him, 0 to 1
-    if (p < 0.93 && rise <= 0) { from = null; return; }
-    const K = Math.max(HAND.k || 0, 0.42 * Math.min(w, h));  // never smaller than he was
-    if (!from) from = p < 0.995 && HAND.k ? { x: HAND.x, y: HAND.y, k: HAND.k } : { x: w * 0.5, y: h * 0.6, k: K };
-    const u = smooth(clamp((p - 0.93) / 0.07));
-    const x = lerp(from.x, w * 0.5, u), y = lerp(from.y, h * 0.6, u), k = Math.max(from.k, lerp(from.k, K, u));
-    const pose = mixPose(glidePose(t), standPose(t, 1), smooth(rise));
-    if (rise < 1) {
-      og.shadowColor = 'rgba(16, 9, 4, 0.8)'; og.shadowBlur = 14;
-      drawFig(MB, og, pose, x, y, k, t, mixHex('#FFEDD7', '#DC5000', smooth(rise)));
-      og.shadowBlur = 0;
-    } else {
-      drawFig(MB, cg, pose, cw * 0.5, ch * 0.6 + Math.sin(t * 1.5) * 6, K, t, '#DC5000');   // behind the words, moving with the section
+
+    // the jump, out of the top of the screen
+    if (ps >= 0.93 && ps < 1 && pr.bottom > h * 0.5) {
+      if (!from) from = HAND.k ? { x: HAND.x, y: HAND.y, k: HAND.k } : { x: w * 0.5, y: h * 0.62, k: K };
+      const j = clamp((ps - 0.93) / 0.07);
+      if (j < 0.32) {
+        const c = smooth(j / 0.32);
+        draw(og, mixPose(glidePose(ps * 60), crouchPose(), c), lerp(from.x, w * 0.5, c), lerp(from.y, h * 0.66, c), lerp(from.k, K, c), t, '#FFEDD7', true);
+      } else {
+        const l = (j - 0.32) / 0.68;
+        const pose = mixPose(crouchPose(), leapPose(), smooth(clamp(l * 3)));
+        draw(og, pose, w * 0.5, lerp(h * 0.66, -0.75 * K, Math.pow(l, 1.3)), K, t, '#FFEDD7', true);
+      }
+      return;
     }
+    if (ps < 0.93) from = null;
+
+    // the landing, behind the words of the contact section
+    const rise = clamp(1 - r.top / h), cst = ST.getById('cta'), q = cst ? cst.progress : 0;
+    const L = clamp((rise - 0.55) / 0.45) * 0.55 + clamp(q / 0.3) * 0.45;
+    if (L <= 0) return;
+    const landY = ch * 0.6, F = clamp(L / 0.75), G = clamp((L - 0.75) / 0.25);
+    let pose, y = landY;
+    if (F < 1) { pose = leapPose(); y = lerp(-0.8 * K, landY, F * F); }                         // dropping in, gathering speed
+    else if (G < 0.4) pose = mixPose(leapPose(), crouchPose(), smooth(G / 0.4));                 // the landing: knees give
+    else pose = mixPose(crouchPose(), standPose(t, smooth(clamp(q / 0.3 - 1) * 2)), smooth((G - 0.4) / 0.6));   // up, and a wave
+    if (L >= 1) pose = standPose(t, smooth(clamp((q - 0.3) / 0.15)));
+    draw(cg, pose, cw * 0.5, y + (L >= 1 ? Math.sin(t * 1.5) * 4 : 0), K, t, '#DC5000', false);
   };
-  let on = false, vis = new Set();
+  let on = false;
+  const vis = new Set();
   const io = new IntersectionObserver((es) => {
     es.forEach((e) => (e.isIntersecting ? vis.add(e.target) : vis.delete(e.target)));
     const want = vis.size > 0;
-    if (want !== on) { on = want; onClock(frame, on); if (!on) { og.clearRect(0, 0, ov.width, ov.height); } }
+    if (want !== on) { on = want; onClock(frame, on); if (!on) og.clearRect(0, 0, ov.width, ov.height); }
   });
   io.observe(portalEl); io.observe(cta);
 }

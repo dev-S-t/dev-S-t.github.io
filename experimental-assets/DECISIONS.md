@@ -2,6 +2,16 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-10: seventh pass, the spiral, the jump, and a lighter scroll
+
+Abhishek's notes: in the space section the human appeared small and tumbled on his own, then grew; he should arrive, stretch to his real size, and fall in a spiral only as you scroll. Later: the screen scrolled too much on its own; it should feel like gsap.com, slower under the wheel; the figure distorted too much; when he jumps, show the jump and land behind the content.
+
+- **gsap.com, measured:** it uses native scroll (no ScrollSmoother, no Lenis) and crisp entrance animations. So the smoothing here is now light: ScrollSmoother at 1 second, scrubs of 0.4 to 0.8 (one layer, never stacked).
+- **Heavy near the core, by distance not lag:** the fall is pinned for 12 screens (at least 4,800px), and its scroll is mapped to the scene so that the stretch near the core takes about 1.5 times as much scrolling. It moves slower under the wheel and stops when you stop.
+- **The spiral:** the walker comes down to the spiral's start; the full figure takes over there and stretches up to his real size, then falls two and a quarter turns into the portal's centre, leaning into the turns and spinning only as he is drawn in. Scroll only.
+- **Clean poses:** a floating pose (arms raised evenly, legs a little apart) for the spiral and the tunnel; elbows consistent in every pose so blends never flip; stretching kept small.
+- **The jump:** after the glass, he crouches and leaps up out of the top of the screen. As the contact section arrives he drops in from above behind its words, lands in a crouch, stands and waves. Scroll-driven except the wave.
+
 ## 2026-11-10: sixth pass, the hand-over and the sea of lines
 
 Abhishek's notes: after the glass, don't fade to black; keep him visible and at full size, and carry him into the contact section by scroll; pin the contact section for 120vh so a fast scroll can't skip it; replace the corridor and drop its text; blend the tunnel better and make the scroll heavy near the end of the wormhole; smooth the way into the portal.
