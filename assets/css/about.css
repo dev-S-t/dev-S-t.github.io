@@ -1,0 +1,130 @@
+/* About page. Loaded after home.css, which gives the tokens, nav, buttons, type scale, next-page bar and footer.
+   Structure and motion follow lusion.co/about (Abhishek's reference, 2026-11-10); colours: black and one bright
+   (the studio orange). Everything drawn is lines: the field, the beam, the portraits, the outlines. */
+.ab { --bg: #030203; --fg: var(--cream); --dim: rgba(255, 237, 215, .62); --rule: rgba(255, 237, 215, .16); --bright: var(--orange);
+  background: var(--bg); color: var(--fg); }
+.ab h1, .ab h2, .ab h3 { color: inherit; }
+.ab main > section { position: relative; z-index: 1; }
+
+/* The opening scene sits behind the first three sections and fades out before the team. */
+.ab-stage { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.ab-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* 1. The name */
+.ab-intro { height: 100svh; display: grid; align-content: end; padding: 0 var(--gutter) var(--s4); }
+.ab-word { margin: 0; font-family: var(--sans); font-weight: 300; text-transform: uppercase; white-space: nowrap;
+  /* A display size, outside the type scale: the name is the picture here, as in the reference. */
+  font-size: 12.4vw; line-height: .9; letter-spacing: -0.03em; color: transparent; -webkit-text-stroke: 1.5px var(--fg); }
+.ab-word span { display: inline-block; }
+.ab-scroll { position: absolute; right: var(--gutter); top: calc(100svh - 12.4vw - var(--s8)); margin: 0; font-size: var(--label); line-height: 1; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); }
+
+/* 2. Who we are */
+.ab-we { height: 100svh; display: grid; grid-template-columns: 1fr 1fr; align-items: end; gap: var(--s4); padding: 0 var(--gutter) var(--s8); }
+.ab-we p { margin: 0; font-size: var(--h3); line-height: var(--lh3); text-transform: uppercase; font-weight: 400; max-width: 12em; }
+.ab-we-b { justify-self: end; text-align: right; }
+.ab em { font-style: italic; }
+
+/* 3. The statement */
+.ab-say { height: 160svh; display: grid; grid-template-rows: 1fr 1fr; padding: var(--s16) var(--gutter); }
+.ab-say p { margin: 0; font-size: var(--h2); line-height: var(--lh2); font-weight: 300; max-width: 15em; }
+.ab-say-b { align-self: end; justify-self: end; text-align: right; }
+.ab-words .w { display: inline-block; }
+
+/* 4. Team */
+.ab-team-stick { position: relative; height: 100svh; overflow: hidden; }
+.ab-face { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ab-team-word { position: absolute; top: var(--s12); right: var(--gutter); margin: 0; font-size: var(--h1); line-height: 1; font-weight: 300; text-transform: uppercase; letter-spacing: .28em; margin-right: -.28em; }
+.ab-ticks { position: absolute; top: var(--s16); left: var(--gutter); display: flex; gap: var(--s1); }
+.ab-ticks i { width: 16px; height: 1px; background: var(--rule); }
+.ab-ticks i.on { background: var(--fg); }
+.ab-letter { position: absolute; left: 62%; bottom: var(--s6); margin: 0; perspective: 600px; font-family: var(--serif); font-weight: 250; font-size: 240px; line-height: .8; color: var(--fg); }
+.ab-letter span { display: inline-block; transform-origin: 50% 60%; }
+.ab-people { position: absolute; left: var(--gutter); bottom: var(--s10); margin: 0; padding: 0; list-style: none; display: grid; }
+.ab-person { grid-area: 1 / 1; }
+.ab-name { margin: 0; font-size: var(--p); line-height: var(--lh-p); color: var(--fg); }
+.ab-role { margin: var(--s1) 0 0; font-size: var(--label); line-height: 1; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); }
+.ab-team-bar { position: absolute; left: var(--gutter); bottom: var(--s6); width: 240px; height: 1px; background: var(--rule); }
+.ab-team-bar b { position: absolute; inset: 0; background: var(--fg); transform-origin: left; transform: scaleX(0); }
+.ab-next { position: absolute; left: 50%; top: 50%; width: 96px; height: 96px; margin: -48px 0 0 -48px; border: 0; border-radius: 50%; background: var(--bright); color: var(--ink); cursor: pointer; display: grid; place-items: center; transition: transform .6s var(--ease-out); }
+.ab-next:hover { transform: scale(1.12); }
+.ab-next:focus-visible { outline: 2px solid var(--fg); outline-offset: 6px; }
+.ab-next-arrow { position: relative; width: 24px; height: 14px; }
+.ab-next-arrow::before { content: ""; position: absolute; left: 0; top: 6px; width: 23px; height: 1.6px; background: currentColor; }
+.ab-next-arrow::after { content: ""; position: absolute; right: 0; top: 2px; width: 8px; height: 8px; border-top: 1.6px solid currentColor; border-right: 1.6px solid currentColor; transform: rotate(45deg); }
+.ab-next .quip-pill { top: auto; bottom: calc(100% + 16px); left: 50%; translate: -50% 0; white-space: nowrap; }
+.ab-team-copy { position: absolute; right: var(--gutter); bottom: var(--s6); margin: 0; max-width: 320px; font-size: var(--p-sm); line-height: var(--lh-p-sm); color: var(--dim); }
+/* Without scripts, both people are listed */
+.js .ab-person { opacity: 0; visibility: hidden; transition: opacity .5s, visibility .5s; }
+.js .ab-person.is-on { opacity: 1; visibility: visible; transition: opacity .5s, visibility 0s; }
+
+/* 5. The record */
+.ab-record { padding: var(--s16) var(--gutter); min-height: 100svh; overflow: hidden; }
+.ab-drift { position: absolute; inset: 0; display: grid; align-content: space-around; pointer-events: none; }
+.ab-drift p { margin: 0; white-space: nowrap; font-family: var(--sans); font-weight: 300; text-transform: uppercase; font-size: 16vw; line-height: 1; color: transparent; -webkit-text-stroke: 1px rgba(255, 237, 215, .14); }
+.ab-rows { position: relative; display: grid; gap: var(--s16); }
+.ab-row { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 1fr) minmax(0, 7fr); align-items: start; gap: var(--s4); }
+.ab-row-head { font-family: var(--sans); font-weight: 300; text-transform: uppercase; font-size: var(--h3); line-height: var(--lh3); }
+.ab-row-count { margin: 0; display: flex; align-items: center; gap: var(--s1); font-size: var(--p); line-height: var(--lh3); color: var(--fg); font-variant-numeric: tabular-nums; }
+.ab-spark { position: relative; width: 14px; height: 14px; }
+.ab-spark::before, .ab-spark::after { content: ""; position: absolute; background: var(--bright); }
+.ab-spark::before { left: 6px; top: 0; width: 2px; height: 14px; }
+.ab-spark::after { top: 6px; left: 0; height: 2px; width: 14px; }
+.ab-list { margin: 0; padding: 0; list-style: none; }
+.ab-list a { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 5fr); gap: var(--s4); padding: var(--s2) 0; border-top: 1px solid var(--rule); font-size: var(--p-sm); line-height: var(--lh-p-sm); color: var(--dim); transition: color .4s, padding .6s var(--ease-out); }
+.ab-list li:last-child a { border-bottom: 1px solid var(--rule); }
+.ab-list a span:last-child { color: var(--fg); }
+.ab-list a:hover, .ab-list a:focus-visible { color: var(--bright); padding-left: var(--s2); }
+
+/* 6. What we make: the bright block. Ink on orange (AA, about 5:1). */
+.ab-make { background: var(--bright); color: var(--ink); min-height: 100svh; padding: var(--s16) var(--gutter); overflow: hidden; display: grid; align-content: end; gap: var(--s10); }
+.ab-make-word { position: absolute; left: var(--gutter); top: var(--s8); margin: 0; white-space: nowrap; font-family: var(--sans); font-weight: 300; text-transform: uppercase; font-size: 26vw; line-height: .85; color: transparent; -webkit-text-stroke: 1.5px var(--ink); }
+.ab-make-head h2 { position: relative; font-family: var(--sans); font-weight: 300; text-transform: uppercase; font-size: var(--h1); line-height: var(--lh1); color: var(--ink); }
+.ab-cards { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: var(--s4); }
+.ab-card { border-top: 1px solid rgba(16, 9, 4, .4); padding-top: var(--s3); display: grid; grid-template-columns: auto 1fr; gap: var(--s1) var(--s4); }
+.ab-card-letter { grid-row: 1 / 3; margin: 0; perspective: 400px; font-family: var(--serif); font-weight: 250; font-size: 128px; line-height: .8; }
+.ab-card-letter span { display: inline-block; transform-origin: 50% 60%; }
+.ab-card h3 { font-family: var(--sans); font-weight: 400; text-transform: uppercase; font-size: var(--h6); line-height: var(--lh6); color: var(--ink); }
+.ab-card ul { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--s1); font-size: var(--p); line-height: var(--lh-p); color: var(--ink); }
+
+/* 7. Let's make it together */
+.ab-cta { min-height: 100svh; display: grid; place-content: center; justify-items: center; gap: var(--s4); padding: var(--s16) var(--gutter); text-align: center; }
+.ab-cta-kicker { margin: 0; font-size: var(--label-lg); line-height: 1; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); }
+.ab-cta-title { display: block; font-family: var(--sans); font-weight: 300; text-transform: uppercase; font-size: var(--h1); line-height: var(--lh1); color: var(--fg); }
+.ab-cta-title:focus-visible { outline: 2px solid var(--bright); outline-offset: 12px; }
+.ab-roll { display: inline-block; }
+/* each letter twice, stacked; on hover the copy rolls up into place, a letter at a time */
+.ab-roll .wd { display: inline-block; white-space: nowrap; }
+.ab-roll .l { position: relative; display: inline-block; overflow: hidden; vertical-align: top; }
+.ab-roll .l > span { display: block; transition: transform .6s var(--ease-io); transition-delay: calc(var(--i) * 18ms); }
+.ab-roll .l > span + span { position: absolute; left: 0; top: 0; transform: translateY(100%); color: var(--bright); }
+.ab-cta-title.is-low .l > span:first-child { transform: translateY(110%); transition: none; }
+.ab-cta-title:hover .l > span:first-child, .ab-cta-title:focus-visible .l > span:first-child { transform: translateY(-100%); }
+.ab-cta-title:hover .l > span + span, .ab-cta-title:focus-visible .l > span + span { transform: translateY(0); }
+.ab-cta-sub { margin: 0; font-size: var(--p-lg); line-height: var(--lh-p-lg); color: var(--dim); }
+
+.ab .next { background: #0B0A0A; }
+.ab .foot { background: var(--bg); }
+
+@media (max-width: 900px) {
+  .ab-word { font-size: 21vw; }
+  .ab-word span { display: block; }
+  .ab-scroll { top: auto; bottom: calc(21vw * 1.8 + var(--s8)); }
+  .ab-we { grid-template-columns: 1fr; align-content: end; }
+  .ab-we-b { justify-self: start; text-align: left; }
+  .ab-say { height: 120svh; }
+  .ab-team-word { top: var(--s10); font-size: var(--h3); }
+  .ab-letter { font-size: 144px; left: auto; right: var(--gutter); bottom: auto; top: 58%; }
+  .ab-team-copy { position: absolute; left: var(--gutter); right: var(--gutter); bottom: var(--s3); max-width: none; }
+  .ab-people { bottom: calc(var(--s16) + var(--s4)); }
+  .ab-team-bar { bottom: calc(var(--s16) + var(--s1)); }
+  .ab-next { width: 72px; height: 72px; margin: -36px 0 0 -36px; top: 40%; }
+  .ab-row { grid-template-columns: 1fr auto; }
+  .ab-list { grid-column: 1 / -1; }
+  .ab-list a { grid-template-columns: 1fr; gap: var(--s1); }
+  .ab-cards { grid-template-columns: 1fr; }
+  .ab-card-letter { font-size: 96px; }
+  .ab-make-word { font-size: 30vw; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ab-roll .l > span { transition: none; }
+}

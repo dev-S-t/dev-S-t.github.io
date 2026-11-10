@@ -2,6 +2,18 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-10: tenth pass, the About page after lusion.co/about
+
+Abhishek asked for an About page like lusion.co/about. We follow its order and motion, not its content: the words are ours (from the home page), the drawings are lines, the pictures come from Abhishek.
+
+- **Colours (Abhishek):** black and one bright, as Lusion does. Ground `#030203`, text cream, the bright is the studio orange `#DC5000` (no other accent was named; it is one token, `--bright`, in `assets/css/about.css`).
+- **Order:** the name huge in outline over the opening scene; who we are, in two halves; the statement, lit word by word; the team, pinned, one person at a time; the record (publications and projects) over three drifting outline words ("Look closely / Make carefully / Look again", from the home page's copy); what we make, on the bright block, with flipping letters; "Let's make it together." with a letter-by-letter roll on hover; the next page (Our projects); the footer.
+- **Opening scene (Abhishek picked "figure on a field of lines"):** the logo's figure stands on contour lines under a beam of fine vertical lines, ringed in orange. Scrolling lifts the camera up the beam. three.js, loaded after the page's load event, stopped once the team section covers the screen.
+- **Team portraits (Abhishek picked "drawn in lines"):** each photo is read as light and dark, and rows of lines across the screen lift where the face is light; the pointer sends a ripple through them, and switching people morphs one face into the other. Until the photos arrive (`assets/img/team/sahil.webp`, `abhishek.webp`), a soft head-and-shoulders stand-in is drawn with the brief under it.
+- **Roles:** from the site's structured data (AI Solutions Architect, Product Designer). llms.txt names them differently (AI Solutions Engineer; UI and UX); one should be chosen.
+- **Proof (Abhishek picked "publications and talks"):** there are no talks on the site yet, so the list holds the IEEE publication and three shipped projects. No logo marquee.
+- **The name** is drawn at a display size (12.4vw), outside the type scale, because here it is the picture.
+
 ## 2026-11-10: ninth pass, the humans section and the reveal
 
 - **The humans (Abhishek picked "pinned list", after fragment-website-ten.vercel.app's "What drives us"):** the section pins and the scroll walks through the people. Names on the left; the one you are on is ink and nudged right, the other muted brown, so hierarchy comes from colour and stays AA on cream. A line under the active name fills with the scroll in orange. The picture on the right wipes in from the right edge (clip-path, 0.9s, power4.out). Each name is a button that scrolls to its person. Phones, no scripts and reduced motion get a plain list (reduced motion: the names switch the picture, no pin).

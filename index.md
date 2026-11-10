@@ -52,7 +52,7 @@ Tell us what you are building. A human reads every message. [Start a project](/c
 - Abhishek — role to be written
 
 ## Next
-[About us](/about/) (coming soon).
+[About us](/about/) ([Markdown](/about.md)).
 
 ## For agents
 - [llms.txt](/llms.txt)
