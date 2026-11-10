@@ -13,11 +13,6 @@ Two disciplines, one table. Design shapes what people see and touch; AI does the
 - **AI** — Voice agents, retrieval and automation that run in production, not just in a demo. [Inside the AI loop](https://human-in-loop.dev/ai/) ([Markdown](/ai.md)).
 - **Design** — Products, interfaces and systems that people understand at first glance and enjoy at the hundredth. Opening soon.
 
-## Step inside the loop
-We do not chase trends. We sit with a problem until it is clear, then draw it, build it and keep watching it after launch.
-
-That is the loop: look closely, make carefully, look again.
-
 ## Selected work
 - [VOAG — Enterprise Voice AI SaaS](/projects/voag.md): 1,000+ daily calls in Mr. LADs app, sub-300ms p95 latency, DigitalOcean & UAE LAN SIP modem architecture.
 - [Hireups — Real-Time AI Interviewer with Photorealistic Avatar](/projects/hireups.md): Photorealistic video avatar interviewer built on Gemini Realtime and self-hosted LiveKit on GCP.
@@ -36,17 +31,26 @@ Design
 - UI and UX — interfaces that are clear at first glance and still pleasant later.
 - Design systems — components and rules so the next screen designs itself, nearly.
 
+## The humans
+- Sahil Tomar
+- Abhishek
+
 ## How it goes
 1. Listen — we start with your problem, not our tools.
 2. Sketch — rough lines first, so ideas stay cheap to change.
 3. Build — design and AI built side by side, shipped in small pieces.
 4. Stay in the loop — we keep watching after launch and tune what needs tuning.
 
-## The humans
-- Sahil Tomar
-- Abhishek
+## Step inside the loop
+We do not chase trends. We sit with a problem until it is clear, then draw it, build it and keep watching it after launch.
+
+That is the loop: look closely, make carefully, look again.
+
+Every line here was drawn by a human.
 
 ## Got something in mind?
+Let's make it together.
+
 Tell us what you are building. A human reads every message. [Start a project](/contact.md).
 
 ## For agents

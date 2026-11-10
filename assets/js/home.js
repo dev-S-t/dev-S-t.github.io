@@ -148,7 +148,8 @@
   /* 2. Weighted scrolling */
   let lenis = null;
   if (!reduce && window.Lenis) {
-    lenis = new window.Lenis({ lerp: 0.085, wheelMultiplier: 0.9 });
+    // A low lerp gives the scroll its weight: the page keeps gliding after the wheel stops.
+    lenis = new window.Lenis({ lerp: 0.06, wheelMultiplier: 0.85, touchMultiplier: 1.2 });
     lenis.on('scroll', (e) => { ST.update(); field.kick(e.velocity); });
     gsap.ticker.add((t) => lenis.raf(t * 1000));
     gsap.ticker.lagSmoothing(0);
@@ -164,7 +165,7 @@
     // The reel: a small, tilted card grows, flattens and opens to full screen; PLAY and REEL part.
     const card = document.querySelector('.reel-card');
     const cover = () => Math.max(innerWidth / card.offsetWidth, innerHeight / card.offsetHeight) * 1.02;
-    const reelTl = gsap.timeline({ scrollTrigger: { id: 'reel', trigger: '.reel', start: 'top top', end: '+=160%', pin: '.reel-stick', scrub: 1, invalidateOnRefresh: true } });
+    const reelTl = gsap.timeline({ scrollTrigger: { id: 'reel', trigger: '.reel', start: 'top top', end: '+=200%', pin: '.reel-stick', scrub: 1.6, invalidateOnRefresh: true } });
     reelTl.fromTo(card, { scale: 0.42, rotation: -5, borderRadius: 18 }, { scale: 1, rotation: 0, borderRadius: 14, ease: 'power2.out', duration: 0.55 }, 0)
       .to(card, { scale: cover, borderRadius: 0, ease: 'power2.in', duration: 0.45 }, 0.55)
       .fromTo('.reel-label span:first-child', { xPercent: 0 }, { xPercent: -70, ease: 'power1.inOut', duration: 0.7 }, 0)
@@ -174,7 +175,7 @@
   });
   later(() => {
     // The loops: AI, then design.
-    const loopsTl = gsap.timeline({ scrollTrigger: { id: 'loops', trigger: '.loops', start: 'top top', end: '+=300%', pin: '.loops-stick', scrub: 1 } });
+    const loopsTl = gsap.timeline({ scrollTrigger: { id: 'loops', trigger: '.loops', start: 'top top', end: '+=360%', pin: '.loops-stick', scrub: 1.6 } });
     loopsTl.fromTo('.panel-ai', { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, duration: 0.1 }, 0.12)
       .to('.panel-ai', { autoAlpha: 0, y: -40, duration: 0.08 }, 0.42)
       .fromTo('.panel-design', { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, duration: 0.1 }, 0.66)
@@ -184,18 +185,14 @@
 
   });
   later(() => {
-    // The portal: the picture grows to fill the screen, then you fall into a tunnel of lines.
-    const pCard = document.querySelector('.portal-card'), pStick = document.querySelector('.portal-stick');
-    const delta = () => {
-      const s = pStick.getBoundingClientRect(), c = pCard.getBoundingClientRect();
-      return { x: s.left + s.width / 2 - (c.left + c.width / 2), y: s.top + s.height / 2 - (c.top + c.height / 2), k: Math.max(s.width / c.width, s.height / c.height) * 1.04 };
-    };
-    const portalTl = gsap.timeline({ scrollTrigger: { id: 'portal', trigger: '.portal', start: 'top top', end: '+=280%', pin: '.portal-stick', scrub: 1, invalidateOnRefresh: true } });
-    portalTl.to('.portal-title, .portal-copy', { autoAlpha: 0, y: -40, duration: 0.14, stagger: 0.04 }, 0.04)
-      .to(pCard, { x: () => delta().x, y: () => delta().y, scale: () => delta().k, borderRadius: 0, ease: 'power2.inOut', duration: 0.3 }, 0)
-      .to(pCard, { autoAlpha: 0, duration: 0.1 }, 0.33)
-      .fromTo('.portal-fallback', { scale: 0.2, autoAlpha: 0 }, { scale: 3, autoAlpha: 1, ease: 'power1.in', duration: 0.6 }, 0.3)
-      .fromTo('.portal-end', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.1 }, 0.8)
+    // Into space: a long fall. The words drift away, the human tumbles toward the wormhole and through it.
+    // (scene.js draws the space, the wormhole and the human from this trigger's progress.)
+    const portalTl = gsap.timeline({ scrollTrigger: { id: 'portal', trigger: '.portal', start: 'top top', end: '+=650%', pin: '.portal-stick', scrub: 1.8 } });
+    portalTl.to('.portal-intro', { autoAlpha: 0, y: -80, duration: 0.1, ease: 'power2.in' }, 0.08)
+      .fromTo('.portal-mid', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.06 }, 0.42)
+      .to('.portal-mid', { autoAlpha: 0, y: -30, duration: 0.06 }, 0.58)
+      .fromTo('.portal-end', { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.07 }, 0.86)
+      .fromTo('.portal-meter b', { scaleX: 0 }, { scaleX: 1, ease: 'none', duration: 1 }, 0)
       .set({}, {}, 1);
   });
 
@@ -236,17 +233,69 @@
       gsap.from(svc, { y: 36, opacity: 0, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: svc, start: 'top 92%' } });
     });
 
-    // The process line draws through the steps as you scroll.
-    const procPath = document.querySelector('.proc-line path');
-    if (procPath) {
-      procPath.setAttribute('pathLength', '1'); procPath.style.strokeDasharray = '1';
-      gsap.fromTo(procPath, { strokeDashoffset: 1 }, { strokeDashoffset: 0, ease: 'none', scrollTrigger: { trigger: '.proc', start: 'top 75%', end: 'bottom 55%', scrub: 1 } });
+    // The process ribbon: a thick line draws over a dotted track, its head (a dot) leading the way.
+    // Real path length in its own units (no non-scaling stroke), so the dash maths stays exact and smooth.
+    const ribbon = document.querySelector('.proc-ribbon'), head = document.querySelector('.proc-head');
+    if (ribbon) {
+      const len = ribbon.getTotalLength(), state = { p: 0 }, steps = [...document.querySelectorAll('.step')];
+      ribbon.style.strokeDasharray = `${len} ${len}`; ribbon.style.strokeDashoffset = len;
+      const draw = () => {
+        ribbon.style.strokeDashoffset = len * (1 - state.p);
+        const pt = ribbon.getPointAtLength(len * state.p); head.setAttribute('cx', pt.x); head.setAttribute('cy', pt.y);
+        steps.forEach((s, i) => s.classList.toggle('on', state.p >= (i + 0.25) / steps.length)); // each step lights up as the head passes
+      };
+      gsap.to(state, { p: 1, ease: 'none', onUpdate: draw, scrollTrigger: { trigger: '.proc', start: 'top 80%', end: 'bottom 50%', scrub: 1.6 } });
     }
 
     document.querySelectorAll('.card, .step, .person, .statement-foot').forEach((el) => {
       gsap.from(el, { y: 50, opacity: 0, duration: 1.3, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
     });
   });
+
+  /* 4b. Weight in every section: parts move at different speeds (parallax), and lists lean with the speed of the
+     scroll, then settle, so a flick of the wheel feels like moving something heavy. */
+  later(() => {
+    const lag = (sel, dist) => document.querySelectorAll(sel).forEach((el) => {
+      gsap.fromTo(el, { y: dist }, { y: -dist, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 1.8 } });
+    });
+    lag('.sec-head h2', 40); lag('.statement-text', 50); lag('.svc-col-name', 30);
+    lag('.card:nth-child(2), .card:nth-child(4)', 70); lag('.person:nth-child(2)', 80); lag('.proc-steps', 24);
+    // Pictures drift inside their frames.
+    document.querySelectorAll('.card-media, .person-photo').forEach((m) => {
+      gsap.fromTo(m, { backgroundPosition: '50% 0%' }, { backgroundPosition: '50% 100%', ease: 'none', scrollTrigger: { trigger: m, start: 'top bottom', end: 'bottom top', scrub: 1.8 } });
+    });
+    const leaners = gsap.utils.toArray('.work-list, .team-list, .svc-cols');
+    const skew = gsap.quickTo(leaners, 'skewY', { duration: 0.9, ease: 'power3.out' });
+    ST.create({ start: 0, end: 'max', onUpdate: (s) => skew(clamp(s.getVelocity() / -900, -3, 3)) });
+  });
+
+  /* 4c. Contact: the line drawings drift with the scroll at their own depth, and lean away from the pointer;
+     the headline's underlines draw in when it arrives. */
+  later(() => {
+    const floats = gsap.utils.toArray('.float');
+    floats.forEach((f) => {
+      const d = parseFloat(f.dataset.depth || '0.5');
+      gsap.fromTo(f, { y: 160 * d }, { y: -160 * d, ease: 'none', scrollTrigger: { trigger: '.cta', start: 'top bottom', end: 'bottom top', scrub: 2 } });
+    });
+    const cta = document.querySelector('.cta');
+    if (cta && finePointer) {
+      const movers = floats.map((f) => ({ f, i: f.querySelector('i'), x: gsap.quickTo(f.querySelector('i'), 'x', { duration: 1.2, ease: 'expo.out' }), y: gsap.quickTo(f.querySelector('i'), 'y', { duration: 1.2, ease: 'expo.out' }) }));
+      cta.addEventListener('pointermove', (e) => movers.forEach((m) => {
+        const r = m.f.getBoundingClientRect(), dx = r.left + r.width / 2 - e.clientX, dy = r.top + r.height / 2 - e.clientY, d = Math.hypot(dx, dy) || 1;
+        // Lean away as the pointer comes near; once it is over a drawing, hold still so the hover can show.
+        const push = d < r.width * 0.55 ? 0 : Math.max(0, 1 - d / 320) * 70; m.x((dx / d) * push); m.y((dy / d) * push);
+      }));
+      cta.addEventListener('pointerleave', () => movers.forEach((m) => { m.x(0); m.y(0); }));
+    }
+    gsap.fromTo('.cta-title .ul', { '--u': 0 }, { '--u': 1, duration: 1.4, ease: 'expo.inOut', stagger: 0.18, scrollTrigger: { trigger: '.cta-title', start: 'top 75%' } });
+    gsap.from('.cta-center > *', { y: 50, opacity: 0, duration: 1.4, ease: 'expo.out', stagger: 0.1, scrollTrigger: { trigger: '.cta-center', start: 'top 80%' } });
+  });
+
+  // Hover lines near the right edge open leftwards, so they never run off the screen.
+  document.querySelectorAll('.quipped').forEach((el) => el.addEventListener('pointerenter', () => {
+    const q = el.querySelector(':scope > .quip'); if (!q || q.classList.contains('quip-pill')) return;
+    q.classList.toggle('quip-end', el.getBoundingClientRect().left + 270 > innerWidth);
+  }));
 
   /* 5. The walker */
   const walker = document.querySelector('.walker');

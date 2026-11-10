@@ -2,6 +2,19 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-10: third pass, into space
+
+Abhishek's notes: the design board's lines should run at angles; the portal should be real space, Interstellar-like, with stars that bend and stretch near the wormhole; a very long, heavy scroll; the logo's human falling through it like Lusion's astronaut; the section moved after Process, leading into a Lusion-style contact section with hover effects; fine, igloo-like lines; a smoother process line; the design board should split like a slash under the cursor and reassemble.
+
+- **Order:** hero, reel, about, two loops, work, services, team, process, into space, contact, footer.
+- **Design loop:** the board is turned and tipped in 3D, so the grid, spiral and loop run at angles. Moving the cursor across it cuts it along the path (each side pushed apart), and it pulls itself back together.
+- **Into space (pinned for 650% of the viewport):** one full-screen shader: four layers of stars and a galaxy band on black; a wormhole that bends the light round it (stars near it smear and wobble), a photon ring, fine dotted rings whose dots stretch into lines with scroll speed; a brighter sky inside. Then the hole fills the screen and you rush through it as star lines and rings.
+- **The falling human:** the logo's own posable body (`MarkBody`, copied to `assets/js/figure/` from the kit), tumbling with arms and legs drifting, drawn with an 8-per-second boil, with speed lines behind him; stretched toward the hole as he falls in.
+- **Contact:** black, like the space before it: a big centred line with drawn underlines, the kit's line drawings (copied to `assets/img/lines/`) floating at different depths, leaning away from the pointer and turning orange on hover.
+- **Process:** a thick gradient ribbon drawn over a dotted track with a dot at its head, from the path's real length (no non-scaling stroke, which caused the glitch); each step lights up as the head passes.
+- **Weight:** Lenis lerp 0.06; scrubs of 1.6 to 2; parallax on headings, statement, cards, portraits and steps; lists lean with scroll speed and settle.
+- **Speed (Lighthouse 12.6.1, local with compression):** desktop 100/100/100/100, LCP 0.4s, TBT 0ms; mobile 95 to 99.
+
 ## 2026-11-10: second build, an agency home page with three.js
 
 Abhishek's feedback on the first build: too basic; needs a primary CTA; built like an agency (AI and design) without saying who does what; scroll-driven three.js like igloo.inc and lusion.co; vectors; the walker should talk; better type colour hierarchy; image slots as fill boxes; load as fast as lusion.co.
