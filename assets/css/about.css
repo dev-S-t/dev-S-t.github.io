@@ -80,22 +80,25 @@
 .js .ab-person { opacity: 0; visibility: hidden; transform: translateY(12px); transition: opacity .5s, visibility .5s, transform .7s var(--ease-out); }
 .js .ab-person.is-on { opacity: 1; visibility: visible; transform: none; transition: opacity .6s .1s, visibility 0s, transform .8s .1s var(--ease-out); }
 
-/* 5. What we build with */
+/* 5. What we build with: label, heading and a short note; then two rows of names between hairlines, fading out
+   at both edges. One face, one weight; a small ring between names; a name brightens under the pointer. */
 .ab-tools { padding: var(--s16) 0; overflow: hidden; }
-.ab-tools-head { display: flex; justify-content: space-between; align-items: end; gap: var(--s4); padding: 0 var(--gutter) var(--s10); }
-.ab-tools-head h2 { font-size: 72px; line-height: .95; text-transform: uppercase; }
-.ab-tools-head p { margin: 0; max-width: 18em; font-size: var(--label); line-height: 1.5; text-transform: uppercase; letter-spacing: .04em; color: var(--dim); text-align: right; }
-.ab-rowset { display: grid; gap: var(--s6); }
-.ab-belt { display: flex; width: max-content; margin: 0; padding: 0; list-style: none; gap: 120px; animation: belt 38s linear infinite; }
-.ab-belt-rev { animation-direction: reverse; animation-duration: 44s; }
-.ab-belt li { flex: none; font-size: 40px; line-height: 1; color: var(--fg); opacity: .9; white-space: nowrap; transition: opacity .3s, color .3s; }
-.ab-belt li:hover { color: var(--bright); opacity: 1; }
-.t-sans { font-family: var(--sans); font-weight: 500; letter-spacing: -0.02em; }
-.t-serif { font-family: var(--serif); font-weight: 250; font-style: italic; }
-.t-mono { font-family: var(--mono); font-size: 32px !important; letter-spacing: -0.04em; }
-.t-caps { font-family: var(--sans); font-weight: 300; text-transform: uppercase; letter-spacing: .14em; font-size: 30px !important; }
+.ab-tools-head { display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto; align-items: end; gap: var(--s4) var(--s8); padding: 0 var(--gutter) var(--s10); }
+.ab-tools-head .ab-label { grid-column: 1 / -1; }
+.ab-tools-head h2 { font-size: var(--h2); line-height: var(--lh2); font-weight: 300; letter-spacing: -0.02em; }
+.ab-tools-note { margin: 0; max-width: 22em; font-size: var(--p); line-height: var(--lh-p); color: var(--dim); text-align: right; }
+.ab-rowset { border-top: 1px solid var(--faint); }
+.ab-belt-win { border-bottom: 1px solid var(--faint); overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+.ab-belt { display: flex; width: max-content; margin: 0; padding: var(--s5) 0; list-style: none; }
+.ab-belt li { position: relative; flex: none; padding: 0 var(--s6); font-size: var(--h3); line-height: 1; font-weight: 300; letter-spacing: -0.02em; color: var(--dim); white-space: nowrap; transition: color .4s; }
+.ab-belt li::after { content: ""; position: absolute; right: -4px; top: 50%; width: 8px; height: 8px; margin-top: -4px; border: 1px solid var(--faint); border-radius: 50%; }
+.ab-belt li:hover { color: var(--fg); }
+/* without scripts the rows drift on their own */
+.ab-belt { animation: belt 60s linear infinite; }
+.ab-belt-rev { animation-direction: reverse; animation-duration: 70s; }
+.js .ab-belt { animation: none; }
 @keyframes belt { to { transform: translateX(-50%); } }
-.ab-rowset:hover .ab-belt { animation-play-state: paused; }
 
 /* 6. The record */
 .ab-record { padding: var(--s16) var(--gutter); overflow: hidden; }
@@ -193,11 +196,10 @@
   .ab-team-copy { font-size: var(--p-sm); line-height: var(--lh-p-sm); }
   .ab-name { font-size: var(--h4); line-height: var(--lh4); }
   .ab-team-nav { top: calc(var(--s12) + var(--s5)); }
-  .ab-tools-head { flex-direction: column; align-items: start; }
-  .ab-tools-head h2 { font-size: 40px; }
-  .ab-tools-head p { text-align: left; }
-  .ab-belt li { font-size: 28px; }
-  .ab-belt { gap: 56px; }
+  .ab-tools-head { grid-template-columns: 1fr; }
+  .ab-tools-note { text-align: left; }
+  .ab-belt li { font-size: var(--h5); padding: 0 var(--s4); }
+  .ab-belt { padding: var(--s3) 0; }
   .ab-block { grid-template-columns: 1fr auto; }
   .ab-block-head { font-size: 44px; }
   .ab-block-count { font-size: 32px; }
@@ -213,7 +215,8 @@
   .ab-cta-title { font-size: 15vw; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ab-belt { animation: none; flex-wrap: wrap; width: auto; padding: 0 var(--gutter); gap: var(--s4) var(--s8); }
+  .ab-belt { animation: none; flex-wrap: wrap; width: auto; padding: var(--s3) var(--gutter); gap: var(--s2) 0; }
+  .ab-belt-win { -webkit-mask-image: none; mask-image: none; }
   .ab-roll .l > span { transition: none; }
   .ab-make-stick { height: auto; padding-bottom: var(--s10); }
 }

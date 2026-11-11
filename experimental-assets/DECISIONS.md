@@ -2,6 +2,11 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-11: thirteenth pass, "What we build with" made quiet
+
+- A numbered label (03 Tools), the heading at h2 (48px, light) and a short note on the right (both still Claude's draft).
+- Two rows of tool names between hairlines instead of three rows in four different faces: one face, one weight, 40px, muted; a small ring between names; the rows fade out at both edges. They drift in opposite directions; a flick of the scroll pushes them faster, then they ease back; under the pointer they slow almost to a stop and a name brightens. Without scripts they drift on CSS alone; with reduced motion they sit still as a wrapped list.
+
 ## 2026-11-11: twelfth pass, the About page's first four sections made quiet
 
 Abhishek: everything up to "What we build with" looked messy; make it professional, minimal and aesthetic.

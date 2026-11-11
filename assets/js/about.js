@@ -47,7 +47,7 @@ if (gsap && ST) {
   ST.addEventListener('refresh', setTheme);
 
   if (!reduce) {
-    const shown = gsap.utils.toArray('.ab-tools-head > *, .ab-block-head, .ab-block-count, .ab-table > div, .ab-make-side, .next-kicker, .foot-grid > *');
+    const shown = gsap.utils.toArray('.ab-tools-head > *, .ab-belt-win, .ab-block-head, .ab-block-count, .ab-table > div, .ab-make-side, .next-kicker, .foot-grid > *');
     shown.forEach((el) => el.classList.add('entry'));
     gsap.set(shown, { opacity: 0, '--reveal': '0%' });
     ST.batch(shown, { start: 'top 92%', once: true, interval: 0.08, onEnter: (els) => {
@@ -136,6 +136,24 @@ if (gsap && ST) {
   }
 
   if (!reduce) {
+    /* ---------------- What we build with ---------------- */
+    // Each row holds its names twice (the second set hidden from screen readers) and drifts half its width, forever; the scroll's speed pushes it along,
+    // so a flick of the wheel sends the names past, then they ease back to their own pace.
+    const belts = gsap.utils.toArray('.ab-belt').map((ul, i) => {
+      const dir = i % 2 ? 1 : -1;
+      gsap.set(ul, { xPercent: dir > 0 ? -50 : 0 });
+      return gsap.to(ul, { xPercent: dir > 0 ? 0 : -50, duration: 60 + i * 10, ease: 'none', repeat: -1 });
+    });
+    if (belts.length) {
+      const boost = { v: 1 };
+      ST.create({ trigger: '.ab-tools', start: 'top bottom', end: 'bottom top', onUpdate: (s) => {
+        gsap.to(boost, { v: 1 + Math.min(6, Math.abs(s.getVelocity()) / 300), duration: 0.2, overwrite: true, onUpdate: () => belts.forEach((t) => t.timeScale(boost.v)) });
+        gsap.to(boost, { v: 1, duration: 1.2, delay: 0.2, ease: 'power2.out', onUpdate: () => belts.forEach((t) => t.timeScale(boost.v)) });
+      } });
+      document.querySelector('.ab-rowset')?.addEventListener('pointerenter', () => belts.forEach((t) => gsap.to(t, { timeScale: 0.25, duration: 0.6 })));
+      document.querySelector('.ab-rowset')?.addEventListener('pointerleave', () => belts.forEach((t) => gsap.to(t, { timeScale: 1, duration: 0.6 })));
+    }
+
     /* ---------------- 5. The record ---------------- */
     [0, 1, 2].forEach((i) => gsap.fromTo(`.ab-drift-words p:nth-child(${i + 1})`, { xPercent: i % 2 ? -40 : 0 }, { xPercent: i % 2 ? 0 : -40, ease: 'none', scrollTrigger: { trigger: '.ab-record', start: 'top bottom', end: 'bottom top', scrub: 0.6 } }));
     const rec = document.querySelector('.ab-record'), lens = document.querySelector('.ab-lens');
