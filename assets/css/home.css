@@ -326,6 +326,8 @@ a { color: inherit; text-decoration: none; }
 .tm-word { display: block; font-family: var(--serif); font-weight: 250; font-size: var(--h3); line-height: var(--lh3); color: var(--ink); transition: color .5s, translate .6s var(--ease-out); }
 .tm-bar { display: none; }
 .tm-media { margin: 0; aspect-ratio: 4 / 5; border-radius: 16px; }
+.tm-media { position: relative; overflow: hidden; background: var(--cream-2); }
+.tm-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
 .tm-media .quip-pill { white-space: nowrap; }
 .tm-copy { display: flex; align-items: baseline; gap: var(--s3); }
 .tm-count { font-size: var(--label); line-height: 1; color: var(--muted); font-variant-numeric: tabular-nums; }

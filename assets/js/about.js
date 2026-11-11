@@ -449,14 +449,14 @@ async function world(stage, scrollPos) {
 }
 
 /* ================= 4. Portraits drawn in lines ================= */
-// Each photo is read as light and dark. Rows of lines cross the screen, lifted where the face is light, and drawn
+// Each photo (cut out from its background, in grey: assets/img/team/*-lines.webp) is read as light and dark. Rows of lines cross the screen, lifted where the face is light, and drawn
 // brighter there, as if lit. Short dashes fall behind like rain. The pointer sends a ripple through the rows, and
 // switching people morphs one face into the other. Until a photo is supplied (assets/img/team/), a sculpted
 // stand-in (a lit head and shoulders) is drawn, with the brief for the photo under it.
 function lineFaces(canvas, items) {
   if (!canvas) return { show() {} };
   const g = canvas.getContext('2d');
-  const GW = 140, GH = 110;
+  const GW = 180, GH = 198;   // a little taller than wide: a head and shoulders
   const fields = [], keys = items.map((it) => it.dataset.keyword || ''), placeholder = items.map(() => true);
   const cur = new Float32Array(GW * GH), from = new Float32Array(GW * GH);
   let target = 0, mixT = 1, w = 0, h = 0, dpr = 1, live = false;
@@ -494,10 +494,22 @@ function lineFaces(canvas, items) {
       const img = new Image(); img.decoding = 'async';
       img.onload = () => {
         const c = document.createElement('canvas'); c.width = GW; c.height = GH; const cg = c.getContext('2d', { willReadFrequently: true });
-        const s = Math.max(GW / img.width, GH / img.height), dw = img.width * s, dh = img.height * s;
-        cg.drawImage(img, (GW - dw) / 2, (GH - dh) / 2, dw, dh);
-        const d = cg.getImageData(0, 0, GW, GH).data, f = new Float32Array(GW * GH);
-        for (let k = 0; k < GW * GH; k++) f[k] = (0.2126 * d[k * 4] + 0.7152 * d[k * 4 + 1] + 0.0722 * d[k * 4 + 2]) / 255;
+        // frame the head and shoulders: the photos are square with the person centred and the head near the top
+        let sh = img.height * 0.98, sw = sh * (GW / GH);
+        if (sw > img.width) { sw = img.width; sh = sw * (GH / GW); }
+        cg.drawImage(img, (img.width - sw) / 2, img.height * 0.01, sw, sh, 0, 0, GW, GH);
+        const d = cg.getImageData(0, 0, GW, GH).data, f = new Float32Array(GW * GH), mask = new Float32Array(GW * GH), seen = [];
+        // the background fades out in a soft oval around the person; the light inside is stretched to the full range
+        for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) {
+          const k = y * GW + x, u = x / (GW - 1) - 0.5, v = y / (GH - 1) - 0.52;
+          const r = Math.hypot(u / 0.6, v / 0.75), m = 1 - smooth(clamp((r - 0.85) / 0.25));   // the source is already cut out on black; this only softens the frame's corners
+          mask[k] = m * (1 - smooth(clamp((y / (GH - 1) - 0.86) / 0.14)));
+          f[k] = (0.2126 * d[k * 4] + 0.7152 * d[k * 4 + 1] + 0.0722 * d[k * 4 + 2]) / 255;
+          if (m > 0.6 && f[k] > 0.04) seen.push(f[k]);   // levels from the person only, not the black around them
+        }
+        seen.sort((a, b) => a - b);
+        const lo = seen[Math.floor(seen.length * 0.04)] || 0, hi = seen[Math.floor(seen.length * 0.985)] || 1;
+        for (let k = 0; k < GW * GH; k++) f[k] = Math.pow(clamp((f[k] - lo) / (hi - lo || 1)), 1.15) * mask[k];
         fields[i] = f; placeholder[i] = false;
         if (i === target) { from.set(cur); mixT = 0; }
       };
@@ -512,14 +524,14 @@ function lineFaces(canvas, items) {
   canvas.parentElement.addEventListener('pointermove', (e) => { const r = canvas.getBoundingClientRect(); ptr.x = e.clientX - r.left; ptr.y = e.clientY - r.top; ptr.t = performance.now() / 1000; }, { passive: true });
   onScreen(canvas, (v) => { live = v; });
 
-  const ROWS = 72, STEPS = 160, SEG = 8;
+  const ROWS = 118, STEPS = 220, SEG = 8;
   const frame = (time) => {
     if (!live || !w) return;
     if (mixT < 1) { mixT = Math.min(1, mixT + 0.022); const m = smooth(mixT), f = fields[target]; for (let k = 0; k < cur.length; k++) cur[k] = from[k] + (f[k] - from[k]) * m; }
     g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
     // the face
     const fw = Math.min(w * 0.86, h * 0.78 * (GW / GH)), fh = fw * (GH / GW), ox = (w - fw) / 2, oy = Math.max(h * 0.11, (h - fh) / 2 - h * 0.06);   // keep its proportions on any screen
-    const amp = (fh / ROWS) * 3.2, since = time - ptr.t;
+    const amp = (fh / ROWS) * 1.5, since = time - ptr.t;
     g.globalCompositeOperation = 'lighter';
     for (let r = 0; r < ROWS; r++) {
       const fy = (r / (ROWS - 1)) * (GH - 1), gy0 = Math.floor(fy), gy1 = Math.min(GH - 1, gy0 + 1), ty = fy - gy0, baseY = oy + (r / (ROWS - 1)) * fh;
@@ -536,7 +548,7 @@ function lineFaces(canvas, items) {
           if (n === SEG || c === STEPS) {
             const lum = acc / n, uu = (x - ox) / fw, vv = r / (ROWS - 1);
             const edge = smooth(clamp(Math.min(uu, 1 - uu) / 0.2)) * smooth(clamp((1 - vv) / 0.12));   // soft at the sides and the foot
-            g.strokeStyle = `rgba(255, 244, 230, ${((0.015 + Math.pow(lum, 1.3) * 0.85) * edge).toFixed(3)})`;
+            g.strokeStyle = `rgba(255, 244, 230, ${((0.004 + Math.pow(lum, 0.9) * 1.0) * edge).toFixed(3)})`;
             g.lineWidth = 1; g.stroke(); acc = 0; n = 0;
           }
         }
