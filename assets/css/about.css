@@ -69,7 +69,6 @@
 @media (hover: hover) and (pointer: fine) {
   .ab-team-nav { opacity: 0; transition: opacity .3s; }
   .ab-team-nav:focus-within { opacity: 1; }
-  .ab-face { cursor: none; }
 }
 /* With a mouse, a small disc follows the pointer over the portrait; its arrow turns to the side you are on */
 .ab-cursor { position: fixed; left: 0; top: 0; z-index: 50; width: 88px; height: 88px; margin: -44px 0 0 -44px; border-radius: 50%; background: var(--fg); color: var(--ink); display: grid; place-items: center; pointer-events: none; transform: scale(0); will-change: transform; }

@@ -96,7 +96,7 @@ if (gsap && ST) {
   /* ---------------- 4. The team ---------------- */
   const team = document.querySelector('.ab-team'), stick = document.querySelector('.ab-team-stick');
   const face = document.querySelector('.ab-face'), letter = document.querySelector('.ab-letter span'), bar = document.querySelector('.ab-team-bar b'), countN = document.querySelector('.ab-count-n');
-  const portraits = lineFaces(face, people);
+  const portraits = contourFaces(face, people) || lineFaces(face, people);
   let on = 0;
   const pick = (i) => {
     if (i === on) return;
@@ -122,18 +122,30 @@ if (gsap && ST) {
   document.querySelector('.ab-next')?.addEventListener('click', () => go(1));
   document.querySelector('.ab-prev')?.addEventListener('click', () => go(-1));
   // The disc: follows the pointer over the team; its arrow points to the side you are on, and a click goes that way.
+  // Whether it shows is worked out every frame from where the pointer is, not from enter and leave events: the page
+  // glides under a resting pointer (smooth scroll, the pin), and those events never fire then, which left the disc
+  // stuck on screen or missing. It hides over the menu bar and the keyboard buttons.
   const cursor = document.querySelector('.ab-cursor');
   if (cursor && finePointer && !reduce && stick) {
-    const cx = gsap.quickTo(cursor, 'x', { duration: 0.5, ease: 'power3.out' }), cy = gsap.quickTo(cursor, 'y', { duration: 0.5, ease: 'power3.out' });
-    let left = false;
-    stick.addEventListener('pointerenter', (e) => { gsap.set(cursor, { x: e.clientX, y: e.clientY }); gsap.to(cursor, { scale: 1, duration: 0.5, ease: 'back.out(1.6)' }); });
-    stick.addEventListener('pointerleave', () => gsap.to(cursor, { scale: 0, duration: 0.35, ease: 'power2.in' }));
-    stick.addEventListener('pointermove', (e) => {
-      cx(e.clientX); cy(e.clientY);
-      const l = e.clientX < innerWidth / 2; if (l !== left) { left = l; cursor.classList.toggle('is-left', l); }
+    const cx = gsap.quickTo(cursor, 'x', { duration: 0.45, ease: 'power3.out' }), cy = gsap.quickTo(cursor, 'y', { duration: 0.45, ease: 'power3.out' });
+    const P = { x: -1, y: -1, moved: false };
+    let left = false, shown = false;
+    addEventListener('pointermove', (e) => { P.x = e.clientX; P.y = e.clientY; P.moved = true; }, { passive: true });
+    document.documentElement.addEventListener('pointerleave', () => { P.x = P.y = -1; });
+    gsap.ticker.add(() => {
+      if (P.x < 0) { if (shown) { shown = false; gsap.to(cursor, { scale: 0, duration: 0.3, ease: 'power2.in', overwrite: 'auto' }); } return; }
+      const r = stick.getBoundingClientRect(), over = document.elementFromPoint(P.x, P.y);
+      const inside = P.x >= r.left && P.x <= r.right && P.y >= r.top && P.y <= r.bottom && over && stick.contains(over) && !over.closest('.ab-team-nav');
+      if (inside !== shown) {
+        shown = inside;
+        if (inside) { gsap.set(cursor, { x: P.x, y: P.y }); gsap.to(cursor, { scale: 1, duration: 0.45, ease: 'back.out(1.6)', overwrite: 'auto' }); }
+        else gsap.to(cursor, { scale: 0, duration: 0.3, ease: 'power2.in', overwrite: 'auto' });
+        stick.style.cursor = inside ? 'none' : '';
+      }
+      if (shown && P.moved) { cx(P.x); cy(P.y); P.moved = false; const l = P.x < innerWidth / 2; if (l !== left) { left = l; cursor.classList.toggle('is-left', l); } }
     });
-    stick.addEventListener('pointerdown', () => gsap.fromTo(cursor, { scale: 0.85 }, { scale: 1, duration: 0.5, ease: 'back.out(2)' }));
-    face.addEventListener('click', () => go(left ? -1 : 1));
+    stick.addEventListener('pointerdown', () => { if (shown) gsap.fromTo(cursor, { scale: 0.85 }, { scale: 1, duration: 0.5, ease: 'back.out(2)', overwrite: 'auto' }); });
+    stick.addEventListener('click', (e) => { if (shown && !e.target.closest('a, button')) go(left ? -1 : 1); });
   }
 
   if (!reduce) {
@@ -447,6 +459,123 @@ async function world(stage, scrollPos) {
       fg.shadowBlur = 0;
     }
   });
+}
+
+/* ================= 4. Portraits in contour lines ================= */
+// Each face is drawn as contour lines, like a map of its light: every line joins points of equal brightness, so they
+// ring the eyes, the nose and the cheeks. The source is the photo cut out from its background, in grey with local
+// contrast lifted so the eyes keep their shape (assets/img/team/*-lines.webp, the alpha is the cut). It runs on the
+// graphics card: the lines drift slowly, swell gently round the pointer, and one face flows into the other.
+function contourFaces(canvas, items) {
+  if (!canvas) return null;
+  const gl = canvas.getContext('webgl', { premultipliedAlpha: false, antialias: true });
+  if (!gl || !gl.getExtension('OES_standard_derivatives')) return null;
+  const vs = 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }';
+  const fs = `#extension GL_OES_standard_derivatives : enable
+    precision highp float;
+    uniform sampler2D uA, uB; uniform float uMix, uTime, uLevels, uPush; uniform vec4 uFrame; uniform vec2 uPtr; uniform float uDpr;
+    void main() {
+      vec2 uv = (gl_FragCoord.xy - uFrame.xy) / uFrame.zw; uv.y = 1.0 - uv.y;
+      if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) discard;
+      vec2 tu = vec2(0.05 + uv.x * 0.9, 0.005 + uv.y * 0.99);
+      vec4 a = texture2D(uA, tu), b = texture2D(uB, tu);
+      float L = mix(a.r, b.r, uMix), Ld = mix(a.g, b.g, uMix), M = mix(a.a, b.a, uMix);
+      if (M < 0.01) discard;
+      // a gentle swell round the pointer: the lines part and ring it, then settle
+      vec2 d = (uv - uPtr) * vec2(uFrame.z / uFrame.w, 1.0);
+      float bump = exp(-dot(d, d) / 0.006) * uPush;
+      float v = (pow(L, 0.8) + bump * 0.12) * uLevels + uTime * 0.12;
+      float g = fwidth(v);
+      float dist = 0.5 - abs(fract(v) - 0.5);                  // how far from the nearest contour
+      float line = 1.0 - smoothstep(0.0, g * 1.2 + 0.0001, dist);   // one pixel wide, anti-aliased
+      float edge = smoothstep(0.0, 0.08, uv.x) * smoothstep(0.0, 0.08, 1.0 - uv.x) * smoothstep(0.0, 0.1, 1.0 - uv.y);
+      float sparse = 1.0 - smoothstep(0.45, 0.9, g);   // where lines crowd closer than a few pixels, let them go, so no grey smudges
+      float alpha = line * sparse * smoothstep(0.02, 0.4, M) * edge * mix(0.34, 1.0, pow(Ld, 0.75));
+      gl_FragColor = vec4(1.0, 0.957, 0.902, alpha);
+    }`;
+  const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; };
+  let prog;
+  try { prog = gl.createProgram(); gl.attachShader(prog, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(prog); if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error('link'); }
+  catch (e) { console.warn('[about] portraits', e); return null; }
+  gl.useProgram(prog);
+  const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  const U = (n) => gl.getUniformLocation(prog, n);
+  const uA = U('uA'), uB = U('uB'), uMix = U('uMix'), uTime = U('uTime'), uLevels = U('uLevels'), uPush = U('uPush'), uFrame = U('uFrame'), uPtr = U('uPtr');
+  gl.uniform1i(uA, 0); gl.uniform1i(uB, 1);
+  gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+  const blank = () => { const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0])); return t; };
+  const texs = items.map(() => blank());
+  items.forEach((it, i) => {
+    const img = new Image(); img.decoding = 'async';
+    img.onload = () => {
+      // A smooth map of the light: blurred enough that the lines follow the shape of the face, not the grain of the
+      // skin or the weave of a shirt, but not so much that the eyes are lost. The light is filled in up to the edge
+      // of the cut (blur of light-times-cut, divided by blur of the cut), so the outline does not pile up in rings.
+      const S = 256, c = document.createElement('canvas'); c.width = c.height = S; const cg = c.getContext('2d', { willReadFrequently: true });
+      cg.drawImage(img, 0, 0, S, S);
+      const px = cg.getImageData(0, 0, S, S), d = px.data, N = S * S, LM = new Float32Array(N), M = new Float32Array(N), tmp = new Float32Array(N);
+      for (let k = 0; k < N; k++) { const m = d[k * 4 + 3] / 255; M[k] = m; LM[k] = (d[k * 4] / 255) * m; }
+      const box = (a, r) => {                       // one horizontal and one vertical running-average pass
+        for (let y = 0; y < S; y++) { let acc = 0; for (let x = -r; x <= r; x++) acc += a[y * S + Math.min(S - 1, Math.max(0, x))];
+          for (let x = 0; x < S; x++) { tmp[y * S + x] = acc / (2 * r + 1); acc += a[y * S + Math.min(S - 1, x + r + 1)] - a[y * S + Math.max(0, x - r)]; } }
+        for (let x = 0; x < S; x++) { let acc = 0; for (let y = -r; y <= r; y++) acc += tmp[Math.min(S - 1, Math.max(0, y)) * S + x];
+          for (let y = 0; y < S; y++) { a[y * S + x] = acc / (2 * r + 1); acc += tmp[Math.min(S - 1, y + r + 1) * S + x] - tmp[Math.max(0, y - r) * S + x]; } }
+      };
+      // two maps: a heavily smoothed one that the contours follow (even, flowing lines, like a map of depth), and a
+      // lightly smoothed one that sets each line's brightness (so eyes, brows and beard read along the lines)
+      const LM2 = Float32Array.from(LM), Mb = Float32Array.from(M), Mb2 = Float32Array.from(M);
+      [5, 5, 4].forEach((r) => { box(LM, r); box(Mb, r); });
+      [1, 1].forEach((r) => { box(LM2, r); box(Mb2, r); });
+      for (let k = 0; k < N; k++) {
+        const f = Mb[k] > 0.02 ? LM[k] / Mb[k] : 0, f2 = Mb2[k] > 0.02 ? LM2[k] / Mb2[k] : 0;
+        d[k * 4] = Math.round(Math.min(1, f) * 255); d[k * 4 + 1] = Math.round(Math.min(1, f2) * 255); d[k * 4 + 2] = 0; d[k * 4 + 3] = Math.round(M[k] * 255);
+      }
+      cg.putImageData(px, 0, 0);
+      gl.bindTexture(gl.TEXTURE_2D, texs[i]);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, c);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    };
+    img.src = it.dataset.photo;
+  });
+
+  let w = 0, h = 0, dpr = 1, live = false, cur = 0, next = 0, mix = { v: 0 };
+  const size = () => { dpr = Math.min(devicePixelRatio || 1, 2); w = canvas.clientWidth; h = canvas.clientHeight; canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr); gl.viewport(0, 0, canvas.width, canvas.height); };
+  size(); addEventListener('resize', size);
+  onScreen(canvas, (v) => { live = v; });
+  // the pointer, in the portrait's own coordinates; its pull rises while it moves and fades when it rests
+  const ptr = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5, push: 0, target: 0 }, frame = { x: 0, y: 0, w: 1, h: 1 };
+  canvas.parentElement.addEventListener('pointermove', (e) => {
+    const r = canvas.getBoundingClientRect();
+    ptr.tx = (e.clientX - r.left - frame.x) / frame.w; ptr.ty = (e.clientY - r.top - frame.y) / frame.h; ptr.target = 1;
+  }, { passive: true });
+  canvas.parentElement.addEventListener('pointerleave', () => { ptr.target = 0; });
+
+  const draw = (time) => {
+    if (!live || !w) return;
+    // the portrait's frame: a little taller than wide, centred, clear of the corners' text
+    const fw = Math.min(w * 0.86, h * 0.8 / 1.1), fh = fw * 1.1;
+    frame.w = fw; frame.h = fh; frame.x = (w - fw) / 2; frame.y = Math.max(h * 0.1, (h - fh) / 2 - h * 0.04);
+    ptr.x += (ptr.tx - ptr.x) * 0.12; ptr.y += (ptr.ty - ptr.y) * 0.12; ptr.push += (ptr.target - ptr.push) * 0.06;
+    gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, texs[cur]);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, texs[next]);
+    gl.uniform1f(uMix, smooth(mix.v)); gl.uniform1f(uTime, time); gl.uniform1f(uLevels, 30);
+    gl.uniform1f(uPush, ptr.push); gl.uniform2f(uPtr, ptr.x, ptr.y);
+    // gl_FragCoord runs from the bottom; the frame is given in device pixels from the bottom left
+    gl.uniform4f(uFrame, frame.x * dpr, (h - frame.y - fh) * dpr, fw * dpr, fh * dpr);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  };
+  gsap.ticker.add(draw);
+  return { show(i) {
+    if (i === next && mix.v < 1) return;
+    if (i === cur && mix.v === 0) return;
+    if (mix.v >= 1) cur = next;       // the last change finished: start from the face now showing
+    next = i; mix.v = 0;
+    gsap.to(mix, { v: 1, duration: 1.1, ease: 'power2.inOut', overwrite: true, onComplete: () => { cur = next; mix.v = 0; } });
+  } };
 }
 
 /* ================= 4. Portraits drawn in lines ================= */
