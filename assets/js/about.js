@@ -186,12 +186,9 @@ if (gsap && ST) {
     gsap.from('.ab-minis li', { rotationY: 180, opacity: 0, duration: 0.9, ease: 'power3.out', stagger: 0.08, scrollTrigger: { trigger: '.ab-minis', start: 'top 85%' } });
     if (make && cards.length && !narrow()) {
       make.classList.add('deal');
-      const swoosh = make.querySelector('.ab-swoosh path');
       const spread = () => Math.min(innerWidth * 0.22, 400) * 1.06;
       const tl = gsap.timeline({ scrollTrigger: { trigger: make, start: 'top top', end: '+=260%', pin: '.ab-make-stick', scrub: 0.6, invalidateOnRefresh: true } });
-      tl.to('.ab-make-head', { yPercent: -120, opacity: 0, ease: 'power2.in', duration: 0.3 }, 0.05)
-        .fromTo(swoosh, { strokeDashoffset: 1 }, { strokeDashoffset: 0, ease: 'power1.inOut', duration: 0.55 }, 0)
-        .to('.ab-swoosh', { yPercent: -40, rotation: -6, ease: 'none', duration: 1 }, 0);
+      tl.to('.ab-make-head', { yPercent: -120, opacity: 0, ease: 'power2.in', duration: 0.3 }, 0.05);
       cards.forEach((c, i) => {
         const d = i - (cards.length - 1) / 2, inner = c.querySelector('.ab-card-in');
         gsap.set(c, { y: () => innerHeight * 0.7, rotation: d * 3, x: d * 8 });
