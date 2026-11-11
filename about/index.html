@@ -76,9 +76,9 @@
   <a class="skip" href="#we-are">Skip to content</a>
 
   <!--
-    The structure and motion follow lusion.co/about (Abhishek's reference); the words, pictures and drawings are ours.
-    Words are the studio's own, from the home page. Hover lines (.quip) are Claude's, for Abhishek to review.
-    Boxes marked .fill or data-keyword are image slots; data-keyword says what goes there.
+    Structure and motion follow lusion.co/about (Abhishek's reference); the words, drawings and pictures are ours.
+    Words come from the home page and the project pages. Text marked class="draft" is Claude's, for the humans to
+    rewrite. Hover lines (.quip) are Claude's, for Abhishek to review. data-keyword marks an image slot.
   -->
 
   <header class="nav" data-on="dark">
@@ -101,115 +101,179 @@
     </a>
   </header>
 
-  <!-- The opening scene: one canvas, fixed behind the first three sections. The figure stands on a field of
-       contour lines under a beam of lines; the camera rises up the beam as you scroll. -->
+  <!-- The opening world, fixed behind the first three sections: a cloud of dots in the shape of the mark, a beam of
+       lines falling from it onto the figure, who stands on a field of contour lines. -->
   <div class="ab-stage" aria-hidden="true"><canvas class="ab-gl"></canvas><canvas class="ab-fig"></canvas></div>
+  <!-- The team viewer's pointer: a bright disc with an arrow that turns to the side you are on -->
+  <div class="ab-cursor" aria-hidden="true"><span class="ab-cursor-arrow"></span></div>
 
   <div id="smooth-wrapper"><div id="smooth-content">
   <main id="top">
 
-    <!-- 1. The name, huge and drawn in outline -->
+    <!-- 1. The name -->
     <section class="ab-intro" data-theme="dark" aria-label="human in loop">
-      <h1 class="ab-word"><span>human</span> <span>in loop</span></h1>
+      <div class="ab-plus" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+      <h1 class="ab-word"><span class="ab-word-in">Human in loop</span></h1>
       <p class="ab-scroll">Scroll to explore</p>
     </section>
 
-    <!-- 2. Who we are, in two halves -->
-    <section class="ab-we" id="we-are" data-theme="dark" aria-label="Who we are">
-      <p class="ab-we-a">We are a small studio <em>of humans</em></p>
-      <p class="ab-we-b"><em>who design with care</em> and build with AI.</p>
+    <!-- 2. Who we are -->
+    <section class="ab-hero" id="we-are" data-theme="dark" aria-label="Who we are">
+      <div class="ab-plus" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+      <p class="ab-hero-a"><span class="ln"><span>We are</span></span> <span class="ln"><span>human in loop,</span></span> <span class="ln"><span>a small studio</span></span> <span class="ln"><span><em>of humans</em></span></span></p>
+      <p class="ab-hero-b"><span class="ln"><span><em>who design</em></span></span> <span class="ln"><span><em>with care</em></span></span> <span class="ln"><span><em>and build</em></span></span> <span class="ln"><span><em>with AI</em></span></span></p>
     </section>
 
-    <!-- 3. The statement, word by word -->
+    <!-- 3. The statement -->
     <section class="ab-say" data-theme="dark" aria-label="How we work">
       <p class="ab-say-a ab-words"><em>Every project</em> has a person in the loop,</p>
       <p class="ab-say-b ab-words">watching what changes and deciding what matters.</p>
     </section>
 
-    <!-- 4. The team: one person at a time, drawn in lines -->
+    <!-- 4. The team -->
     <section class="ab-team" id="team" data-theme="dark" aria-label="Team">
       <div class="ab-team-stick">
-        <p class="ab-team-word" aria-hidden="true">Team</p>
-        <div class="ab-ticks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
         <canvas class="ab-face" aria-hidden="true"></canvas>
-        <p class="ab-letter" aria-hidden="true"><span>S</span></p>
+        <p class="ab-team-word" aria-hidden="true">Team</p>
+        <p class="ab-count" aria-hidden="true"><span>[[</span><span class="ab-count-n">001</span><span>]]</span></p>
+        <div class="ab-ruler ab-ruler-top" aria-hidden="true"></div>
+        <div class="ab-dots" aria-hidden="true"></div>
+        <div class="ab-plus" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
         <ol class="ab-people">
           <li class="ab-person is-on" data-photo="/assets/img/team/sahil.webp" data-keyword="portrait of Sahil">
-            <p class="ab-name">Sahil Tomar</p>
+            <p class="ab-name"><span class="ab-name-dots" aria-hidden="true"></span>Sahil Tomar</p>
             <p class="ab-role">AI Solutions Architect</p>
           </li>
           <li class="ab-person" data-photo="/assets/img/team/abhishek.webp" data-keyword="portrait of Abhishek">
-            <p class="ab-name">Abhishek</p>
+            <p class="ab-name"><span class="ab-name-dots" aria-hidden="true"></span>Abhishek</p>
             <p class="ab-role">Product Designer</p>
           </li>
         </ol>
         <i class="ab-team-bar" aria-hidden="true"><b></b></i>
-        <button class="ab-next quipped" type="button" aria-label="Next person"><span class="ab-next-arrow" aria-hidden="true"></span><span class="quip quip-pill" aria-hidden="true">There are only two of us. Keep clicking anyway.</span></button>
+        <div class="ab-ruler ab-ruler-bot" aria-hidden="true"></div>
+        <p class="ab-letter" aria-hidden="true"><span>S</span></p>
         <p class="ab-team-copy">Two disciplines, one table. Design shapes what people see and touch; AI does the heavy lifting underneath. We keep both in the same room from day one.</p>
+        <div class="ab-team-nav">
+          <button class="ab-prev" type="button" aria-label="Previous person"><span class="ab-cursor-arrow"></span></button>
+          <button class="ab-next" type="button" aria-label="Next person"><span class="ab-cursor-arrow"></span></button>
+        </div>
       </div>
     </section>
 
-    <!-- 5. The record: what we have published and shipped, over three huge words drifting past -->
+    <!-- 5. What we build with: three rows running in turn -->
+    <section class="ab-tools" data-theme="dark" aria-labelledby="tools-title">
+      <div class="ab-tools-head">
+        <h2 id="tools-title" class="draft">What we build with</h2>
+        <p class="draft">The tools behind the projects below, from the phone line to the browser.</p>
+      </div>
+      <div class="ab-rowset">
+        <ul class="ab-belt" aria-label="Tools, row one">
+          <li class="t-sans">Gemini Realtime</li><li class="t-serif">LiveKit</li><li class="t-mono">Google ADK</li><li class="t-caps">LangGraph</li><li class="t-serif">LiteLLM</li><li class="t-sans">Google Veo</li>
+        </ul>
+        <ul class="ab-belt ab-belt-rev" aria-label="Tools, row two">
+          <li class="t-caps">GCP</li><li class="t-serif">DigitalOcean</li><li class="t-mono">SIP</li><li class="t-sans">Cartesia</li><li class="t-caps">Playwright</li><li class="t-serif">A2A</li>
+        </ul>
+        <ul class="ab-belt" aria-label="Tools, row three">
+          <li class="t-mono">XGBoost</li><li class="t-sans">SARIMA</li><li class="t-serif">Prophet</li><li class="t-caps">WhatsApp</li><li class="t-mono">three.js</li><li class="t-sans">GSAP</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6. The record, over three huge outline words and a lens that colours what it passes over -->
     <section class="ab-record" data-theme="dark" aria-label="Publications and projects">
-      <div class="ab-drift" aria-hidden="true"><p>Look closely</p><p>Make carefully</p><p>Look again</p></div>
-      <div class="ab-rows">
-        <div class="ab-row">
-          <h2 class="ab-row-head">Publications</h2>
-          <p class="ab-row-count" aria-hidden="true"><span class="ab-spark"></span>01</p>
-          <ul class="ab-list">
-            <li><a href="/publications/"><span>IEEE</span><span>A Demand-Driven Software Approach with Dynamic Micro-Expiry and Just-in-Time Processing to Reduce Platelet Wastage in Blood Banks</span></a></li>
-          </ul>
-        </div>
-        <div class="ab-row">
-          <h2 class="ab-row-head">Projects</h2>
-          <p class="ab-row-count" aria-hidden="true"><span class="ab-spark"></span>03</p>
-          <ul class="ab-list">
-            <li><a href="/projects/voag/"><span>Voice AI</span><span>VOAG — Enterprise Voice AI SaaS</span></a></li>
-            <li><a href="/projects/hireups/"><span>AI interviewer</span><span>Hireups — Real-Time AI Interviewer with Photorealistic Avatar</span></a></li>
-            <li><a href="/projects/privacy-rag/"><span>Retrieval</span><span>Privacy-First On-Prem RAG (A2A Protocol)</span></a></li>
-          </ul>
-        </div>
+      <div class="ab-drift" aria-hidden="true">
+        <div class="ab-drift-words"><p>Look closely</p><p>Make carefully</p><p>Look again</p></div>
+        <div class="ab-drift-words ab-lens"><p>Look closely</p><p>Make carefully</p><p>Look again</p></div>
+      </div>
+      <div class="ab-block">
+        <h2 class="ab-block-head">Publications</h2>
+        <p class="ab-block-count" aria-hidden="true"><span class="ab-spark"></span><span class="n">01</span></p>
+        <dl class="ab-table">
+          <div><dt>IEEE</dt><dd><span class="no">001</span><a href="/publications/">Platelet wastage in blood banks, cut with demand forecasting</a></dd></div>
+        </dl>
+      </div>
+      <div class="ab-block">
+        <h2 class="ab-block-head">Projects</h2>
+        <p class="ab-block-count" aria-hidden="true"><span class="ab-spark"></span><span class="n">09</span></p>
+        <dl class="ab-table">
+          <div><dt>Voice AI</dt><dd><span class="no">001</span><a href="/projects/voag/">VOAG — Enterprise Voice AI SaaS</a></dd></div>
+          <div><dt>AI avatars</dt><dd><span class="no">001</span><a href="/projects/hireups/">Hireups — Real-Time AI Interviewer</a></dd></div>
+          <div><dt>Retrieval</dt><dd><span class="no">001</span><a href="/projects/anyassist/">AnyAssist — Multi-Tenant RAG Platform</a></dd><dd><span class="no">002</span><a href="/projects/privacy-rag/">Privacy-First On-Prem RAG (A2A Protocol)</a></dd></div>
+          <div><dt>Automation</dt><dd><span class="no">001</span><a href="/projects/whatsapp-dispatch/">WhatsApp Dispatch Automation</a></dd></div>
+          <div><dt>Media</dt><dd><span class="no">001</span><a href="/projects/mage/">MAGe — Multi-Agent Media Generation Engine</a></dd></div>
+          <div><dt>Vision</dt><dd><span class="no">001</span><a href="/projects/unibias/">UniBias — Live Attention Tracker</a></dd></div>
+          <div><dt>Forecasting</dt><dd><span class="no">001</span><a href="/projects/blood-bank/">Blood Bank Demand Forecasting System</a></dd><dd><span class="no">002</span><a href="https://github.com/dev-S-t/FraudDetectionSystem">Fraud Detection System</a></dd></div>
+        </dl>
       </div>
     </section>
 
-    <!-- 6. What we make: the bright block -->
-    <section class="ab-make" data-theme="bright" aria-label="What we make">
-      <p class="ab-make-word" aria-hidden="true">Loops</p>
-      <div class="ab-make-head">
-        <h2>What we make</h2>
-      </div>
-      <div class="ab-cards">
-        <article class="ab-card">
-          <p class="ab-card-letter" aria-hidden="true"><span>A</span></p>
-          <h3>AI</h3>
-          <ul>
-            <li>Voice agents</li>
-            <li>Retrieval</li>
-            <li>Automation</li>
-          </ul>
-        </article>
-        <article class="ab-card">
-          <p class="ab-card-letter" aria-hidden="true"><span>D</span></p>
-          <h3>Design</h3>
-          <ul>
-            <li>Product design</li>
-            <li>UI and UX</li>
-            <li>Design systems</li>
-          </ul>
-        </article>
+    <!-- 7. How it goes: the bright block, four cards dealt, turned over and laid out -->
+    <section class="ab-make" data-theme="bright" aria-label="How it goes">
+      <div class="ab-make-stick">
+        <svg class="ab-swoosh" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true"><path d="M-120 760 C 300 120, 1100 -60, 1760 360" /></svg>
+        <div class="ab-make-head">
+          <h2><span class="ln"><span>How it</span></span> <span class="ln ab-make-2"><span>goes</span></span></h2>
+          <div class="ab-make-side">
+            <p>AI: voice agents, retrieval, automation. Design: product design, UI and UX, design systems.</p>
+            <ul class="ab-minis" aria-hidden="true"><li>L</li><li>S</li><li>B</li><li>S</li></ul>
+          </div>
+        </div>
+        <ol class="ab-deck">
+          <li class="ab-card">
+            <div class="ab-card-in">
+              <div class="ab-card-back" aria-hidden="true"><svg><use href="#card-back"/></svg><span class="ab-card-mark"></span></div>
+              <div class="ab-card-face">
+                <div class="ab-card-top"><h3>Listen</h3><span class="ab-glyph" aria-hidden="true">L</span></div>
+                <p>We start with your problem, not our tools.</p>
+                <div class="ab-card-bot" aria-hidden="true"><span class="ab-glyph">L</span><span>Listen</span></div>
+              </div>
+            </div>
+          </li>
+          <li class="ab-card">
+            <div class="ab-card-in">
+              <div class="ab-card-back" aria-hidden="true"><svg><use href="#card-back"/></svg><span class="ab-card-mark"></span></div>
+              <div class="ab-card-face">
+                <div class="ab-card-top"><h3>Sketch</h3><span class="ab-glyph" aria-hidden="true">S</span></div>
+                <p>Rough lines first, so ideas stay cheap to change.</p>
+                <div class="ab-card-bot" aria-hidden="true"><span class="ab-glyph">S</span><span>Sketch</span></div>
+              </div>
+            </div>
+          </li>
+          <li class="ab-card">
+            <div class="ab-card-in">
+              <div class="ab-card-back" aria-hidden="true"><svg><use href="#card-back"/></svg><span class="ab-card-mark"></span></div>
+              <div class="ab-card-face">
+                <div class="ab-card-top"><h3>Build</h3><span class="ab-glyph" aria-hidden="true">B</span></div>
+                <p>Design and AI built side by side, shipped in small pieces.</p>
+                <div class="ab-card-bot" aria-hidden="true"><span class="ab-glyph">B</span><span>Build</span></div>
+              </div>
+            </div>
+          </li>
+          <li class="ab-card">
+            <div class="ab-card-in">
+              <div class="ab-card-back" aria-hidden="true"><svg><use href="#card-back"/></svg><span class="ab-card-mark"></span></div>
+              <div class="ab-card-face">
+                <div class="ab-card-top"><h3>Stay in the loop</h3><span class="ab-glyph" aria-hidden="true">S</span></div>
+                <p>We keep watching after launch and tune what needs tuning.</p>
+                <div class="ab-card-bot" aria-hidden="true"><span class="ab-glyph">S</span><span>Stay in the loop</span></div>
+              </div>
+            </div>
+          </li>
+        </ol>
       </div>
     </section>
 
-    <!-- 7. Let's make it together -->
-    <section class="ab-cta" data-theme="dark" aria-label="Start a project">
+    <!-- 8. Let's make it together, over a heap of small line marks that move out of the pointer's way -->
+    <section class="ab-cta" data-theme="bright" aria-label="Start a project">
+      <canvas class="ab-heap" aria-hidden="true"></canvas>
+      <div class="ab-plus" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
       <p class="ab-cta-kicker">Got something in mind?</p>
-      <a class="ab-cta-title" href="/contact/" aria-label="Let's make it together. Start a project">
-        <span class="ab-roll" aria-hidden="true">Let's make it together.</span>
-      </a>
+      <a class="ab-cta-title" href="/contact/"><span class="ab-roll">Let's make it together.</span></a>
       <p class="ab-cta-sub">Tell us what you are building. A human reads every message.</p>
+      <a class="ab-pill roll" href="/contact/"><span class="ab-pill-arrow" aria-hidden="true"></span><span class="roll-in"><span>Start a project</span><span aria-hidden="true">Start a project</span></span><span class="ab-pill-arrow" aria-hidden="true"></span></a>
     </section>
 
-    <!-- 8. Next page -->
+    <!-- 9. Next page -->
     <section class="next" id="next" data-theme="dark" aria-label="Next page">
       <div class="next-stick">
         <p class="next-kicker">Keep scrolling<br>to learn more</p>
@@ -245,5 +309,26 @@
     <p class="foot-small"><small>&copy; human-in-loop.dev</small></p>
   </footer>
   </div></div>
+
+  <!-- The back of every card: a frame of fine lines around a ring that holds the mark -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="card-back" viewBox="0 0 250 350">
+      <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <rect x="6" y="6" width="238" height="338" rx="16" stroke-width="3"/>
+        <rect x="18" y="18" width="214" height="314" rx="6"/>
+        <rect x="26" y="26" width="198" height="298" rx="3" stroke-width="1"/>
+        <path d="M26 26 L125 175 L224 26 M26 324 L125 175 L224 324"/>
+        <path d="M40 26 L125 160 L210 26 M40 324 L125 190 L210 324" stroke-width="1"/>
+        <path d="M54 26 L125 145 L196 26 M54 324 L125 205 L196 324" stroke-width="1"/>
+        <path d="M26 60 Q 60 60 60 26 M224 60 Q 190 60 190 26 M26 290 Q 60 290 60 324 M224 290 Q 190 290 190 324"/>
+        <path d="M26 80 Q 80 80 80 26 M224 80 Q 170 80 170 26 M26 270 Q 80 270 80 324 M224 270 Q 170 270 170 324" stroke-width="1"/>
+        <path d="M26 175 L70 135 L70 215 Z M224 175 L180 135 L180 215 Z"/>
+        <circle cx="125" cy="175" r="46" fill="var(--card-bg, #DC5000)" stroke-width="2.4"/>
+        <circle cx="125" cy="175" r="38"/>
+        <circle cx="125" cy="48" r="8"/><circle cx="125" cy="64" r="5"/><circle cx="125" cy="302" r="8"/><circle cx="125" cy="286" r="5"/>
+        <path d="M40 120 v110 M210 120 v110" stroke-dasharray="2 8"/>
+      </g>
+    </symbol>
+  </svg>
 </body>
 </html>

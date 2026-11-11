@@ -2,6 +2,20 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-11: eleventh pass, the About page rebuilt closer to Lusion
+
+Abhishek found the first About page too basic: no particles, no hover, no parallax, sections missing. Rebuilt section by section against his screenshots of lusion.co/about, keeping our words, lines and logo.
+
+- **The name:** solid, huge, rising out of a mask on arrival, over the world.
+- **The world (three.js):** a cloud of about 7,000 dots sampled from the logo mark itself, plus dust and drifting line fragments; the pointer pushes the dots and they spring back. A beam of fine lines with a soft glow falls from the cloud onto the figure, who stands in a valley of contour lines with ridges on both sides, rings of light and pebble marks round his feet. The camera starts in the cloud (behind the name), pulls back and down to find him (who we are), then rises toward the cloud (the statement).
+- **Who we are:** two blocks of large uppercase lines, each line rising out of its own mask; crosshair rows drift slower than the page.
+- **The statement:** words come out of a blur and light up one by one.
+- **Team:** portraits in lines, lit (brighter and heavier where the face is light), over falling dashes; rulers, a dotted block, a `[[ 001 ]]` counter, TEAM spaced wide, a heavy block initial that flips, name and role with a progress line. With a mouse, an orange disc follows the pointer, its arrow turning to the side you are on; a click goes that way. Buttons for keyboard and touch.
+- **What we build with (new):** three rows of tool names running in turn, each in a different face, as Lusion runs client logos. The heading and line are Claude's draft.
+- **The record:** Publications (01) and Projects (09, grouped by field, numbered like Lusion's awards) over three huge outline words; a lens follows the pointer and shows the words in coloured light, like Lusion's glass prism.
+- **How it goes:** the bright block. A huge two-line title, the two disciplines in small type with four small letter boxes, then four cards dealt face down (a back of fine lines around the mark), fanned, turned over one by one and laid out, under a sweeping thick line. The cards are the four steps of the process; each leans toward the pointer.
+- **Let's make it together:** huge, rising a letter at a time, rolling to ink on hover, over a heap of small line marks (crosses, rings, triangles, squares, dashes) that fall into place and move out of the pointer's way; a pill button below.
+
 ## 2026-11-10: tenth pass, the About page after lusion.co/about
 
 Abhishek asked for an About page like lusion.co/about. We follow its order and motion, not its content: the words are ours (from the home page), the drawings are lines, the pictures come from Abhishek.
