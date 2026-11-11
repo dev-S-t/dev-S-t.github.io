@@ -60,7 +60,8 @@ if (gsap && ST) {
     gsap.set('.ab-word', { overflow: 'hidden' });
     gsap.from('.ab-word-in', { yPercent: 100, duration: 1.4, ease: 'expo.out', delay: 0.15 });
     gsap.from('.ab-rule-row', { opacity: 0, duration: 1.2, ease: 'power2.out', delay: 0.7 });
-    gsap.to('.ab-word-in', { yPercent: 40, ease: 'none', scrollTrigger: { trigger: '.ab-intro', start: 'top top', end: 'bottom top', scrub: 0.3 } });
+    // the scroll moves the whole line (the h1), never the word inside it, which belongs to the entrance above
+    gsap.fromTo('.ab-word', { yPercent: 0 }, { yPercent: 30, immediateRender: false, ease: 'none', scrollTrigger: { trigger: '.ab-intro', start: 'top top', end: 'bottom top', scrub: 0.3 } });
     gsap.fromTo('.ab-word, .ab-rule-row', { opacity: 1 }, { opacity: 0, immediateRender: false, ease: 'none', scrollTrigger: { trigger: '.ab-intro', start: '20% top', end: '75% top', scrub: 0.3 } });
     // Who we are: each word rises out of its own mask, in one calm sweep; the sentence fades as you move on.
     document.querySelectorAll('.ab-rise').forEach((p) => {
