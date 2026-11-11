@@ -26,67 +26,59 @@
 .ab-stage { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 .ab-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 
-/* 1. The name */
+/* 1. The name: one line, the full width; a hairline under it with two small labels */
+.ab-label { display: flex; gap: var(--s2); margin: 0; font-size: var(--label); line-height: 1; text-transform: uppercase; letter-spacing: .12em; color: var(--dim); }
+.ab-label span { color: var(--bright); }
 .ab-intro { height: 100svh; display: grid; align-content: end; padding: 0 var(--gutter) var(--s5); }
 .ab-word { margin: 0; font-size: 11.4vw; line-height: .84; font-weight: 500; letter-spacing: -0.045em; text-transform: uppercase; white-space: nowrap; color: var(--fg); }
 .ab-word-in { display: inline-block; }
-.ab-scroll { justify-self: end; margin: var(--s2) 0 0; font-size: var(--p-xl); line-height: 1; text-transform: uppercase; color: var(--fg); }
+.ab-rule-row { display: flex; justify-content: space-between; margin-top: var(--s4); padding-top: var(--s2); border-top: 1px solid var(--faint); }
+.ab-rule-row p { margin: 0; font-size: var(--label); line-height: 1; text-transform: uppercase; letter-spacing: .12em; color: var(--dim); }
 
-/* 2. Who we are */
-.ab-hero { height: 130svh; display: grid; grid-template-columns: 1fr 1fr; align-items: end; padding: 0 var(--gutter) var(--s10); }
-.ab-hero p { margin: 0; font-size: var(--h1); line-height: .98; text-transform: uppercase; font-weight: 400; letter-spacing: -0.03em; position: sticky; bottom: var(--s10); }
-.ab-hero .ln { display: block; }
-.ab-hero-b { text-align: right; }
+/* 2. Who we are: one sentence, large and light, at the lower left; the figure stands to its right */
+.ab-hero { height: 120svh; display: grid; align-content: end; gap: var(--s4); padding: 0 var(--gutter) var(--s16); }
+.ab-hero-text { margin: 0; max-width: 12.5em; font-size: var(--h1); line-height: var(--lh1); font-weight: 300; letter-spacing: -0.03em; color: var(--fg); }
+.ab-hero-text em, .ab-say-text em { font-family: var(--serif); font-weight: 250; font-style: italic; letter-spacing: -0.01em; }
+.ab-rise .wm { display: inline-block; overflow: hidden; vertical-align: top; padding: .08em .16em .12em 0; margin: -.08em -.16em -.12em 0; }
+.ab-rise .wm > span { display: inline-block; }
 
-/* 3. The statement */
-.ab-say { height: 170svh; display: grid; grid-template-rows: 1fr 1fr; padding: var(--s16) var(--gutter); }
-.ab-say p { margin: 0; font-size: 56px; line-height: 1.08; font-weight: 300; letter-spacing: -0.02em; max-width: 13em; }
-.ab-say-b { align-self: end; justify-self: end; text-align: right; }
+/* 3. The statement: smaller, to the right, lit a word at a time */
+.ab-say { height: 140svh; display: grid; align-content: center; justify-items: end; padding: var(--s16) var(--gutter); }
+.ab-say-text { margin: 0; max-width: 15em; font-size: var(--h2); line-height: var(--lh2); font-weight: 300; letter-spacing: -0.02em; color: var(--fg); }
 .ab-words .w { display: inline-block; }
 
-/* 4. Team */
+/* 4. Team: the portrait in the middle; four quiet corners; one hairline that fills as you scroll */
 .ab-team { background: var(--bg); }
 .ab-team-stick { position: relative; height: 100svh; overflow: hidden; }
-.ab-face { position: absolute; inset: 0; width: 100%; height: 100%; cursor: none; }
-.ab-team-word { position: absolute; top: var(--s16); right: var(--gutter); margin: 0; font-size: 104px; line-height: .8; font-weight: 300; text-transform: uppercase; letter-spacing: .32em; margin-right: -.32em; pointer-events: none; }
-.ab-count { position: absolute; top: calc(var(--s16) + var(--s1)); left: var(--gutter); display: flex; gap: var(--s5); margin: 0; font-family: var(--mono); font-size: var(--label); line-height: 1; color: var(--fg); pointer-events: none; }
-.ab-ruler { position: absolute; left: 30%; width: 13%; height: 16px; pointer-events: none;
-  background: repeating-linear-gradient(90deg, var(--fg) 0 1px, transparent 1px 24px) 0 100% / 100% 8px no-repeat,
-              repeating-linear-gradient(90deg, var(--fg) 0 2px, transparent 2px 120px) 0 100% / 100% 16px no-repeat; opacity: .8; }
-.ab-ruler-top { top: calc(var(--s16) - var(--s1)); }
-.ab-ruler-bot { bottom: var(--s8); }
-.ab-dots { position: absolute; top: calc(var(--s16) - var(--s1)); left: 62%; width: 128px; height: 16px; pointer-events: none;
-  background: radial-gradient(circle, var(--fg) 1px, transparent 1.4px) 0 0 / 8px 8px; opacity: .8; }
-.ab-team .ab-plus { top: 50%; }
-.ab-people { position: absolute; left: var(--gutter); bottom: calc(var(--s10) + var(--s1)); margin: 0; padding: 0; list-style: none; display: grid; pointer-events: none; }
+.ab-face { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ab-team-top { position: absolute; left: var(--gutter); right: var(--gutter); top: var(--s16); display: flex; justify-content: space-between; pointer-events: none; }
+.ab-count { margin: 0; font-size: var(--label); line-height: 1; letter-spacing: .12em; color: var(--dim); font-variant-numeric: tabular-nums; }
+.ab-count-n { color: var(--fg); }
+.ab-team-foot { position: absolute; left: var(--gutter); right: var(--gutter); bottom: var(--s10); display: flex; justify-content: space-between; align-items: end; gap: var(--s8); pointer-events: none; }
+.ab-people { margin: 0; padding: 0; list-style: none; display: grid; }
 .ab-person { grid-area: 1 / 1; }
-.ab-name { display: flex; align-items: center; gap: var(--s2); margin: 0; font-size: var(--p-xl); line-height: 1; color: var(--fg); }
-.ab-name-dots { width: 10px; height: 10px; background: radial-gradient(circle, var(--fg) 1.4px, transparent 1.8px) 0 0 / 5px 5px; }
-.ab-role { margin: var(--s2) 0 0; font-size: var(--label); line-height: 1.5; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); max-width: 14em; }
-.ab-team-bar { position: absolute; left: var(--gutter); bottom: var(--s8); width: 240px; height: 2px; background: var(--faint); pointer-events: none; }
+.ab-name { margin: 0; font-size: var(--h3); line-height: var(--lh3); font-weight: 300; letter-spacing: -0.02em; color: var(--fg); white-space: nowrap; }
+.ab-role { margin: var(--s1) 0 0; font-size: var(--label); line-height: 1.5; text-transform: uppercase; letter-spacing: .12em; color: var(--dim); }
+.ab-team-copy { margin: 0; max-width: 360px; font-size: var(--p); line-height: var(--lh-p); color: var(--dim); }
+.ab-team-bar { position: absolute; left: var(--gutter); right: var(--gutter); bottom: var(--s6); height: 1px; background: var(--faint); pointer-events: none; }
 .ab-team-bar b { position: absolute; inset: 0; background: var(--fg); transform-origin: left; transform: scaleX(0); }
-.ab-letter { position: absolute; left: 62%; bottom: var(--s8); margin: 0; perspective: 600px; font-family: var(--sans); font-weight: 800; font-size: 200px; line-height: .74; color: var(--fg); pointer-events: none; }
-.ab-letter span { display: inline-block; transform-origin: 50% 60%; }
-.ab-team-copy { position: absolute; right: var(--gutter); bottom: var(--s8); margin: 0; max-width: 400px; font-size: var(--p-lg); line-height: 1.4; color: var(--fg); pointer-events: none; }
 .ab-team-nav { position: absolute; right: var(--gutter); top: 50%; display: flex; gap: var(--s1); }
-.ab-prev, .ab-next { width: 56px; height: 56px; border: 0; border-radius: 50%; background: var(--bright); color: var(--ink); cursor: pointer; display: grid; place-items: center; }
+.ab-prev, .ab-next { width: 48px; height: 48px; border: 1px solid var(--faint); border-radius: 50%; background: transparent; color: var(--fg); cursor: pointer; display: grid; place-items: center; }
 .ab-prev .ab-cursor-arrow { transform: scaleX(-1); }
-.ab-prev:focus-visible, .ab-next:focus-visible { outline: 2px solid var(--fg); outline-offset: 4px; }
-/* With a mouse, the disc that follows the pointer does this job; the buttons stay for the keyboard */
+.ab-prev:focus-visible, .ab-next:focus-visible { outline: 2px solid var(--bright); outline-offset: 4px; }
 @media (hover: hover) and (pointer: fine) {
   .ab-team-nav { opacity: 0; transition: opacity .3s; }
   .ab-team-nav:focus-within { opacity: 1; }
+  .ab-face { cursor: none; }
 }
-.ab-cursor { position: fixed; left: 0; top: 0; z-index: 50; width: 168px; height: 168px; margin: -84px 0 0 -84px; border-radius: 50%; background: var(--bright); color: var(--ink); display: grid; place-items: center; pointer-events: none; transform: scale(0); will-change: transform; }
-.ab-cursor-arrow { position: relative; width: 40px; height: 22px; transition: transform .5s var(--ease-out); }
-.ab-cursor-arrow::before { content: ""; position: absolute; left: 0; top: 10px; width: 39px; height: 1.6px; background: currentColor; }
-.ab-cursor-arrow::after { content: ""; position: absolute; right: 1px; top: 4px; width: 13px; height: 13px; border-top: 1.6px solid currentColor; border-right: 1.6px solid currentColor; transform: rotate(45deg); }
+/* With a mouse, a small disc follows the pointer over the portrait; its arrow turns to the side you are on */
+.ab-cursor { position: fixed; left: 0; top: 0; z-index: 50; width: 88px; height: 88px; margin: -44px 0 0 -44px; border-radius: 50%; background: var(--fg); color: var(--ink); display: grid; place-items: center; pointer-events: none; transform: scale(0); will-change: transform; }
+.ab-cursor-arrow { position: relative; width: 22px; height: 12px; transition: transform .5s var(--ease-out); }
+.ab-cursor-arrow::before { content: ""; position: absolute; left: 0; top: 5.5px; width: 21px; height: 1.2px; background: currentColor; }
+.ab-cursor-arrow::after { content: ""; position: absolute; right: 1px; top: 2px; width: 7px; height: 7px; border-top: 1.2px solid currentColor; border-right: 1.2px solid currentColor; transform: rotate(45deg); }
 .ab-cursor.is-left .ab-cursor-arrow { transform: scaleX(-1); }
-.ab-team-nav .ab-cursor-arrow { width: 20px; height: 12px; }
-.ab-team-nav .ab-cursor-arrow::before { top: 5px; width: 19px; }
-.ab-team-nav .ab-cursor-arrow::after { top: 1.5px; width: 8px; height: 8px; }
-.js .ab-person { opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity .5s, visibility .5s, transform .6s var(--ease-out); }
-.js .ab-person.is-on { opacity: 1; visibility: visible; transform: none; transition: opacity .5s, visibility 0s, transform .6s var(--ease-out); }
+.js .ab-person { opacity: 0; visibility: hidden; transform: translateY(12px); transition: opacity .5s, visibility .5s, transform .7s var(--ease-out); }
+.js .ab-person.is-on { opacity: 1; visibility: visible; transform: none; transition: opacity .6s .1s, visibility 0s, transform .8s .1s var(--ease-out); }
 
 /* 5. What we build with */
 .ab-tools { padding: var(--s16) 0; overflow: hidden; }
@@ -192,18 +184,15 @@
 
 @media (max-width: 900px) {
   .ab-word { font-size: 21vw; white-space: normal; line-height: .86; }
-  .ab-hero { grid-template-columns: 1fr; height: auto; min-height: 120svh; gap: var(--s4); align-content: end; }
-  .ab-hero p { font-size: 40px; position: static; }
-  .ab-hero-b { text-align: left; }
-  .ab-say { height: 130svh; }
-  .ab-say p { font-size: 32px; }
-  .ab-team-word { top: var(--s12); font-size: 44px; }
-  .ab-count, .ab-ruler, .ab-dots, .ab-team .ab-plus { display: none; }
-  .ab-letter { font-size: 120px; left: auto; right: var(--gutter); bottom: 46%; }
-  .ab-team-copy { left: var(--gutter); right: var(--gutter); bottom: var(--s3); max-width: none; font-size: var(--p-sm); }
-  .ab-people { bottom: calc(var(--s16) + var(--s2)); }
-  .ab-team-bar { bottom: calc(var(--s16) + var(--s1)); }
-  .ab-team-nav { top: auto; bottom: calc(var(--s16) + var(--s1)); }
+  .ab-hero { height: auto; min-height: 120svh; padding-bottom: var(--s10); }
+  .ab-hero-text { font-size: var(--h2); line-height: var(--lh2); }
+  .ab-say { height: 110svh; justify-items: start; }
+  .ab-say-text { font-size: var(--h4); line-height: var(--lh4); }
+  .ab-team-top { top: var(--s12); }
+  .ab-team-foot { flex-direction: column; align-items: start; gap: var(--s3); }
+  .ab-team-copy { font-size: var(--p-sm); line-height: var(--lh-p-sm); }
+  .ab-name { font-size: var(--h4); line-height: var(--lh4); }
+  .ab-team-nav { top: calc(var(--s12) + var(--s5)); }
   .ab-tools-head { flex-direction: column; align-items: start; }
   .ab-tools-head h2 { font-size: 40px; }
   .ab-tools-head p { text-align: left; }

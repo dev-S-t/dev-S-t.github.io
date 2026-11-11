@@ -2,6 +2,17 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-11: twelfth pass, the About page's first four sections made quiet
+
+Abhishek: everything up to "What we build with" looked messy; make it professional, minimal and aesthetic.
+
+- **Taken out:** the crosshair rows, the dust storm and drifting fragments round the cloud, the pebbles, most of the valley's lines, the wide beam glow, the team's falling dashes, rulers, dotted block, bracket counter, giant block letter and big TEAM word.
+- **The name:** one line across the full width; under it a hairline with two small labels, "About us" and "Scroll to explore".
+- **The world:** the cloud keeps only the mark's dots (finer, a very few orange) with a light dust; a thin beam; about thirty faint contour lines; one orange ring at his feet. In "who we are" the camera moves so he stands to the right of the sentence.
+- **Who we are:** one sentence at h1 (72px), light, with "of humans" in Canela italic; each word rises out of its own mask. A small numbered label above it (01 Who we are).
+- **The statement:** h2 (48px), to the right, lit a word at a time.
+- **Team:** the portrait alone in the middle, its lines confined to the portrait and fading at the sides; four quiet corners (label, 01 / 02, name and role, the line of copy); one hairline across the bottom that fills as you scroll. The pointer disc is now small and cream (88px).
+
 ## 2026-11-11: eleventh pass, the About page rebuilt closer to Lusion
 
 Abhishek found the first About page too basic: no particles, no hover, no parallax, sections missing. Rebuilt section by section against his screenshots of lusion.co/about, keeping our words, lines and logo.

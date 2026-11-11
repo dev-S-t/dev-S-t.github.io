@@ -59,14 +59,23 @@ if (gsap && ST) {
     // The name rises out of the bottom of the screen on arrival, then sinks and fades as you scroll on.
     gsap.set('.ab-word', { overflow: 'hidden' });
     gsap.from('.ab-word-in', { yPercent: 100, duration: 1.4, ease: 'expo.out', delay: 0.15 });
-    gsap.from('.ab-scroll', { opacity: 0, y: 16, duration: 1, ease: 'expo.out', delay: 0.6 });
+    gsap.from('.ab-rule-row', { opacity: 0, duration: 1.2, ease: 'power2.out', delay: 0.7 });
     gsap.to('.ab-word-in', { yPercent: 40, ease: 'none', scrollTrigger: { trigger: '.ab-intro', start: 'top top', end: 'bottom top', scrub: 0.3 } });
-    gsap.to('.ab-intro .ab-scroll, .ab-word', { opacity: 0, ease: 'none', scrollTrigger: { trigger: '.ab-intro', start: '20% top', end: '75% top', scrub: 0.3 } });
-    // Who we are: each line rises out of its own mask, the right side a beat after the left; they lift away together.
-    const heroIn = gsap.timeline({ scrollTrigger: { trigger: '.ab-hero', start: 'top 55%', toggleActions: 'play none none reverse' } });
-    heroIn.from('.ab-hero-a .ln > span', { yPercent: 110, duration: 1.1, ease: 'expo.out', stagger: 0.08 })
-      .from('.ab-hero-b .ln > span', { yPercent: 110, duration: 1.1, ease: 'expo.out', stagger: 0.08 }, 0.25);
-    gsap.to('.ab-hero p', { yPercent: -40, opacity: 0, ease: 'power1.in', scrollTrigger: { trigger: '.ab-hero', start: 'bottom 90%', end: 'bottom 20%', scrub: 0.4 } });
+    gsap.fromTo('.ab-word, .ab-rule-row', { opacity: 1 }, { opacity: 0, immediateRender: false, ease: 'none', scrollTrigger: { trigger: '.ab-intro', start: '20% top', end: '75% top', scrub: 0.3 } });
+    // Who we are: each word rises out of its own mask, in one calm sweep; the sentence fades as you move on.
+    document.querySelectorAll('.ab-rise').forEach((p) => {
+      const wrap = (node) => [...node.childNodes].forEach((n) => {
+        if (n.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach((w) => { if (!w) return; if (/^\s+$/.test(w)) frag.append(w); else { const m = document.createElement('span'); m.className = 'wm'; const i = document.createElement('span'); i.textContent = w; m.append(i); frag.append(m); } });
+          n.replaceWith(frag);
+        } else wrap(n);
+      });
+      wrap(p);
+      gsap.from(p.querySelectorAll('.wm > span'), { yPercent: 110, duration: 1.2, ease: 'expo.out', stagger: 0.035, scrollTrigger: { trigger: p, start: 'top 85%', toggleActions: 'play none none reverse' } });
+    });
+    gsap.from('.ab-hero .ab-label', { opacity: 0, y: 12, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: '.ab-hero .ab-label', start: 'top 90%', toggleActions: 'play none none reverse' } });
+    gsap.to('.ab-hero > *', { opacity: 0, y: -40, ease: 'power1.in', scrollTrigger: { trigger: '.ab-hero', start: 'bottom 75%', end: 'bottom 25%', scrub: 0.4 } });
     // The statement lights up a word at a time.
     document.querySelectorAll('.ab-words').forEach((p) => {
       const walk = (node) => [...node.childNodes].forEach((n) => {
@@ -77,7 +86,7 @@ if (gsap && ST) {
         } else walk(n);
       });
       walk(p);
-      gsap.fromTo(p.querySelectorAll('.w'), { opacity: 0.1, filter: 'blur(6px)' }, { opacity: 1, filter: 'blur(0px)', ease: 'none', stagger: 0.1, scrollTrigger: { trigger: p, start: 'top 85%', end: 'bottom 45%', scrub: 0.5 } });
+      gsap.fromTo(p.querySelectorAll('.w'), { opacity: 0.14 }, { opacity: 1, ease: 'none', stagger: 0.1, scrollTrigger: { trigger: p, start: 'top 85%', end: 'bottom 45%', scrub: 0.5 } });
     });
     // The crosshairs drift a little slower than the page.
     document.querySelectorAll('.ab-plus').forEach((p) => gsap.fromTo(p, { y: 60 }, { y: -60, ease: 'none', scrollTrigger: { trigger: p.parentElement, start: 'top bottom', end: 'bottom top', scrub: 0.6 } }));
@@ -92,7 +101,7 @@ if (gsap && ST) {
     if (i === on) return;
     people.forEach((p, k) => p.classList.toggle('is-on', k === i));
     portraits.show(i);
-    if (countN) countN.textContent = String(i + 1).padStart(3, '0');
+    if (countN) countN.textContent = String(i + 1).padStart(2, '0');
     const ch = people[i].querySelector('.ab-name').textContent.trim()[0];
     if (letter && !reduce) gsap.timeline().to(letter, { rotationX: 90, duration: 0.22, ease: 'power2.in', onComplete: () => { letter.textContent = ch; } }).fromTo(letter, { rotationX: -90 }, { rotationX: 0, duration: 0.5, ease: 'power3.out' });
     else if (letter) letter.textContent = ch;
@@ -245,7 +254,7 @@ async function world(stage, scrollPos) {
     img.onerror = () => ok([]);
     img.src = '/assets/img/logo.svg';
   });
-  const NM = small ? 2600 : 5200, ND = small ? 900 : 2200, N = NM + ND;
+  const NM = small ? 2400 : 4600, ND = small ? 200 : 500, N = NM + ND;
   const home = new Float32Array(N * 3), pos = new Float32Array(N * 3), vel = new Float32Array(N * 3), size = new Float32Array(N), tone = new Float32Array(N);
   const R = 7.5;
   for (let i = 0; i < N; i++) {
@@ -259,9 +268,9 @@ async function world(stage, scrollPos) {
     }
     home[i * 3] = x; home[i * 3 + 1] = y; home[i * 3 + 2] = z;
     pos[i * 3] = x * 2.6 + (Math.random() - 0.5) * 30; pos[i * 3 + 1] = y * 2.6 + (Math.random() - 0.5) * 30; pos[i * 3 + 2] = z + (Math.random() - 0.5) * 30;   // they gather on load
-    const big = Math.random() < 0.035;
-    size[i] = big ? 2.6 + Math.random() * 3.4 : 0.7 + Math.random() * 1.3;
-    tone[i] = Math.random() < 0.06 ? 1 : 0;   // a few orange
+    const big = Math.random() < 0.01;
+    size[i] = big ? 2.2 + Math.random() * 1.6 : 0.6 + Math.random() * 0.9;
+    tone[i] = Math.random() < 0.015 ? 1 : 0;   // a very few orange
   }
   const cloudGeo = new THREE.BufferGeometry();
   cloudGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
@@ -285,19 +294,19 @@ async function world(stage, scrollPos) {
   scene.add(cloud);
 
   // --- line fragments drifting round the cloud, like pieces broken off it
-  const NF = small ? 40 : 90, frag = [], fragPos = new Float32Array(NF * 6);
+  const NF = 0, frag = [], fragPos = new Float32Array(NF * 6);
   for (let i = 0; i < NF; i++) frag.push({ a: Math.random() * Math.PI * 2, r: R * (0.9 + Math.random() * 0.9), y: (Math.random() - 0.5) * R * 1.6, s: 0.02 + Math.random() * 0.05, len: 0.2 + Math.random() * 0.7, tilt: Math.random() * Math.PI, spin: (Math.random() - 0.5) * 0.6 });
   const fragGeo = new THREE.BufferGeometry(); fragGeo.setAttribute('position', new THREE.BufferAttribute(fragPos, 3));
   const frags = new THREE.LineSegments(fragGeo, new THREE.LineBasicMaterial({ color: 0xFFF4E6, transparent: true, opacity: 0.55 }));
   frags.position.copy(C); frags.frustumCulled = false; scene.add(frags);
 
   // --- the valley: rows of contour lines, rising into ridges on both sides and far away
-  const ROWS = small ? 70 : 110, COLS = small ? 120 : 180, W = 150, D = 120;
+  const ROWS = small ? 22 : 30, COLS = small ? 120 : 200, W = 150, D = 110;
   const hgt = (x, z) => {
     const ax = Math.abs(x), dz = -z - 8;
-    const ridge = Math.pow(Math.max(0, ax - 9), 1.35) * 0.42 * (1 + 0.35 * Math.sin(z * 0.11 + x * 0.05));
+    const ridge = Math.pow(Math.max(0, ax - 12), 1.3) * 0.22 * (1 + 0.3 * Math.sin(z * 0.11 + x * 0.05));
     const far = Math.max(0, dz - 25) * 0.18 * (1 + 0.5 * Math.sin(x * 0.07));
-    const rough = (Math.sin(x * 0.9 + z * 0.4) * 0.12 + Math.sin(x * 0.31 - z * 0.7) * 0.18) * (0.3 + Math.min(1, ax / 14));
+    const rough = Math.sin(x * 0.21 - z * 0.13) * 0.25 * Math.min(1, ax / 20);
     const bowl = -0.25 * Math.exp(-(x * x + (z + 8) * (z + 8)) / 30);
     return ridge + far + rough + bowl;
   };
@@ -310,14 +319,14 @@ async function world(stage, scrollPos) {
     }
   }
   const valleyGeo = new THREE.BufferGeometry(); valleyGeo.setAttribute('position', new THREE.Float32BufferAttribute(vpos, 3));
-  const valley = new THREE.LineSegments(valleyGeo, new THREE.LineBasicMaterial({ color: 0xFFF4E6, transparent: true, opacity: 0.3 }));
+  const valley = new THREE.LineSegments(valleyGeo, new THREE.LineBasicMaterial({ color: 0xFFF4E6, transparent: true, opacity: 0.13 }));
   scene.add(valley);
 
   // --- the beam: fine lines from the cloud to the ground, and a soft glow around them
-  const NB = small ? 140 : 260, bpos = [], bcol = [];
+  const NB = small ? 40 : 70, bpos = [], bcol = [];
   for (let i = 0; i < NB; i++) {
-    const a = Math.random() * Math.PI * 2, rr = Math.pow(Math.random(), 1.7) * 1.1, x = Math.cos(a) * rr, z = FIG.z + Math.sin(a) * rr;
-    const y0 = Math.random() * 1.5, y1 = C.y - 3 - Math.random() * 3, k = 1 - rr / 1.1, c = 0.3 + 0.7 * k;
+    const a = Math.random() * Math.PI * 2, rr = Math.pow(Math.random(), 2.2) * 0.45, x = Math.cos(a) * rr, z = FIG.z + Math.sin(a) * rr;
+    const y0 = Math.random() * 1.0, y1 = C.y - 3 - Math.random() * 3, k = 1 - rr / 0.45, c = 0.3 + 0.7 * k;
     bpos.push(x, y0, z, x, y1, z); bcol.push(c, c * 0.96, c * 0.9, c * 0.25, c * 0.24, c * 0.22);
   }
   const beamGeo = new THREE.BufferGeometry(); beamGeo.setAttribute('position', new THREE.Float32BufferAttribute(bpos, 3)); beamGeo.setAttribute('color', new THREE.Float32BufferAttribute(bcol, 3));
@@ -328,19 +337,19 @@ async function world(stage, scrollPos) {
     g.fillStyle = gr; g.fillRect(0, 0, 64, 256); const v = g.createLinearGradient(0, 0, 0, 256); v.addColorStop(0, 'rgba(0,0,0,.9)'); v.addColorStop(0.7, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.2)');
     g.globalCompositeOperation = 'destination-out'; g.fillStyle = v; g.fillRect(0, 0, 64, 256); return new THREE.CanvasTexture(c); })();
   const glow = new THREE.Group();
-  for (let k = 0; k < 3; k++) { const m = new THREE.Mesh(new THREE.PlaneGeometry(4.2, C.y - 2), new THREE.MeshBasicMaterial({ map: glowTex, transparent: true, opacity: 0.22, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
+  for (let k = 0; k < 3; k++) { const m = new THREE.Mesh(new THREE.PlaneGeometry(2.4, C.y - 2), new THREE.MeshBasicMaterial({ map: glowTex, transparent: true, opacity: 0.1, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
     m.position.set(0, (C.y - 2) / 2, FIG.z); m.rotation.y = (k / 3) * Math.PI; glow.add(m); }
   scene.add(glow);
   // --- light pooled on the ground: loose rings, and a scatter of short marks like pebbles
   const ring = new THREE.Group();
-  for (let k = 0; k < 6; k++) {
-    const pts = [], Rr = 1.1 + k * 0.7;
+  for (let k = 0; k < 2; k++) {
+    const pts = [], Rr = 1.1 + k * 1.4;
     for (let i = 0; i <= 120; i++) { const a = (i / 120) * Math.PI * 2; pts.push(new THREE.Vector3(Math.cos(a) * Rr, 0.03 + hgt(Math.cos(a) * Rr, FIG.z + Math.sin(a) * Rr), FIG.z + Math.sin(a) * Rr * 0.9)); }
-    ring.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: k ? 0xFFF4E6 : 0xDC5000, transparent: true, opacity: k ? 0.18 - k * 0.022 : 0.7 })));
+    ring.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: k ? 0xFFF4E6 : 0xDC5000, transparent: true, opacity: k ? 0.12 : 0.6 })));
   }
   scene.add(ring);
   const peb = [];
-  for (let i = 0; i < (small ? 160 : 360); i++) { const a = Math.random() * Math.PI * 2, r = 1.2 + Math.pow(Math.random(), 0.7) * 9, x = Math.cos(a) * r, z = FIG.z + Math.sin(a) * r * 0.8, y = hgt(x, z) + 0.03, l = 0.05 + Math.random() * 0.12, t = Math.random() * Math.PI;
+  for (let i = 0; i < 0; i++) { const a = Math.random() * Math.PI * 2, r = 1.2 + Math.pow(Math.random(), 0.7) * 9, x = Math.cos(a) * r, z = FIG.z + Math.sin(a) * r * 0.8, y = hgt(x, z) + 0.03, l = 0.05 + Math.random() * 0.12, t = Math.random() * Math.PI;
     peb.push(x - Math.cos(t) * l, y, z - Math.sin(t) * l, x + Math.cos(t) * l, y, z + Math.sin(t) * l); }
   const pebGeo = new THREE.BufferGeometry(); pebGeo.setAttribute('position', new THREE.Float32BufferAttribute(peb, 3));
   scene.add(new THREE.LineSegments(pebGeo, new THREE.LineBasicMaterial({ color: 0xFFF4E6, transparent: true, opacity: 0.55 })));
@@ -358,7 +367,7 @@ async function world(stage, scrollPos) {
 
   // camera keys: [position, target]
   const K0 = [new THREE.Vector3(0, 13.4, 5.5), new THREE.Vector3(0, 12.6, -8)];
-  const K1 = [new THREE.Vector3(0, 2.4, 15), new THREE.Vector3(0, 5.4, -8)];
+  const K1 = [new THREE.Vector3(small ? 0 : -4.2, 2.4, 15), new THREE.Vector3(small ? 0 : -4.2, 5.4, -8)];
   const K2 = [new THREE.Vector3(0, 9, 2), new THREE.Vector3(0, 13, -8)];
   const P = new THREE.Vector3(), T = new THREE.Vector3(), ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -C.z), hit = new THREE.Vector3(), local = new THREE.Vector3();
   const stand = (t) => ({ root: { x: 0, y: 0, rot: 0, sx: 1 }, lean: 0.03 * Math.sin(t * 0.7), bend: 0.8, nod: -0.16, feet: { L: { x: -0.09, y: 0.33 }, R: { x: 0.1, y: 0.33 } }, knee: { L: 1, R: -1 }, hands: { F: { x: 0.2, y: -0.03 }, B: { x: -0.21, y: -0.02 } }, elbow: { F: 1, B: -1 }, round: { F: 0.3, B: 0.5 } });
@@ -376,12 +385,12 @@ async function world(stage, scrollPos) {
     const hA = heroAt(), a = smooth(clamp(p / hA)), b = smooth(clamp((p - hA) / (1 - hA)));
     if (p < hA) { P.lerpVectors(K0[0], K1[0], a); T.lerpVectors(K0[1], K1[1], a); }
     else { P.lerpVectors(K1[0], K2[0], b); T.lerpVectors(K1[1], K2[1], b); }
-    P.x += pointer.sx * 1.2; P.y += pointer.sy * 0.6;
+    P.x += pointer.sx * 0.6; P.y += pointer.sy * 0.3;
     cam.position.copy(P); cam.lookAt(T);
 
     // the cloud: each dot springs toward its place in the mark, and away from the pointer
     const life = Math.min(1, (performance.now() / 1000 - t0) / 2.5);
-    cloud.rotation.y = Math.sin(time * 0.15) * 0.35 + pointer.sx * 0.25; cloud.rotation.x = Math.sin(time * 0.11) * 0.08;
+    cloud.rotation.y = Math.sin(time * 0.12) * 0.22 + pointer.sx * 0.12; cloud.rotation.x = Math.sin(time * 0.11) * 0.08;
     let px = 1e9, py = 1e9, pz = 0;
     if (pointer.active) {
       ray.setFromCamera({ x: pointer.x, y: pointer.y }, cam);
@@ -404,8 +413,8 @@ async function world(stage, scrollPos) {
       fragPos.set([x - dx, y - dy, z, x + dx, y + dy, z], i * 6);
     }
     fragGeo.attributes.position.needsUpdate = true;
-    beam.material.opacity = 0.5 + 0.15 * Math.sin(time * 1.7) + 0.1 * Math.sin(time * 4.3);
-    glow.children.forEach((m, k) => { m.material.opacity = 0.16 + 0.06 * Math.sin(time * 1.2 + k); });
+    beam.material.opacity = 0.42 + 0.08 * Math.sin(time * 1.3);
+    glow.children.forEach((m, k) => { m.material.opacity = 0.08 + 0.02 * Math.sin(time * 1.2 + k); });
     ring.rotation.y = time * 0.04;
     renderer.render(scene, cam);
 
@@ -417,7 +426,7 @@ async function world(stage, scrollPos) {
       const pose = stand(time), lines = MB.body(pose), bf = Math.floor(time * 8), jit = Math.max(0.4, k * 0.006);
       const camF = (qx, qy) => [fx + qx * k, fy - k * 0.33 + qy * k]; camF.k = k;
       const j = (s) => [s[0] + (hsh(s[0] * 0.07 + bf) - 0.5) * jit, s[1] + (hsh(s[1] * 0.07 + bf + 3.1) - 0.5) * jit];
-      fg.shadowColor = 'rgba(255, 244, 230, .7)'; fg.shadowBlur = 14;
+      fg.shadowColor = 'rgba(255, 244, 230, .5)'; fg.shadowBlur = 10;
       MB.draw(fg, lines, camF, j, '#FFF4E6');
       fg.shadowBlur = 0;
     }
@@ -488,39 +497,32 @@ function lineFaces(canvas, items) {
   canvas.parentElement.addEventListener('pointermove', (e) => { const r = canvas.getBoundingClientRect(); ptr.x = e.clientX - r.left; ptr.y = e.clientY - r.top; ptr.t = performance.now() / 1000; }, { passive: true });
   onScreen(canvas, (v) => { live = v; });
 
-  const ROWS = 96, STEPS = 220, SEG = 11;
+  const ROWS = 72, STEPS = 160, SEG = 8;
   const frame = (time) => {
     if (!live || !w) return;
     if (mixT < 1) { mixT = Math.min(1, mixT + 0.022); const m = smooth(mixT), f = fields[target]; for (let k = 0; k < cur.length; k++) cur[k] = from[k] + (f[k] - from[k]) * m; }
     g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-    // the rain
-    g.lineWidth = 1;
-    for (const c of cols) {
-      const x = Math.round(c.x * w) + 0.5, head = ((time * c.sp + c.off) % 1.3 - 0.15) * h;
-      for (let y = head - c.len * h; y < head; y += 7) {
-        const a = c.a * clamp((y - (head - c.len * h)) / (c.len * h));
-        g.strokeStyle = `rgba(190, 220, 255, ${(a * 0.5).toFixed(3)})`; g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + 3); g.stroke();
-      }
-    }
     // the face
-    const fh = h * 0.96, fw = Math.min(w * 0.75, fh * (GW / GH)), ox = (w - fw) / 2, oy = h * 0.06;
+    const fw = Math.min(w * 0.86, h * 0.78 * (GW / GH)), fh = fw * (GH / GW), ox = (w - fw) / 2, oy = Math.max(h * 0.11, (h - fh) / 2 - h * 0.06);   // keep its proportions on any screen
     const amp = (fh / ROWS) * 3.2, since = time - ptr.t;
     g.globalCompositeOperation = 'lighter';
     for (let r = 0; r < ROWS; r++) {
-      const gy = Math.min(GH - 1, Math.round((r / (ROWS - 1)) * (GH - 1))), baseY = oy + (r / (ROWS - 1)) * fh;
+      const fy = (r / (ROWS - 1)) * (GH - 1), gy0 = Math.floor(fy), gy1 = Math.min(GH - 1, gy0 + 1), ty = fy - gy0, baseY = oy + (r / (ROWS - 1)) * fh;
       let px = 0, py = 0, acc = 0, n = 0;
       for (let c = 0; c <= STEPS; c++) {
-        const x = (c / STEPS) * w, u = (x - ox) / fw, gx = Math.round(u * (GW - 1));
-        const L = u >= 0 && u <= 1 ? cur[gy * GW + gx] : 0;
+        const u = c / STEPS, x = ox + u * fw, fx = u * (GW - 1), gx0 = Math.floor(fx), gx1 = Math.min(GW - 1, gx0 + 1), tx = fx - gx0;
+        // smooth (bilinear) sampling, so edges are curves, not steps
+        const L = (cur[gy0 * GW + gx0] * (1 - tx) + cur[gy0 * GW + gx1] * tx) * (1 - ty) + (cur[gy1 * GW + gx0] * (1 - tx) + cur[gy1 * GW + gx1] * tx) * ty;
         const d = Math.hypot(x - ptr.x, baseY - ptr.y), rip = since < 3 ? Math.sin(d * 0.05 - since * 8) * Math.exp(-d / 160) * 12 * (1 - since / 3) : 0;
         const y = baseY - L * amp + Math.sin(u * 14 + time * 0.7 + r * 0.35) * 0.5 + rip;
         if (c) {
           if (n === 0) { g.beginPath(); g.moveTo(px, py); }
           g.lineTo(x, y); acc += L; n++;
           if (n === SEG || c === STEPS) {
-            const lum = acc / n, edge = Math.min(1, Math.min(x, w - x) / (w * 0.12));
-            g.strokeStyle = `rgba(255, 244, 230, ${((0.05 + Math.pow(lum, 1.6) * 0.95) * edge).toFixed(3)})`;
-            g.lineWidth = 0.8 + lum * 0.9; g.stroke(); acc = 0; n = 0;
+            const lum = acc / n, uu = (x - ox) / fw, vv = r / (ROWS - 1);
+            const edge = smooth(clamp(Math.min(uu, 1 - uu) / 0.2)) * smooth(clamp((1 - vv) / 0.12));   // soft at the sides and the foot
+            g.strokeStyle = `rgba(255, 244, 230, ${((0.015 + Math.pow(lum, 1.3) * 0.85) * edge).toFixed(3)})`;
+            g.lineWidth = 1; g.stroke(); acc = 0; n = 0;
           }
         }
         px = x; py = y;
@@ -529,7 +531,7 @@ function lineFaces(canvas, items) {
     g.globalCompositeOperation = 'source-over';
     if (placeholder[target]) {
       g.font = '400 11px Outfit, system-ui, sans-serif'; g.fillStyle = 'rgba(255, 244, 230, .5)'; g.textAlign = 'center';
-      g.fillText(keys[target] + ' (photo to come)', w / 2, h - 20);
+      g.fillText(keys[target] + ', photo to come', w / 2, oy + fh + 18);
     }
   };
   if (window.gsap) window.gsap.ticker.add(frame); else { const loop = (t) => { frame(t / 1000); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
