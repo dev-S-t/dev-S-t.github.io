@@ -176,10 +176,14 @@
 .ab-cta-title:hover .l > span:first-child, .ab-cta-title:focus-visible .l > span:first-child { transform: translateY(-105%); }
 .ab-cta-title:hover .l > span + span, .ab-cta-title:focus-visible .l > span + span { transform: translateY(0); }
 .ab-cta-sub { position: relative; margin: 0; font-size: var(--p-lg); line-height: var(--lh-p-lg); color: var(--ink); }
-.ab-pill { position: relative; margin-top: auto; display: inline-flex; align-items: center; gap: var(--s4); padding: var(--s3) var(--s5); border-radius: 999px; background: var(--fg); color: var(--ink); font-size: var(--p); line-height: 1; text-transform: uppercase; box-shadow: 0 20px 40px -20px rgba(16, 9, 4, .5); }
-.ab-pill-arrow { position: relative; width: 12px; height: 16px; }
-.ab-pill-arrow::before { content: ""; position: absolute; left: 5.5px; top: 0; width: 1.4px; height: 15px; background: currentColor; }
-.ab-pill-arrow::after { content: ""; position: absolute; left: 1.5px; bottom: 1px; width: 7px; height: 7px; border-right: 1.4px solid currentColor; border-bottom: 1.4px solid currentColor; transform: rotate(45deg); }
+.ab-pill { position: relative; margin-top: auto; display: inline-flex; align-items: center; gap: var(--s3); padding: var(--s1) var(--s1) var(--s1) var(--s4); border-radius: 999px; background: var(--fg); color: var(--ink); font-size: var(--p); line-height: 1; text-transform: uppercase; letter-spacing: .02em; box-shadow: 0 20px 40px -20px rgba(16, 9, 4, .5); }
+/* the arrow sits in a dark disc; on hover it leaves to the right and a second arrow comes in from the left */
+.ab-pill-icon { position: relative; width: 48px; height: 48px; border-radius: 50%; background: var(--ink); color: var(--fg); overflow: hidden; transition: transform .6s var(--ease-out); }
+.ab-pill-icon svg { position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform .55s var(--ease-io); }
+.ab-pill-icon svg + svg { transform: translateX(-48px); }
+.ab-pill:hover .ab-pill-icon, .ab-pill:focus-visible .ab-pill-icon { transform: scale(1.08); }
+.ab-pill:hover .ab-pill-icon svg:first-child, .ab-pill:focus-visible .ab-pill-icon svg:first-child { transform: translateX(48px); }
+.ab-pill:hover .ab-pill-icon svg + svg, .ab-pill:focus-visible .ab-pill-icon svg + svg { transform: translateX(0); }
 .ab-pill:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
 
 .ab .next { background: #0B0A0A; }
