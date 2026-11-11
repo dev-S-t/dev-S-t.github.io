@@ -369,7 +369,7 @@ async function world(stage, scrollPos) {
   }
   const beamGeo = new THREE.BufferGeometry(); beamGeo.setAttribute('position', new THREE.Float32BufferAttribute(bpos, 3)); beamGeo.setAttribute('color', new THREE.Float32BufferAttribute(bcol, 3));
   const beam = new THREE.LineSegments(beamGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false }));
-  scene.add(beam);
+  const bolt = new THREE.Group(); bolt.add(beam);
   const glowTex = (() => { const c = document.createElement('canvas'); c.width = 64; c.height = 256; const g = c.getContext('2d');
     const gr = g.createLinearGradient(0, 0, 64, 0); gr.addColorStop(0, 'rgba(255,244,230,0)'); gr.addColorStop(0.5, 'rgba(255,244,230,1)'); gr.addColorStop(1, 'rgba(255,244,230,0)');
     g.fillStyle = gr; g.fillRect(0, 0, 64, 256); const v = g.createLinearGradient(0, 0, 0, 256); v.addColorStop(0, 'rgba(0,0,0,.9)'); v.addColorStop(0.7, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.2)');
@@ -377,7 +377,7 @@ async function world(stage, scrollPos) {
   const glow = new THREE.Group();
   for (let k = 0; k < 3; k++) { const m = new THREE.Mesh(new THREE.PlaneGeometry(2.4, C.y - 2), new THREE.MeshBasicMaterial({ map: glowTex, transparent: true, opacity: 0.1, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
     m.position.set(0, (C.y - 2) / 2, FIG.z); m.rotation.y = (k / 3) * Math.PI; glow.add(m); }
-  scene.add(glow);
+  bolt.add(glow);
   // --- light pooled on the ground: loose rings, and a scatter of short marks like pebbles
   const ring = new THREE.Group();
   for (let k = 0; k < 2; k++) {
@@ -386,6 +386,62 @@ async function world(stage, scrollPos) {
     ring.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: k ? 0xFFF4E6 : 0xDC5000, transparent: true, opacity: k ? 0.12 : 0.6 })));
   }
   scene.add(ring);
+
+  // ---------------- The arrival: a beam strikes down from the cloud, he lands, the mark burns into the ground ----------------
+  // Scroll-driven, like all his movement. The bolt reaches down with a prism of coloured light twisting round its core;
+  // the impact flashes, sends rings racing out across the ground and throws up dust; the loops of the mark burn into the
+  // ground where he lands, hot orange cooling to cream; he rises out of a crouch, and the beam calms to a thin thread.
+  const TOP = C.y - 3, GY = hgt(0, FIG.z) + 0.04;
+  // the prism: seven strands of colour twisting round the core
+  const hpos = [], hcol = [], HUES = [[1, .08, .05], [1, .42, 0], [1, .9, .05], [.1, 1, .3], [0, .75, 1], [.2, .2, 1], [.75, .1, 1]];   // the full spectrum, saturated
+  [...HUES, ...HUES].forEach((c, k) => {          // fourteen strands: each colour twice, on two radii
+    const SEG = 90;
+    for (let i = 0; i < SEG; i++) {
+      const y0 = (i / SEG) * TOP, y1 = ((i + 1) / SEG) * TOP, a0 = k / 14 * Math.PI * 2 + y0 * 0.9, a1 = k / 14 * Math.PI * 2 + y1 * 0.9, r = k < 7 ? 0.55 : 0.78;
+      hpos.push(Math.cos(a0) * r, y0, FIG.z + Math.sin(a0) * r, Math.cos(a1) * r, y1, FIG.z + Math.sin(a1) * r);
+      hcol.push(...c, ...c);
+    }
+  });
+  const helixGeo = new THREE.BufferGeometry(); helixGeo.setAttribute('position', new THREE.Float32BufferAttribute(hpos, 3)); helixGeo.setAttribute('color', new THREE.Float32BufferAttribute(hcol, 3));
+  const helix = new THREE.LineSegments(helixGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
+  const helixPivot = new THREE.Group(); helixPivot.position.set(0, 0, FIG.z); helix.position.set(0, 0, -FIG.z); helixPivot.add(helix); bolt.add(helixPivot);
+  scene.add(bolt);
+  // the shockwave: three rings racing out over the ground
+  const waves = [0, 1, 2].map(() => {
+    const pts = []; for (let i = 0; i <= 160; i++) { const a = (i / 160) * Math.PI * 2; pts.push(new THREE.Vector3(Math.cos(a), 0, Math.sin(a) * 0.9)); }
+    const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xFFF4E6, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
+    l.position.set(0, GY, FIG.z); scene.add(l); return l;
+  });
+  // dust thrown out by the impact (each grain's path is fixed; the scroll says how far along it is)
+  const ND2 = small ? 160 : 320, dust = new Float32Array(ND2 * 3), dustDir = [];
+  for (let i = 0; i < ND2; i++) dustDir.push({ a: Math.random() * Math.PI * 2, sp: 2 + Math.random() * 9, up: 1.5 + Math.random() * 5 });
+  const dustGeo = new THREE.BufferGeometry(); dustGeo.setAttribute('position', new THREE.BufferAttribute(dust, 3));
+  const dustPts = new THREE.Points(dustGeo, new THREE.PointsMaterial({ color: 0xFFF4E6, size: 0.06, transparent: true, opacity: 0, depthWrite: false }));
+  dustPts.frustumCulled = false; scene.add(dustPts);
+  // the mark, burnt into the ground: the logo's own dots, laid flat round where he lands, revealed from the centre out
+  const GR = 4.4, glyphN = Math.min(markPts.length, small ? 1600 : 3200), gpos = new Float32Array(glyphN * 3), grad = new Float32Array(glyphN);
+  for (let i = 0; i < glyphN; i++) {
+    const q = markPts[Math.floor((i / glyphN) * markPts.length)];
+    const x = q[0] * GR * 2, z = FIG.z - q[1] * GR * 2 * 0.95;
+    gpos[i * 3] = x; gpos[i * 3 + 1] = hgt(x, z) + 0.035; gpos[i * 3 + 2] = z; grad[i] = Math.hypot(q[0], q[1]) * 2;
+  }
+  const glyphGeo = new THREE.BufferGeometry(); glyphGeo.setAttribute('position', new THREE.BufferAttribute(gpos, 3)); glyphGeo.setAttribute('rad', new THREE.BufferAttribute(grad, 1));
+  const glyphMat = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: { uReveal: { value: 0 }, uHeat: { value: 1 }, uScale: { value: 1 } },
+    vertexShader: `attribute float rad; varying float vRad; uniform float uScale; void main(){ vRad = rad; vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_Position = projectionMatrix * mv; gl_PointSize = uScale * 26.0 / -mv.z; }`,
+    fragmentShader: `varying float vRad; uniform float uReveal, uHeat;
+      void main(){ vec2 c = gl_PointCoord - 0.5; if (length(c) > 0.5) discard;
+        float on = smoothstep(uReveal, uReveal - 0.12, vRad);            // burning outward from the centre
+        float edge = smoothstep(uReveal - 0.18, uReveal, vRad) * on;       // the burning edge glows hottest
+        vec3 hot = vec3(1.0, 0.45, 0.08), cool = vec3(1.0, 0.957, 0.902);
+        vec3 col = mix(cool, hot, clamp(uHeat + edge, 0.0, 1.0));
+        gl_FragColor = vec4(col, on * (0.55 + 0.45 * edge) * (0.5 + 0.5 * uHeat) + edge * 0.4); }`
+  });
+  const glyph = new THREE.Points(glyphGeo, glyphMat); glyph.frustumCulled = false; scene.add(glyph);
+  const crouch = () => ({ root: { x: 0, y: 0, rot: 0, sx: 1 }, lean: 0.35, bend: 0.8, nod: 0.25, feet: { L: { x: -0.16, y: 0.2 }, R: { x: 0.14, y: 0.21 } }, knee: { L: 1, R: 1 }, hands: { F: { x: 0.22, y: 0.16 }, B: { x: -0.26, y: 0.1 } }, elbow: { F: 1, B: -1 }, round: { F: 0.3, B: 0.3 } });
+  const mixPose = (a, b, u) => { const o = {}; for (const k in b) { const A = a[k], B = b[k]; if (typeof A === 'number' && typeof B === 'number') o[k] = A + (B - A) * u; else if (A && B && typeof A === 'object') o[k] = mixPose(A, B, u); else o[k] = u < 0.5 && A !== undefined ? A : B; } return o; };
+  const arrival = { s: 0 };
   const peb = [];
   for (let i = 0; i < 0; i++) { const a = Math.random() * Math.PI * 2, r = 1.2 + Math.pow(Math.random(), 0.7) * 9, x = Math.cos(a) * r, z = FIG.z + Math.sin(a) * r * 0.8, y = hgt(x, z) + 0.03, l = 0.05 + Math.random() * 0.12, t = Math.random() * Math.PI;
     peb.push(x - Math.cos(t) * l, y, z - Math.sin(t) * l, x + Math.cos(t) * l, y, z + Math.sin(t) * l); }
@@ -405,7 +461,7 @@ async function world(stage, scrollPos) {
 
   // camera keys: [position, target]
   const K0 = [new THREE.Vector3(0, 13.4, 5.5), new THREE.Vector3(0, 12.6, -8)];
-  const K1 = [new THREE.Vector3(small ? 0 : -4.2, 2.4, 15), new THREE.Vector3(small ? 0 : -4.2, 5.4, -8)];
+  const K1 = [new THREE.Vector3(small ? 0 : -4.2, 4.6, 15.5), new THREE.Vector3(small ? 0 : -4.2, 4.2, -8)];   // high enough to see the mark on the ground
   const K2 = [new THREE.Vector3(0, 9, 2), new THREE.Vector3(0, 13, -8)];
   const P = new THREE.Vector3(), T = new THREE.Vector3(), ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -C.z), hit = new THREE.Vector3(), local = new THREE.Vector3();
   const stand = (t) => ({ root: { x: 0, y: 0, rot: 0, sx: 1 }, lean: 0.03 * Math.sin(t * 0.7), bend: 0.8, nod: -0.16, feet: { L: { x: -0.09, y: 0.33 }, R: { x: 0.1, y: 0.33 } }, knee: { L: 1, R: -1 }, hands: { F: { x: 0.2, y: -0.03 }, B: { x: -0.21, y: -0.02 } }, elbow: { F: 1, B: -1 }, round: { F: 0.3, B: 0.5 } });
@@ -420,10 +476,15 @@ async function world(stage, scrollPos) {
     stage.style.opacity = String(1 - smooth(clamp((p - 0.86) / 0.14)));
     if (covered || p >= 1) return;
     pointer.sx += (pointer.x - pointer.sx) * 0.05; pointer.sy += (pointer.y - pointer.sy) * 0.05;
-    const hA = heroAt(), a = smooth(clamp(p / hA)), b = smooth(clamp((p - hA) / (1 - hA)));
+    const hA = heroAt(), a = smooth(clamp(p / (hA * 0.45))), b = smooth(clamp((p - hA) / (1 - hA)));   // the camera comes down first; then the strike
     if (p < hA) { P.lerpVectors(K0[0], K1[0], a); T.lerpVectors(K0[1], K1[1], a); }
     else { P.lerpVectors(K1[0], K2[0], b); T.lerpVectors(K1[1], K2[1], b); }
     P.x += pointer.sx * 0.6; P.y += pointer.sy * 0.3;
+    // the arrival, from the first scroll until "who we are" is in place
+    const S = clamp((p - hA * 0.42) / (hA * 0.55)); arrival.s = S;
+    const reach = smooth(clamp(S / 0.22));                                   // the bolt reaching down
+    const flash = S > 0.18 ? Math.exp(-Math.pow((S - 0.245) / 0.035, 2)) : 0; // the impact
+    P.y += Math.sin(time * 70) * 0.09 * flash; P.x += Math.cos(time * 53) * 0.06 * flash;   // the ground shakes
     cam.position.copy(P); cam.lookAt(T);
 
     // the cloud: each dot springs toward its place in the mark, and away from the pointer
@@ -451,22 +512,51 @@ async function world(stage, scrollPos) {
       fragPos.set([x - dx, y - dy, z, x + dx, y + dy, z], i * 6);
     }
     fragGeo.attributes.position.needsUpdate = true;
-    beam.material.opacity = 0.42 + 0.08 * Math.sin(time * 1.3);
-    glow.children.forEach((m, k) => { m.material.opacity = 0.08 + 0.02 * Math.sin(time * 1.2 + k); });
+    // the bolt: reaches down from the cloud, blazes at the impact, then calms to a thin thread
+    const blaze = S < 0.22 ? 1 : lerp(1, 0.3, smooth(clamp((S - 0.3) / 0.5)));
+    bolt.visible = reach > 0.001;
+    const X = 1 + flash * 1.6 + (1 - smooth(clamp((S - 0.25) / 0.4))) * 0.8 * (S > 0.22 ? 1 : reach);   // thick while it blazes
+    bolt.scale.set(X, reach, X);
+    bolt.position.set(0, TOP * (1 - reach), FIG.z * (1 - X));   // widening round its own axis, which stands at FIG.z
+    beam.material.opacity = (0.42 + 0.08 * Math.sin(time * 1.3)) * (0.6 + blaze * 0.9);
+    glow.children.forEach((m, k) => { m.material.opacity = (0.08 + 0.02 * Math.sin(time * 1.2 + k)) * (1 + blaze * 3 + flash * 6); });
+    helix.material.opacity = (S < 0.22 ? reach : 1 - smooth(clamp((S - 0.32) / 0.4)));
+    helixPivot.rotation.y = time * 2.2 + S * 20;
+    // the shockwave, the dust, the mark
+    const tw = clamp((S - 0.23) / 0.5);
+    waves.forEach((l, k) => { const t = clamp(tw * 1.25 - k * 0.12); l.scale.setScalar(0.4 + Math.pow(t, 0.7) * 22); l.material.opacity = t > 0 && t < 1 ? (1 - t) * 0.85 : 0; });
+    const dt = clamp((S - 0.23) / 0.6);
+    for (let i = 0; i < ND2; i++) { const d = dustDir[i], r = d.sp * Math.pow(dt, 0.6); dust[i * 3] = Math.cos(d.a) * r; dust[i * 3 + 1] = GY + Math.max(0, d.up * dt - 7 * dt * dt); dust[i * 3 + 2] = FIG.z + Math.sin(d.a) * r * 0.9; }
+    dustGeo.attributes.position.needsUpdate = true; dustPts.material.opacity = dt > 0 && dt < 1 ? (1 - dt) * 0.8 : 0;
+    glyphMat.uniforms.uReveal.value = smooth(clamp((S - 0.24) / 0.32)) * 1.25;
+    glyphMat.uniforms.uHeat.value = 1 - smooth(clamp((S - 0.45) / 0.5));
+    glyphMat.uniforms.uScale.value = h / 900 * dpr;
+    ring.visible = S > 0.3; ring.children.forEach((l, k) => { l.material.opacity = (k ? 0.12 : 0.6) * smooth(clamp((S - 0.3) / 0.3)); });
     ring.rotation.y = time * 0.04;
     renderer.render(scene, cam);
 
     // the figure, in 2D, where his feet and head fall on screen
     v.copy(FIG).project(cam); v2.set(FIG.x, FIG.y + 1.8, FIG.z).project(cam);
     fg.setTransform(dpr, 0, 0, dpr, 0, 0); fg.clearRect(0, 0, w, h);
-    if (MB && v.z < 1 && v.z > -1) {
-      const fx = (v.x * 0.5 + 0.5) * w, fy = (-v.y * 0.5 + 0.5) * h, hy = (-v2.y * 0.5 + 0.5) * h, k = Math.max(3, (fy - hy) * 1.2);
-      const pose = stand(time), lines = MB.body(pose), bf = Math.floor(time * 8), jit = Math.max(0.4, k * 0.006);
+    const fx = (v.x * 0.5 + 0.5) * w, fy = (-v.y * 0.5 + 0.5) * h;
+    // the flash: a burst of white from the point of impact, washing the screen for an instant
+    if (flash > 0.01 && v.z < 1) {
+      const gr = fg.createRadialGradient(fx, fy, 0, fx, fy, Math.max(w, h) * 0.7);
+      gr.addColorStop(0, `rgba(255, 250, 240, ${(flash * 0.95).toFixed(3)})`); gr.addColorStop(0.25, `rgba(255, 236, 210, ${(flash * 0.45).toFixed(3)})`); gr.addColorStop(1, 'rgba(255, 236, 210, 0)');
+      fg.fillStyle = gr; fg.fillRect(0, 0, w, h);
+    }
+    const appear = smooth(clamp((S - 0.25) / 0.16));   // he comes out of the light
+    if (MB && appear > 0 && v.z < 1 && v.z > -1) {
+      const hy = (-v2.y * 0.5 + 0.5) * h, k = Math.max(3, (fy - hy) * 1.2);
+      const rise = smooth(clamp((S - 0.42) / 0.36));     // out of the landing crouch, up to standing
+      const pose = mixPose(crouch(), stand(time), rise), lines = MB.body(pose), bf = Math.floor(time * 8), jit = Math.max(0.4, k * 0.006);
       const camF = (qx, qy) => [fx + qx * k, fy - k * 0.33 + qy * k]; camF.k = k;
       const j = (s) => [s[0] + (hsh(s[0] * 0.07 + bf) - 0.5) * jit, s[1] + (hsh(s[1] * 0.07 + bf + 3.1) - 0.5) * jit];
-      fg.shadowColor = 'rgba(255, 244, 230, .5)'; fg.shadowBlur = 10;
-      MB.draw(fg, lines, camF, j, '#FFF4E6');
-      fg.shadowBlur = 0;
+      const hot = 1 - smooth(clamp((S - 0.3) / 0.3));
+      fg.globalAlpha = appear;
+      fg.shadowColor = `rgba(255, 244, 230, ${(0.5 + hot * 0.5).toFixed(2)})`; fg.shadowBlur = 10 + hot * 30;
+      MB.draw(fg, lines, camF, j, hot > 0.5 ? '#FFFFFF' : '#FFF4E6');
+      fg.shadowBlur = 0; fg.globalAlpha = 1;
     }
   });
 }

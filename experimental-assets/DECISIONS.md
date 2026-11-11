@@ -2,6 +2,16 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-11: fifteenth pass, the arrival (after the Bifrost landing in Infinity War)
+
+Abhishek: make the beam like Thor's Bifrost arrival in Wakanda, and have the man come in the logo's form after a mass entry.
+
+- All driven by scroll, as his movement always is. Between the name and "who we are", the camera first comes down from the cloud; then the bolt strikes down from it, a white core wrapped in fourteen twisting strands of saturated spectrum colour.
+- The impact: a white flash from the point of landing, the ground shakes, three rings race out across the contour lines, and dust is thrown up and falls.
+- The mark: where he lands, the loops of the logo burn into the ground (the logo's own dots, laid flat), revealed from the centre out with a hot orange edge, cooling to cream. This is our version of the Bifrost's ring on the ground.
+- He comes out of the light, white and glowing, crouched from the landing, and rises to standing on the mark; the bolt calms to the thin thread that stays for the rest of the scene.
+- The camera in "who we are" is a little higher, so the mark on the ground reads.
+
 ## 2026-11-11: fourteenth pass, contour portraits and the footer after oryzo.ai
 
 - **Portraits (Abhishek's reference: a face drawn in contour lines, but with the eyes visible):** each photo is cut out from its background (OpenCV GrabCut, on this machine) and saved in grey with the cut as alpha (`assets/img/team/*-lines.webp`). On the graphics card, the face is drawn as contour lines of a heavily smoothed map of its light (even, flowing lines, like a map of depth); a lightly smoothed map sets each line's brightness, so eyes, glasses, brows and beard read along the lines. The lines drift slowly; the pointer makes them swell and ring it; one face flows into the other. The original photos are used as they are on the home page's humans section.
