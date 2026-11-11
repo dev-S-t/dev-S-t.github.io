@@ -2,6 +2,13 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-11: fourteenth pass, contour portraits and the footer after oryzo.ai
+
+- **Portraits (Abhishek's reference: a face drawn in contour lines, but with the eyes visible):** each photo is cut out from its background (OpenCV GrabCut, on this machine) and saved in grey with the cut as alpha (`assets/img/team/*-lines.webp`). On the graphics card, the face is drawn as contour lines of a heavily smoothed map of its light (even, flowing lines, like a map of depth); a lightly smoothed map sets each line's brightness, so eyes, glasses, brows and beard read along the lines. The lines drift slowly; the pointer makes them swell and ring it; one face flows into the other. The original photos are used as they are on the home page's humans section.
+- **The hover glitch:** the pointer disc was shown and hidden on enter and leave events, which never fire when the page glides under a resting pointer (smooth scroll, the pin); it stuck on screen or went missing. It is now decided every frame from where the pointer is, and hides over the menu bar.
+- **Footer (after oryzo.ai's):** one screen. Oryzo's coffee beans become a broad diagonal stream of short lines, each turned its own way. The mark's figure wades in after the pointer (or wanders along the stream when left alone), sweeping his arms; the lines he touches are pushed aside, turn to run with the stream and light up, orange where he has just passed, then fall back into the tangle. Top: the mark, and "That is the loop: look closely, make carefully, look again." (the home page's words) with the Start a project pill. Bottom: a small share box with a working Copy link (its two lines are Claude's draft), the Explore and For agents links, the copyright.
+- **Next page:** moved below the footer; it is now the last thing on the page.
+
 ## 2026-11-11: thirteenth pass, "What we build with" made quiet
 
 - A numbered label (03 Tools), the heading at h2 (48px, light) and a short note on the right (both still Claude's draft).
