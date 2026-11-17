@@ -36,13 +36,14 @@ main { position: relative; z-index: 1; }
 .quipped { position: relative; }
 .quip { position: absolute; z-index: 30; pointer-events: none; white-space: nowrap; font-size: 12px; line-height: 1.2; color: var(--mute); opacity: 0; transform: translateY(6px) rotate(-12deg); transition: opacity .3s, transform .5s var(--spring); }
 .quipped:hover > .quip, .quipped:focus-visible > .quip { opacity: 1; transform: translateY(0) rotate(-12deg); }
-.quip-tilt { left: -16px; top: calc(100% + 6px); transform-origin: left top; transform: rotate(60deg) translateY(4px); font-size: 11px; }
-.quipped:hover > .quip-tilt, .quipped:focus-visible > .quip-tilt { transform: rotate(60deg) translateY(0); }
+.quip-tilt { left: 50%; top: calc(100% + 14px); translate: -50% 0; transform-origin: 50% 0; transform: rotate(-4deg) translateY(4px); font-size: 12px; }   /* level enough to read at a glance */
+.quipped:hover > .quip-tilt, .quipped:focus-visible > .quip-tilt { transform: rotate(-4deg) translateY(0); }
 
 /* buttons */
 .dz-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 24px; border-radius: 999px; font-size: 17px; font-weight: 600; line-height: 1; white-space: nowrap; transition: background .3s, color .3s, transform .5s var(--spring); }
 .dz-btn-blue { background: var(--blue); color: #fff; }
-.dz-btn-grey { background: var(--grey); color: #fff; }
+.dz-btn-grey { background: #4F4F4F; color: #fff; font-size: 18px; font-weight: 500; letter-spacing: 0; }
+.dz-btn-grey.dz-tilt:hover, .dz-btn-grey.dz-tilt:focus-visible { transform: rotate(-4deg) scale(1.07); }   /* his: a small tilt and a lift, the label stays put */
 .dz-btn-line { border: 1.5px solid var(--ink); }
 .dz-btn-lg { height: 56px; padding: 0 30px; font-size: 16px; }
 .dz-tilt:hover, .dz-tilt:focus-visible { transform: rotate(-8deg) scale(1.04); }
@@ -74,7 +75,7 @@ main { position: relative; z-index: 1; }
 .dz-q-resume { left: 30px; top: calc(100% + 10px); white-space: normal; width: 110px; text-align: left; }
 
 /* header: hides as you scroll down, comes back as you scroll up */
-.dz-top { position: fixed; z-index: 60; left: 50%; top: 0; width: min(1080px, calc(100% - 2 * var(--gut))); translate: -50% 0; display: flex; justify-content: space-between; align-items: center; padding: 40px 0 28px; pointer-events: none; transition: transform .5s var(--ease); }
+.dz-top { position: fixed; z-index: 60; left: 50%; top: 0; width: calc(100% - 2 * var(--gut)); translate: -50% 0; display: flex; justify-content: space-between; align-items: center; padding: 40px 0 28px; pointer-events: none; transition: transform .5s var(--ease); }
 .dz-top.is-hidden { transform: translateY(-120%); }
 .dz-top > * { pointer-events: auto; }
 .dz-name { display: grid; justify-items: start; font-size: 24px; font-weight: 500; line-height: 1.05; letter-spacing: -0.02em; padding-left: 4px; }
@@ -153,7 +154,7 @@ main { position: relative; z-index: 1; }
 .dz-tools li { width: 64px; height: 64px; display: grid; place-items: center; animation: float var(--t, 4s) ease-in-out var(--d, 0s) infinite; }
 .dz-tools li img { width: 60px; height: 60px; transition: transform .5s var(--spring); }
 .dz-tools li:hover img { transform: scale(1.18) rotate(-12deg); }
-@keyframes float { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-12px) rotate(var(--r, 6deg)); } }
+@keyframes float { 0%, 100% { transform: translateY(-6px) rotate(0); } 50% { transform: translateY(22px) rotate(var(--r, 6deg)); } }   /* they sink further than they rise */
 
 /* 3. featured projects: a photo stack behind a white card with a folder cut */
 .dz-work { padding: 80px var(--gut) 160px; max-width: 1280px; margin: 0 auto; }

@@ -125,7 +125,7 @@
 
     // projects and about come up as you reach them
     gsap.from('.pj', { clearProps: 'transform,opacity', y: 80, opacity: 0, duration: 1.1, ease: 'expo.out', stagger: 0.12, scrollTrigger: { trigger: '.pjs', start: 'top 85%' } });
-    gsap.from('.dz-work-head > *', { y: 24, opacity: 0, duration: 0.9, ease: 'expo.out', stagger: 0.08, scrollTrigger: { trigger: '.dz-work-head', start: 'top 85%' } });
+    gsap.from('.dz-work-head > *', { clearProps: 'transform,opacity', y: 24, opacity: 0, duration: 0.9, ease: 'expo.out', stagger: 0.08, scrollTrigger: { trigger: '.dz-work-head', start: 'top 85%' } });
     const photoDone = calm('.dz-photo');
     gsap.from('.dz-photo', { clearProps: 'transform,opacity', onComplete: photoDone, rotate: -18, x: -60, opacity: 0, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: '.dz-about', start: 'top 75%' } });
     gsap.from('.dz-about-text > *', { y: 30, opacity: 0, duration: 1, ease: 'expo.out', stagger: 0.1, scrollTrigger: { trigger: '.dz-about', start: 'top 70%' } });
