@@ -111,7 +111,8 @@ main { position: relative; z-index: 1; }
 .dz-avatar { position: absolute; left: 0; top: -.08em; margin: 0; width: 4.09em; transform: rotate(-5deg); transition: transform .6s var(--spring); }
 .dz-avatar:hover, .dz-avatar:focus-visible { transform: rotate(6deg) scale(1.04); }
 .dz-q-avatar { left: 70%; top: -14px; transform: rotate(-12deg); }
-.dz-tag { position: absolute; left: 2.83em; top: -.81em; display: inline-flex; align-items: center; margin: 0; padding: 5px 14px; border: 1px solid #CFCFCF; border-radius: 999px; background: var(--paper); font-size: 12px; line-height: 1.2; color: var(--ink-2); white-space: nowrap; }
+.dz-tag { position: absolute; left: calc(clamp(34px, 3.4vw, 52px) * 4.58); top: -.81em; translate: -50% 0; }   /* centred over "I design. I build." (its middle sits 4.58 headline-em in) */
+.dz-tag { display: inline-flex; align-items: center; margin: 0; padding: 5px 14px; border: 1px solid #CFCFCF; border-radius: 999px; background: var(--paper); font-size: 12px; line-height: 1.2; color: var(--ink-2); white-space: nowrap; }
 .dz-tag i { position: absolute; width: 18px; height: 18px; color: var(--ink); }
 .dz-tag-a { right: 4px; top: calc(100% - 2px); transform: rotate(-17deg); }
 .dz-tag-b { right: -14px; top: 60%; transform: rotate(15deg); }
@@ -360,6 +361,7 @@ html:not(.js) .dz-step { opacity: 1; }
   .dz-hero-in { width: auto; padding: 0; display: grid; justify-items: center; gap: 28px; font-size: clamp(30px, 8.6vw, 40px); text-align: center; }
   .dz-stickers { left: 0; top: -2.6em; }
   .dz-avatar, .dz-tag, .dz-palette { position: relative; left: auto; top: auto; }
+  .dz-tag { translate: none; }
   .dz-avatar { order: -1; width: 4.4em; }
   .dz-headline { display: grid; justify-items: center; gap: 12px; }
   .dz-h1 { line-height: 1.4; }
