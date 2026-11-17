@@ -10,6 +10,14 @@
   /* ---------- the moon sticker: lights off for the whole page ---------- */
   document.querySelectorAll('.dz-hero [data-toggle="dark"]').forEach((b) => b.addEventListener('click', () => root.classList.toggle('is-dark')));
 
+  /* ---------- the palette: pointing at it tilts it ("press me ;)"); pressing it wakes the tools ---------- */
+  const pal = document.querySelector('.dz-palette');
+  if (pal) {
+    pal.addEventListener('click', (e) => { if (!pal.classList.contains('is-on')) { pal.classList.add('is-on'); e.stopPropagation(); } });
+    document.addEventListener('click', (e) => { if (!pal.contains(e.target)) pal.classList.remove('is-on'); });
+    pal.addEventListener('pointerleave', () => setTimeout(() => { if (!pal.matches(':hover')) pal.classList.remove('is-on'); }, 1200));
+  }
+
   /* ---------- the header hides as you read down and comes back when you scroll up ---------- */
   const top = document.querySelector('.dz-top');
   if (top) {
@@ -97,7 +105,8 @@
       .from('.dz-ghost', { x: 30, y: 20, opacity: 0, ease: 'power3.out' }, 0.9)
       .from('.dz-dock', { y: 80, opacity: 0 }, 0.6);
     // "the future.", its frame and the cursor drift together on a slow diagonal, as on his site
-    gsap.to('.dz-future', { x: 7, y: -7, duration: 2.2, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 1.2 });
+    // his timing: rest, step 12px up and to the left in .6s, rest, step back
+    gsap.timeline({ repeat: -1, delay: 1.4, repeatDelay: 1.8 }).to('.dz-future', { x: -12, y: -12, duration: 0.6, ease: 'power2.inOut' }).to('.dz-future', { x: 0, y: 0, duration: 0.6, ease: 'power2.inOut' }, '+=1.8');
 
     // I build it: the words fill in as you read down; the marks pop in
     const ship = document.querySelector('.dz-ship-text');
