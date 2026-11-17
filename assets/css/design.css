@@ -47,15 +47,15 @@ main { position: relative; z-index: 1; }
 .dz-btn-lg { height: 56px; padding: 0 30px; font-size: 16px; }
 .dz-tilt:hover, .dz-tilt:focus-visible { transform: rotate(-8deg) scale(1.04); }
 /* Let's Contact / About Me: on hover the words give way to a typing indicator, and the button pales */
-.dz-talk { overflow: hidden; }
-.dz-talk-t { transition: transform .45s var(--ease), opacity .3s; }
-.dz-dots { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 5px; opacity: 0; transform: translateY(80%); transition: transform .45s var(--ease), opacity .3s; }
-.dz-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); animation: dot 1s ease-in-out infinite; }
-.dz-dots i:nth-child(2) { animation-delay: .15s; } .dz-dots i:nth-child(3) { animation-delay: .3s; }
-@keyframes dot { 40% { transform: translateY(-4px); } }
-.dz-talk:hover, .dz-talk:focus-visible { background: #CDE6FF; }
-.dz-talk:hover .dz-talk-t, .dz-talk:focus-visible .dz-talk-t { transform: translateY(-120%); opacity: 0; }
-.dz-talk:hover .dz-dots, .dz-talk:focus-visible .dz-dots { transform: none; opacity: 1; }
+/* the primary button, as his: blue with a fine blue edge; under the pointer it turns white and its label rolls up,
+   a blue copy rolling in behind it (measured on his site: ~.23s, a touch of spring) */
+.dz-talk { border: 1px solid rgba(0,128,255,.5); padding: 0 23px; font-size: 18px; font-weight: 500; letter-spacing: 0; transition: background-color .25s cubic-bezier(.35, .05, .3, 1), transform .5s var(--spring); }
+.dz-roll { display: block; height: 1.34em; overflow: hidden; line-height: 1.22em; }
+.dz-roll > span { display: block; transition: transform .28s cubic-bezier(.35, .1, .3, 1.15); }
+.dz-roll > span + span { margin-top: .56em; color: var(--blue); }
+.dz-talk:hover, .dz-talk:focus-visible { background-color: #fff; }
+.dz-talk:hover .dz-roll > span, .dz-talk:focus-visible .dz-roll > span { transform: translateY(-1.67em); }
+@media (prefers-reduced-motion: reduce) { .dz-roll > span { transition: none; } }
 /* Resume: outlined in pale blue, an orange tile half outside its left edge; on hover tiles burst out of it */
 .dz-resume { position: relative; display: inline-flex; align-items: center; height: 48px; padding: 0 20px 0 76px; border: 1.5px solid var(--blue-soft); border-radius: 999px; background: var(--paper); color: var(--blue); font-size: 17px; font-weight: 600; transition: background .3s, color .3s, border-color .3s; }
 .dz-burst { position: absolute; left: 12px; top: 50%; width: 48px; height: 48px; margin-top: -24px; }
