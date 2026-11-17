@@ -475,3 +475,17 @@ a { color: inherit; text-decoration: none; }
   *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
   .js .walker { display: none; }
 }
+
+/* The callout in the hero (after jehaduddin.vercel.app's leader lines): an elbow line draws out of the rings when the
+   pointer comes near, then its words come into focus one line after the other. */
+.ring-note { position: absolute; z-index: 2; width: 220px; pointer-events: none; }
+.ring-note svg { width: 140px; height: 60px; margin-left: 80px; overflow: visible; }
+.ring-note circle { fill: var(--ink); opacity: 0; transition: opacity .2s; }
+.ring-note path { fill: none; stroke: var(--ink); stroke-width: 1; vector-effect: non-scaling-stroke; stroke-dasharray: 160; stroke-dashoffset: 160; transition: stroke-dashoffset .45s cubic-bezier(.33, 1, .68, 1); }
+.ring-note p { position: absolute; right: 44px; top: 42px; display: grid; justify-items: end; gap: 2px; margin: 0; white-space: nowrap; font-size: var(--label); line-height: 1.4; text-transform: uppercase; letter-spacing: .06em; color: var(--brown); }
+.ring-note p span { opacity: 0; transform: translateY(8px); filter: blur(5px); transition: opacity .42s, transform .42s, filter .42s; }
+.ring-note.is-on circle { opacity: 1; }
+.ring-note.is-on path { stroke-dashoffset: 0; }
+.ring-note.is-on p span { opacity: 1; transform: none; filter: none; transition-delay: .28s; }
+.ring-note.is-on p span + span { transition-delay: .36s; }
+@media (max-width: 900px) { .ring-note { display: none; } }

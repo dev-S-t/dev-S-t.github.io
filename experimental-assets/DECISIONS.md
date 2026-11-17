@@ -2,6 +2,13 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-17: the home hero, after jehaduddin.vercel.app
+
+Abhishek wants the home page to feel like jehaduddin.vercel.app: minimal, lines forming on hover, particles forming and stirred. Its hero runs ~100k GPU particles dragged by a fluid field the pointer stirs; we keep our own 2D field of dots and rings and borrow the two ideas, with no new library:
+
+- **Strands:** the pointer presses its path into a coarse current (72 x 44 cells) that smooths and fades each frame. Every dot rides the current by its own amount, so one sweep of the mouse pulls the field into several thin strands, drawn as lines while they move (orange where fastest), then they spring back to the grid and the rings.
+- **A line that forms on hover:** near the rings, an elbow callout draws itself out of the outer ring (.45s, ease-out cubic, as on Jehad's site), and the home page's own words come into focus line by line: "That is the loop: look closely, make carefully, look again." Hidden on phones.
+
 ## 2026-11-17: the Design loop page, Abhishek's portfolio (/design/)
 
 Abhishek asked for his Framer portfolio (bright-maintenance-823856.framer.app) rebuilt as it is, with lines from human-in-loop, and its unfinished home page completed. References: adasilv2.framer.website (minimal, a joke on every hover), gsap.com, thewhoopsies.co.uk, mathiasadolfsson.dev; GSAP DrawSVG and MorphSVG.

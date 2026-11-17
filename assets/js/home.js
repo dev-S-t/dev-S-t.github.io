@@ -26,7 +26,15 @@
     let ringU, ringR, ringS;   // ring dots: position along the arc, ring radius, speed
     let cx = 0, cy = 0, R = 0;
     const GAP0 = -135 * Math.PI / 180, GAP = 30 * Math.PI / 180; // the opening, 11 o'clock, 30 degrees
-    const p = { x: -9999, y: -9999, vx: 0, vy: 0, inside: false };
+    const p = { x: -9999, y: -9999, vx: 0, vy: 0, inside: false, lx: -9999, ly: -9999 };
+    // The current (after jehaduddin.vercel.app): a coarse grid of velocities. The pointer's path since the last frame
+    // is pressed into it; it smooths and fades each frame. Every dot rides it by its own amount (gain), so one sweep of
+    // the mouse pulls the field into several thin strands of dots, drawn as lines while they move.
+    const FW = 72, FH = 44; let fx = new Float32Array(FW * FH), fy = new Float32Array(FW * FH), gfx = new Float32Array(FW * FH), gfy = new Float32Array(FW * FH);
+    let gain;
+    // the callout: an elbow line that draws itself out of the rings when the pointer comes near (hero only)
+    const note = opts.note || null, notePath = note && note.querySelector('path');
+    let noteOn = false;
 
     function build() {
       const r = canvas.getBoundingClientRect();
@@ -47,6 +55,7 @@
       rx = new Float32Array(N); ry = new Float32Array(N); x = new Float32Array(N); y = new Float32Array(N);
       vx = new Float32Array(N); vy = new Float32Array(N);
       ringU = new Float32Array(m); ringR = new Float32Array(m); ringS = new Float32Array(m);
+      gain = new Float32Array(N); for (let i = 0; i < N; i++) gain[i] = 0.15 + Math.pow(((i * 2654435761) % 1000) / 1000, 1.6) * 0.95;
       const ox = (w - (cols - 1) * gap) / 2, oy = (h - (rows - 1) * gap) / 2;
       let i = 0;
       for (let a = 0; a < rows; a++) for (let b = 0; b < cols; b++, i++) { rx[i] = x[i] = ox + b * gap; ry[i] = y[i] = oy + a * gap; }
@@ -55,6 +64,7 @@
       placeRings(0, true);
       // The walker stands on top of the outer ring.
       if (perch) { perch.style.left = cx + 'px'; perch.style.top = (cy - R - 4) + 'px'; }
+      if (note) { note.style.left = (cx - R * 0.72 - 220) + 'px'; note.style.top = (cy + R * 0.72) + 'px'; }   // opens to the left: the rings sit near the right edge
     }
 
     function placeRings(dt, snap) {
@@ -72,6 +82,30 @@
       const dt = Math.min(0.05, (now - t0) / 1000); t0 = now;
       if (!reduce) placeRings(dt, false);
       p.vx *= 0.86; p.vy *= 0.86;
+      // press the pointer's path into the current, then smooth and fade it
+      if (p.inside && p.lx > -9000) {
+        const steps = Math.max(1, Math.ceil(Math.hypot(p.x - p.lx, p.y - p.ly) / 8)), mvx = (p.x - p.lx), mvy = (p.y - p.ly);
+        for (let k = 0; k <= steps; k++) {
+          const sx = p.lx + (p.x - p.lx) * k / steps, sy = p.ly + (p.y - p.ly) * k / steps;
+          const gx = Math.floor(sx / w * FW), gy = Math.floor(sy / h * FH);
+          for (let oy = -2; oy <= 2; oy++) for (let ox = -2; ox <= 2; ox++) {
+            const X = gx + ox, Y = gy + oy; if (X < 0 || Y < 0 || X >= FW || Y >= FH) continue;
+            const f = Math.exp(-(ox * ox + oy * oy) / 2.2) / (steps + 1) * 0.9, c = Y * FW + X;
+            fx[c] += mvx * f; fy[c] += mvy * f;
+          }
+        }
+      }
+      p.lx = p.inside ? p.x : -9999; p.ly = p.inside ? p.y : -9999;
+      for (let Y = 0; Y < FH; Y++) for (let X = 0; X < FW; X++) {
+        const c = Y * FW + X, l = X > 0 ? c - 1 : c, r = X < FW - 1 ? c + 1 : c, u = Y > 0 ? c - FW : c, d = Y < FH - 1 ? c + FW : c;
+        gfx[c] = (fx[c] * 0.6 + (fx[l] + fx[r] + fx[u] + fx[d]) * 0.1) * 0.93; gfy[c] = (fy[c] * 0.6 + (fy[l] + fy[r] + fy[u] + fy[d]) * 0.1) * 0.93;
+      }
+      { const t1 = fx; fx = gfx; gfx = t1; const t2 = fy; fy = gfy; gfy = t2; }
+      // the callout: shown while the pointer is near the rings
+      if (note) {
+        const near = p.inside && Math.hypot(p.x - cx, p.y - cy) < R * 1.35;
+        if (near !== noteOn) { noteOn = near; note.classList.toggle('is-on', near); }
+      }
       ctx.clearRect(0, 0, w, h); ctx.lineCap = 'round';
       const R2 = 150 * 150;
       const gridDots = new Path2D(), ringDots = new Path2D(), slow = new Path2D(), fast = new Path2D();
@@ -81,6 +115,8 @@
           const f = 1 - Math.sqrt(d2) / 150;
           vx[i] += p.vx * f * 0.16 + dx * f * 0.012; vy[i] += p.vy * f * 0.16 + dy * f * 0.012;
         }
+        { const gx = Math.min(FW - 1, Math.max(0, (x[i] / w * FW) | 0)), gy = Math.min(FH - 1, Math.max(0, (y[i] / h * FH) | 0)), c = gy * FW + gx;
+          vx[i] += fx[c] * gain[i] * 0.55; vy[i] += fy[c] * gain[i] * 0.55; }   // riding the current
         vx[i] += (rx[i] - x[i]) * 0.06; vy[i] += (ry[i] - y[i]) * 0.06;
         vx[i] *= 0.8; vy[i] *= 0.8; x[i] += vx[i]; y[i] += vy[i];
         const s = Math.abs(vx[i]) + Math.abs(vy[i]);
@@ -124,7 +160,7 @@
       }
     };
   }
-  const field = (() => { const c = document.querySelector('.field'); return c ? heroField(c, document.querySelector('.perch-hero')) : { kick() {} }; })();
+  const field = (() => { const c = document.querySelector('.field'); return c ? heroField(c, document.querySelector('.perch-hero'), { note: document.querySelector('.ring-note') }) : { kick() {} }; })();
   // The contact section gets the same field: cream dots on black, stretched into lines by the pointer.
   const ctaField = (() => { const c = document.querySelector('.cta-field'); return c ? heroField(c, null, { rings: false, dark: true }) : { kick() {} }; })();
 
