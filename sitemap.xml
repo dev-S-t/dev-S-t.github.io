@@ -121,6 +121,11 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
+    <loc>https://human-in-loop.dev/design/</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
     <loc>https://human-in-loop.dev/about/</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>

@@ -2,6 +2,16 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-17: the Design loop page, Abhishek's portfolio (/design/)
+
+Abhishek asked for his Framer portfolio (bright-maintenance-823856.framer.app) rebuilt as it is, with lines from human-in-loop, and its unfinished home page completed. References: adasilv2.framer.website (minimal, a joke on every hover), gsap.com, thewhoopsies.co.uk, mathiasadolfsson.dev; GSAP DrawSVG and MorphSVG.
+
+- **Where:** /design/, as the Design loop next to the AI loop. Its own `assets/css/design.css` and `assets/js/design.js`; light, Outfit, his blue. Markdown mirror `design.md`; sitemap and llms.txt updated.
+- **Rebuilt from his site, his words:** the name in a dashed selection box (photos fan out, "...know about me ;)"); Resume (tool marks burst out, "So much experience :o") and Let's Contact; the avatar ("...yes, I do my own dev."); "I design. I build. I imagine." with the selected word cycling through the future / pixels / conversions / handoffs / no-code magic / chaos, and the blue Abhishek cursor; the dark tool palette ("press me ;)", "find the real problem", "sketch the first idea"); "I don't just design the product..." with the five tool marks and their tilted jokes; Featured Projects as folders that open on hover; the About card; The Craft & the Kit with throwable chips and the toolbar (line them up, let gravity win, pull it together, pour some colour, try another vibe, after-hours, hide the ghost) and the sticky note; the dock. Images and icons are his, from his Framer site (see `assets/img/design/SOURCE.txt`).
+- **Hover lines Claude wrote** (marked data-by="claude" or class draft, for Abhishek to review): the six other palette tools, "make a mess" in the toolbar, "lights off?" on the moon sticker, the five timeline jokes. Draft copy: the How I work heading and step lines, the contact heading.
+- **Completed (Abhishek picked):** How I work (pinned; a path draws through four steps with DrawSVG, the step's mark morphs with MorphSVG, about 900 dots gather into a large dotted version of the mark; the steps are his own phrases), Experience (a line grows down the page, each stop lights as it reaches it), Contact and footer.
+- **Threads from human-in-loop (Abhishek picked "subtle"):** selection boxes draw themselves on; one fine line runs down the left of the page, drawn by the scroll, bending in at each section; the cursor leaves a fine fading line; a sticker of the human-in-loop mark sits beside his moon sticker.
+
 ## 2026-11-11: fifteenth pass, the arrival (after the Bifrost landing in Infinity War)
 
 Abhishek: make the beam like Thor's Bifrost arrival in Wakanda, and have the man come in the logo's form after a mass entry.

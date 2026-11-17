@@ -1,0 +1,8 @@
+Images and icons for the Design loop page (/design/), Abhishek Sharma's portfolio.
+
+Taken from Abhishek's own Framer site (bright-maintenance-823856.framer.app) on 2026-11-17, at his request,
+and saved as WebP. They are his: the avatar sticker, his photos, the Syrma Johari cover and the mood photos
+used on hover and on the project cards.
+
+icons/: the dock icons and tool marks used on his Framer site. Framer, Figma, Notion, WordPress and the
+Claude asterisk are those companies' marks, shown only to name the tools he works with.

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>document.documentElement.classList.add('js')</script>
+  <title>Abhishek Sharma, product designer — the Design loop — human-in-loop.dev</title>
+  <meta name="description" content="Abhishek Sharma designs products and builds them. Product design portfolio: Syrma Johari Medtech, ASB Connect and Tramontina. The Design loop on human-in-loop.dev.">
+  <meta name="theme-color" content="#FAFAF7">
+  <link rel="canonical" href="https://human-in-loop.dev/design/">
+  <link rel="alternate" type="text/markdown" title="The Design loop in Markdown" href="https://human-in-loop.dev/design.md">
+
+  <meta property="og:title" content="Abhishek Sharma, product designer — the Design loop">
+  <meta property="og:description" content="I design. I build. I imagine the future. A product design portfolio.">
+  <meta property="og:url" content="https://human-in-loop.dev/design/">
+  <meta property="og:type" content="profile">
+  <meta property="og:image" content="https://human-in-loop.dev/assets/img/design/avatar.webp">
+  <meta property="og:image:alt" content="Abhishek's avatar: a drawing of him with his arms folded, smiling">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Abhishek Sharma, product designer">
+  <meta name="twitter:description" content="I design. I build. I imagine the future.">
+  <meta name="twitter:image" content="https://human-in-loop.dev/assets/img/design/avatar.webp">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "ProfilePage",
+        "@id": "https://human-in-loop.dev/design/#page",
+        "url": "https://human-in-loop.dev/design/",
+        "name": "The Design loop: Abhishek Sharma",
+        "isPartOf": { "@id": "https://human-in-loop.dev/#site" },
+        "mainEntity": { "@id": "https://human-in-loop.dev/#abhishek" }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://human-in-loop.dev/#abhishek",
+        "name": "Abhishek Sharma",
+        "jobTitle": "Product Designer",
+        "url": "https://human-in-loop.dev/design/",
+        "image": "https://human-in-loop.dev/assets/img/design/portrait.webp",
+        "sameAs": ["https://www.linkedin.com/in/sharma-abhii/"],
+        "knowsAbout": ["Interaction design", "UX research", "Design systems", "Prototyping", "Framer", "Figma", "WordPress"]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://human-in-loop.dev/" },
+          { "@type": "ListItem", "position": 2, "name": "The Design loop", "item": "https://human-in-loop.dev/design/" }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <link rel="preload" href="/assets/fonts/outfit-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/css/design.css">
+  <script src="/assets/js/vendor/gsap.min.js" defer></script>
+  <script src="/assets/js/vendor/ScrollTrigger.min.js" defer></script>
+  <script src="/assets/js/vendor/DrawSVGPlugin.min.js" defer></script>
+  <script src="/assets/js/vendor/MorphSVGPlugin.min.js" defer></script>
+  <script src="/assets/js/design.js" defer></script>
+  <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+</head>
+<body class="dz">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <!--
+    Abhishek's portfolio, rebuilt from his Framer site (his design and his words), with threads from human-in-loop:
+    lines that draw themselves, a line the cursor leaves, a thread down the page. Hover lines in data-quip and
+    .quip that are marked "claude" are Claude's, for Abhishek to review; the rest are his. Text marked class="draft"
+    is a first draft for him to rewrite.
+  -->
+
+  <!-- the thread: one fine line down the left edge that draws itself as you scroll, knotting at each section -->
+  <svg class="dz-thread" aria-hidden="true" preserveAspectRatio="none"><path class="dz-thread-path" d="" /></svg>
+  <canvas class="dz-trail" aria-hidden="true"></canvas>
+
+  <header class="dz-top">
+    <a class="dz-name sel quipped" href="#main" aria-label="Abhishek Sharma, back to the top">
+      <svg class="sel-box" aria-hidden="true"><rect x="1" y="1" /></svg>
+      <svg class="dz-arrow" viewBox="0 0 12 14" aria-hidden="true"><path d="M1 1 L1 12 L4 9 L6.5 13.2 L8.2 12.3 L5.8 8.2 L10 8.2 Z"/></svg>
+      <span class="dz-name-a">abhishek</span>
+      <span class="dz-name-b">sharma</span>
+      <span class="dz-fan" aria-hidden="true">
+        <img src="/assets/img/design/drink.webp" alt="" width="480" height="720" loading="lazy" decoding="async">
+        <img src="/assets/img/design/boat.webp" alt="" width="480" height="599" loading="lazy" decoding="async">
+        <img src="/assets/img/design/flowers.webp" alt="" width="480" height="720" loading="lazy" decoding="async">
+      </span>
+      <span class="quip quip-hand" aria-hidden="true">...know about me ;)</span>
+    </a>
+    <div class="dz-actions">
+      <a class="dz-resume quipped" href="#experience">
+        <span class="dz-resume-icons" aria-hidden="true"><img src="/assets/img/design/icons/claude.svg" alt="" width="16" height="16"><img src="/assets/img/design/icons/framer.svg" alt="" width="16" height="16"><img src="/assets/img/design/icons/figma.svg" alt="" width="16" height="16"></span>
+        <span>Resume</span>
+        <span class="quip quip-hand quip-below" aria-hidden="true">So much experience :o</span>
+      </a>
+      <a class="dz-btn dz-btn-blue roll" href="#contact"><span class="roll-in"><span>Let's Contact</span><span aria-hidden="true">Let's Contact</span></span></a>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- 1. Hero: a page that looks like a design file -->
+    <section class="dz-hero" id="home" aria-label="Introduction">
+      <div class="dz-stickers" aria-hidden="true">
+        <button class="dz-sticker dz-sticker-moon quipped" type="button" data-toggle="dark" tabindex="-1"><svg viewBox="0 0 24 24"><path d="M10 20c1 0 2-.2 3-.5-4-1.3-7-5-7-9.5S9 1.7 13 .5C12 .2 11 0 10 0 4.5 0 0 4.5 0 10s4.5 10 10 10Z" transform="translate(5.5 2)"/></svg><span class="quip quip-hand" aria-hidden="true">lights off?</span></button>
+        <span class="dz-sticker dz-sticker-mark" title="human in loop"></span>
+      </div>
+      <figure class="dz-avatar quipped" tabindex="0">
+        <img src="/assets/img/design/avatar.webp" alt="A drawing of Abhishek with his arms folded, smiling" width="560" height="560" decoding="async" fetchpriority="high">
+        <span class="quip quip-hand" aria-hidden="true">...yes, I do my own dev.</span>
+      </figure>
+      <div class="dz-headline">
+        <p class="dz-tag"><span>Product Design Portfolio</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l3.8-1 11-11-2.8-2.8-11 11z M14.2 6.2l2.8 2.8"/></svg></p>
+        <h1 class="dz-h1">
+          <span class="dz-line">I design. I build.</span>
+          <span class="dz-line">I imagine. <span class="dz-swap sel"><svg class="sel-box" aria-hidden="true"><rect x="1" y="1" /></svg><span class="dz-swap-in"><span class="dz-word is-on">the future.</span><span class="dz-word" aria-hidden="true">pixels.</span><span class="dz-word" aria-hidden="true">conversions.</span><span class="dz-word" aria-hidden="true">handoffs.</span><span class="dz-word" aria-hidden="true">no-code magic.</span><span class="dz-word" aria-hidden="true">chaos.</span></span><span class="dz-ghost" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M7.2 5.5 19.1 9.9c.5.2.9.6.9 1.2 0 .5-.3 1-.8 1.2l-4.8 1.8c-.2.1-.3.2-.3.4l-1.8 4.7c-.2.5-.7.8-1.2.8-.5 0-1-.3-1.2-.8L5.5 7.2c-.2-.5 0-1 .3-1.4.4-.4.9-.5 1.4-.3Z"/></svg><b>Abhishek</b></span></span></span>
+        </h1>
+      </div>
+      <div class="dz-palette quipped" role="group" aria-label="Design tools, each with a note">
+        <span class="quip quip-hand dz-press" aria-hidden="true">press me ;)</span>
+        <button type="button" class="dz-tool" data-tip="point at the problem" data-by="claude"><svg viewBox="0 0 24 24"><path d="M6 18 18 6M9 6h9v9"/></svg><span class="sr">Arrow</span></button>
+        <button type="button" class="dz-tool" data-tip="catch the scope creep" data-by="claude"><svg viewBox="0 0 24 24"><path d="M12 4c5 0 8 2.5 8 5.5S17 15 12 15c-2 0-3.5-.4-4.6-1M7 13c-1.6-1-3-2.3-3-3.5C4 6.5 7 4 12 4M7 13l-1 4 3-2"/></svg><span class="sr">Lasso</span></button>
+        <button type="button" class="dz-tool" data-tip="v12_final_FINAL" data-by="claude"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"/></svg><span class="sr">Undo</span></button>
+        <button type="button" class="dz-tool" data-tip="find the real problem"><svg viewBox="0 0 24 24"><path d="M4 12a8 7 0 1 1 3.5 5.8L4 20l.9-3.6A6.6 6.6 0 0 1 4 12Z"/></svg><span class="sr">Comment</span></button>
+        <button type="button" class="dz-tool" data-tip="sketch the first idea"><svg viewBox="0 0 24 24"><path d="M4 20l1-4L16 5l3 3L8 19zM14 7l3 3"/></svg><span class="sr">Pencil</span></button>
+        <button type="button" class="dz-tool" data-tip="hold the brand steady" data-by="claude"><svg viewBox="0 0 24 24"><path d="M12 7v14M12 7a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM5 13H3a9 9 0 0 0 18 0h-2M8 11h8"/></svg><span class="sr">Anchor</span></button>
+        <button type="button" class="dz-tool" data-tip="draw the line somewhere" data-by="claude"><svg viewBox="0 0 24 24"><path d="m12 19 7-7 3 3-7 7zM18 13l-1.5-7.5L2 2l3.5 14.5L13 18zM2 2l7.6 7.6M11 13a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg><span class="sr">Pen</span></button>
+        <button type="button" class="dz-tool" data-tip="it's not magic, it's iteration" data-by="claude"><svg viewBox="0 0 24 24"><path d="m4 20 11-11M14 4v3M19 9h-3M17.5 5.5 16 7M10 3l.5 1.5M20 13l-1.5-.5"/></svg><span class="sr">Magic wand</span></button>
+      </div>
+    </section>
+
+    <!-- 2. I build it -->
+    <section class="dz-ship" aria-labelledby="ship-title">
+      <h2 id="ship-title" class="dz-ship-text">I don't just design the product. I <em>build</em> it, and I own it until it <em>ships.</em></h2>
+      <ul class="dz-tools" aria-label="Tools">
+        <li class="quipped" tabindex="0"><img src="/assets/img/design/icons/framer.svg" alt="Framer" width="40" height="40"><span class="quip quip-tilt" aria-hidden="true">'no-code,' he lied.</span></li>
+        <li class="quipped" tabindex="0"><img src="/assets/img/design/icons/figma.svg" alt="Figma" width="40" height="40"><span class="quip quip-tilt" aria-hidden="true">auto-layout and I are in therapy.</span></li>
+        <li class="quipped" tabindex="0"><img src="/assets/img/design/icons/claude.svg" alt="Claude" width="40" height="40"><span class="quip quip-tilt" aria-hidden="true">types fast. I bring the taste</span></li>
+        <li class="quipped" tabindex="0"><img src="/assets/img/design/icons/notion.svg" alt="Notion" width="40" height="40"><span class="quip quip-tilt" aria-hidden="true">writing my own UX hypothesis</span></li>
+        <li class="quipped" tabindex="0"><img src="/assets/img/design/icons/wordpress.svg" alt="WordPress" width="40" height="40"><span class="quip quip-tilt" aria-hidden="true">the logo peaked in 2009. the work didn't.</span></li>
+      </ul>
+    </section>
+
+    <!-- 3. Featured projects: folders that open on hover -->
+    <section class="dz-work" id="projects" aria-labelledby="work-title">
+      <div class="dz-work-head">
+        <img class="dz-work-icon" src="/assets/img/design/icons/projects-file.svg" alt="" width="40" height="40">
+        <div>
+          <h2 id="work-title">Featured Projects</h2>
+          <p>Blood, sweat, and tears were sacrificed</p>
+        </div>
+        <a class="dz-btn dz-btn-dark roll" href="#contact"><span class="roll-in"><span>Let's Contact</span><span aria-hidden="true">Let's Contact</span></span></a>
+      </div>
+      <ul class="dz-folders">
+        <li class="dz-folder" tabindex="0" style="--tint: #1E3A8A">
+          <div class="dz-folder-art" aria-hidden="true">
+            <span class="dz-folder-back"></span>
+            <img class="dz-folder-img a" src="/assets/img/design/syrma.webp" alt="" width="900" height="804" loading="lazy" decoding="async">
+            <img class="dz-folder-img b" src="/assets/img/design/interior.webp" alt="" width="720" height="975" loading="lazy" decoding="async">
+            <span class="dz-folder-front"></span>
+            <span class="dz-paper"><span class="dz-paper-meta">16 Weeks<br>Winter 2026</span><span class="dz-paper-title">Syrma Johari - Medtech</span></span>
+          </div>
+          <h3 class="dz-folder-title">Syrma Johari - Medtech</h3>
+          <div class="dz-folder-more">
+            <p>Redesigned and rebuilt a 60-page website for a medical manufacturing company — the research, the structure, the design, and the WordPress build.</p>
+            <p class="dz-role"><span>Role:</span> Lead Designer &amp; Developer</p>
+          </div>
+        </li>
+        <li class="dz-folder" tabindex="0" style="--tint: #2B6CB0">
+          <div class="dz-folder-art" aria-hidden="true">
+            <span class="dz-folder-back"></span>
+            <img class="dz-folder-img a" src="/assets/img/design/interior.webp" alt="" width="720" height="975" loading="lazy" decoding="async">
+            <img class="dz-folder-img b" src="/assets/img/design/car.webp" alt="" width="720" height="889" loading="lazy" decoding="async">
+            <span class="dz-folder-front"></span>
+            <span class="dz-paper"><span class="dz-paper-meta">4 Weeks<br>Fall 2025</span><span class="dz-paper-title">ASB Connect</span></span>
+          </div>
+          <h3 class="dz-folder-title">ASB Connect</h3>
+          <div class="dz-folder-more">
+            <p>Designed a feature to explore schools, hospitals, and places near a project, and a referral flow to invite friends, track them, and claim rewards.</p>
+            <p class="dz-role"><span>Role:</span> UX &amp; Interaction Designer</p>
+          </div>
+        </li>
+        <li class="dz-folder" tabindex="0" style="--tint: #3F6EA8">
+          <div class="dz-folder-art" aria-hidden="true">
+            <span class="dz-folder-back"></span>
+            <img class="dz-folder-img a" src="/assets/img/design/car.webp" alt="" width="720" height="889" loading="lazy" decoding="async">
+            <img class="dz-folder-img b" src="/assets/img/design/interior.webp" alt="" width="720" height="975" loading="lazy" decoding="async">
+            <span class="dz-folder-front"></span>
+            <span class="dz-paper"><span class="dz-paper-meta">8 Weeks<br>Summer 2026</span><span class="dz-paper-title">Tramontina</span></span>
+          </div>
+          <h3 class="dz-folder-title">Tramontina</h3>
+          <div class="dz-folder-more">
+            <p>Designed and built the store for a global cookware brand, four landing pages, plus material and care pages built to scale across every category.</p>
+            <p class="dz-role"><span>Role:</span> Product Designer &amp; Client POC</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 4. About -->
+    <section class="dz-about" id="about" aria-labelledby="about-title">
+      <figure class="dz-photo">
+        <img src="/assets/img/design/portrait.webp" alt="Abhishek sitting at a glass table in a black jacket and a white roll-neck" width="720" height="960" loading="lazy" decoding="async">
+        <figcaption class="dz-photo-bar">
+          <img src="/assets/img/design/face.webp" alt="" width="160" height="160" loading="lazy">
+          <span><b>@Sharma-abhii</b><small>Linkedin</small></span>
+          <a class="dz-btn dz-btn-dark dz-btn-sm" href="https://www.linkedin.com/in/sharma-abhii/" rel="noopener" target="_blank">Connect</a>
+        </figcaption>
+      </figure>
+      <div class="dz-about-text">
+        <h2 id="about-title" class="sr">About</h2>
+        <p class="dz-bio">I'm Abhishek, an Information Technology graduate with Honours who left the engineering track for product design and brought the engineer's brain along.</p>
+        <div class="dz-about-btns">
+          <a class="dz-resume quipped" href="#experience"><span class="dz-resume-icons" aria-hidden="true"><img src="/assets/img/design/icons/claude.svg" alt="" width="16" height="16"><img src="/assets/img/design/icons/framer.svg" alt="" width="16" height="16"><img src="/assets/img/design/icons/figma.svg" alt="" width="16" height="16"></span><span>Resume</span><span class="quip quip-hand quip-below" aria-hidden="true">So much experience :o</span></a>
+          <a class="dz-btn dz-btn-blue roll" href="#how"><span class="roll-in"><span>About Me</span><span aria-hidden="true">About Me</span></span></a>
+        </div>
+        <ul class="dz-gallery" id="gallery" aria-label="Gallery">
+          <li><img src="/assets/img/design/drink.webp" alt="A pink drink with a slice of melon on a tray" width="480" height="720" loading="lazy" decoding="async"></li>
+          <li><img src="/assets/img/design/boat.webp" alt="A wooden boat on a golden shore" width="480" height="599" loading="lazy" decoding="async"></li>
+          <li><img src="/assets/img/design/flowers.webp" alt="Yellow mimosa flowers against a pale sky" width="480" height="720" loading="lazy" decoding="async"></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 5. The Craft & the Kit: chips you can throw, sort, drop, colour -->
+    <section class="dz-kit" id="kit" aria-labelledby="kit-title">
+      <p class="dz-eyebrow">// Components / The Kit</p>
+      <h2 id="kit-title">The Craft &amp; the Kit</h2>
+      <p class="dz-kit-sub">Everything I reach for — from the first wireframe to the last line of code.</p>
+      <div class="dz-arena" aria-label="Skills">
+        <div class="dz-cols" aria-hidden="true"><span>Design</span><span>Build</span><span>Lead</span></div>
+        <ul class="dz-chips">
+          <li class="dz-chip" data-g="design">Interaction design</li><li class="dz-chip" data-g="design">User flows</li><li class="dz-chip" data-g="design">Wireframing</li><li class="dz-chip" data-g="design">Prototyping</li><li class="dz-chip" data-g="design">Information architecture</li><li class="dz-chip" data-g="design">UX research</li><li class="dz-chip" data-g="design">Usability testing</li><li class="dz-chip" data-g="design">Design systems</li><li class="dz-chip" data-g="design">Dashboards &amp; data-viz</li><li class="dz-chip" data-g="design">Responsive</li>
+          <li class="dz-chip" data-g="build">Figma</li><li class="dz-chip" data-g="build">Framer</li><li class="dz-chip" data-g="build">WordPress</li><li class="dz-chip" data-g="build">HTML / CSS / JS</li><li class="dz-chip" data-g="build">Unity</li><li class="dz-chip" data-g="build">Claude Code</li><li class="dz-chip" data-g="build">GitHub</li>
+          <li class="dz-chip" data-g="lead">Client POC</li><li class="dz-chip" data-g="lead">Requirements &amp; alignment</li><li class="dz-chip" data-g="lead">Design QA</li><li class="dz-chip" data-g="lead">CRO</li><li class="dz-chip" data-g="lead">Shipping ownership</li>
+        </ul>
+        <p class="dz-note">These are <b>stuck to the grid</b>. Throw them, rearrange them, colour them — or hit <b>tidy up</b>. Go on.</p>
+      </div>
+      <div class="dz-toolbar" role="toolbar" aria-label="Play with the skills">
+        <button type="button" data-mode="tidy" data-tip="line them up"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg><span class="sr">Line them up</span></button>
+        <button type="button" data-mode="scatter" data-tip="make a mess" data-by="claude"><svg viewBox="0 0 24 24"><path d="M9 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM21 9a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM12 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg><span class="sr">Scatter them</span></button>
+        <button type="button" data-mode="gravity" data-tip="let gravity win"><svg viewBox="0 0 24 24"><path d="M12 3v13M6 11l6 6 6-6M4 21h16"/></svg><span class="sr">Let gravity win</span></button>
+        <button type="button" data-mode="pull" data-tip="pull it together"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5M12 10a2 2 0 1 1 0 4 2 2 0 0 1 0-4Z"/></svg><span class="sr">Pull it together</span></button>
+        <button type="button" data-toggle="colour" data-tip="pour some colour"><svg viewBox="0 0 24 24"><path d="m5 11 7-7 7 7-7 7zM19 15s2 2.2 2 3.5a2 2 0 0 1-4 0c0-1.3 2-3.5 2-3.5ZM5 11h14"/></svg><span class="sr">Pour some colour</span></button>
+        <button type="button" data-toggle="vibe" data-tip="try another vibe"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1 0 1.5-.8 1.5-1.6 0-1-.8-1.4-.8-2.2 0-.9.7-1.7 1.6-1.7H17a4 4 0 0 0 4-4C21 6.6 17 3 12 3ZM7.5 11a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM11 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM15.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/></svg><span class="sr">Try another vibe</span></button>
+        <button type="button" data-toggle="dark" data-tip="after-hours"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z"/></svg><span class="sr">After-hours</span></button>
+        <button type="button" data-toggle="ghost" data-tip="hide the ghost"><svg viewBox="0 0 24 24"><path d="M7.2 5.5 19.1 9.9c.5.2.9.6.9 1.2 0 .5-.3 1-.8 1.2l-4.8 1.8c-.2.1-.3.2-.3.4l-1.8 4.7c-.2.5-.7.8-1.2.8-.5 0-1-.3-1.2-.8L5.5 7.2c-.2-.5 0-1 .3-1.4.4-.4.9-.5 1.4-.3Z" transform="scale(.85) translate(2 1)"/></svg><span class="sr">Hide the ghost</span></button>
+      </div>
+    </section>
+
+    <!-- 6. How I work (new): pinned; a line runs through the four steps, the step's mark morphs, dots gather into it -->
+    <section class="dz-how" id="how" aria-labelledby="how-title">
+      <div class="dz-how-stick">
+        <p class="dz-eyebrow">// How I work</p>
+        <h2 id="how-title" class="draft">From the real problem to the thing that ships.</h2>
+        <div class="dz-how-stage">
+          <canvas class="dz-dots" aria-hidden="true"></canvas>
+          <svg class="dz-how-svg" viewBox="0 0 1000 420" aria-hidden="true">
+            <path class="dz-how-track" d="M40 330 C 200 330, 220 110, 380 110 S 560 330, 640 250 S 820 90, 960 110"/>
+            <path class="dz-how-line" d="M40 330 C 200 330, 220 110, 380 110 S 560 330, 640 250 S 820 90, 960 110"/>
+            <g class="dz-how-nodes"><circle cx="40" cy="330" r="7"/><circle cx="380" cy="110" r="7"/><circle cx="640" cy="250" r="7"/><circle cx="960" cy="110" r="7"/></g>
+          </svg>
+          <svg class="dz-mark" viewBox="0 0 100 100" aria-hidden="true">
+            <path class="dz-mark-path" d="M50 14 a36 36 0 1 1 -0.1 0 M50 50 m-6 0 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0"/>
+            <path class="dz-shape" id="shape-find" d="M42 42 m-24 0 a24 24 0 1 0 48 0 a24 24 0 1 0 -48 0 M60 60 L84 84"/>
+            <path class="dz-shape" id="shape-sketch" d="M16 82 L22 62 L66 18 L82 34 L38 78 Z M58 26 L74 42"/>
+            <path class="dz-shape" id="shape-build" d="M14 30 L50 12 L86 30 L86 70 L50 88 L14 70 Z M14 30 L50 48 L86 30 M50 48 L50 88"/>
+            <path class="dz-shape" id="shape-ship" d="M50 10 C 66 22, 70 44, 66 66 L34 66 C 30 44, 34 22, 50 10 Z M34 66 L22 80 L36 76 M66 66 L78 80 L64 76 M44 70 L50 90 L56 70"/>
+          </svg>
+        </div>
+        <ol class="dz-steps">
+          <li class="dz-step is-on"><span class="dz-step-no">01</span><h3>Find the real problem</h3><p class="draft">Before a single screen: who is stuck, where, and why it matters to the business.</p></li>
+          <li class="dz-step"><span class="dz-step-no">02</span><h3>Sketch the first idea</h3><p class="draft">Rough lines first, many of them, while changing your mind is still free.</p></li>
+          <li class="dz-step"><span class="dz-step-no">03</span><h3>Build it</h3><p class="draft">The design becomes the real thing, in Framer, WordPress or code, by the same hands.</p></li>
+          <li class="dz-step"><span class="dz-step-no">04</span><h3>Own it until it ships</h3><p class="draft">QA, the handoff, launch day and the fixes after it. Nothing is thrown over a wall.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 7. Experience (new): a line grows down the page; each stop has a note -->
+    <section class="dz-exp" id="experience" aria-labelledby="exp-title">
+      <p class="dz-eyebrow">// Resume, the short version</p>
+      <h2 id="exp-title">Experience</h2>
+      <div class="dz-time">
+        <svg class="dz-time-svg" aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 40 1000"><path class="dz-time-track" d="M20 0 V1000"/><path class="dz-time-line" d="M20 0 V1000"/></svg>
+        <ol class="dz-stops">
+          <li class="dz-stop quipped" tabindex="0"><span class="dz-when">Before</span><h3>Information Technology, with Honours</h3><p>Left the engineering track for product design, and brought the engineer's brain along.</p><span class="quip quip-hand" aria-hidden="true" data-by="claude">still debugs in his sleep.</span></li>
+          <li class="dz-stop quipped" tabindex="0"><span class="dz-when">Fall 2025 · 4 weeks</span><h3>ASB Connect</h3><p>UX &amp; Interaction Designer. Places near a project, and a referral flow with rewards.</p><span class="quip quip-hand" aria-hidden="true" data-by="claude">invited friends. they came.</span></li>
+          <li class="dz-stop quipped" tabindex="0"><span class="dz-when">Winter 2026 · 16 weeks</span><h3>Syrma Johari - Medtech</h3><p>Lead Designer &amp; Developer. A 60-page website, researched, designed and built in WordPress.</p><span class="quip quip-hand" aria-hidden="true" data-by="claude">60 pages. zero lorem ipsum.</span></li>
+          <li class="dz-stop quipped" tabindex="0"><span class="dz-when">Summer 2026 · 8 weeks</span><h3>Tramontina</h3><p>Product Designer &amp; Client POC. A store for a global cookware brand, built to scale across every category.</p><span class="quip quip-hand" aria-hidden="true" data-by="claude">now owns too many pans.</span></li>
+          <li class="dz-stop quipped" tabindex="0"><span class="dz-when">Now</span><h3>The Design loop</h3><p>Keeping the Design loop at human-in-loop.dev, next to the AI loop.</p><span class="quip quip-hand" aria-hidden="true" data-by="claude">in the loop. obviously.</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 8. Contact (new) -->
+    <section class="dz-contact" id="contact" aria-labelledby="contact-title">
+      <p class="dz-eyebrow">// Let's Contact</p>
+      <h2 id="contact-title" class="dz-contact-title draft"><span class="ln"><span>Got a product</span></span> <span class="ln"><span>that needs <em>both</em></span></span> <span class="ln"><span>a designer and a builder?</span></span></h2>
+      <div class="dz-contact-btns">
+        <a class="dz-btn dz-btn-blue dz-btn-lg roll" href="https://www.linkedin.com/in/sharma-abhii/" rel="noopener" target="_blank"><span class="roll-in"><span>Connect on LinkedIn</span><span aria-hidden="true">Connect on LinkedIn</span></span></a>
+        <a class="dz-btn dz-btn-line dz-btn-lg roll" href="/contact/"><span class="roll-in"><span>Start a project</span><span aria-hidden="true">Start a project</span></span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="dz-foot">
+    <p class="dz-foot-big" aria-hidden="true">abhishek sharma</p>
+    <div class="dz-foot-row">
+      <p>&copy; Abhishek Sharma. The Design loop at <a href="/">human-in-loop.dev</a>.</p>
+      <p><a href="/ai/">The AI loop</a> · <a href="/about/">About the studio</a></p>
+    </div>
+  </footer>
+
+  <!-- the dock -->
+  <nav class="dz-dock" aria-label="Sections">
+    <a href="#home" data-tip="Home"><img src="/assets/img/design/icons/home.svg" alt="" width="24" height="24"><span class="sr">Home</span></a>
+    <a href="#about" data-tip="About Me"><img src="/assets/img/design/icons/about.svg" alt="" width="24" height="24"><span class="sr">About Me</span></a>
+    <a href="#projects" data-tip="Projects"><img src="/assets/img/design/icons/projects.svg" alt="" width="24" height="24"><span class="sr">Projects</span></a>
+    <a href="#experience" data-tip="Resume"><img src="/assets/img/design/icons/resume.svg" alt="" width="24" height="24"><span class="sr">Resume</span></a>
+    <a href="#gallery" data-tip="Gallery"><img src="/assets/img/design/icons/gallery.svg" alt="" width="24" height="24"><span class="sr">Gallery</span></a>
+  </nav>
+</body>
+</html>

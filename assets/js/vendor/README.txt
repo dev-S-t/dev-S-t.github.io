@@ -1,7 +1,8 @@
 Third-party scripts, served from the site so the page needs no CDN.
 
-gsap.min.js, ScrollTrigger.min.js, ScrollSmoother.min.js
+gsap.min.js, ScrollTrigger.min.js, ScrollSmoother.min.js, DrawSVGPlugin.min.js, MorphSVGPlugin.min.js
   GSAP 3.13.0 by GreenSock (Webflow), from cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/
+  (DrawSVG and MorphSVG from cdn.jsdelivr.net/npm/gsap@3.13.0/dist/, 2026-11-17, for the Design loop page)
   Licence: GSAP Standard "no charge" licence, which since 3.13 covers every plugin, https://gsap.com/standard-license
 
 
