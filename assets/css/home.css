@@ -261,6 +261,13 @@ a { color: inherit; text-decoration: none; }
 .js .work.is-show .work-track { pointer-events: none; }
 .js .work.is-show .wcard { pointer-events: auto; }
 .wcard { flex: none; width: min(44vw, 640px); scroll-snap-align: center; transform-style: preserve-3d; }
+/* Desktop showcase: the bar below names the project in view, so the cards carry only their pictures (the title and
+   description stay in the page for screen readers and for phones). Cards are sized by the screen's height too, so the
+   showcase fits a short screen without touching the bar. */
+@media (min-width: 900px) {
+  .js .work-stage .wcard { width: min(40vw, 620px, calc((100svh - 420px) * 16 / 9)); }
+  .js .work-stage .wcard-title, .js .work-stage .wcard-desc { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
 .wcard-link { display: grid; gap: var(--s2); outline-offset: 8px; }
 .wcard-media { aspect-ratio: 16 / 9; border-radius: 16px; transition: border-radius .8s var(--ease-out); }
 .wcard-link:hover .wcard-media, .wcard-link:focus-visible .wcard-media { border-radius: 24px; }
@@ -274,6 +281,7 @@ a { color: inherit; text-decoration: none; }
 .js .work.is-show .wcard:not(.on) .wcard-title, .js .work.is-show .wcard:not(.on) .wcard-desc { opacity: 0; }
 .work-bar { display: grid; grid-template-columns: 1.2fr 1fr auto; align-items: center; gap: var(--s4); padding: 0 var(--gutter); }
 .work-now { display: flex; align-items: center; gap: var(--s3); min-width: 0; }
+.work-now > div { min-width: 0; overflow: hidden; }   /* so a long project name ends in an ellipsis instead of running into the count */
 .work-no { font-family: var(--serif); font-weight: 250; font-size: var(--h2); line-height: 1; color: transparent; -webkit-text-stroke: 1px var(--tone); }
 .work-name { font-family: var(--serif); font-weight: 250; font-size: var(--h5); line-height: var(--lh5); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .work-tags { margin-top: var(--s1); font-size: var(--label); line-height: 1; color: var(--orange-ink); }
