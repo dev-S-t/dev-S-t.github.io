@@ -74,7 +74,7 @@ main { position: relative; z-index: 1; }
 .dz-q-resume { left: 30px; top: calc(100% + 10px); white-space: normal; width: 110px; text-align: left; }
 
 /* header: hides as you scroll down, comes back as you scroll up */
-.dz-top { position: fixed; z-index: 60; left: 50%; top: 0; width: min(1080px, calc(100% - 2 * var(--gut))); translate: -50% 0; display: flex; justify-content: space-between; align-items: center; padding: 28px 0; pointer-events: none; transition: transform .5s var(--ease); }
+.dz-top { position: fixed; z-index: 60; left: 50%; top: 0; width: min(1080px, calc(100% - 2 * var(--gut))); translate: -50% 0; display: flex; justify-content: space-between; align-items: center; padding: 40px 0 28px; pointer-events: none; transition: transform .5s var(--ease); }
 .dz-top.is-hidden { transform: translateY(-120%); }
 .dz-top > * { pointer-events: auto; }
 .dz-name { display: grid; justify-items: start; font-size: 24px; font-weight: 500; line-height: 1.05; letter-spacing: -0.02em; padding-left: 4px; }
@@ -97,7 +97,7 @@ main { position: relative; z-index: 1; }
    centred group.
    The group runs from the avatar's left edge (-4.72em) to the palette's right edge (10.04em + its 112px). */
 .dz-hero { position: relative; min-height: 100svh; display: grid; place-items: center; padding: 120px var(--gut) 150px; }
-.dz-hero-in { position: relative; width: calc(14.76em + 112px); padding-left: 4.72em; font-size: clamp(34px, 3.4vw, 52px); }   /* his headline: ~47px at 1384px */
+.dz-hero-in { position: relative; width: calc(14.76em + 112px); padding-left: 4.72em; font-size: clamp(34px, 3.4vw, 52px); translate: -1.08em 1.35em; }   /* the eye centres on the headline, not the outer edges: the words sit in the middle of the screen */   /* his headline: ~47px at 1384px */
 .dz-headline { position: relative; }
 .dz-stickers { position: absolute; left: calc(4.72em - 1.28em); top: -2.83em; width: 2.6em; height: 2.5em; animation: bob 5s ease-in-out infinite; }
 .dz-sticker { position: absolute; width: 1.32em; height: 1.32em; border-radius: .26em; border: 0; padding: 0; display: grid; place-items: center; cursor: pointer; transition: transform .55s var(--spring); }
@@ -128,7 +128,7 @@ main { position: relative; z-index: 1; }
 .dz.no-ghost .dz-ghost, .kit.no-ghost .cursor { opacity: 0; }
 /* the palette: straight at rest; under the pointer it tilts and asks to be pressed; pressed, it straightens and its
    tools answer when you point at them */
-.dz-palette { position: absolute; left: calc(4.72em + 10.04em); top: -1.87em; display: grid; grid-template-columns: repeat(2, 40px); gap: 8px 12px; padding: 14px 12px; border-radius: 10px; background: #303030; color: #fff; cursor: pointer; transform-origin: 50% 30%; transition: transform .6s var(--spring); }
+.dz-palette { position: absolute; left: calc(4.72em + 10.04em); top: calc(2.63em - 212px); display: grid; grid-template-columns: repeat(2, 40px); gap: 8px 12px; padding: 14px 12px; border-radius: 10px; background: #303030; color: #fff; cursor: pointer; transform-origin: 50% 30%; transition: transform .6s var(--spring); }
 .dz-palette:not(.is-on):hover { transform: rotate(14deg) translateY(4px); }
 .dz-press { left: 50%; top: calc(100% + 16px); translate: -50% 0; transform: rotate(-4deg) translateY(4px); }
 .dz-palette:not(.is-on):hover > .dz-press { opacity: 1; transform: rotate(-4deg); }
@@ -358,7 +358,7 @@ html:not(.js) .dz-step { opacity: 1; }
   .dz-tile img { width: 19px; height: 19px; }
   .dz-ghost { left: calc(100% - 3.2em); }
   .dz-ghost b { font-size: 13px; padding: 4px 12px; }
-  .dz-hero-in { width: auto; padding: 0; display: grid; justify-items: center; gap: 28px; font-size: clamp(30px, 8.6vw, 40px); text-align: center; }
+  .dz-hero-in { translate: none; width: auto; padding: 0; display: grid; justify-items: center; gap: 28px; font-size: clamp(30px, 8.6vw, 40px); text-align: center; }
   .dz-stickers { left: 0; top: -2.6em; }
   .dz-avatar, .dz-tag, .dz-palette { position: relative; left: auto; top: auto; }
   .dz-tag { translate: none; }
