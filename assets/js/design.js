@@ -18,14 +18,14 @@
     pal.addEventListener('pointerleave', () => setTimeout(() => { if (!pal.matches(':hover')) pal.classList.remove('is-on'); }, 1200));
   }
 
-  /* ---------- the header hides as you read down and comes back when you scroll up ---------- */
-  const top = document.querySelector('.dz-top');
-  if (top) {
+  /* ---------- the header and the dock hide as you read down and come back when you scroll up ---------- */
+  const bars = [document.querySelector('.dz-top'), document.querySelector('.dz-dock')].filter(Boolean);
+  if (bars.length) {
     let lastY = scrollY;
     addEventListener('scroll', () => {
       const y = scrollY;
-      if (y > 120 && y > lastY + 4) top.classList.add('is-hidden');
-      else if (y < lastY - 4 || y < 120) top.classList.remove('is-hidden');
+      if (y > 120 && y > lastY + 4) bars.forEach((b) => b.classList.add('is-hidden'));
+      else if (y < lastY - 4 || y < 120) bars.forEach((b) => b.classList.remove('is-hidden'));
       lastY = y;
     }, { passive: true });
   }

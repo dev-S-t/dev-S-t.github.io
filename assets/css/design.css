@@ -336,7 +336,7 @@ html:not(.js) .dz-step { opacity: 1; }
 
 /* the dock: grey tiles in a white tray; the one under the pointer swells and lifts, its neighbours a little;
    a speech bubble names it */
-.dz-dock.is-away { opacity: 0; pointer-events: none; transform: translate(-50%, 30px); }   /* steps aside for the Kit's own toolbar */
+.dz-dock.is-away, .dz-dock.is-hidden { opacity: 0; pointer-events: none; transform: translate(-50%, 30px); }   /* steps aside for the Kit's own toolbar and the footer, and while you read down */
 .dz-dock { transition: opacity .35s, transform .45s var(--ease); }
 .dz-dock { position: fixed; z-index: 60; left: 50%; bottom: 22px; display: flex; align-items: flex-end; gap: 8px; padding: 8px; border-radius: 20px; background: #fff; box-shadow: 0 10px 28px -14px rgba(0,0,0,.35), 0 0 0 1px rgba(0,0,0,.06); transform: translateX(-50%); }
 .dz-dock a { position: relative; width: 44px; height: 44px; border-radius: 12px; background: #F3F3F3; display: grid; place-items: center; transform-origin: 50% 100%; transition: transform .35s var(--spring), margin .35s var(--spring); }
