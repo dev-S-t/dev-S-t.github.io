@@ -79,73 +79,70 @@
   <canvas class="dz-trail" aria-hidden="true"></canvas>
 
   <header class="dz-top">
-    <a class="dz-name sel quipped" href="#main" aria-label="Abhishek Sharma, back to the top">
-      <svg class="sel-box" aria-hidden="true"><rect x="1" y="1" /></svg>
-      <svg class="dz-arrow" viewBox="0 0 12 14" aria-hidden="true"><path d="M1 1 L1 12 L4 9 L6.5 13.2 L8.2 12.3 L5.8 8.2 L10 8.2 Z"/></svg>
+    <a class="dz-name quipped" href="#main" aria-label="Abhishek Sharma, back to the top">
+      <svg class="dz-name-arrow" viewBox="0 0 12 14" aria-hidden="true"><path d="M1 1 L1 12 L4 9 L6.5 13.2 L8.2 12.3 L5.8 8.2 L10 8.2 Z"/></svg>
       <span class="dz-name-a">abhishek</span>
-      <span class="dz-name-b">sharma</span>
-      <span class="dz-fan" aria-hidden="true">
-        <img src="/assets/img/design/drink.webp" alt="" width="480" height="720" loading="lazy" decoding="async">
-        <img src="/assets/img/design/boat.webp" alt="" width="480" height="599" loading="lazy" decoding="async">
-        <img src="/assets/img/design/flowers.webp" alt="" width="480" height="720" loading="lazy" decoding="async">
-      </span>
-      <span class="quip quip-hand" aria-hidden="true">...know about me ;)</span>
+      <span class="dz-name-b"><svg class="dz-frame" aria-hidden="true" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109.014 34.014" overflow="visible"><g><path d="M 107.385 1.464 L 1.967 1.464 L 1.967 32.504 L 3.232 32.504 L 107.385 32.504 Z" fill="transparent" stroke-width="0.59" stroke="rgb(31, 31, 31)"></path><path d="M 0 0 L 3.514 0 L 3.514 3.514 L 0 3.514 Z" fill="rgb(31, 31, 31)"></path><path d="M 105 0 L 108.514 0 L 108.514 3.514 L 105 3.514 Z" fill="rgb(31, 31, 31)"></path><path d="M 105.5 30.5 L 109.014 30.5 L 109.014 34.014 L 105.5 34.014 Z" fill="rgb(31, 31, 31)"></path><path d="M 0 30.5 L 3.514 30.5 L 3.514 34.014 L 0 34.014 Z" fill="rgb(31, 31, 31)"></path></g></svg><span>sharma</span></span>
+      <span class="dz-fan" aria-hidden="true"><img src="/assets/img/design/drink.webp" alt=""><img src="/assets/img/design/boat.webp" alt=""><img src="/assets/img/design/flowers.webp" alt=""></span>
+      <span class="quip dz-q-name" aria-hidden="true">...know about me ;)</span>
     </a>
-    <div class="dz-actions">
+    <nav class="dz-actions" aria-label="Contact">
       <a class="dz-resume quipped" href="#experience">
-        <span class="dz-resume-icons" aria-hidden="true"><img src="/assets/img/design/icons/claude.svg" alt="" width="16" height="16"><img src="/assets/img/design/icons/framer.svg" alt="" width="16" height="16"><img src="/assets/img/design/icons/figma.svg" alt="" width="16" height="16"></span>
-        <span>Resume</span>
-        <span class="quip quip-hand quip-below" aria-hidden="true">So much experience :o</span>
+        <span class="dz-burst" aria-hidden="true">
+          <span class="dz-tile dz-t-framer"><img src="/assets/img/design/icons/framer.svg" alt=""></span>
+          <span class="dz-tile dz-t-figma"><img src="/assets/img/design/icons/figma.svg" alt=""></span>
+          <span class="dz-tile dz-t-notion"><img src="/assets/img/design/icons/notion.svg" alt=""></span>
+          <span class="dz-tile dz-t-claude"><img src="/assets/img/design/icons/claude.svg" alt=""></span>
+        </span>
+        <span class="dz-resume-t">Resume</span>
+        <span class="quip dz-q-resume" aria-hidden="true">So much<br>experience :o</span>
       </a>
-      <a class="dz-btn dz-btn-blue roll" href="#contact"><span class="roll-in"><span>Let's Contact</span><span aria-hidden="true">Let's Contact</span></span></a>
-    </div>
+      <a class="dz-btn dz-btn-blue dz-talk" href="#contact"><span class="dz-talk-t">Let's Contact</span><span class="dz-dots" aria-hidden="true"><i></i><i></i><i></i></span></a>
+    </nav>
   </header>
 
   <main id="main">
 
     <!-- 1. Hero: a page that looks like a design file -->
     <section class="dz-hero" id="home" aria-label="Introduction">
-      <div class="dz-stickers" aria-hidden="true">
-        <button class="dz-sticker dz-sticker-moon quipped" type="button" data-toggle="dark" tabindex="-1"><svg viewBox="0 0 24 24"><path d="M10 20c1 0 2-.2 3-.5-4-1.3-7-5-7-9.5S9 1.7 13 .5C12 .2 11 0 10 0 4.5 0 0 4.5 0 10s4.5 10 10 10Z" transform="translate(5.5 2)"/></svg><span class="quip quip-hand" aria-hidden="true">lights off?</span></button>
-        <span class="dz-sticker dz-sticker-mark" title="human in loop"></span>
-      </div>
-      <figure class="dz-avatar quipped" tabindex="0">
-        <img src="/assets/img/design/avatar.webp" alt="A drawing of Abhishek with his arms folded, smiling" width="560" height="560" decoding="async" fetchpriority="high">
-        <span class="quip quip-hand" aria-hidden="true">...yes, I do my own dev.</span>
-      </figure>
-      <div class="dz-headline">
-        <p class="dz-tag"><span>Product Design Portfolio</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l3.8-1 11-11-2.8-2.8-11 11z M14.2 6.2l2.8 2.8"/></svg></p>
-        <h1 class="dz-h1">
-          <span class="dz-line">I design. I build.</span>
-          <span class="dz-line">I imagine. <span class="dz-swap sel"><svg class="sel-box" aria-hidden="true"><rect x="1" y="1" /></svg><span class="dz-swap-in"><span class="dz-word is-on">the future.</span><span class="dz-word" aria-hidden="true">pixels.</span><span class="dz-word" aria-hidden="true">conversions.</span><span class="dz-word" aria-hidden="true">handoffs.</span><span class="dz-word" aria-hidden="true">no-code magic.</span><span class="dz-word" aria-hidden="true">chaos.</span></span><span class="dz-ghost" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M7.2 5.5 19.1 9.9c.5.2.9.6.9 1.2 0 .5-.3 1-.8 1.2l-4.8 1.8c-.2.1-.3.2-.3.4l-1.8 4.7c-.2.5-.7.8-1.2.8-.5 0-1-.3-1.2-.8L5.5 7.2c-.2-.5 0-1 .3-1.4.4-.4.9-.5 1.4-.3Z"/></svg><b>Abhishek</b></span></span></span>
-        </h1>
-      </div>
-      <div class="dz-palette quipped" role="group" aria-label="Design tools, each with a note">
-        <span class="quip quip-hand dz-press" aria-hidden="true">press me ;)</span>
-        <button type="button" class="dz-tool" data-tip="point at the problem" data-by="claude"><svg viewBox="0 0 24 24"><path d="M6 18 18 6M9 6h9v9"/></svg><span class="sr">Arrow</span></button>
-        <button type="button" class="dz-tool" data-tip="catch the scope creep" data-by="claude"><svg viewBox="0 0 24 24"><path d="M12 4c5 0 8 2.5 8 5.5S17 15 12 15c-2 0-3.5-.4-4.6-1M7 13c-1.6-1-3-2.3-3-3.5C4 6.5 7 4 12 4M7 13l-1 4 3-2"/></svg><span class="sr">Lasso</span></button>
-        <button type="button" class="dz-tool" data-tip="v12_final_FINAL" data-by="claude"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"/></svg><span class="sr">Undo</span></button>
-        <button type="button" class="dz-tool" data-tip="find the real problem"><svg viewBox="0 0 24 24"><path d="M4 12a8 7 0 1 1 3.5 5.8L4 20l.9-3.6A6.6 6.6 0 0 1 4 12Z"/></svg><span class="sr">Comment</span></button>
-        <button type="button" class="dz-tool" data-tip="sketch the first idea"><svg viewBox="0 0 24 24"><path d="M4 20l1-4L16 5l3 3L8 19zM14 7l3 3"/></svg><span class="sr">Pencil</span></button>
-        <button type="button" class="dz-tool" data-tip="hold the brand steady" data-by="claude"><svg viewBox="0 0 24 24"><path d="M12 7v14M12 7a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM5 13H3a9 9 0 0 0 18 0h-2M8 11h8"/></svg><span class="sr">Anchor</span></button>
-        <button type="button" class="dz-tool" data-tip="draw the line somewhere" data-by="claude"><svg viewBox="0 0 24 24"><path d="m12 19 7-7 3 3-7 7zM18 13l-1.5-7.5L2 2l3.5 14.5L13 18zM2 2l7.6 7.6M11 13a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg><span class="sr">Pen</span></button>
-        <button type="button" class="dz-tool" data-tip="it's not magic, it's iteration" data-by="claude"><svg viewBox="0 0 24 24"><path d="m4 20 11-11M14 4v3M19 9h-3M17.5 5.5 16 7M10 3l.5 1.5M20 13l-1.5-.5"/></svg><span class="sr">Magic wand</span></button>
+      <div class="dz-hero-in">
+        <div class="dz-stickers">
+          <button class="dz-sticker dz-sticker-moon quipped" type="button" data-toggle="dark" aria-label="Lights off"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 20c1 0 2-.2 3-.5-4-1.3-7-5-7-9.5S9 1.7 13 .5C12 .2 11 0 10 0 4.5 0 0 4.5 0 10s4.5 10 10 10Z" transform="translate(5.5 2)"/></svg><span class="quip dz-q-sticker" aria-hidden="true" data-by="claude">lights off?</span></button>
+          <span class="dz-sticker dz-sticker-gpt quipped" aria-hidden="true"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"> <path d="M13.1565 6.89689L13.1534 6.89377C13.419 6.07502 13.3222 5.18127 12.8909 4.44065C12.2315 3.30002 10.9128 2.7094 9.62528 2.98127L9.62216 2.9844C9.04716 2.34377 8.22528 1.98127 7.36591 1.9844C6.04716 1.9844 4.87841 2.83127 4.47216 4.08127V4.08752C3.63153 4.26565 2.90653 4.79689 2.47841 5.54377C1.81591 6.68127 1.96278 8.11877 2.84403 9.0969L2.84716 9.10002C2.58153 9.91877 2.67841 10.8125 3.10966 11.5531C3.76903 12.6938 5.08778 13.2844 6.37528 13.0125L6.37841 13.0094C6.95341 13.65 7.77528 14.0125 8.63466 14.0094C9.95341 14.0094 11.1222 13.1625 11.5284 11.9125V11.9063C12.369 11.7281 13.094 11.1969 13.5222 10.45C14.1847 9.31252 14.0378 7.87502 13.1565 6.89689ZM9.19091 8.68439L8.00028 9.37189L6.80966 8.68439V7.30939L8.00028 6.62189L9.19091 7.30939V8.68439ZM12.2128 4.82815H12.2065C12.469 5.2844 12.5659 5.81564 12.4784 6.33439L10.019 4.91565C9.99091 4.90002 9.96278 4.88752 9.93153 4.87815C9.82841 4.84377 9.71278 4.85627 9.61591 4.91565L6.80966 6.53752V5.35315L9.12841 4.01252C9.35341 3.88127 9.59716 3.79377 9.85028 3.7469L9.84716 3.74064C10.7597 3.57189 11.719 3.98127 12.2128 4.82815ZM7.36278 2.76565L7.35966 2.76877C7.88778 2.76877 8.39403 2.95002 8.80028 3.28439L6.34403 4.70627C6.31591 4.7219 6.29091 4.74064 6.26903 4.76252C6.18778 4.83439 6.14091 4.94065 6.14091 5.05627V8.2969L5.11591 7.70627V5.02814C5.11591 4.76877 5.15966 4.51252 5.24716 4.27189L5.24091 4.26877C5.54716 3.39377 6.38153 2.76565 7.36278 2.76565ZM3.15028 5.93127V5.93752C3.41278 5.48127 3.82528 5.13127 4.31903 4.9469V7.78752C4.31903 7.81877 4.32216 7.85002 4.33153 7.88127C4.35341 7.98752 4.42216 8.08127 4.52216 8.13752L7.32841 9.75939L6.30341 10.3531L3.98466 9.01565C3.75966 8.88752 3.55966 8.71877 3.39403 8.5219L3.38778 8.52814C2.78778 7.81877 2.66278 6.7844 3.15028 5.93127ZM3.78778 11.1625H3.79403C3.53153 10.7063 3.43466 10.175 3.52216 9.65627L5.98153 11.075C6.00966 11.0906 6.03778 11.1031 6.06903 11.1125C6.17216 11.1469 6.28778 11.1344 6.38466 11.075L9.19091 9.45315V10.6375L6.87216 11.9781C6.64716 12.1094 6.40341 12.1969 6.15028 12.2438L6.15341 12.25C5.24091 12.4219 4.28153 12.0125 3.78778 11.1625ZM8.63778 13.2281L8.64091 13.225C8.11278 13.225 7.60653 13.0438 7.20028 12.7094L9.65966 11.2906C9.68778 11.275 9.71278 11.2563 9.73466 11.2344C9.81591 11.1625 9.86278 11.0563 9.86278 10.9406V7.6969L10.8878 8.28752V10.9656C10.8878 11.225 10.844 11.4813 10.7565 11.7219L10.7628 11.725C10.4534 12.6 9.61903 13.2281 8.63778 13.2281ZM12.8503 10.0625V10.0563C12.5878 10.5125 12.1753 10.8625 11.6815 11.0469V8.20627C11.6815 8.17502 11.6784 8.14377 11.669 8.11252C11.6472 8.00627 11.5784 7.91252 11.4784 7.85627L8.67216 6.2344L9.69716 5.64065L12.0159 6.97815C12.2409 7.10627 12.4409 7.27502 12.6065 7.4719L12.6128 7.46564C13.2128 8.17502 13.3378 9.2094 12.8503 10.0625Z" fill="currentColor"></path> </svg><span class="quip dz-q-sticker" data-by="claude">my rubber duck.</span></span>
+        </div>
+        <figure class="dz-avatar quipped" tabindex="0">
+          <img src="/assets/img/design/avatar.webp" alt="A drawing of Abhishek with his arms folded, smiling" width="560" height="560" decoding="async" fetchpriority="high">
+          <span class="quip dz-q-avatar" aria-hidden="true">...yes, I do my own dev.</span>
+        </figure>
+        <div class="dz-headline">
+          <p class="dz-tag"><span>Product Design Portfolio</span><i class="dz-tag-a"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M 3.293 8.879 C 2.902 9.269 2.269 9.269 1.879 8.879 L 0.293 7.293 C -0.098 6.902 -0.098 6.269 0.293 5.879 L 5.879 0.293 C 6.269 -0.098 6.902 -0.098 7.293 0.293 L 8.879 1.879 C 9.269 2.269 9.269 2.902 8.879 3.293 Z" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(12.414 12.414)"></path><path d="M 16 11 L 14.625 4.126 C 14.549 3.744 14.258 3.441 13.879 3.35 L 1.235 0.028 C 0.896 -0.054 0.539 0.046 0.293 0.293 C 0.046 0.539 -0.054 0.896 0.028 1.235 L 3.35 13.879 C 3.441 14.258 3.744 14.549 4.126 14.625 L 11 16" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(2 2)"></path><path d="M 0 0 L 7.286 7.286" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(2.3 2.3)"></path><path d="M 0 2 C 0 0.895 0.895 0 2 0 C 3.105 0 4 0.895 4 2 C 4 3.105 3.105 4 2 4 C 0.895 4 0 3.105 0 2 Z" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(9 9)"></path></svg></i><i class="dz-tag-b"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M 11.002 4.993 L 6.702 0.693 C 5.762 -0.243 4.242 -0.243 3.302 0.693 L 0.702 3.293 C -0.234 4.233 -0.234 5.753 0.702 6.693 L 5.002 10.993" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(1.998 2.007)"></path><path d="M 0 2 L 2 0" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(8 4)"></path><path d="M 0 2 L 2 0" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(18 14)"></path><path d="M 6 0 L 10.3 4.3 C 11.24 5.24 11.24 6.76 10.3 7.7 L 7.7 10.3 C 6.76 11.24 5.24 11.24 4.3 10.3 L 0 6" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(11 11)"></path><path d="M 19.174 4.812 C 20.275 3.712 20.275 1.927 19.174 0.826 C 18.074 -0.275 16.289 -0.275 15.188 0.825 L 1.842 14.174 C 1.61 14.406 1.438 14.691 1.342 15.004 L 0.021 19.356 C -0.032 19.533 0.017 19.723 0.147 19.853 C 0.277 19.983 0.468 20.031 0.644 19.978 L 4.997 18.658 C 5.31 18.563 5.595 18.392 5.827 18.161 Z" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(2 2)"></path><path d="M 0 0 L 4 4" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(15 5)"></path></svg></i></p>
+          <h1 class="dz-h1">
+            <span class="dz-line">I design. I build.</span>
+            <span class="dz-line">I imagine. <span class="dz-future"><svg class="dz-frame" aria-hidden="true" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230.245 59" overflow="visible"><g><path d="M 227.358 2.5 L 3.358 2.5 L 3.358 55.5 L 6.046 55.5 L 227.358 55.5 Z" fill="rgba(0, 170, 255, 0.06)" stroke="rgb(0, 128, 255)"></path><path d="M 0 0 L 6 0 L 6 6 L 0 6 Z" fill="rgb(0, 128, 255)"></path><path d="M 223.925 0 L 229.925 0 L 229.925 6 L 223.925 6 Z" fill="rgb(0, 128, 255)"></path><path d="M 224.245 53 L 230.245 53 L 230.245 59 L 224.245 59 Z" fill="rgb(0, 128, 255)"></path><path d="M 1 53 L 7 53 L 7 59 L 1 59 Z" fill="rgb(0, 128, 255)"></path></g></svg><span class="dz-future-t">the future.</span><span class="dz-ghost" aria-hidden="true"><svg class="dz-ghost-arrow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 27.999" overflow="visible"><path d="M 10.037 7.714 L 26.804 13.793 C 27.52 14.047 27.998 14.724 28 15.484 C 28.01 16.244 27.541 16.929 26.828 17.193 L 20.196 19.702 C 19.969 19.789 19.79 19.968 19.704 20.195 L 17.195 26.827 C 16.932 27.535 16.255 28.003 15.5 27.999 L 15.487 27.999 C 14.726 27.998 14.049 27.519 13.794 26.803 L 7.713 10.037 C 7.468 9.376 7.634 8.632 8.136 8.137 C 8.631 7.635 9.375 7.469 10.037 7.714 Z" fill="rgb(0, 128, 255)" stroke-width="2" stroke="rgb(255, 255, 255)" stroke-miterlimit="10"></path></svg><b>Abhishek</b></span></span></span>
+          </h1>
+        </div>
+        <div class="dz-palette quipped" role="group" aria-label="Design tools, each with a note">
+          <button type="button" class="dz-tool" data-tip="point at the problem" data-by="claude"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M 0 0 L 10 0 L 10 10" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(7 7)"></path><path d="M 0 10 L 10 0" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(7 7)"></path></svg><span class="sr">Arrow</span></button><button type="button" class="dz-tool" data-tip="select what matters" data-by="claude"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M 2 4 C 0.741 3.056 0 1.574 0 0" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(5 18)"></path><path d="M 0 0 C 0.96 0.43 1.96 0.74 2.99 0.91" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(7 16.93)"></path><path d="M 1.34 12 C 0.481 10.842 0.011 9.442 0 8 C 0 3.58 4.48 0 10 0 C 15.52 0 20 3.58 20 8 C 19.985 8.679 19.874 9.352 19.67 10" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(2 2)"></path><path d="M 2 4 C 3.105 4 4 3.105 4 2 C 4 0.895 3.105 0 2 0 C 0.895 0 0 0.895 0 2 C 0 3.105 0.895 4 2 4 Z" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(3 14)"></path><path d="M 0.33 10.66 L 0.24 10.66 C 0.101 10.614 0.005 10.486 0 10.34 L 0 0.34 C 0 0.156 0.146 0.005 0.33 0 C 0.41 0 0.48 0.03 0.54 0.08 L 7.88 6.08 C 7.992 6.167 8.035 6.317 7.988 6.451 C 7.94 6.585 7.812 6.673 7.67 6.67 L 3.18 6.67 L 0.61 10.52 C 0.544 10.608 0.44 10.66 0.33 10.66 Z" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(14 11.34)"></path></svg><span class="sr">Select</span></button><button type="button" class="dz-tool" data-tip="v12_final_FINAL" data-by="claude"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M 0 0 L 0 6 L 6 6" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(3 7)"></path><path d="M 18 9 C 18 4.029 13.971 0 9 0 C 6.785 0.002 4.649 0.821 3 2.3 L 0 5" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(3 8)"></path></svg><span class="sr">Undo</span></button><button type="button" class="dz-tool" data-tip="find the real problem"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M 1.704 12.467 C 0.593 11.147 0 9.591 0 8 C 0 3.582 4.477 0 10 0 C 15.523 0 20 3.582 20 8 C 20 12.418 15.523 16 10 16 C 8.173 16 6.381 15.599 4.819 14.842" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(2 2)"></path><path d="M 2 3.994 C 0.743 3.051 0.002 1.572 0 0" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(5 18.006)"></path><path d="M 0 2 C 0 0.895 0.895 0 2 0 C 3.105 0 4 0.895 4 2 C 4 3.105 3.105 4 2 4 C 0.895 4 0 3.105 0 2 Z" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(3 14)"></path></svg><span class="sr">Lasso</span></button><button type="button" class="dz-tool" data-tip="sketch the first idea"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M 19.174 4.812 C 20.275 3.712 20.275 1.927 19.174 0.826 C 18.074 -0.275 16.289 -0.275 15.188 0.825 L 1.842 14.174 C 1.61 14.406 1.438 14.691 1.342 15.004 L 0.021 19.356 C -0.032 19.533 0.017 19.723 0.147 19.853 C 0.277 19.983 0.468 20.031 0.644 19.978 L 4.997 18.658 C 5.31 18.563 5.595 18.392 5.827 18.161 Z" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(2 2)"></path><path d="M 0 0 L 4 4" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(15 5)"></path></svg><span class="sr">Pencil</span></button><button type="button" class="dz-tool" data-tip="hold the brand steady" data-by="claude"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M 0 14 L 0 0" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(12 8)"></path><path d="M 3 0 L 0 0 C 0 5.523 4.477 10 10 10 C 15.523 10 20 5.523 20 0 L 17 0" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(2 12)"></path><path d="M 0 3 C 0 1.343 1.343 0 3 0 C 4.657 0 6 1.343 6 3 C 6 4.657 4.657 6 3 6 C 1.343 6 0 4.657 0 3 Z" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(9 2)"></path></svg><span class="sr">Anchor</span></button><button type="button" class="dz-tool" data-tip="draw the line somewhere" data-by="claude"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M 3.293 8.879 C 2.902 9.269 2.269 9.269 1.879 8.879 L 0.293 7.293 C -0.098 6.902 -0.098 6.269 0.293 5.879 L 5.879 0.293 C 6.269 -0.098 6.902 -0.098 7.293 0.293 L 8.879 1.879 C 9.269 2.269 9.269 2.902 8.879 3.293 Z" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(12.414 12.414)"></path><path d="M 16 11 L 14.625 4.126 C 14.549 3.744 14.258 3.441 13.879 3.35 L 1.235 0.028 C 0.896 -0.054 0.539 0.046 0.293 0.293 C 0.046 0.539 -0.054 0.896 0.028 1.235 L 3.35 13.879 C 3.441 14.258 3.744 14.549 4.126 14.625 L 11 16" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(2 2)"></path><path d="M 0 0 L 7.286 7.286" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(2.3 2.3)"></path><path d="M 0 2 C 0 0.895 0.895 0 2 0 C 3.105 0 4 0.895 4 2 C 4 3.105 3.105 4 2 4 C 0.895 4 0 3.105 0 2 Z" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(9 9)"></path></svg><span class="sr">Pen</span></button><button type="button" class="dz-tool" data-tip="it's not magic, it's iteration" data-by="claude"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M 19.639 1.639 L 18.359 0.359 C 18.132 0.129 17.822 0 17.499 0 C 17.176 0 16.866 0.129 16.639 0.359 L 0.359 16.639 C 0.129 16.866 0 17.176 0 17.499 C 0 17.822 0.129 18.132 0.359 18.359 L 1.639 19.639 C 1.865 19.871 2.175 20.002 2.499 20.002 C 2.823 20.002 3.133 19.871 3.359 19.639 L 19.639 3.359 C 19.871 3.133 20.002 2.823 20.002 2.499 C 20.002 2.175 19.871 1.865 19.639 1.639" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(2.001 2.001)"></path><path d="M 0 0 L 3 3" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(14 7)"></path><path d="M 0 0 L 0 4" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(5 6)"></path><path d="M 0 0 L 0 4" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(19 14)"></path><path d="M 0 0 L 0 2" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(10 2)"></path><path d="M 4 0 L 0 0" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(3 8)"></path><path d="M 4 0 L 0 0" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(17 16)"></path><path d="M 2 0 L 0 0" fill="transparent" stroke-dasharray="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" transform="translate(9 3)"></path></svg><span class="sr">Magic wand</span></button>
+          <span class="quip dz-press" aria-hidden="true">press me ;)</span>
+        </div>
       </div>
     </section>
 
     <!-- 2. I build it -->
     <section class="dz-ship" aria-labelledby="ship-title">
-      <h2 id="ship-title" class="dz-ship-text">I don't just design the product. I <em>build</em> it, and I own it until it <em>ships.</em></h2>
-      <ul class="dz-tools" aria-label="Tools">
-        <li class="quipped" tabindex="0"><img src="/assets/img/design/icons/framer.svg" alt="Framer" width="40" height="40"><span class="quip quip-tilt" aria-hidden="true">'no-code,' he lied.</span></li>
-        <li class="quipped" tabindex="0"><img src="/assets/img/design/icons/figma.svg" alt="Figma" width="40" height="40"><span class="quip quip-tilt" aria-hidden="true">auto-layout and I are in therapy.</span></li>
-        <li class="quipped" tabindex="0"><img src="/assets/img/design/icons/claude.svg" alt="Claude" width="40" height="40"><span class="quip quip-tilt" aria-hidden="true">types fast. I bring the taste</span></li>
-        <li class="quipped" tabindex="0"><img src="/assets/img/design/icons/notion.svg" alt="Notion" width="40" height="40"><span class="quip quip-tilt" aria-hidden="true">writing my own UX hypothesis</span></li>
-        <li class="quipped" tabindex="0"><img src="/assets/img/design/icons/wordpress.svg" alt="WordPress" width="40" height="40"><span class="quip quip-tilt" aria-hidden="true">the logo peaked in 2009. the work didn't.</span></li>
-      </ul>
+      <div class="dz-ship-grid">
+        <h2 id="ship-title" class="dz-ship-text">I don't just design the product. I <em>build</em> it, and I own it until it <em>ships.</em></h2>
+        <ul class="dz-tools" aria-label="Tools">
+          <li class="quipped" tabindex="0" style="--d:0s;--t:4.2s;--r:-6deg"><img src="/assets/img/design/icons/framer.svg" alt="Framer"><span class="quip quip-tilt" aria-hidden="true">'no-code,' he lied.</span></li>
+          <li class="quipped" tabindex="0" style="--d:-1.1s;--t:5s;--r:7deg"><img src="/assets/img/design/icons/figma.svg" alt="Figma"><span class="quip quip-tilt" aria-hidden="true">auto-layout and I are in therapy.</span></li>
+          <li class="quipped" tabindex="0" style="--d:-2.3s;--t:3.6s;--r:-9deg"><img src="/assets/img/design/icons/claude.svg" alt="Claude"><span class="quip quip-tilt" aria-hidden="true">types fast. I bring the taste</span></li>
+          <li class="quipped" tabindex="0" style="--d:-.6s;--t:4.6s;--r:10deg"><img src="/assets/img/design/icons/notion.svg" alt="Notion"><span class="quip quip-tilt" aria-hidden="true">writing my own UX hypothesis</span></li>
+          <li class="quipped" tabindex="0" style="--d:-3s;--t:5.4s;--r:-5deg"><img src="/assets/img/design/icons/wordpress.svg" alt="WordPress"><span class="quip quip-tilt" aria-hidden="true">the logo peaked in 2009. the work didn't.</span></li>
+        </ul>
+      </div>
     </section>
 
-    <!-- 3. Featured projects: folders that open on hover -->
+    <!-- 3. Featured projects -->
     <section class="dz-work" id="projects" aria-labelledby="work-title">
       <div class="dz-work-head">
         <img class="dz-work-icon" src="/assets/img/design/icons/projects-file.svg" alt="" width="40" height="40">
@@ -153,50 +150,38 @@
           <h2 id="work-title">Featured Projects</h2>
           <p>Blood, sweat, and tears were sacrificed</p>
         </div>
-        <a class="dz-btn dz-btn-dark roll" href="#contact"><span class="roll-in"><span>Let's Contact</span><span aria-hidden="true">Let's Contact</span></span></a>
+        <a class="dz-btn dz-btn-grey dz-tilt" href="#contact">Let's Contact</a>
       </div>
-      <ul class="dz-folders">
-        <li class="dz-folder" tabindex="0" style="--tint: #1E3A8A">
-          <div class="dz-folder-art" aria-hidden="true">
-            <span class="dz-folder-back"></span>
-            <img class="dz-folder-img a" src="/assets/img/design/syrma.webp" alt="" width="900" height="804" loading="lazy" decoding="async">
-            <img class="dz-folder-img b" src="/assets/img/design/interior.webp" alt="" width="720" height="975" loading="lazy" decoding="async">
-            <span class="dz-folder-front"></span>
-            <span class="dz-paper"><span class="dz-paper-meta">16 Weeks<br>Winter 2026</span><span class="dz-paper-title">Syrma Johari - Medtech</span></span>
+      <ul class="pjs">
+        <li class="pj" tabindex="0">
+          <div class="pj-art" aria-hidden="true">
+            <img class="pj-img pj-img-l" src="/assets/img/design/interior.webp" alt="" loading="lazy" decoding="async">
+            <img class="pj-img pj-img-r" src="/assets/img/design/car.webp" alt="" loading="lazy" decoding="async">
+            <img class="pj-img pj-img-m" src="/assets/img/design/syrma.webp" alt="" loading="lazy" decoding="async">
+            <div class="pj-card"><svg class="pj-card-bg" viewBox="0 0 300 190" preserveAspectRatio="none" aria-hidden="true"><path d="M0 34 Q0 14 20 14 H118 C140 14 146 44 172 44 H280 Q300 44 300 64 V170 Q300 190 280 190 H20 Q0 190 0 170 Z"/></svg><p class="pj-time"><span>16 Weeks</span><span>Winter 2026</span></p><p class="pj-name">Syrma Johari - Medtech</p></div>
           </div>
-          <h3 class="dz-folder-title">Syrma Johari - Medtech</h3>
-          <div class="dz-folder-more">
-            <p>Redesigned and rebuilt a 60-page website for a medical manufacturing company — the research, the structure, the design, and the WordPress build.</p>
-            <p class="dz-role"><span>Role:</span> Lead Designer &amp; Developer</p>
-          </div>
+          <h3 class="sr">Syrma Johari - Medtech</h3>
+          <div class="pj-more"><p>Redesigned and rebuilt a 60-page website for a medical manufacturing company — the research, the structure, the design, and the WordPress build.</p><p class="pj-role"><span>Role:</span> Lead Designer &amp; Developer</p></div>
         </li>
-        <li class="dz-folder" tabindex="0" style="--tint: #2B6CB0">
-          <div class="dz-folder-art" aria-hidden="true">
-            <span class="dz-folder-back"></span>
-            <img class="dz-folder-img a" src="/assets/img/design/interior.webp" alt="" width="720" height="975" loading="lazy" decoding="async">
-            <img class="dz-folder-img b" src="/assets/img/design/car.webp" alt="" width="720" height="889" loading="lazy" decoding="async">
-            <span class="dz-folder-front"></span>
-            <span class="dz-paper"><span class="dz-paper-meta">4 Weeks<br>Fall 2025</span><span class="dz-paper-title">ASB Connect</span></span>
+        <li class="pj" tabindex="0">
+          <div class="pj-art" aria-hidden="true">
+            <img class="pj-img pj-img-l" src="/assets/img/design/interior.webp" alt="" loading="lazy" decoding="async">
+            <img class="pj-img pj-img-r" src="/assets/img/design/car.webp" alt="" loading="lazy" decoding="async">
+            <img class="pj-img pj-img-m" src="/assets/img/design/interior.webp" alt="" loading="lazy" decoding="async">
+            <div class="pj-card"><svg class="pj-card-bg" viewBox="0 0 300 190" preserveAspectRatio="none" aria-hidden="true"><path d="M0 34 Q0 14 20 14 H118 C140 14 146 44 172 44 H280 Q300 44 300 64 V170 Q300 190 280 190 H20 Q0 190 0 170 Z"/></svg><p class="pj-time"><span>4 Weeks</span><span>Fall 2025</span></p><p class="pj-name">ASB Connect</p></div>
           </div>
-          <h3 class="dz-folder-title">ASB Connect</h3>
-          <div class="dz-folder-more">
-            <p>Designed a feature to explore schools, hospitals, and places near a project, and a referral flow to invite friends, track them, and claim rewards.</p>
-            <p class="dz-role"><span>Role:</span> UX &amp; Interaction Designer</p>
-          </div>
+          <h3 class="sr">ASB Connect</h3>
+          <div class="pj-more"><p>Designed a feature to explore schools, hospitals, and places near a project, and a referral flow to invite friends, track them, and claim rewards.</p><p class="pj-role"><span>Role:</span> UX &amp; Interaction Designer</p></div>
         </li>
-        <li class="dz-folder" tabindex="0" style="--tint: #3F6EA8">
-          <div class="dz-folder-art" aria-hidden="true">
-            <span class="dz-folder-back"></span>
-            <img class="dz-folder-img a" src="/assets/img/design/car.webp" alt="" width="720" height="889" loading="lazy" decoding="async">
-            <img class="dz-folder-img b" src="/assets/img/design/interior.webp" alt="" width="720" height="975" loading="lazy" decoding="async">
-            <span class="dz-folder-front"></span>
-            <span class="dz-paper"><span class="dz-paper-meta">8 Weeks<br>Summer 2026</span><span class="dz-paper-title">Tramontina</span></span>
+        <li class="pj" tabindex="0">
+          <div class="pj-art" aria-hidden="true">
+            <img class="pj-img pj-img-l" src="/assets/img/design/interior.webp" alt="" loading="lazy" decoding="async">
+            <img class="pj-img pj-img-r" src="/assets/img/design/car.webp" alt="" loading="lazy" decoding="async">
+            <img class="pj-img pj-img-m" src="/assets/img/design/interior.webp" alt="" loading="lazy" decoding="async">
+            <div class="pj-card"><svg class="pj-card-bg" viewBox="0 0 300 190" preserveAspectRatio="none" aria-hidden="true"><path d="M0 34 Q0 14 20 14 H118 C140 14 146 44 172 44 H280 Q300 44 300 64 V170 Q300 190 280 190 H20 Q0 190 0 170 Z"/></svg><p class="pj-time"><span>8 Weeks</span><span>Summer 2026</span></p><p class="pj-name">Tramontina</p></div>
           </div>
-          <h3 class="dz-folder-title">Tramontina</h3>
-          <div class="dz-folder-more">
-            <p>Designed and built the store for a global cookware brand, four landing pages, plus material and care pages built to scale across every category.</p>
-            <p class="dz-role"><span>Role:</span> Product Designer &amp; Client POC</p>
-          </div>
+          <h3 class="sr">Tramontina</h3>
+          <div class="pj-more"><p>Designed and built the store for a global cookware brand, four landing pages, plus material and care pages built to scale across every category.</p><p class="pj-role"><span>Role:</span> Product Designer &amp; Client POC</p></div>
         </li>
       </ul>
     </section>
@@ -208,48 +193,54 @@
         <figcaption class="dz-photo-bar">
           <img src="/assets/img/design/face.webp" alt="" width="160" height="160" loading="lazy">
           <span><b>@Sharma-abhii</b><small>Linkedin</small></span>
-          <a class="dz-btn dz-btn-dark dz-btn-sm" href="https://www.linkedin.com/in/sharma-abhii/" rel="noopener" target="_blank">Connect</a>
+          <a class="dz-connect" href="https://www.linkedin.com/in/sharma-abhii/" rel="noopener" target="_blank">Connect</a>
         </figcaption>
       </figure>
       <div class="dz-about-text">
         <h2 id="about-title" class="sr">About</h2>
         <p class="dz-bio">I'm Abhishek, an Information Technology graduate with Honours who left the engineering track for product design and brought the engineer's brain along.</p>
         <div class="dz-about-btns">
-          <a class="dz-resume quipped" href="#experience"><span class="dz-resume-icons" aria-hidden="true"><img src="/assets/img/design/icons/claude.svg" alt="" width="16" height="16"><img src="/assets/img/design/icons/framer.svg" alt="" width="16" height="16"><img src="/assets/img/design/icons/figma.svg" alt="" width="16" height="16"></span><span>Resume</span><span class="quip quip-hand quip-below" aria-hidden="true">So much experience :o</span></a>
-          <a class="dz-btn dz-btn-blue roll" href="#how"><span class="roll-in"><span>About Me</span><span aria-hidden="true">About Me</span></span></a>
+          <a class="dz-resume quipped" href="#experience">
+            <span class="dz-burst" aria-hidden="true">
+              <span class="dz-tile dz-t-framer"><img src="/assets/img/design/icons/framer.svg" alt=""></span>
+              <span class="dz-tile dz-t-figma"><img src="/assets/img/design/icons/figma.svg" alt=""></span>
+              <span class="dz-tile dz-t-notion"><img src="/assets/img/design/icons/notion.svg" alt=""></span>
+              <span class="dz-tile dz-t-claude"><img src="/assets/img/design/icons/claude.svg" alt=""></span>
+            </span>
+            <span class="dz-resume-t">Resume</span>
+            <span class="quip dz-q-resume" aria-hidden="true">So much<br>experience :o</span>
+          </a>
+          <a class="dz-btn dz-btn-blue dz-talk" href="#how"><span class="dz-talk-t">About Me</span><span class="dz-dots" aria-hidden="true"><i></i><i></i><i></i></span></a>
         </div>
         <ul class="dz-gallery" id="gallery" aria-label="Gallery">
-          <li><img src="/assets/img/design/drink.webp" alt="A pink drink with a slice of melon on a tray" width="480" height="720" loading="lazy" decoding="async"></li>
-          <li><img src="/assets/img/design/boat.webp" alt="A wooden boat on a golden shore" width="480" height="599" loading="lazy" decoding="async"></li>
-          <li><img src="/assets/img/design/flowers.webp" alt="Yellow mimosa flowers against a pale sky" width="480" height="720" loading="lazy" decoding="async"></li>
+          <li><img src="/assets/img/design/drink.webp" alt="A pink drink with a slice of melon on a tray" loading="lazy" decoding="async"></li>
+          <li><img src="/assets/img/design/boat.webp" alt="A wooden boat on a golden shore" loading="lazy" decoding="async"></li>
+          <li><img src="/assets/img/design/flowers.webp" alt="Yellow mimosa flowers against a pale sky" loading="lazy" decoding="async"></li>
         </ul>
       </div>
     </section>
 
-    <!-- 5. The Craft & the Kit: chips you can throw, sort, drop, colour -->
-    <section class="dz-kit" id="kit" aria-labelledby="kit-title">
-      <p class="dz-eyebrow">// Components / The Kit</p>
-      <h2 id="kit-title">The Craft &amp; the Kit</h2>
-      <p class="dz-kit-sub">Everything I reach for — from the first wireframe to the last line of code.</p>
-      <div class="dz-arena" aria-label="Skills">
-        <div class="dz-cols" aria-hidden="true"><span>Design</span><span>Build</span><span>Lead</span></div>
-        <ul class="dz-chips">
-          <li class="dz-chip" data-g="design">Interaction design</li><li class="dz-chip" data-g="design">User flows</li><li class="dz-chip" data-g="design">Wireframing</li><li class="dz-chip" data-g="design">Prototyping</li><li class="dz-chip" data-g="design">Information architecture</li><li class="dz-chip" data-g="design">UX research</li><li class="dz-chip" data-g="design">Usability testing</li><li class="dz-chip" data-g="design">Design systems</li><li class="dz-chip" data-g="design">Dashboards &amp; data-viz</li><li class="dz-chip" data-g="design">Responsive</li>
-          <li class="dz-chip" data-g="build">Figma</li><li class="dz-chip" data-g="build">Framer</li><li class="dz-chip" data-g="build">WordPress</li><li class="dz-chip" data-g="build">HTML / CSS / JS</li><li class="dz-chip" data-g="build">Unity</li><li class="dz-chip" data-g="build">Claude Code</li><li class="dz-chip" data-g="build">GitHub</li>
-          <li class="dz-chip" data-g="lead">Client POC</li><li class="dz-chip" data-g="lead">Requirements &amp; alignment</li><li class="dz-chip" data-g="lead">Design QA</li><li class="dz-chip" data-g="lead">CRO</li><li class="dz-chip" data-g="lead">Shipping ownership</li>
-        </ul>
-        <p class="dz-note">These are <b>stuck to the grid</b>. Throw them, rearrange them, colour them — or hit <b>tidy up</b>. Go on.</p>
+    <!-- 5. The Craft & the Kit: Abhishek's own component, ported from his Framer code (CraftAndKit.tsx) -->
+    <section class="kit" id="kit" aria-labelledby="kit-title">
+      <div class="kit__grid" aria-hidden="true"></div>
+      <div class="content">
+        <div class="head">
+          <p class="eyebrow"><b>//</b> components / the&#8209;kit</p>
+          <h2 class="title" id="kit-title">The Craft &amp; the Kit</h2>
+          <p class="sub">Everything I reach for — from the first wireframe to the last line of code.</p>
+        </div>
+        <div class="stage" id="kit-stage">
+          <div class="cursor" id="kit-cursor" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 2l14 8-6 1.5L9 18 4 2z" fill="#141414" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg><span class="name">Abhishek</span></div>
+          <p class="helper" id="kit-helper">These are <b>stuck to the grid</b>. Throw them, rearrange them, colour them — or hit <b>tidy up</b>. Go on.</p>
+          <ul class="kit-list" aria-label="Skills">
+            <li>Design: Interaction design, User flows, Wireframing, Prototyping, Information architecture, UX research, Usability testing, Design systems, Dashboards &amp; data-viz, Responsive.</li>
+            <li>Build: Figma, Framer, WordPress, HTML / CSS / JS, Unity, Claude Code, GitHub.</li>
+            <li>Lead: Client POC, Requirements &amp; alignment, Design QA, CRO, Shipping ownership.</li>
+          </ul>
+        </div>
+        <div class="tools"><div class="toolwrap" id="kit-tools" role="toolbar" aria-label="Play with the skills"></div></div>
       </div>
-      <div class="dz-toolbar" role="toolbar" aria-label="Play with the skills">
-        <button type="button" data-mode="tidy" data-tip="line them up"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg><span class="sr">Line them up</span></button>
-        <button type="button" data-mode="scatter" data-tip="make a mess" data-by="claude"><svg viewBox="0 0 24 24"><path d="M9 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM21 9a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM12 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg><span class="sr">Scatter them</span></button>
-        <button type="button" data-mode="gravity" data-tip="let gravity win"><svg viewBox="0 0 24 24"><path d="M12 3v13M6 11l6 6 6-6M4 21h16"/></svg><span class="sr">Let gravity win</span></button>
-        <button type="button" data-mode="pull" data-tip="pull it together"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5M12 10a2 2 0 1 1 0 4 2 2 0 0 1 0-4Z"/></svg><span class="sr">Pull it together</span></button>
-        <button type="button" data-toggle="colour" data-tip="pour some colour"><svg viewBox="0 0 24 24"><path d="m5 11 7-7 7 7-7 7zM19 15s2 2.2 2 3.5a2 2 0 0 1-4 0c0-1.3 2-3.5 2-3.5ZM5 11h14"/></svg><span class="sr">Pour some colour</span></button>
-        <button type="button" data-toggle="vibe" data-tip="try another vibe"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1 0 1.5-.8 1.5-1.6 0-1-.8-1.4-.8-2.2 0-.9.7-1.7 1.6-1.7H17a4 4 0 0 0 4-4C21 6.6 17 3 12 3ZM7.5 11a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM11 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM15.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/></svg><span class="sr">Try another vibe</span></button>
-        <button type="button" data-toggle="dark" data-tip="after-hours"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z"/></svg><span class="sr">After-hours</span></button>
-        <button type="button" data-toggle="ghost" data-tip="hide the ghost"><svg viewBox="0 0 24 24"><path d="M7.2 5.5 19.1 9.9c.5.2.9.6.9 1.2 0 .5-.3 1-.8 1.2l-4.8 1.8c-.2.1-.3.2-.3.4l-1.8 4.7c-.2.5-.7.8-1.2.8-.5 0-1-.3-1.2-.8L5.5 7.2c-.2-.5 0-1 .3-1.4.4-.4.9-.5 1.4-.3Z" transform="scale(.85) translate(2 1)"/></svg><span class="sr">Hide the ghost</span></button>
-      </div>
+      <template id="kit-icons"><span data-sym="grid_view"><svg aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M120-510v-330h330v330H120Zm0 390v-330h330v330H120Zm390-390v-330h330v330H510Zm0 390v-330h330v330H510ZM180-570h210v-210H180v210Zm390 0h210v-210H570v210Zm0 390h210v-210H570v210Zm-390 0h210v-210H180v210Zm390-390Zm0 180Zm-180 0Zm0-180Z"/></svg></span><span data-sym="scatter_plot"><svg aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M692-120q-62 0-105-43t-43-105q0-62 43-105t105-43q62 0 105 43t43 105q0 62-43 105t-105 43Zm0-60q38 0 63-25t25-63q0-38-25-63t-63-25q-38 0-63 25t-25 63q0 38 25 63t63 25Zm-424-70q-62 0-105-43t-43-105q0-62 43-105t105-43q62 0 105 43t43 105q0 62-43 105t-105 43Zm0-60q37 0 62.5-25.5T356-398q0-37-25.5-62.5T268-486q-37 0-62.5 25.5T180-398q0 37 25.5 62.5T268-310Zm169-274q-62 0-105-43t-43-105q0-62 43-105t105-43q62 0 105 43t43 105q0 62-43 105t-105 43Zm0-60q38 0 63-25t25-63q0-38-25-63t-63-25q-38 0-63 25t-25 63q0 38 25 63t63 25Zm255 376ZM268-398Zm169-334Z"/></svg></span><span data-sym="vertical_align_bottom"><svg aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M160-120v-60h640v60H160Zm320-120L286-434l43-43 121 121v-484h60v484l117-117 43 43-190 190Z"/></svg></span><span data-sym="filter_center_focus"><svg aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M480-376q-45 0-74.5-29.5T376-480q0-45 29.5-74.5T480-584q45 0 74.5 29.5T584-480q0 45-29.5 74.5T480-376Zm0-60q18 0 31-13t13-31q0-18-13-31t-31-13q-18 0-31 13t-13 31q0 18 13 31t31 13ZM180-120q-24 0-42-18t-18-42v-172h60v172h172v60H180Zm428 0v-60h172v-172h60v172q0 24-18 42t-42 18H608ZM120-608v-172q0-24 18-42t42-18h172v60H180v172h-60Zm660 0v-172H608v-60h172q24 0 42 18t18 42v172h-60Z"/></svg></span><span data-sym="format_color_fill"><svg aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m255-917 43-43 347.69 347.69Q669-589 669-555.37q0 33.62-23 56.37L468-321q-23 23-54 23t-54-23L182-499q-23-22.77-23-56.44 0-33.66 23-56.44L371-801 255-917Zm159 159L215-559h398L414-758Zm337.79 477Q722-281 701-302.15T680-353q0-17.35 8-37.17Q696-410 710-431q8-13 19.5-28t22.5-28q11 13 22.5 28t19.5 28q14 21 22 40.83 8 19.82 8 37.17 0 29.7-21.21 50.85-21.21 21.15-51 21.15ZM80 1v-121h800V1H80Z"/></svg></span><span data-sym="palette"><svg aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-85 32-158t87.5-127q55.5-54 130-84.5T489-880q79 0 150 26.5T763.5-780q53.5 47 85 111.5T880-527q0 108-63 170.5T650-294h-75q-18 0-31 14t-13 31q0 27 14.5 46t14.5 44q0 38-21 58.5T480-80Zm0-400Zm-233 26q20 0 35-15t15-35q0-20-15-35t-35-15q-20 0-35 15t-15 35q0 20 15 35t35 15Zm126-170q20 0 35-15t15-35q0-20-15-35t-35-15q-20 0-35 15t-15 35q0 20 15 35t35 15Zm214 0q20 0 35-15t15-35q0-20-15-35t-35-15q-20 0-35 15t-15 35q0 20 15 35t35 15Zm131 170q20 0 35-15t15-35q0-20-15-35t-35-15q-20 0-35 15t-15 35q0 20 15 35t35 15ZM480-140q11 0 15.5-4.5T500-159q0-14-14.5-26T471-238q0-46 30-81t76-35h73q76 0 123-44.5T820-527q0-132-100-212.5T489-820q-146 0-247.5 98.5T140-480q0 141 99.5 240.5T480-140Z"/></svg></span><span data-sym="dark_mode"><svg aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q8 0 17 .5t23 1.5q-36 32-56 79t-20 99q0 90 63 153t153 63q52 0 99-18.5t79-51.5q1 12 1.5 19.5t.5 14.5q0 150-105 255T480-120Zm0-60q109 0 190-67.5T771-406q-25 11-53.67 16.5Q688.67-384 660-384q-114.69 0-195.34-80.66Q384-545.31 384-660q0-24 5-51.5t18-62.5q-98 27-162.5 109.5T180-480q0 125 87.5 212.5T480-180Zm-4-297Z"/></svg></span><span data-sym="arrow_selector_tool"><svg aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m300-347 109-153h218L300-757v410ZM560-84 412-401 240-160v-720l560 440H505l145 314-90 42ZM409-500Z"/></svg></span></template>
     </section>
 
     <!-- 6. How I work (new): pinned; a line runs through the four steps, the step's mark morphs, dots gather into it -->
@@ -297,32 +288,69 @@
       </div>
     </section>
 
-    <!-- 8. Contact (new) -->
+    <!-- 8. Contact (new): the closing line sits in a frame on a canvas, selected, with two people's cursors on it -->
     <section class="dz-contact" id="contact" aria-labelledby="contact-title">
-      <p class="dz-eyebrow">// Let's Contact</p>
-      <h2 id="contact-title" class="dz-contact-title draft"><span class="ln"><span>Got a product</span></span> <span class="ln"><span>that needs <em>both</em></span></span> <span class="ln"><span>a designer and a builder?</span></span></h2>
-      <div class="dz-contact-btns">
-        <a class="dz-btn dz-btn-blue dz-btn-lg roll" href="https://www.linkedin.com/in/sharma-abhii/" rel="noopener" target="_blank"><span class="roll-in"><span>Connect on LinkedIn</span><span aria-hidden="true">Connect on LinkedIn</span></span></a>
-        <a class="dz-btn dz-btn-line dz-btn-lg roll" href="/contact/"><span class="roll-in"><span>Start a project</span><span aria-hidden="true">Start a project</span></span></a>
+      <div class="dz-canvas">
+        <p class="dz-frame-label" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M3 0v12M9 0v12M0 3h12M0 9h12"/></svg>Let's Contact</p>
+        <div class="dz-cframe">
+          <span class="dz-h" aria-hidden="true"></span><span class="dz-h" aria-hidden="true"></span><span class="dz-h" aria-hidden="true"></span><span class="dz-h" aria-hidden="true"></span>
+          <p class="dz-eyebrow">// Let's Contact</p>
+          <h2 id="contact-title" class="dz-contact-title draft"><span class="ln"><span>Got a product</span></span> <span class="ln"><span>that needs <em>both</em></span></span> <span class="ln"><span>a designer and a builder?</span></span></h2>
+          <div class="dz-contact-btns">
+            <a class="dz-btn dz-btn-blue dz-btn-lg dz-talk" href="https://www.linkedin.com/in/sharma-abhii/" rel="noopener" target="_blank"><span class="dz-talk-t">Connect on LinkedIn</span><span class="dz-dots" aria-hidden="true"><i></i><i></i><i></i></span></a>
+            <a class="dz-btn dz-btn-line dz-btn-lg dz-tilt" href="/contact/">Start a project</a>
+          </div>
+          <p class="dz-size" aria-hidden="true"><span class="dz-size-w">1200</span> &times; <span class="dz-size-h">640</span></p>
+        </div>
+        <span class="dz-mate dz-mate-a" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 2l14 8-6 1.5L9 18 4 2z"/></svg><b>Abhishek</b></span>
+        <span class="dz-mate dz-mate-you" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 2l14 8-6 1.5L9 18 4 2z"/></svg><b>you</b></span>
       </div>
     </section>
   </main>
 
+  <!-- the footer: the page as a design file; a ruler, the layers panel (every layer a link) and the name, selected -->
   <footer class="dz-foot">
-    <p class="dz-foot-big" aria-hidden="true">abhishek sharma</p>
+    <div class="dz-ruler" aria-hidden="true"></div>
+    <div class="dz-foot-grid">
+      <nav class="dz-layers" aria-label="Page sections">
+        <p class="dz-layers-h">Layers</p>
+        <ol>
+          <li><a href="#home"><i></i>Hero</a></li>
+          <li><a href="#projects"><i></i>Featured Projects</a></li>
+          <li><a href="#about"><i></i>About</a></li>
+          <li><a href="#kit"><i></i>The Craft &amp; the Kit</a></li>
+          <li><a href="#how"><i></i>How I work</a></li>
+          <li><a href="#experience"><i></i>Experience</a></li>
+          <li><a href="#contact"><i></i>Let's Contact</a></li>
+        </ol>
+      </nav>
+      <div class="dz-foot-side">
+        <p class="dz-layers-h">Elsewhere</p>
+        <ul>
+          <li><a href="https://www.linkedin.com/in/sharma-abhii/" rel="noopener" target="_blank">LinkedIn</a></li>
+          <li><a href="/">human-in-loop.dev</a></li>
+          <li><a href="/ai/">The AI loop</a></li>
+          <li><a href="/about/">About the studio</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="dz-foot-name" aria-hidden="true">
+      <span class="dz-h"></span><span class="dz-h"></span><span class="dz-h"></span><span class="dz-h"></span>
+      <p class="dz-foot-big">abhishek sharma</p>
+    </div>
     <div class="dz-foot-row">
       <p>&copy; Abhishek Sharma. The Design loop at <a href="/">human-in-loop.dev</a>.</p>
-      <p><a href="/ai/">The AI loop</a> · <a href="/about/">About the studio</a></p>
+      <p class="dz-foot-zoom" aria-hidden="true">100%</p>
     </div>
   </footer>
 
-  <!-- the dock -->
+  <!-- the dock: tiles that swell under the pointer, a bubble names each -->
   <nav class="dz-dock" aria-label="Sections">
-    <a href="#home" data-tip="Home"><img src="/assets/img/design/icons/home.svg" alt="" width="24" height="24"><span class="sr">Home</span></a>
-    <a href="#about" data-tip="About Me"><img src="/assets/img/design/icons/about.svg" alt="" width="24" height="24"><span class="sr">About Me</span></a>
-    <a href="#projects" data-tip="Projects"><img src="/assets/img/design/icons/projects.svg" alt="" width="24" height="24"><span class="sr">Projects</span></a>
-    <a href="#experience" data-tip="Resume"><img src="/assets/img/design/icons/resume.svg" alt="" width="24" height="24"><span class="sr">Resume</span></a>
-    <a href="#gallery" data-tip="Gallery"><img src="/assets/img/design/icons/gallery.svg" alt="" width="24" height="24"><span class="sr">Gallery</span></a>
+    <a href="#home"><img src="/assets/img/design/icons/home.svg" alt=""><span class="dz-bubble">Home</span><span class="sr">Home</span></a>
+    <a href="#about"><img src="/assets/img/design/icons/about.svg" alt=""><span class="dz-bubble">About Me</span><span class="sr">About Me</span></a>
+    <a href="#projects"><img src="/assets/img/design/icons/projects.svg" alt=""><span class="dz-bubble">Projects</span><span class="sr">Projects</span></a>
+    <a href="#experience"><img src="/assets/img/design/icons/resume.svg" alt=""><span class="dz-bubble">Resume</span><span class="sr">Resume</span></a>
+    <a href="#gallery"><img src="/assets/img/design/icons/gallery.svg" alt=""><span class="dz-bubble">Gallery</span><span class="sr">Gallery</span></a>
   </nav>
 </body>
 </html>

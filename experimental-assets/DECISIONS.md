@@ -2,6 +2,22 @@
 
 What has been agreed with Abhishek, newest first. Read this before designing, and add to it when something is decided. Open questions are listed at the end.
 
+## 2026-11-17: the Design loop matched to Abhishek's Framer site
+
+Abhishek compared /design/ with his Framer site element by element. Changed to match it:
+
+- **White page, no grid** (his background); his own SVGs taken from the page: the blue selection frame round "the future." and the dark one round "sharma", the blue cursor, the ChatGPT knot sticker beside the moon, the two tilted icons by the tag, and his eight palette icons.
+- **"the future." only:** no word swapping; the frame, the words and the Abhishek cursor drift together on a slow diagonal.
+- **Header:** hides on scroll down, returns on scroll up. Name: "sharma" tilts on hover while three photos fan out. Resume: pale-blue outline, an orange tile half outside it; on hover it turns blue and four tool tiles burst out ("So much experience :o"). Let's Contact / About Me: solid blue; on hover the words give way to a typing indicator.
+- **Avatar:** no extra shadow or background (the sticker carries its own); tilted, turning the other way on hover.
+- **Dock:** grey tiles in a white tray; the hovered tile swells and lifts, its neighbours a little; a speech bubble names it. It steps aside while The Craft & the Kit is on screen (the Kit has its own toolbar there).
+- **Tool marks:** larger (60px), wider apart, each floating and turning in its own rhythm.
+- **Projects:** a white card with a folder cut (weeks and season in the tab, the name at the foot) over three photos; on hover the whole thing turns, the photos fan out, description and role appear. The grey Let's Contact turns on hover.
+- **About:** the photo card is tilted and straightens on hover; the Connect button is tilted too.
+- **The Craft & the Kit:** his own component (CraftAndKit.tsx), ported to plain script with the same logic and styles; Material Symbols icons as inline SVG (Apache 2.0) instead of loading the icon font. Changed in his tooltips: "Framer: you're literally inside it. hi" (no longer true here, and the emoji is against the rules) is now "where this portfolio was born." (Claude's, for review).
+- **Contact and footer:** design-file elements: the closing line in a selected frame with handles and a live size, Abhishek's cursor and your own on the canvas; the footer as a canvas with a ruler, a layers panel (each layer a link) and the name in a selection box.
+- **The cursor line on every page:** `assets/js/trail.js` (studio orange), added to the home page, About and every other page; the Design loop keeps its own in blue.
+
 ## 2026-11-17: the home hero, after jehaduddin.vercel.app
 
 Abhishek wants the home page to feel like jehaduddin.vercel.app: minimal, lines forming on hover, particles forming and stirred. Its hero runs ~100k GPU particles dragged by a fluid field the pointer stirs; we keep our own 2D field of dots and rings and borrow the two ideas, with no new library:
