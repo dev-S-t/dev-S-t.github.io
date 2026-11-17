@@ -30,7 +30,7 @@ h1, h2, h3, p { margin: 0; }
 .dz-thread { position: absolute; left: 0; top: 0; width: 100%; pointer-events: none; z-index: 0; overflow: visible; }
 .dz-thread path { fill: none; stroke: var(--ink); stroke-opacity: .16; stroke-width: 1; stroke-linecap: round; }
 .dz-trail { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 70; }
-main, .dz-foot { position: relative; z-index: 1; }
+main { position: relative; z-index: 1; }
 
 /* hover lines (communication with humour): small, tilted, beside the thing */
 .quipped { position: relative; }
@@ -331,23 +331,7 @@ html:not(.js) .dz-step { opacity: 1; }
 .dz-mate-you { --c: #E8622A; left: 70%; top: 70%; opacity: 0; transition: opacity .3s; }
 .dz-canvas.has-you .dz-mate-you { opacity: 1; }
 
-/* footer: the page as a design file */
-.dz-foot { padding: 0 var(--gut) 120px; border-top: 1px solid var(--line); overflow: hidden; background: var(--soft); }
-.dz-ruler { height: 26px; margin: 0 calc(var(--gut) * -1); border-bottom: 1px solid var(--line); background: repeating-linear-gradient(90deg, rgba(31,31,31,.25) 0 1px, transparent 1px 10px) 0 100% / 100% 6px no-repeat, repeating-linear-gradient(90deg, rgba(31,31,31,.4) 0 1px, transparent 1px 100px) 0 100% / 100% 14px no-repeat; }
-.dz-foot-grid { display: grid; grid-template-columns: 280px 1fr; gap: 64px; padding-top: 56px; }
-.dz-layers-h { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--mute); margin-bottom: 12px; }
-.dz-layers ol, .dz-foot-side ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
-.dz-layers a { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 8px; font-size: 14px; transition: background .25s, color .25s; }
-.dz-layers a i { width: 12px; height: 12px; border: 1.5px solid currentColor; border-radius: 2px; opacity: .6; }
-.dz-layers a:hover, .dz-layers a:focus-visible { background: var(--blue); color: #fff; }
-.dz-foot-side a { font-size: 15px; background: linear-gradient(currentColor, currentColor) left bottom / 0 1px no-repeat; transition: background-size .4s var(--ease-io); }
-.dz-foot-side a:hover { background-size: 100% 1px; }
-.dz-foot-side li { padding: 4px 0; }
-.dz-foot-name { position: relative; margin-top: 72px; padding: 6px 12px; border: 1.5px solid var(--blue); }
-.dz-foot-big { font-size: 12.4vw; line-height: .9; font-weight: 700; letter-spacing: -0.06em; white-space: nowrap; color: var(--ink); }
-.dz-foot-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 24px; font-size: 13px; color: var(--mute); }
-.dz-foot-row a { color: var(--ink); }
-.dz-foot-zoom { padding: 2px 8px; border: 1px solid var(--line); border-radius: 6px; }
+/* the footer is the shared one (foot.css), the same as the home page and About */
 
 /* the dock: grey tiles in a white tray; the one under the pointer swells and lifts, its neighbours a little;
    a speech bubble names it */
@@ -399,7 +383,6 @@ html:not(.js) .dz-step { opacity: 1; }
   .dz-stop::before { left: -35px; }
   .dz-stop .quip { right: 0; top: -16px; }
   .dz-cframe { width: 92%; padding: 48px 20px; }
-  .dz-foot-grid { grid-template-columns: 1fr; gap: 32px; }
   .dz-mate { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {

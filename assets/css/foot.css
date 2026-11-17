@@ -1,7 +1,12 @@
 /* The footer, shared by the home page and About (after oryzo.ai): one screen of dark; a stream of short lines that the
    mark's figure wades through and sorts; the statement top right; a share box, links and the copyright below.
    Its colours are set here, so it looks the same on any page. Needs home.css for the spacing and type tokens. */
-.ab-foot { --bg: #030203; --fg: #FFF4E6; --dim: rgba(255, 244, 230, .64); --faint: rgba(255, 244, 230, .16); --bright: var(--orange); }
+.ab-foot { --bg: #030203; --fg: #FFF4E6; --dim: rgba(255, 244, 230, .64); --faint: rgba(255, 244, 230, .16); --orange: #DC5000; --bright: var(--orange); --ink: #100904;
+  /* its own spacing and type, the same as home.css, so it also works on a page that does not load home.css */
+  --s1: 8px; --s2: 16px; --s3: 24px; --s4: 32px; --s5: 40px; --s8: 64px; --s12: 96px; --gutter: 64px;
+  --h4: 32px; --lh4: 40px; --h6: 24px; --lh6: 32px; --p: 16px; --p-sm: 14px; --lh-p-sm: 24px; --label: 12px; --label-lg: 14px;
+  --ease-out: cubic-bezier(0.35, 0, 0, 1); --ease-io: cubic-bezier(0.4, 0, 0.1, 1); }
+@media (max-width: 900px) { .ab-foot { --gutter: 24px; --h6: 20px; --lh6: 24px; } }
 .ab-pill { --fg: #FFF4E6; }
 .ab-pill { position: relative; margin-top: auto; display: inline-flex; align-items: center; gap: var(--s3); padding: var(--s1) var(--s1) var(--s1) var(--s4); border-radius: 999px; background: var(--fg); color: var(--ink); font-size: var(--p); line-height: 1; text-transform: uppercase; letter-spacing: .02em; box-shadow: 0 20px 40px -20px rgba(16, 9, 4, .5); }
 /* the arrow sits in a dark disc; on hover it leaves to the right and a second arrow comes in from the left */
@@ -28,6 +33,13 @@
 .ab-share-t { margin: 0; font-size: var(--label-lg); line-height: 1.4; text-transform: uppercase; color: var(--fg); }
 .ab-copy { position: relative; padding: var(--s1) var(--s2); border: 1px solid var(--faint); border-radius: 999px; background: transparent; color: var(--fg); font: inherit; font-size: var(--label); line-height: 1; text-transform: uppercase; letter-spacing: .08em; cursor: pointer; transition: background .3s, color .3s; }
 .ab-copy:hover, .ab-copy:focus-visible { background: var(--fg); color: var(--ink); }
+/* the rolling label on the pill (the same as home.css), so it also works without it */
+.ab-foot .roll-in { display: inline-grid; overflow: hidden; height: 1.25em; line-height: 1.25em; vertical-align: top; }
+.ab-foot .roll-in > span { grid-area: 1 / 1; transition: transform .55s var(--ease-io); }
+.ab-foot .roll-in > span + span { transform: translateY(110%); }
+.ab-foot .roll:hover .roll-in > span:first-child, .ab-foot .roll:focus-visible .roll-in > span:first-child { transform: translateY(-110%); }
+.ab-foot .roll:hover .roll-in > span + span, .ab-foot .roll:focus-visible .roll-in > span + span { transform: translateY(0); }
+.ab-foot .quip-pill { padding: 6px 12px; border-radius: 999px; background: var(--fg); color: var(--ink); font-size: 12px; }
 .ab-copy .quip-pill { top: auto; bottom: calc(100% + 10px); left: 0; white-space: nowrap; }
 .ab-foot-nav { display: flex; gap: var(--s12); justify-content: center; }
 .ab-foot-k { margin: 0 0 var(--s2); font-size: var(--label); line-height: 1; text-transform: uppercase; letter-spacing: .12em; color: var(--dim); }

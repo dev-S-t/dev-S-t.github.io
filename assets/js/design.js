@@ -39,7 +39,10 @@
     dock.addEventListener('pointerleave', () => mark(-1));
     // The Kit has its own toolbar at the bottom of the screen: the dock steps aside while the Kit is in view.
     const kitSec = document.querySelector('.kit');
-    if (kitSec) new IntersectionObserver(([e]) => dock.classList.toggle('is-away', e.isIntersecting), { threshold: 0.3 }).observe(kitSec);
+    // ...and over the footer, whose links sit where the dock is
+    const away = new Set(), foot = document.querySelector('.ab-foot');
+    const watch = (el, t) => el && new IntersectionObserver(([e]) => { e.isIntersecting ? away.add(el) : away.delete(el); dock.classList.toggle('is-away', away.size > 0); }, { threshold: t }).observe(el);
+    watch(kitSec, 0.3); watch(foot, 0.15);
   }
 
   /* ---------- the contact canvas: your own cursor joins Abhishek's ---------- */
@@ -166,8 +169,6 @@
       cin.to(o, { w: Math.round(cf.offsetWidth), h: Math.round(cf.offsetHeight), duration: 1.2, ease: 'power2.out', onUpdate: () => { w.textContent = Math.round(o.w); h.textContent = Math.round(o.h); } }, 0.2);
       gsap.to('.dz-mate-a', { x: 260, y: -40, duration: 5, ease: 'sine.inOut', yoyo: true, repeat: -1 });
     }
-    // Footer: the name's selection box draws round it, the layers list in
-    gsap.from('.dz-layers li', { x: -20, opacity: 0, duration: 0.6, ease: 'power3.out', stagger: 0.05, scrollTrigger: { trigger: '.dz-foot', start: 'top 80%' } });
 
     // the thread: one line down the left of the page, drawn by the scroll, bending in at each section
     const thread = document.querySelector('.dz-thread'), tp = thread && thread.querySelector('path');
